@@ -1,0 +1,11 @@
+{
+    "name": "Direccion",
+    "alias": "direccion",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Direccion\\Providers\\DireccionServiceProvider"
+    ],
+    "files": []
+}

@@ -544,8 +544,12 @@
               </div>
           </div>
           <div class="dropdown d-lg-none">
-                            <a href="/login">Log in</a>
-                        </div>
+              @auth
+                  <a href="{{ route('direccion.welcome') }}"><i class="fas fa-user-circle me-1"></i> {{ Auth::user()->full_name }} ({{ Auth::user()->primary_role }})</a>
+              @else
+                  <a href="{{ route('login') }}">Log in</a>
+              @endauth
+          </div>
           <div class="dropdown lang d-lg-none">
               <a class="nav-link scrollto" data-toggle="dropdown" href="#">
                    <i class="fas fa-globe"></i>
@@ -562,9 +566,15 @@
         <li><a class="nav-link scrollto active" href="#hero">Inicio</a></li>
         <li class="dropdown"><a href="#modules"><span>Procesos ERP</span> <i class="bi bi-chevron-down"></i></a>
           <ul>
-            <li><a href="#modules-estrategicos"><i class="fas fa-chess-king text-success me-1"></i> Estratégicos</a></li>
-            <li><a href="#modules-misionales"><i class="fas fa-bullseye text-primary me-1"></i> Misionales</a></li>
-            <li><a href="#modules-apoyo"><i class="fas fa-handshake text-warning me-1"></i> Apoyo</a></li>
+            @if(isset($bloques) && count($bloques) > 0)
+              @foreach($bloques as $navBloque)
+                <li><a href="#modules-{{ $navBloque->slug }}"><i class="{{ $navBloque->icon }} me-1" style="color: {{ $navBloque->color }};"></i> {{ $navBloque->name }}</a></li>
+              @endforeach
+            @else
+              <li><a href="#modules-estrategicos"><i class="fas fa-chess-king text-success me-1"></i> Estratégicos</a></li>
+              <li><a href="#modules-misionales"><i class="fas fa-bullseye text-primary me-1"></i> Misionales</a></li>
+              <li><a href="#modules-apoyos"><i class="fas fa-handshake text-warning me-1"></i> Apoyo</a></li>
+            @endif
           </ul>
         </li>
         <li><a class="nav-link scrollto" href="#noticias">Noticias</a></li>
@@ -574,9 +584,24 @@
         <li><a class="nav-link scrollto" href="#why-us">SENA-Empresa</a></li>
         <li><a class="nav-link scrollto" href="#about">Acerca</a></li>
         <li><a class="nav-link scrollto" href="#contact">PQRS</a></li>
-        <li class="dropdown">
-            <a href="/login">Log in</a>
-        </li>
+        @guest
+          <li class="dropdown">
+              <a href="{{ route('login') }}"><i class="fas fa-right-to-bracket me-1 text-success"></i> Log in</a>
+          </li>
+        @else
+          <li class="dropdown">
+              <a href="#" class="d-flex align-items-center gap-1">
+                  <span class="badge bg-success text-white me-1" style="font-size: 11px;">{{ Auth::user()->primary_role }}</span>
+                  <span>{{ Str::limit(Auth::user()->full_name, 15) }}</span>
+                  <i class="bi bi-chevron-down"></i>
+              </a>
+              <ul>
+                  <li><a href="{{ route('direccion.welcome') }}"><i class="fas fa-compass me-1 text-success"></i> Módulo Dirección</a></li>
+                  <li><a href="{{ route('direccion.dashboard') }}"><i class="fas fa-chart-pie me-1 text-primary"></i> Dashboard</a></li>
+                  <li><a href="{{ route('logout') }}" class="text-danger"><i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión</a></li>
+              </ul>
+          </li>
+        @endguest
           
               <!-- languaje Dropdown Menu-->
         <li class="dropdown">
@@ -956,197 +981,50 @@
           <p>Módulos de gestión organizados por categorías institucionales para SENA Empresa</p>
         </div>
 
-        <!-- BLOQUE 1: PROCESOS ESTRATÉGICOS -->
-        <div id="modules-estrategicos" class="process-category-block mb-5 p-4 rounded-4 shadow-sm bg-white border-start border-5" style="border-left-color: #39A900 !important;" data-aos="fade-up">
-          <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
-            <div class="process-icon-box me-3 p-3 rounded-circle" style="background-color: rgba(57, 169, 0, 0.12); color: #39A900;">
-              <i class="fas fa-chess-king fs-2"></i>
-            </div>
-            <div>
-              <h3 class="mb-1 fs-4 fw-bold text-dark">Procesos Estratégicos</h3>
-              <p class="mb-0 text-muted fs-6">Direccionamiento institucional, planeación y evaluación de indicadores globales.</p>
-            </div>
-          </div>
-
-          <div class="row g-4">
-            <!-- Submódulo: Planeación -->
-            <div class="col-xl-6 col-md-6" data-aos="zoom-in" data-aos-delay="100">
-              <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background: linear-gradient(135deg, #39A900, #2b8000);">
-                    <i class="fas fa-clipboard-list fs-4"></i>
-                  </div>
-                  <div>
-                    <h4 class="mb-0 fs-5 fw-bold"><a href="#" class="text-dark hover-green">Planeación</a></h4>
-                    <span class="badge bg-success bg-opacity-10 text-success fs-7">Estratégico</span>
-                  </div>
+        @if(isset($bloques) && count($bloques) > 0)
+          @foreach($bloques as $bloque)
+            <!-- BLOQUE: {{ strtoupper($bloque->name) }} -->
+            <div id="modules-{{ $bloque->slug }}" class="process-category-block mb-5 p-4 rounded-4 shadow-sm bg-white border-start border-5" style="border-left-color: {{ $bloque->color ?? '#39A900' }} !important;" data-aos="fade-up">
+              <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
+                <div class="process-icon-box me-3 p-3 rounded-circle" style="background-color: {{ $bloque->color ?? '#39A900' }}1f; color: {{ $bloque->color ?? '#39A900' }};">
+                  <i class="{{ $bloque->icon ?? 'fas fa-cubes' }} fs-2"></i>
                 </div>
-                <p class="text-muted fs-6 mb-3">
-                  Planificación estratégica, formulación de metas organizacionales, plan de acción anual y asignación de metas.
-                </p>
-                <a href="javascript:void(0)" onclick="openModuleModal('planeacion')" class="btn btn-sm text-white rounded-pill px-3 fw-semibold" style="background-color: #39A900;">
-                  Acceder a Planeación <i class="fas fa-arrow-right ms-1"></i>
-                </a>
+                <div>
+                  <h3 class="mb-1 fs-4 fw-bold text-dark">{{ $bloque->name }}</h3>
+                  <p class="mb-0 text-muted fs-6">{{ $bloque->description }}</p>
+                </div>
+              </div>
+
+              <div class="row g-4">
+                @forelse($bloque->apps as $app)
+                  <div class="col-xl-{{ count($bloque->apps) <= 2 ? '6' : '4' }} col-md-6" data-aos="zoom-in">
+                    <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
+                      <div class="d-flex align-items-center mb-3">
+                        <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background-color: {{ $app->color ?? $bloque->color ?? '#39A900' }};">
+                          <i class="{{ $app->icon ?? 'fas fa-cube' }} fs-4"></i>
+                        </div>
+                        <div>
+                          <h4 class="mb-0 fs-5 fw-bold"><a href="{{ url($app->url) }}" class="text-dark">{{ $app->name }}</a></h4>
+                          <span class="badge text-dark fs-7" style="background-color: {{ $bloque->color ?? '#39A900' }}22; border: 1px solid {{ $bloque->color ?? '#39A900' }}44;">{{ $bloque->name }}</span>
+                        </div>
+                      </div>
+                      <p class="text-muted fs-6 mb-3">
+                        {{ $app->description }}
+                      </p>
+                      <a href="{{ url($app->url) }}" class="btn btn-sm text-white rounded-pill px-3 fw-semibold shadow-sm" style="background-color: {{ $app->color ?? $bloque->color ?? '#39A900' }};">
+                        Acceder a {{ $app->name }} <i class="fas fa-arrow-right ms-1"></i>
+                      </a>
+                    </div>
+                  </div>
+                @empty
+                  <div class="col-12">
+                    <p class="text-muted fst-italic">No hay submódulos asignados a este proceso actualmente.</p>
+                  </div>
+                @endforelse
               </div>
             </div>
-
-            <!-- Submódulo: Indicadores -->
-            <div class="col-xl-6 col-md-6" data-aos="zoom-in" data-aos-delay="200">
-              <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background: linear-gradient(135deg, #20c997, #0f9f75);">
-                    <i class="fas fa-chart-line fs-4"></i>
-                  </div>
-                  <div>
-                    <h4 class="mb-0 fs-5 fw-bold"><a href="#" class="text-dark hover-green">Indicadores</a></h4>
-                    <span class="badge bg-success bg-opacity-10 text-success fs-7">Estratégico</span>
-                  </div>
-                </div>
-                <p class="text-muted fs-6 mb-3">
-                  Tablero de control ejecutivo, medición de KPIs de rendimiento empresarial, evaluación de resultados y estadísticas.
-                </p>
-                <a href="javascript:void(0)" onclick="openModuleModal('indicadores')" class="btn btn-sm text-white rounded-pill px-3 fw-semibold" style="background-color: #39A900;">
-                  Acceder a Indicadores <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- BLOQUE 2: PROCESOS MISIONALES -->
-        <div id="modules-misionales" class="process-category-block mb-5 p-4 rounded-4 shadow-sm bg-white border-start border-5" style="border-left-color: #00324D !important;" data-aos="fade-up">
-          <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
-            <div class="process-icon-box me-3 p-3 rounded-circle" style="background-color: rgba(0, 50, 77, 0.12); color: #00324D;">
-              <i class="fas fa-bullseye fs-2"></i>
-            </div>
-            <div>
-              <h3 class="mb-1 fs-4 fw-bold text-dark">Procesos Misionales</h3>
-              <p class="mb-0 text-muted fs-6">Operación central de SENA Empresa: control de stock, comercialización y aprovisionamiento.</p>
-            </div>
-          </div>
-
-          <div class="row g-4">
-            <!-- Submódulo: Inventario -->
-            <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="100">
-              <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background: linear-gradient(135deg, #00324D, #005685);">
-                    <i class="fas fa-boxes fs-4"></i>
-                  </div>
-                  <div>
-                    <h4 class="mb-0 fs-5 fw-bold"><a href="#" class="text-dark hover-blue">Inventario</a></h4>
-                    <span class="badge bg-primary bg-opacity-10 text-primary fs-7">Misional</span>
-                  </div>
-                </div>
-                <p class="text-muted fs-6 mb-3">
-                  Control de stock en bodegas, trazabilidad de insumos agroindustriales, materias primas y almacenes.
-                </p>
-                <a href="javascript:void(0)" onclick="openModuleModal('inventario')" class="btn btn-sm text-white rounded-pill px-3 fw-semibold" style="background-color: #00324D;">
-                  Acceder a Inventario <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-
-            <!-- Submódulo: Ventas -->
-            <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="200">
-              <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background: linear-gradient(135deg, #0288d1, #01579b);">
-                    <i class="fas fa-cash-register fs-4"></i>
-                  </div>
-                  <div>
-                    <h4 class="mb-0 fs-5 fw-bold"><a href="#ptoventa" class="text-dark hover-blue">Ventas</a></h4>
-                    <span class="badge bg-primary bg-opacity-10 text-primary fs-7">Misional</span>
-                  </div>
-                </div>
-                <p class="text-muted fs-6 mb-3">
-                  Puntos de venta (POS), comercialización de productos del centro de formación y facturación rápida.
-                </p>
-                <a href="javascript:void(0)" onclick="openModuleModal('ventas')" class="btn btn-sm text-white rounded-pill px-3 fw-semibold" style="background-color: #00324D;">
-                  Acceder a Ventas <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-
-            <!-- Submódulo: Compras -->
-            <div class="col-xl-4 col-md-6" data-aos="zoom-in" data-aos-delay="300">
-              <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background: linear-gradient(135deg, #0097a7, #006064);">
-                    <i class="fas fa-shopping-cart fs-4"></i>
-                  </div>
-                  <div>
-                    <h4 class="mb-0 fs-5 fw-bold"><a href="#" class="text-dark hover-blue">Compras</a></h4>
-                    <span class="badge bg-primary bg-opacity-10 text-primary fs-7">Misional</span>
-                  </div>
-                </div>
-                <p class="text-muted fs-6 mb-3">
-                  Gestión de proveedores, cotizaciones, solicitudes de insumos y órdenes de adquisición.
-                </p>
-                <a href="javascript:void(0)" onclick="openModuleModal('compras')" class="btn btn-sm text-white rounded-pill px-3 fw-semibold" style="background-color: #00324D;">
-                  Acceder a Compras <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- BLOQUE 3: PROCESOS DE APOYO -->
-        <div id="modules-apoyo" class="process-category-block mb-4 p-4 rounded-4 shadow-sm bg-white border-start border-5" style="border-left-color: #e65100 !important;" data-aos="fade-up">
-          <div class="d-flex align-items-center mb-4 pb-2 border-bottom">
-            <div class="process-icon-box me-3 p-3 rounded-circle" style="background-color: rgba(230, 81, 0, 0.12); color: #e65100;">
-              <i class="fas fa-handshake fs-2"></i>
-            </div>
-            <div>
-              <h3 class="mb-1 fs-4 fw-bold text-dark">Procesos de Apoyo</h3>
-              <p class="mb-0 text-muted fs-6">Soporte contable, financiero y gestión integral del capital humano.</p>
-            </div>
-          </div>
-
-          <div class="row g-4">
-            <!-- Submódulo: Contabilidad -->
-            <div class="col-xl-6 col-md-6" data-aos="zoom-in" data-aos-delay="100">
-              <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background: linear-gradient(135deg, #f57c00, #e65100);">
-                    <i class="fas fa-file-invoice-dollar fs-4"></i>
-                  </div>
-                  <div>
-                    <h4 class="mb-0 fs-5 fw-bold"><a href="#" class="text-dark hover-warning">Contabilidad</a></h4>
-                    <span class="badge bg-warning bg-opacity-10 text-dark fs-7">Apoyo</span>
-                  </div>
-                </div>
-                <p class="text-muted fs-6 mb-3">
-                  Gestión contable y financiera, registro de comprobantes, presupuestos, asientos y balances generales.
-                </p>
-                <a href="javascript:void(0)" onclick="openModuleModal('contabilidad')" class="btn btn-sm text-white rounded-pill px-3 fw-semibold" style="background-color: #e65100;">
-                  Acceder a Contabilidad <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-
-            <!-- Submódulo: Talento Humano -->
-            <div class="col-xl-6 col-md-6" data-aos="zoom-in" data-aos-delay="200">
-              <div class="icon-box h-100 p-4 rounded-3 border bg-light shadow-sm hover-lift">
-                <div class="d-flex align-items-center mb-3">
-                  <div class="icon-circle p-3 rounded-3 me-3 text-white" style="background: linear-gradient(135deg, #ff9800, #f57c00);">
-                    <i class="fas fa-users-cog fs-4"></i>
-                  </div>
-                  <div>
-                    <h4 class="mb-0 fs-5 fw-bold"><a href="#" class="text-dark hover-warning">Talento Humano</a></h4>
-                    <span class="badge bg-warning bg-opacity-10 text-dark fs-7">Apoyo</span>
-                  </div>
-                </div>
-                <p class="text-muted fs-6 mb-3">
-                  Administración de aprendices, instructores, asignación de turnos operacionales en SENA Empresa y control de asistencia.
-                </p>
-                <a href="javascript:void(0)" onclick="openModuleModal('talento')" class="btn btn-sm text-white rounded-pill px-3 fw-semibold" style="background-color: #e65100;">
-                  Acceder a Talento Humano <i class="fas fa-arrow-right ms-1"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+          @endforeach
+        @endif
 
       </div>
     </section><!-- End Services Section -->

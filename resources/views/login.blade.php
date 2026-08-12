@@ -212,19 +212,45 @@
             <div class="col-lg-7 login-form-container d-flex flex-column justify-content-between">
                 <div>
                     <div class="text-center text-lg-start mb-4">
-                        <h2 class="fw-bold text-dark mb-1 fs-3">Acceso al Sistema ERP</h2>
-                        <p class="text-muted fs-6">Ingresa tus credenciales para administrar los procesos de SENA Empresa</p>
-                    </div>
+                    <!-- Flash messages & Alerts -->
+                    @if(session('info'))
+                        <div class="alert alert-info border-0 rounded-3 shadow-sm d-flex align-items-center gap-2 mb-3 py-2 px-3 fs-7" role="alert">
+                            <i class="fas fa-info-circle text-info fs-6"></i>
+                            <div>{{ session('info') }}</div>
+                        </div>
+                    @endif
 
-                    <form action="#" method="POST" onsubmit="event.preventDefault(); alert('Bienvenido a SENA Empresa ERP');">
+                    @if(session('success'))
+                        <div class="alert alert-success border-0 rounded-3 shadow-sm d-flex align-items-center gap-2 mb-3 py-2 px-3 fs-7" role="alert">
+                            <i class="fas fa-check-circle text-success fs-6"></i>
+                            <div>{{ session('success') }}</div>
+                        </div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="alert alert-danger border-0 rounded-3 shadow-sm mb-3 py-2 px-3 fs-7" role="alert">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="fas fa-exclamation-triangle text-danger fs-6"></i>
+                                <strong>Error de autenticación:</strong>
+                            </div>
+                            <ul class="mb-0 ps-3">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('login.post') }}" method="POST">
                         @csrf
+                        <input type="hidden" name="redirect" value="{{ old('redirect', $redirect ?? request('redirect')) }}">
 
                         <!-- User / Email Input -->
                         <div class="mb-3 position-relative form-group-custom">
                             <label for="email" class="form-label fw-semibold text-secondary fs-7">Correo Electrónico / Usuario</label>
                             <div class="position-relative">
                                 <i class="fas fa-envelope input-group-text-icon"></i>
-                                <input type="email" id="email" name="email" class="form-control" placeholder="ejemplo@sena.edu.co" required autofocus>
+                                <input type="text" id="email" name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" placeholder="ejemplo@sena.edu.co o usuario" required autofocus>
                             </div>
                         </div>
 
@@ -232,18 +258,18 @@
                         <div class="mb-3 position-relative form-group-custom">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <label for="password" class="form-label fw-semibold text-secondary fs-7 mb-0">Contraseña</label>
-                                <a href="#" class="fs-7 text-decoration-none fw-semibold" style="color: var(--sena-green);">¿Olvidaste tu contraseña?</a>
+                                <a href="javascript:void(0)" onclick="alert('Por favor contacte al Administrador del Sistema ERP o Soporte TIC.');" class="fs-7 text-decoration-none fw-semibold" style="color: var(--sena-green);">¿Olvidaste tu contraseña?</a>
                             </div>
                             <div class="position-relative">
                                 <i class="fas fa-lock input-group-text-icon"></i>
-                                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                                <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="••••••••" required>
                                 <i class="far fa-eye toggle-password" id="togglePassword"></i>
                             </div>
                         </div>
 
                         <!-- Remember Me Checkbox -->
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember" {{ old('remember') ? 'checked' : '' }}>
                             <label class="form-check-label fs-7 text-muted" for="remember">
                                 Recordar mi sesión en este dispositivo
                             </label>
@@ -254,6 +280,14 @@
                             <i class="fas fa-right-to-bracket btn-icon-navy me-2"></i>
                             <span>Iniciar Sesión en SENA Empresa</span>
                         </button>
+
+                        <!-- Demo test credentials helper -->
+                        <div class="p-2 bg-light rounded-3 border text-center fs-8 text-muted">
+                            <span class="fw-bold text-dark d-block mb-1"><i class="fas fa-key text-warning me-1"></i> Credencial de Acceso Rápido:</span>
+                            <span class="badge bg-dark text-white cursor-pointer px-2 py-1 me-1" style="cursor: pointer;" onclick="fillDemo('damendez', '12345678')">
+                                Usuario: <code>damendez</code> (SuperAdmin / Director)
+                            </span>
+                        </div>
                     </form>
                 </div>
 
@@ -268,7 +302,7 @@
         </div>
     </div>
 
-    <!-- Toggle Password Script -->
+    <!-- Toggle Password Script & Demo Helper -->
     <script>
         document.getElementById('togglePassword').addEventListener('click', function () {
             const passwordInput = document.getElementById('password');
@@ -277,6 +311,11 @@
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
+
+        function fillDemo(username, password) {
+            document.getElementById('email').value = username;
+            document.getElementById('password').value = password;
+        }
     </script>
 </body>
 </html>
