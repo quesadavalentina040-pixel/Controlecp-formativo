@@ -1,0 +1,11 @@
+{
+    "name": "ControlECP",
+    "alias": "controlecp",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ControlECP\\Providers\\ControlECPServiceProvider"
+    ],
+    "files": []
+}

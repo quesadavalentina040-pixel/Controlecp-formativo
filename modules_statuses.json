@@ -3,5 +3,6 @@
     "Direccion": true,
     "SST": true,
     "RUB": true,
-    "CEFA": true
+    "CEFA": true,
+    "ControlECP": true
 }
