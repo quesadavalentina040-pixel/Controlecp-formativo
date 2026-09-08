@@ -13,7 +13,7 @@ class ElementoController extends Controller
     {
         $elementos = Elemento::orderBy('created_at', 'desc')->paginate(10);
 
-        return view('controlecp::index', compact('elementos'));
+        return view('controlecp::elementos.index', compact('elementos'));
     }
 
     // 2. FORMULARIO DE CREACIÓN
