@@ -73,112 +73,115 @@
                 <button type="button" data-bs-target="#carouselControlECP" data-bs-slide-to="2" aria-label="Slide 3" style="background-color: var(--sena-pastel-primary);"></button>
             </div>
 
-            <!-- Diapositivas del Carrusel -->
+            <!-- Diapositivas del Carrusel con Fotos Reales y Cajita Compacta -->
             <div class="carousel-inner">
-                <!-- Slide 1: Principal -->
-                <div class="carousel-item active ecp-carousel-item" style="background: linear-gradient(135deg, #d8f3dc 0%, #b7e4c7 50%, #95d5b2 100%);">
+                <!-- Slide 1: Principal - Kiosco / Casa de Paz en el Lago -->
+                <div class="carousel-item active ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-1.png') }}'); background-size: cover; background-position: center;">
                     <div class="ecp-carousel-overlay"></div>
-                    <div class="container ecp-carousel-content py-5">
-                        <div class="row align-items-center justify-content-center text-center">
-                            <div class="col-lg-10 col-xl-9">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-4" style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(116, 198, 157, 0.4); backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(82, 183, 136, 0.15);">
-                                    <i class="fas fa-dove" style="color: #2d6a4f;"></i>
-                                    <span class="fs-7 fw-bold" style="color: var(--sena-pastel-text-title);">Centro de Formación Agroindustrial "La Angostura"</span>
+                    <div class="container ecp-carousel-content py-4">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-7 col-lg-8 col-md-10">
+                                <div class="ecp-hero-card text-center">
+                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(116, 198, 157, 0.6); box-shadow: 0 2px 8px rgba(82, 183, 136, 0.12);">
+                                        <i class="fas fa-dove" style="color: #1b4332; font-size: 0.8rem;"></i>
+                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Centro de Formación Agroindustrial "La Angostura"</span>
+                                    </div>
+
+                                    <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
+                                        Escuela Cultura <span style="color: #2d6a4f;">de Paz</span>
+                                    </h2>
+
+                                    <p class="mb-3 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 460px; font-size: 0.92rem; line-height: 1.5;">
+                                        Espacio pedagógico de formación integral, convivencia armónica, diálogo constructivo y valores humanos para la comunidad educativa SENA.
+                                    </p>
+
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                                        @guest
+                                            <a href="{{ route('login') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
+                                                <span>Ingresar</span>
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('controlecp.elementos') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
+                                                <span>Ingresar al Sistema</span>
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        @endguest
+
+                                        <a href="#quienes-somos" class="btn btn-sena-outline-white px-3 py-2 fs-6 d-inline-flex align-items-center gap-2">
+                                            <i class="fas fa-circle-info"></i> Conocer Más
+                                        </a>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                                <h1 class="display-3 fw-bold mb-3" style="color: var(--sena-pastel-text-title); text-shadow: 0 2px 10px rgba(255,255,255,0.6);">
-                                    Escuela Cultura <br>
-                                    <span style="color: #2d6a4f; text-shadow: 0 0 20px rgba(116, 198, 157, 0.5);">de Paz</span>
-                                </h1>
+                <!-- Slide 2: Convivencia y Actividades al Aire Libre -->
+                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-2.png') }}'); background-size: cover; background-position: center;">
+                    <div class="ecp-carousel-overlay"></div>
+                    <div class="container ecp-carousel-content py-4">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-7 col-lg-8 col-md-10">
+                                <div class="ecp-hero-card text-center">
+                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(116, 198, 157, 0.6); box-shadow: 0 2px 8px rgba(82, 183, 136, 0.12);">
+                                        <i class="fas fa-handshake" style="color: #1b4332; font-size: 0.8rem;"></i>
+                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Mediación y Diálogo Asertivo</span>
+                                    </div>
 
-                                <p class="lead mb-5 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 680px; font-size: 1.25rem;">
-                                    Espacio pedagógico de formación integral, convivencia armónica, diálogo constructivo y valores humanos para la comunidad educativa SENA.
-                                </p>
+                                    <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
+                                        Transformando Conflictos en <span style="color: #2d6a4f;">Oportunidades de Aprendizaje</span>
+                                    </h2>
 
-                                <div class="d-flex flex-wrap justify-content-center gap-3">
-                                    @guest
-                                        <a href="{{ route('login') }}" class="btn btn-sena-green btn-lg px-5 py-3 fs-5 d-inline-flex align-items-center gap-3 shadow-lg">
+                                    <p class="mb-3 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 460px; font-size: 0.92rem; line-height: 1.5;">
+                                        Promovemos la resolución pacífica de controversias mediante la escucha activa, la empatía y la construcción de acuerdos colectivos sostenibles.
+                                    </p>
+
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                                        <a href="{{ route('login') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
                                             <span>Ingresar</span>
                                             <i class="fas fa-arrow-right"></i>
                                         </a>
-                                    @else
-                                        <a href="{{ route('controlecp.elementos') }}" class="btn btn-sena-green btn-lg px-5 py-3 fs-5 d-inline-flex align-items-center gap-3 shadow-lg">
-                                            <span>Ingresar al Sistema</span>
+                                        <a href="#momentos" class="btn btn-sena-outline-white px-3 py-2 fs-6 d-inline-flex align-items-center gap-2">
+                                            <i class="fas fa-shapes"></i> Ver Momentos ECP
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Talleres Vivenciales y Formación Ciudadana -->
+                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-3.png') }}'); background-size: cover; background-position: center;">
+                    <div class="ecp-carousel-overlay"></div>
+                    <div class="container ecp-carousel-content py-4">
+                        <div class="row justify-content-center">
+                            <div class="col-xl-7 col-lg-8 col-md-10">
+                                <div class="ecp-hero-card text-center">
+                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.75); border: 1px solid rgba(116, 198, 157, 0.6); box-shadow: 0 2px 8px rgba(82, 183, 136, 0.12);">
+                                        <i class="fas fa-seedling" style="color: #1b4332; font-size: 0.8rem;"></i>
+                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Formación Ética y Ciudadana</span>
+                                    </div>
+
+                                    <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
+                                        Liderazgo Consciente y <span style="color: #2d6a4f;">Convivencia</span>
+                                    </h2>
+
+                                    <p class="mb-3 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 460px; font-size: 0.92rem; line-height: 1.5;">
+                                        Fortalecemos las habilidades socioemocionales de aprendices e instructores para forjar líderes integrales y constructores de paz en el Huila.
+                                    </p>
+
+                                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                                        <a href="{{ route('login') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-lg">
+                                            <span>Ingresar</span>
                                             <i class="fas fa-arrow-right"></i>
                                         </a>
-                                    @endguest
-
-                                    <a href="#quienes-somos" class="btn btn-sena-outline-white btn-lg px-4 py-3 fs-6 d-inline-flex align-items-center gap-2">
-                                        <i class="fas fa-circle-info"></i> Conocer Más
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide 2: Convivencia y Mediación -->
-                <div class="carousel-item ecp-carousel-item" style="background: linear-gradient(135deg, #e0f4eb 0%, #c7ecc8 50%, #8fd8ad 100%);">
-                    <div class="ecp-carousel-overlay"></div>
-                    <div class="container ecp-carousel-content py-5">
-                        <div class="row align-items-center justify-content-center text-center">
-                            <div class="col-lg-10 col-xl-9">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-4" style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(116, 198, 157, 0.4); backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(82, 183, 136, 0.15);">
-                                    <i class="fas fa-handshake" style="color: #2d6a4f;"></i>
-                                    <span class="fs-7 fw-bold" style="color: var(--sena-pastel-text-title);">Mediación y Diálogo Asertivo</span>
-                                </div>
-
-                                <h1 class="display-4 fw-bold mb-3" style="color: var(--sena-pastel-text-title);">
-                                    Transformando Conflictos en <br>
-                                    <span style="color: #2d6a4f;">Oportunidades de Aprendizaje</span>
-                                </h1>
-
-                                <p class="lead mb-5 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 680px; font-size: 1.2rem;">
-                                    Promovemos la resolución pacífica de controversias mediante la escucha activa, la empatía y la construcción de acuerdos colectivos sostenibles.
-                                </p>
-
-                                <div class="d-flex flex-wrap justify-content-center gap-3">
-                                    <a href="{{ route('login') }}" class="btn btn-sena-green btn-lg px-5 py-3 fs-5 d-inline-flex align-items-center gap-3 shadow-lg">
-                                        <span>Ingresar</span>
-                                        <i class="fas fa-arrow-right"></i>
-                                    </a>
-                                    <a href="#momentos" class="btn btn-sena-outline-white btn-lg px-4 py-3 fs-6 d-inline-flex align-items-center gap-2">
-                                        <i class="fas fa-shapes"></i> Ver Momentos ECP
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide 3: Liderazgo y Ciudadanía -->
-                <div class="carousel-item ecp-carousel-item" style="background: linear-gradient(135deg, #e8f7ee 0%, #b8e9cc 50%, #9ce0b8 100%);">
-                    <div class="ecp-carousel-overlay"></div>
-                    <div class="container ecp-carousel-content py-5">
-                        <div class="row align-items-center justify-content-center text-center">
-                            <div class="col-lg-10 col-xl-9">
-                                <div class="d-inline-flex align-items-center gap-2 px-3 py-2 rounded-pill mb-4" style="background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(116, 198, 157, 0.4); backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(82, 183, 136, 0.15);">
-                                    <i class="fas fa-seedling" style="color: #2d6a4f;"></i>
-                                    <span class="fs-7 fw-bold" style="color: var(--sena-pastel-text-title);">Formación Ética y Ciudadana</span>
-                                </div>
-
-                                <h1 class="display-4 fw-bold mb-3" style="color: var(--sena-pastel-text-title);">
-                                    Liderazgo Consciente y <br>
-                                    <span style="color: #2d6a4f;">Convivencia en Paz</span>
-                                </h1>
-
-                                <p class="lead mb-5 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 680px; font-size: 1.2rem;">
-                                    Fortalecemos las habilidades socioemocionales de aprendices e instructores para forjar líderes integrales y constructores de paz en el Huila.
-                                </p>
-
-                                <div class="d-flex flex-wrap justify-content-center gap-3">
-                                    <a href="{{ route('login') }}" class="btn btn-sena-green btn-lg px-5 py-3 fs-5 d-inline-flex align-items-center gap-3 shadow-lg">
-                                        <span>Ingresar</span>
-                                        <i class="fas fa-arrow-right"></i>
-                                    </a>
-                                    <a href="#que-hacemos" class="btn btn-sena-outline-white btn-lg px-4 py-3 fs-6 d-inline-flex align-items-center gap-2">
-                                        <i class="fas fa-hands-holding-circle"></i> Nuestras Acciones
-                                    </a>
+                                        <a href="#que-hacemos" class="btn btn-sena-outline-white px-3 py-2 fs-6 d-inline-flex align-items-center gap-2">
+                                            <i class="fas fa-hands-holding-circle"></i> Nuestras Acciones
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

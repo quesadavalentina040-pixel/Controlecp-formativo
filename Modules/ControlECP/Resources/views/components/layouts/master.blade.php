@@ -162,12 +162,29 @@
         }
 
         .ecp-carousel-item {
-            min-height: 82vh;
+            height: 620px;
+            min-height: 620px;
+            max-height: 620px;
             background-size: cover;
-            background-position: center;
+            background-position: center center;
+            background-repeat: no-repeat;
             position: relative;
-            display: flex;
-            align-items: center;
+        }
+
+        .carousel-item.ecp-carousel-item.active,
+        .carousel-item-next.ecp-carousel-item,
+        .carousel-item-prev.ecp-carousel-item {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        @media (max-width: 768px) {
+            .ecp-carousel-item {
+                height: 580px;
+                min-height: 580px;
+                max-height: 580px;
+            }
         }
 
         .ecp-carousel-overlay {
@@ -176,13 +193,37 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(216, 243, 220, 0.88) 0%, rgba(183, 228, 199, 0.8) 50%, rgba(149, 213, 178, 0.85) 100%);
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.18) 100%);
             z-index: 1;
         }
 
         .ecp-carousel-content {
             position: relative;
             z-index: 2;
+            width: 100%;
+            margin: auto 0;
+        }
+
+        /* Casillita Contenedora Translúcida Glassmorphism - Centrado Perfecto y Uniforme */
+        .ecp-hero-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-radius: 24px;
+            padding: 2.2rem 2.4rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.16);
+            width: 100%;
+            max-width: 600px;
+            min-height: 380px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            gap: 0.65rem;
+            transition: all 0.3s ease;
         }
 
         /* Section Titles */
