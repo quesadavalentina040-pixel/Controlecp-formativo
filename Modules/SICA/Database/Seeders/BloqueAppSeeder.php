@@ -118,5 +118,14 @@ class BloqueAppSeeder extends Seeder
             'description' => 'Administración de aprendices, instructores, asignación de turnos operacionales en SENA Empresa y control de asistencia.',
             'description_english' => 'Management of apprentices, instructors, operational shifts and attendance control.'
         ]);
+
+        App::updateOrCreate(['name'=> 'Control ECP'], [
+            'bloque_id' => $estrategico->id, // O $misional->id o $apoyo->id
+            'url' => '/control-ecp',
+            'color' => '#39A900', // Color del botón y detalles
+            'icon' => 'fas fa-clipboard-check', // Icono de FontAwesome
+            'description' => 'Control ECP es una plataforma web del SENA Regional Huila (Centro La Angostura) para gestionar y centralizar los procesos de la Escuela de Cultura de Paz.',
+            'description_english' => 'Control ECP is a web platform of the SENA Regional Huila (Centro La Angostura) to manage and centralize the processes of the School of Peace Culture.'
+        ]);
     }
 }
