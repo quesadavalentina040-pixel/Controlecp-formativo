@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/controlecp",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ControlECP\\": "",
+            "Modules\\ControlECP\\Database\\Factories\\": "database/factories/",
+            "Modules\\ControlECP\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\ControlECP\\Tests\\": "tests/"
+        }
+    }
+}
