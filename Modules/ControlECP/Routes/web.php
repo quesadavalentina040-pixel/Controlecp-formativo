@@ -18,17 +18,7 @@ Route::get('/control-ecp/inicio', [ControlECPController::class, 'index'])->name(
 // --- 2. RUTAS PROTEGIDAS (Gestión interna / CRUD de Elementos) ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Resource del controlador principal (sin 'index' para evitar colisión con la ruta pública)
-    Route::resource('controlecps', ControlECPController::class)
-        ->except(['index'])
-        ->names([
-            'create'  => 'controlecp.resource.create',
-            'store'   => 'controlecp.resource.store',
-            'show'    => 'controlecp.resource.show',
-            'edit'    => 'controlecp.resource.edit',
-            'update'  => 'controlecp.resource.update',
-            'destroy' => 'controlecp.resource.destroy',
-        ]);
+    Route::resource('controlecps', ControlECPController::class)->names('controlecp');
 
     // Gestión de Elementos
     Route::get('/control-ecp/elementos', [ElementoController::class, 'index'])
