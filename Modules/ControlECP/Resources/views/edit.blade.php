@@ -5,7 +5,7 @@
 
             <div class="card shadow-sm border-0 rounded-4 p-4">
 
-                <h4 class="mb-4">Nuevo Registro</h4>
+                <h4 class="mb-4"><i class="fas fa-edit me-2 text-success"></i>Editar Registro</h4>
 
                 {{-- Bloque para mostrar errores generales de validación --}}
                 @if ($errors->any())
@@ -20,16 +20,17 @@
                     </div>
                 @endif
 
-                <form action="{{ route('controlecp.store') }}" method="POST">
+                <form action="{{ route('controlecp.update', $elemento->id) }}" method="POST">
 
                     @csrf
+                    @method('PUT')
 
                     <div class="mb-3">
-                        <label class="form-label">Código</label>
+                        <label class="form-label fw-semibold">Código</label>
                         <input type="text" 
                                name="codigo" 
                                class="form-control @error('codigo') is-invalid @enderror" 
-                               value="{{ old('codigo') }}" 
+                               value="{{ old('codigo', $elemento->codigo) }}" 
                                required>
                         @error('codigo')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -37,11 +38,11 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Nombre</label>
+                        <label class="form-label fw-semibold">Nombre</label>
                         <input type="text" 
                                name="nombre" 
                                class="form-control @error('nombre') is-invalid @enderror" 
-                               value="{{ old('nombre') }}" 
+                               value="{{ old('nombre', $elemento->nombre) }}" 
                                required>
                         @error('nombre')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -49,34 +50,34 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Descripción</label>
+                        <label class="form-label fw-semibold">Descripción</label>
                         <textarea name="descripcion" 
                                   class="form-control @error('descripcion') is-invalid @enderror" 
-                                  rows="3">{{ old('descripcion') }}</textarea>
+                                  rows="3">{{ old('descripcion', $elemento->descripcion) }}</textarea>
                         @error('descripcion')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Estado</label>
+                        <label class="form-label fw-semibold">Estado</label>
                         <select name="estado" class="form-select @error('estado') is-invalid @enderror">
-                            <option value="Activo" {{ old('estado') == 'Activo' ? 'selected' : '' }}>Activo</option>
-                            <option value="Inactivo" {{ old('estado') == 'Inactivo' ? 'selected' : '' }}>Inactivo</option>
+                            <option value="Activo" {{ old('estado', $elemento->estado) == 'Activo' ? 'selected' : '' }}>Activo</option>
+                            <option value="Inactivo" {{ old('estado', $elemento->estado) == 'Inactivo' ? 'selected' : '' }}>Inactivo</option>
                         </select>
                         @error('estado')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2">
+                    <div class="d-flex justify-content-end gap-2 mt-4">
 
                         <a href="{{ route('controlecp.elementos') }}" class="btn btn-secondary rounded-pill px-4">
                             Cancelar
                         </a>
 
                         <button type="submit" class="btn btn-sena-green rounded-pill px-4 shadow-sm">
-                            <i class="fas fa-save me-1"></i> Guardar
+                            <i class="fas fa-save me-1"></i> Actualizar
                         </button>
 
                     </div>

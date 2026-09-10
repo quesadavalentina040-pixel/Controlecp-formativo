@@ -16,8 +16,13 @@ class LoginController extends Controller
     public function showLoginForm(Request $request)
     {
         if (Auth::check()) {
-            $redirect = $request->query('redirect', route('direccion.welcome'));
-            return redirect($redirect)->with('info', 'Ya has iniciado sesión como ' . Auth::user()->full_name);
+            $user = Auth::user();
+            $defaultRedirect = $user->roles->contains(function ($r) { return str_starts_with($r->slug, 'controlecp'); })
+                ? route('controlecp.elementos')
+                : route('direccion.welcome');
+
+            $redirect = $request->query('redirect', $defaultRedirect);
+            return redirect($redirect)->with('info', 'Ya has iniciado sesión como ' . $user->full_name);
         }
 
         $redirect = $request->query('redirect', '');
@@ -52,7 +57,12 @@ class LoginController extends Controller
 
             $redirectUrl = $request->input('redirect');
             if (!empty($redirectUrl) && (str_starts_with($redirectUrl, '/') || str_starts_with($redirectUrl, url('/')))) {
-                return redirect($redirectUrl)->with('success', '¡Bienvenido(a) a SENA Empresa, ' . $user->full_name . '!');
+                return redirect($redirectUrl)->with('success', '¡Bienvenido(a), ' . $user->full_name . '!');
+            }
+
+            // Si el usuario pertenece a Control ECP, redirigir directamente al aplicativo interno
+            if ($user->roles->contains(function ($r) { return str_starts_with($r->slug, 'controlecp'); })) {
+                return redirect()->route('controlecp.elementos')->with('success', '¡Bienvenido(a), ' . $user->full_name . '!');
             }
 
             return redirect()->intended(route('direccion.welcome'))->with('success', '¡Bienvenido(a) a SENA Empresa, ' . $user->full_name . '!');

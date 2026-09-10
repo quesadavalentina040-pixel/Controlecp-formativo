@@ -25,12 +25,15 @@
                 </a>
 
                 @guest
-                    <a href="{{ route('login') }}" class="btn btn-sena-green d-inline-flex align-items-center gap-2">
+                    <a href="{{ route('login', ['redirect' => route('controlecp.elementos')]) }}" class="btn btn-sena-green d-inline-flex align-items-center gap-2">
                         <i class="fas fa-right-to-bracket"></i> Iniciar Sesión
                     </a>
                 @else
+                    <a href="{{ route('controlecp.elementos') }}" class="btn btn-sena-green d-inline-flex align-items-center gap-2" title="Entrar al Aplicativo Control ECP">
+                        <i class="fas fa-right-to-bracket"></i> Iniciar Sesión
+                    </a>
                     <div class="dropdown">
-                        <button class="btn btn-sena-green dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-sena-outline-white dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fas fa-user-circle"></i> {{ Str::limit(Auth::user()->full_name ?? Auth::user()->name, 14) }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2 mt-2" style="background-color: #ffffff; border: 1px solid rgba(116, 198, 157, 0.3) !important;">
@@ -40,7 +43,7 @@
                             </li>
                             <li>
                                 <a class="dropdown-item rounded-3 py-2 my-1" href="{{ route('controlecp.elementos') }}">
-                                    <i class="fas fa-layer-group me-2" style="color: var(--sena-pastel-primary);"></i> Gestión de Elementos
+                                    <i class="fas fa-layer-group me-2" style="color: var(--sena-pastel-primary);"></i> Entrar al Aplicativo
                                 </a>
                             </li>
                             <li>
@@ -97,7 +100,7 @@
 
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
                                         @guest
-                                            <a href="{{ route('login') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
+                                            <a href="{{ route('login', ['redirect' => route('controlecp.elementos')]) }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
                                                 <span>Ingresar</span>
                                                 <i class="fas fa-arrow-right"></i>
                                             </a>
@@ -139,10 +142,17 @@
                                     </p>
 
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
-                                        <a href="{{ route('login') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
-                                            <span>Ingresar</span>
-                                            <i class="fas fa-arrow-right"></i>
-                                        </a>
+                                        @guest
+                                            <a href="{{ route('login', ['redirect' => route('controlecp.elementos')]) }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
+                                                <span>Ingresar</span>
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('controlecp.elementos') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-sm">
+                                                <span>Ingresar al Sistema</span>
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        @endguest
                                         <a href="#momentos" class="btn btn-sena-outline-white px-3 py-2 fs-6 d-inline-flex align-items-center gap-2">
                                             <i class="fas fa-shapes"></i> Ver Momentos ECP
                                         </a>
@@ -174,10 +184,17 @@
                                     </p>
 
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
-                                        <a href="{{ route('login') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-lg">
-                                            <span>Ingresar</span>
-                                            <i class="fas fa-arrow-right"></i>
-                                        </a>
+                                        @guest
+                                            <a href="{{ route('login', ['redirect' => route('controlecp.elementos')]) }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-lg">
+                                                <span>Ingresar</span>
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('controlecp.elementos') }}" class="btn btn-sena-green px-4 py-2 fs-6 d-inline-flex align-items-center gap-2 shadow-lg">
+                                                <span>Ingresar al Sistema</span>
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        @endguest
                                         <a href="#que-hacemos" class="btn btn-sena-outline-white px-3 py-2 fs-6 d-inline-flex align-items-center gap-2">
                                             <i class="fas fa-hands-holding-circle"></i> Nuestras Acciones
                                         </a>
@@ -340,9 +357,15 @@
                             </div>
                         </div>
 
-                        <a href="{{ route('login') }}" class="btn btn-sena-green rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
-                            <i class="fas fa-arrow-right"></i> Participar en la Escuela
-                        </a>
+                        @guest
+                            <a href="{{ route('login', ['redirect' => route('controlecp.elementos')]) }}" class="btn btn-sena-green rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+                                <i class="fas fa-arrow-right"></i> Participar en la Escuela
+                            </a>
+                        @else
+                            <a href="{{ route('controlecp.elementos') }}" class="btn btn-sena-green rounded-pill px-4 py-2 d-inline-flex align-items-center gap-2 shadow-sm">
+                                <i class="fas fa-arrow-right"></i> Participar en la Escuela
+                            </a>
+                        @endguest
                     </div>
                 </div>
 
@@ -481,10 +504,17 @@
 
             <!-- Botón de acción debajo de momentos -->
             <div class="text-center mt-5">
-                <a href="{{ route('login') }}" class="btn btn-sena-green btn-lg px-5 py-3 rounded-pill shadow-lg d-inline-flex align-items-center gap-3">
-                    <i class="fas fa-door-open"></i>
-                    <span>Ingresar y Explorar Módulo ECP</span>
-                </a>
+                @guest
+                    <a href="{{ route('login', ['redirect' => route('controlecp.elementos')]) }}" class="btn btn-sena-green btn-lg px-5 py-3 rounded-pill shadow-lg d-inline-flex align-items-center gap-3">
+                        <i class="fas fa-door-open"></i>
+                        <span>Ingresar y Explorar Módulo ECP</span>
+                    </a>
+                @else
+                    <a href="{{ route('controlecp.elementos') }}" class="btn btn-sena-green btn-lg px-5 py-3 rounded-pill shadow-lg d-inline-flex align-items-center gap-3">
+                        <i class="fas fa-door-open"></i>
+                        <span>Ingresar y Explorar Módulo ECP</span>
+                    </a>
+                @endguest
             </div>
         </div>
     </section>
@@ -561,9 +591,15 @@
                     <a href="{{ url('/') }}" class="me-3 text-decoration-none" style="color: var(--sena-pastel-text-body);">
                         <i class="fas fa-house me-1"></i> Portal ERP SENA Empresa
                     </a>
-                    <a href="{{ route('login') }}" class="text-decoration-none fw-bold" style="color: #1b4332;">
-                        <i class="fas fa-lock me-1"></i> Acceso Administrativo
-                    </a>
+                    @guest
+                        <a href="{{ route('login', ['redirect' => route('controlecp.elementos')]) }}" class="text-decoration-none fw-bold" style="color: #1b4332;">
+                            <i class="fas fa-lock me-1"></i> Acceso Administrativo
+                        </a>
+                    @else
+                        <a href="{{ route('controlecp.elementos') }}" class="text-decoration-none fw-bold" style="color: #1b4332;">
+                            <i class="fas fa-lock me-1"></i> Acceso Administrativo
+                        </a>
+                    @endguest
                 </div>
             </div>
         </div>
