@@ -31,18 +31,18 @@
 
     <style>
         :root {
-            /* Paleta Verde Pastel Claro / Soft Sage & Mint */
-            --sena-pastel-primary: #74c69d;
-            --sena-pastel-hover: #52b788;
+            /* Paleta Oficial SENA Empresa ERP (Verde SENA y Azul Marino) */
+            --sena-pastel-primary: #39A900;
+            --sena-pastel-hover: #2b8000;
             --sena-pastel-light: #d8f3dc;
-            --sena-pastel-xlight: #eaf7ee;
-            --sena-pastel-white-green: #f4fbf6;
-            --sena-pastel-accent: #95d5b2;
-            --sena-pastel-sage: #80b996;
+            --sena-pastel-xlight: #f0fbf4;
+            --sena-pastel-white-green: #f9fcfb;
+            --sena-pastel-accent: #62E31D;
+            --sena-pastel-sage: #2d6a4f;
             
-            /* Textos y Contrastes Suaves */
-            --sena-pastel-text-title: #1b4332;
-            --sena-pastel-text-body: #2d5a46;
+            /* Textos y Contrastes Oficiales SENA */
+            --sena-pastel-text-title: #001A29;
+            --sena-pastel-text-body: #00324D;
             --sena-pastel-text-muted: #52796f;
             --sena-border-radius: 16px;
         }
@@ -64,13 +64,13 @@
             color: var(--sena-pastel-text-title);
         }
 
-        /* Navbar Verde Pastel Claro */
+        /* Navbar Oficial SENA */
         .ecp-navbar {
-            background: rgba(244, 251, 246, 0.94);
+            background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border-bottom: 3px solid var(--sena-pastel-primary);
-            box-shadow: 0 4px 20px rgba(82, 183, 136, 0.12);
+            box-shadow: 0 4px 20px rgba(57, 169, 0, 0.12);
             transition: all 0.3s ease;
             z-index: 1030;
         }
@@ -94,7 +94,7 @@
 
         .ecp-navbar .nav-link:hover,
         .ecp-navbar .nav-link.active {
-            color: #1b4332 !important;
+            color: var(--sena-pastel-primary) !important;
         }
 
         .ecp-navbar .nav-link::after {
@@ -115,7 +115,7 @@
             width: 70%;
         }
 
-        /* Botones Verde Pastel Claro */
+        /* Botones Verde SENA */
         .btn-sena-green {
             background: var(--sena-pastel-primary);
             color: #ffffff !important;
@@ -123,7 +123,7 @@
             border-radius: 50px;
             padding: 0.65rem 1.85rem;
             border: 2px solid transparent;
-            box-shadow: 0 4px 15px rgba(116, 198, 157, 0.45);
+            box-shadow: 0 4px 15px rgba(57, 169, 0, 0.35);
             transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
@@ -131,30 +131,30 @@
             background: var(--sena-pastel-hover);
             color: #ffffff !important;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(82, 183, 136, 0.55);
+            box-shadow: 0 8px 25px rgba(43, 128, 0, 0.45);
         }
 
         .btn-sena-outline-white {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(6px);
             color: var(--sena-pastel-text-title) !important;
             font-weight: 700;
             border-radius: 50px;
             padding: 0.65rem 1.85rem;
             border: 2px solid var(--sena-pastel-primary);
-            box-shadow: 0 4px 12px rgba(82, 183, 136, 0.15);
+            box-shadow: 0 4px 12px rgba(57, 169, 0, 0.12);
             transition: all 0.3s ease;
         }
 
         .btn-sena-outline-white:hover {
             background: var(--sena-pastel-light);
-            color: #1b4332 !important;
+            color: var(--sena-pastel-hover) !important;
             border-color: var(--sena-pastel-hover);
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(82, 183, 136, 0.25);
+            box-shadow: 0 8px 20px rgba(57, 169, 0, 0.22);
         }
 
-        /* Hero Carousel Claro */
+        /* Hero Carousel */
         .ecp-hero-carousel {
             position: relative;
             background: var(--sena-pastel-white-green);
@@ -193,7 +193,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.18) 100%);
+            background: linear-gradient(180deg, rgba(0, 26, 41, 0.12) 0%, rgba(0, 26, 41, 0.35) 100%);
             z-index: 1;
         }
 
@@ -204,15 +204,15 @@
             margin: auto 0;
         }
 
-        /* Casillita Contenedora Translúcida Glassmorphism - Centrado Perfecto y Uniforme */
+        /* Casillita Contenedora Glassmorphism SENA */
         .ecp-hero-card {
-            background: rgba(255, 255, 255, 0.45);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 2px solid rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 2px solid rgba(255, 255, 255, 0.95);
             border-radius: 24px;
             padding: 2.2rem 2.4rem;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.16);
+            box-shadow: 0 15px 40px rgba(0, 26, 41, 0.18);
             width: 100%;
             max-width: 600px;
             min-height: 380px;
@@ -239,12 +239,12 @@
             letter-spacing: 2px;
             font-size: 0.82rem;
             font-weight: 700;
-            color: #1b4332;
+            color: var(--sena-pastel-hover);
             background: var(--sena-pastel-light);
             padding: 0.4rem 1.3rem;
             border-radius: 50px;
             margin-bottom: 0.75rem;
-            border: 1px solid rgba(116, 198, 157, 0.4);
+            border: 1px solid rgba(57, 169, 0, 0.35);
         }
 
         .ecp-section-title {
@@ -261,12 +261,12 @@
             margin: 0 auto;
         }
 
-        /* Tarjetas Verde Pastel Claro */
+        /* Tarjetas SENA */
         .ecp-card-feature {
             background: #ffffff;
             border-radius: 20px;
-            border: 1px solid rgba(116, 198, 157, 0.28);
-            box-shadow: 0 10px 30px rgba(116, 198, 157, 0.08);
+            border: 1px solid rgba(57, 169, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 50, 77, 0.06);
             padding: 2.2rem;
             transition: all 0.35s ease;
             position: relative;
@@ -288,7 +288,7 @@
 
         .ecp-card-feature:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(116, 198, 157, 0.22);
+            box-shadow: 0 20px 40px rgba(57, 169, 0, 0.18);
             border-color: var(--sena-pastel-primary);
         }
 
@@ -301,14 +301,14 @@
             height: 75px;
             border-radius: 20px;
             background: var(--sena-pastel-light);
-            color: #1b4332;
+            color: var(--sena-pastel-hover);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
             margin-bottom: 1.5rem;
             transition: all 0.35s ease;
-            border: 1px solid rgba(116, 198, 157, 0.3);
+            border: 1px solid rgba(57, 169, 0, 0.25);
         }
 
         .ecp-card-feature:hover .ecp-moment-icon {
@@ -317,12 +317,12 @@
             transform: scale(1.1) rotate(5deg);
         }
 
-        /* Bloques de Imagen con fondo verde pastel claro */
+        /* Bloques de Imagen con fondo SENA */
         .ecp-feature-img-box {
             position: relative;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 20px 45px rgba(116, 198, 157, 0.18);
+            box-shadow: 0 20px 45px rgba(0, 35, 54, 0.16);
             border: 4px solid #ffffff;
         }
 
@@ -330,28 +330,28 @@
             position: absolute;
             bottom: 20px;
             left: 20px;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             color: var(--sena-pastel-text-title);
             padding: 12px 20px;
             border-radius: 16px;
-            border: 1px solid rgba(116, 198, 157, 0.4);
+            border: 1px solid rgba(57, 169, 0, 0.35);
             display: flex;
             align-items: center;
             gap: 12px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
 
-        /* Footer Verde Pastel Claro */
+        /* Footer Oficial SENA Empresa (Azul Marino y Verde SENA) */
         .ecp-footer {
-            background: #e3f2ea;
-            color: var(--sena-pastel-text-body);
+            background: #001A29;
+            color: rgba(255, 255, 255, 0.85);
             border-top: 4px solid var(--sena-pastel-primary);
             padding-top: 4.5rem;
         }
 
         .ecp-footer h5 {
-            color: var(--sena-pastel-text-title);
+            color: #62E31D;
             font-size: 1.15rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
@@ -371,7 +371,7 @@
         }
 
         .ecp-footer p, .ecp-footer li {
-            color: var(--sena-pastel-text-body);
+            color: rgba(255, 255, 255, 0.82);
             font-size: 0.92rem;
             line-height: 1.7;
         }
@@ -389,52 +389,53 @@
         }
 
         .ecp-footer ul li i {
-            color: #2d6a4f;
+            color: #62E31D;
             margin-right: 10px;
             margin-top: 4px;
         }
 
         .ecp-footer a {
-            color: var(--sena-pastel-text-title);
+            color: rgba(255, 255, 255, 0.88);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.2s ease;
         }
 
         .ecp-footer a:hover {
-            color: #0b291d;
+            color: #62E31D;
             padding-left: 4px;
         }
 
         .ecp-footer-bottom {
-            background: #d4ebd8;
+            background: #00131E;
             padding: 1.5rem 0;
-            border-top: 1px solid rgba(116, 198, 157, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.85rem;
-            color: var(--sena-pastel-text-muted);
+            color: rgba(255, 255, 255, 0.65);
         }
 
         .social-circle-btn {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #ffffff;
-            color: #1b4332;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             margin-right: 8px;
-            border: 1px solid rgba(116, 198, 157, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
             text-decoration: none;
-            box-shadow: 0 2px 8px rgba(116, 198, 157, 0.15);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .social-circle-btn:hover {
             background: var(--sena-pastel-primary);
             color: #ffffff;
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(116, 198, 157, 0.35);
+            border-color: #62E31D;
+            box-shadow: 0 6px 15px rgba(57, 169, 0, 0.45);
         }
     </style>
 

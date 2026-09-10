@@ -38,10 +38,10 @@ class ControlECPDatabaseSeeder extends Seeder
             [
                 'bloque_id' => $bloqueApoyo->id,
                 'url' => '/control-ecp',
-                'color' => '#39A900',
-                'icon' => 'fas fa-clipboard-check',
-                'description' => 'Control ECP es una plataforma web del SENA Regional Huila (Centro La Angostura) para gestionar y centralizar los procesos de la Escuela de Cultura de Paz.',
-                'description_english' => 'Control ECP is a web platform of the SENA Regional Huila (Centro La Angostura) to manage and centralize the processes of the School of Peace Culture.'
+                'color' => '#FF7F28',
+                'icon' => 'fas fa-dove',
+                'description' => 'Gestión de momentos, actividades, cronograma, repositorio e inventario para la Escuela Cultura de Paz.',
+                'description_english' => 'Management of moments, activities, schedule, repository and inventory for the School of Peace Culture.'
             ]
         );
 
