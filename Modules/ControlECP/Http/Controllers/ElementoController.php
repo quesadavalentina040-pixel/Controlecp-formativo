@@ -35,7 +35,7 @@ class ElementoController extends Controller
         Elemento::create($validated);
 
         return redirect()
-            ->route('controlecp.index')
+            ->route('controlecp.elementos')
             ->with('success', '¡Registro creado con éxito!');
     }
 
@@ -62,7 +62,7 @@ class ElementoController extends Controller
         $elemento->update($validated);
 
         return redirect()
-            ->route('controlecp.index')
+            ->route('controlecp.elementos')
             ->with('success', '¡Registro actualizado con éxito!');
     }
 
@@ -74,7 +74,7 @@ class ElementoController extends Controller
         $elemento->delete();
 
         return redirect()
-            ->route('controlecp.index')
+            ->route('controlecp.elementos')
             ->with('success', '¡Registro eliminado correctamente!');
     }
 }
