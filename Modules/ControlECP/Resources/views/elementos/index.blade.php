@@ -6,10 +6,10 @@
         <!-- Navegación interna -->
         <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
             <div>
-                <a href="{{ route('controlecp.index') }}" class="btn btn-outline-success btn-sm rounded-pill mb-2">
+                <a href="{{ route('controlecp.index') }}" class="btn btn-sena-outline-white btn-sm rounded-pill mb-2">
                     <i class="fas fa-arrow-left me-1"></i> Volver a Escuela Cultura de Paz
                 </a>
-                <h2 class="fw-bold text-success mb-0">
+                <h2 class="fw-bold mb-0" style="color: var(--sena-pastel-primary);">
                     <i class="fas fa-layer-group me-2"></i>Gestión de Elementos
                 </h2>
                 <p class="text-muted mb-0 small">Administración y control de registros del módulo Control ECP</p>
@@ -30,7 +30,7 @@
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead style="background-color: #f0f7f2; color: #00324D;">
+                    <thead style="background-color: #fff3ea; color: #2c1810;">
                         <tr>
                             <th class="ps-4">Código</th>
                             <th>Nombre</th>
@@ -85,7 +85,7 @@
                                 <td colspan="5" class="text-center py-5 text-muted">
                                     <i class="fas fa-inbox fa-3x text-secondary mb-3 d-block"></i>
                                     <p class="mb-2 fw-semibold">No hay registros disponibles en este momento.</p>
-                                    <a href="{{ route('controlecp.create') }}" class="btn btn-sm btn-success rounded-pill px-3">
+                                    <a href="{{ route('controlecp.create') }}" class="btn btn-sm btn-sena-green rounded-pill px-3">
                                         <i class="fas fa-plus me-1"></i> Crear primer registro
                                     </a>
                                 </td>
