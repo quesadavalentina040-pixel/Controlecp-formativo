@@ -17,9 +17,16 @@ class LoginController extends Controller
     {
         if (Auth::check()) {
             $user = Auth::user();
-            $defaultRedirect = $user->roles->contains(function ($r) { return str_starts_with($r->slug, 'controlecp'); })
-                ? route('controlecp.elementos')
-                : route('direccion.welcome');
+
+            if ($user->hasRole('controlecp.admin')) {
+                $defaultRedirect = route('controlecp.administrador.inicio');
+            } elseif ($user->hasRole('controlecp.instructor')) {
+                $defaultRedirect = route('controlecp.instructor.inicio');
+            } elseif ($user->hasRole('controlecp.apprentice')) {
+                $defaultRedirect = route('controlecp.aprendiz.inicio');
+            } else {
+                $defaultRedirect = route('direccion.welcome');
+            }
 
             $redirect = $request->query('redirect', $defaultRedirect);
             return redirect($redirect)->with('info', 'Ya has iniciado sesión como ' . $user->full_name);
@@ -60,9 +67,15 @@ class LoginController extends Controller
                 return redirect($redirectUrl)->with('success', '¡Bienvenido(a), ' . $user->full_name . '!');
             }
 
-            // Si el usuario pertenece a Control ECP, redirigir directamente al aplicativo interno
-            if ($user->roles->contains(function ($r) { return str_starts_with($r->slug, 'controlecp'); })) {
-                return redirect()->route('controlecp.elementos')->with('success', '¡Bienvenido(a), ' . $user->full_name . '!');
+            // Si el usuario pertenece a Control ECP, redirigir según su rol específico
+            if ($user->hasRole('controlecp.admin')) {
+                return redirect()->route('controlecp.administrador.inicio')->with('success', '¡Bienvenido(a), ' . $user->full_name . '!');
+            }
+            if ($user->hasRole('controlecp.instructor')) {
+                return redirect()->route('controlecp.instructor.inicio')->with('success', '¡Bienvenido(a), ' . $user->full_name . '!');
+            }
+            if ($user->hasRole('controlecp.apprentice')) {
+                return redirect()->route('controlecp.aprendiz.inicio')->with('success', '¡Bienvenido(a), ' . $user->full_name . '!');
             }
 
             return redirect()->intended(route('direccion.welcome'))->with('success', '¡Bienvenido(a) a SENA Empresa, ' . $user->full_name . '!');
