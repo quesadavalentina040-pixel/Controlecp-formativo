@@ -74,6 +74,86 @@ class ControlECPController extends Controller
     }
 
     /**
+     * Muestra la vista de gestión de Usuarios del Administrador (Integración vía API).
+     */
+    public function usuariosAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a la gestión de usuarios de Control ECP.');
+        }
+
+        return view('controlecp::administrador.usuario');
+    }
+
+    /**
+     * Muestra la vista de consulta de Fichas del Administrador (Integración vía API).
+     */
+    public function fichasAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a la gestión de fichas de Control ECP.');
+        }
+
+        return view('controlecp::administrador.fichas');
+    }
+
+    /**
+     * Muestra la vista de consulta y estado de Asistencia del Administrador (Flujo dependiente del Rol Instructor).
+     */
+    public function asistenciaAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a la gestión de asistencia de Control ECP.');
+        }
+
+        return view('controlecp::administrador.asistencia');
+    }
+
+    /**
+     * Muestra la vista de consulta y gestión de Asesorías del Administrador.
+     */
+    public function asesoriasAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a la gestión de asesorías de Control ECP.');
+        }
+
+        return view('controlecp::administrador.asesorias');
+    }
+
+    /**
+     * Muestra la vista de consulta y emisión de Certificados del Administrador.
+     */
+    public function certificadosAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a la gestión de certificados de Control ECP.');
+        }
+
+        return view('controlecp::administrador.certificados');
+    }
+
+    /**
      * Muestra el inicio del rol Instructor.
      */
     public function inicioInstructor()

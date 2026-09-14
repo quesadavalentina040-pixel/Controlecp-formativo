@@ -29,15 +29,15 @@
         @php
             $items = [
                 ['icon' => 'fa-house', 'label' => 'Inicio', 'route' => 'controlecp.administrador.inicio'],
-                ['icon' => 'fa-users', 'label' => 'Usuarios', 'route' => NULL],
-                ['icon' => 'fa-id-card', 'label' => 'Fichas', 'route' => NULL],
+                ['icon' => 'fa-users', 'label' => 'Usuarios', 'route' => 'controlecp.administrador.usuarios'],
+                ['icon' => 'fa-id-card', 'label' => 'Fichas', 'route' => 'controlecp.administrador.fichas'],
                 ['icon' => 'fa-star', 'label' => 'Momentos', 'route' => NULL],
                 ['icon' => 'fa-list-check', 'label' => 'Actividades', 'route' => NULL],
                 ['icon' => 'fa-calendar-days', 'label' => 'Cronograma', 'route' => NULL],
-                ['icon' => 'fa-user-check', 'label' => 'Asistencia', 'route' => NULL],
+                ['icon' => 'fa-user-check', 'label' => 'Asistencia', 'route' => 'controlecp.administrador.asistencia'],
                 ['icon' => 'fa-folder-open', 'label' => 'Repositorio', 'route' => NULL],
-                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => NULL],
-                ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => NULL],
+                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.administrador.asesorias'],
+                ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => 'controlecp.administrador.certificados'],
                 ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => NULL],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQR', 'route' => NULL],
             ];

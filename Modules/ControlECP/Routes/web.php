@@ -15,7 +15,7 @@ Route::get('/control-ecp', [ControlECPController::class, 'index'])->name('contro
 Route::get('/controlecp', [ControlECPController::class, 'index']);
 Route::get('/control-ecp/inicio', [ControlECPController::class, 'index'])->name('controlecp.welcome');
 
-// --- 2. RUTAS PROTEGIDAS (Gestión interna / CRUD de Elementos) ---
+// --- 2. RUTAS PROTEGIDAS (Gestión interna / CRUD de Elementos y Vistas por Rol) ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('controlecps', ControlECPController::class)->names('controlecp');
@@ -44,13 +44,41 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/elementos/{id}', [ElementoController::class, 'destroy'])
         ->name('controlecp.destroy');
 
-    // Administrador
+    // --- Panel Administrador ---
     Route::get('/control-ecp/administrador', [ControlECPController::class, 'inicioAdmin'])
         ->name('controlecp.administrador.inicio');
-  // Instructor
+
+    Route::get('/control-ecp/administrador/usuarios', [ControlECPController::class, 'usuariosAdmin'])
+        ->name('controlecp.administrador.usuarios');
+    Route::get('/control-ecp/usuarios', [ControlECPController::class, 'usuariosAdmin'])
+        ->name('controlecp.usuarios');
+
+    Route::get('/control-ecp/administrador/fichas', [ControlECPController::class, 'fichasAdmin'])
+        ->name('controlecp.administrador.fichas');
+    Route::get('/control-ecp/fichas', [ControlECPController::class, 'fichasAdmin'])
+        ->name('controlecp.fichas');
+
+    Route::get('/control-ecp/administrador/asistencia', [ControlECPController::class, 'asistenciaAdmin'])
+        ->name('controlecp.administrador.asistencia');
+    Route::get('/control-ecp/asistencia', [ControlECPController::class, 'asistenciaAdmin'])
+        ->name('controlecp.asistencia');
+
+    Route::get('/control-ecp/administrador/asesorias', [ControlECPController::class, 'asesoriasAdmin'])
+        ->name('controlecp.administrador.asesorias');
+    Route::get('/control-ecp/asesorias', [ControlECPController::class, 'asesoriasAdmin'])
+        ->name('controlecp.asesorias');
+
+    Route::get('/control-ecp/administrador/certificados', [ControlECPController::class, 'certificadosAdmin'])
+        ->name('controlecp.administrador.certificados');
+    Route::get('/control-ecp/certificados', [ControlECPController::class, 'certificadosAdmin'])
+        ->name('controlecp.certificados');
+
+    // --- Panel Instructor ---
     Route::get('/control-ecp/instructor', [ControlECPController::class, 'inicioInstructor'])
         ->name('controlecp.instructor.inicio');
-  // Aprendiz
+
+    // --- Panel Aprendiz ---
     Route::get('/control-ecp/aprendiz', [ControlECPController::class, 'inicioAprendiz'])
         ->name('controlecp.aprendiz.inicio');
-});
+
+ });
