@@ -44,13 +44,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/elementos/{id}', [ElementoController::class, 'destroy'])
         ->name('controlecp.destroy');
 
-    // --- 3. INICIO POR ROL (Administrador / Instructor / Aprendiz) ---
+    // Administrador
     Route::get('/control-ecp/administrador', [ControlECPController::class, 'inicioAdmin'])
         ->name('controlecp.administrador.inicio');
-
+  // Instructor
     Route::get('/control-ecp/instructor', [ControlECPController::class, 'inicioInstructor'])
         ->name('controlecp.instructor.inicio');
-
+  // Aprendiz
     Route::get('/control-ecp/aprendiz', [ControlECPController::class, 'inicioAprendiz'])
         ->name('controlecp.aprendiz.inicio');
 });
