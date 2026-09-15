@@ -73,6 +73,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/certificados', [ControlECPController::class, 'certificadosAdmin'])
         ->name('controlecp.certificados');
 
+            // --- Repositorio (submódulos) ---
+    Route::prefix('control-ecp/administrador/repositorio')
+        ->name('controlecp.administrador.repositorio.')
+        ->group(function () {
+            Route::get('/historia', [ControlECPController::class, 'repositorioHistoria'])
+                ->name('historia');
+            Route::get('/encuesta', [ControlECPController::class, 'repositorioEncuesta'])
+                ->name('encuesta');
+            Route::get('/tabulacion', [ControlECPController::class, 'repositorioTabulacion'])
+                ->name('tabulacion');
+            Route::get('/poe', [ControlECPController::class, 'repositorioPoe'])
+                ->name('poe');
+        });
+
     // --- Panel Instructor ---
     Route::get('/control-ecp/instructor', [ControlECPController::class, 'inicioInstructor'])
         ->name('controlecp.instructor.inicio');
