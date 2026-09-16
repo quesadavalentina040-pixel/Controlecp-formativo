@@ -153,6 +153,70 @@ class ControlECPController extends Controller
         return view('controlecp::administrador.certificados');
     }
 
+
+        /**
+     * Muestra la vista de Historias dentro del Repositorio del Administrador.
+     */
+    public function repositorioHistoria()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder al repositorio de Control ECP.');
+        }
+
+        return view('controlecp::administrador.repositorio.historia');
+    }
+
+    /**
+     * Muestra la vista de Encuestas dentro del Repositorio del Administrador.
+     */
+    public function repositorioEncuesta()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder al repositorio de Control ECP.');
+        }
+
+        return view('controlecp::administrador.repositorio.encuesta');
+    }
+
+    /**
+     * Muestra la vista de Tabulación dentro del Repositorio del Administrador.
+     */
+    public function repositorioTabulacion()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder al repositorio de Control ECP.');
+        }
+
+        return view('controlecp::administrador.repositorio.tabulacion');
+    }
+
+    /**
+     * Muestra la vista de POE dentro del Repositorio del Administrador.
+     */
+    public function repositorioPoe()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder al repositorio de Control ECP.');
+        }
+
+        return view('controlecp::administrador.repositorio.poe');
+    }
     /**
      * Muestra el inicio del rol Instructor.
      */
