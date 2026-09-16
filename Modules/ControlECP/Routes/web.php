@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Modules\ControlECP\Http\Controllers\ControlECPController;
 use Modules\ControlECP\Http\Controllers\ElementoController;
+use Modules\ControlECP\Http\Controllers\MaterialController;
+use Modules\ControlECP\Http\Controllers\PqrController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +60,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/fichas', [ControlECPController::class, 'fichasAdmin'])
         ->name('controlecp.fichas');
 
+    Route::get('/control-ecp/administrador/momentos', [ControlECPController::class, 'momentosAdmin'])
+        ->name('controlecp.administrador.momentos');
+    Route::get('/control-ecp/administrador/actividades', [ControlECPController::class, 'actividadesAdmin'])
+        ->name('controlecp.administrador.actividades');
+    Route::get('/control-ecp/administrador/cronograma', [ControlECPController::class, 'cronogramaAdmin'])
+        ->name('controlecp.administrador.cronograma');
+
     Route::get('/control-ecp/administrador/asistencia', [ControlECPController::class, 'asistenciaAdmin'])
         ->name('controlecp.administrador.asistencia');
     Route::get('/control-ecp/asistencia', [ControlECPController::class, 'asistenciaAdmin'])
@@ -73,7 +82,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/certificados', [ControlECPController::class, 'certificadosAdmin'])
         ->name('controlecp.certificados');
 
-            // --- Repositorio (submódulos) ---
+    // --- Inventario / Materiales ---
+    Route::get('/control-ecp/administrador/inventario', [MaterialController::class, 'index'])
+        ->name('controlecp.administrador.inventario');
+    Route::get('/control-ecp/administrador/inventario/create', [MaterialController::class, 'create'])
+        ->name('controlecp.administrador.inventario.create');
+    Route::post('/control-ecp/administrador/inventario', [MaterialController::class, 'store'])
+        ->name('controlecp.administrador.inventario.store');
+    Route::get('/control-ecp/administrador/inventario/{id}/edit', [MaterialController::class, 'edit'])
+        ->name('controlecp.administrador.inventario.edit');
+    Route::put('/control-ecp/administrador/inventario/{id}', [MaterialController::class, 'update'])
+        ->name('controlecp.administrador.inventario.update');
+    Route::delete('/control-ecp/administrador/inventario/{id}', [MaterialController::class, 'destroy'])
+        ->name('controlecp.administrador.inventario.destroy');
+
+    // --- PQR ---
+    Route::get('/control-ecp/administrador/pqr', [PqrController::class, 'index'])
+        ->name('controlecp.administrador.pqr');
+    Route::get('/control-ecp/administrador/pqr/create', [PqrController::class, 'create'])
+        ->name('controlecp.administrador.pqr.create');
+    Route::post('/control-ecp/administrador/pqr', [PqrController::class, 'store'])
+        ->name('controlecp.administrador.pqr.store');
+    Route::get('/control-ecp/administrador/pqr/{id}', [PqrController::class, 'show'])
+        ->name('controlecp.administrador.pqr.show');
+    Route::put('/control-ecp/administrador/pqr/{id}/responder', [PqrController::class, 'responder'])
+        ->name('controlecp.administrador.pqr.responder');
+    Route::delete('/control-ecp/administrador/pqr/{id}', [PqrController::class, 'destroy'])
+        ->name('controlecp.administrador.pqr.destroy');
+
+    // --- Repositorio (submódulos) ---
     Route::prefix('control-ecp/administrador/repositorio')
         ->name('controlecp.administrador.repositorio.')
         ->group(function () {

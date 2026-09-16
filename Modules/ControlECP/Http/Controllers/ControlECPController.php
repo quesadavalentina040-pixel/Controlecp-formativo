@@ -5,6 +5,8 @@ namespace Modules\ControlECP\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Modules\ControlECP\Entities\Material;
+use Modules\ControlECP\Entities\Pqr;
 
 class ControlECPController extends Controller
 {
@@ -70,7 +72,15 @@ class ControlECPController extends Controller
                 ->with('error', 'No tienes permisos para acceder al panel de Administrador de Control ECP.');
         }
 
-        return view('controlecp::administrador.inicio');
+        $solicitudesPendientes = Pqr::where('estado', 'Pendiente')->count();
+        $recursosCriticos      = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->count();
+        $materialesCriticos    = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->get();
+
+        return view('controlecp::administrador.inicio', compact(
+            'solicitudesPendientes',
+            'recursosCriticos',
+            'materialesCriticos'
+        ));
     }
 
     /**
@@ -103,6 +113,54 @@ class ControlECPController extends Controller
         }
 
         return view('controlecp::administrador.fichas');
+    }
+
+    /**
+     * Muestra la vista de Momentos del Administrador.
+     */
+    public function momentosAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a Momentos de Control ECP.');
+        }
+
+        return view('controlecp::administrador.momentos');
+    }
+
+    /**
+     * Muestra la vista de Actividades del Administrador.
+     */
+    public function actividadesAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a Actividades de Control ECP.');
+        }
+
+        return view('controlecp::administrador.actividades');
+    }
+
+    /**
+     * Muestra la vista de Cronograma del Administrador.
+     */
+    public function cronogramaAdmin()
+    {
+        $usuario = Auth::user();
+
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder al Cronograma de Control ECP.');
+        }
+
+        return view('controlecp::administrador.cronograma');
     }
 
     /**

@@ -58,9 +58,9 @@
                 ['icon' => 'fa-house', 'label' => 'Inicio', 'route' => 'controlecp.administrador.inicio'],
                 ['icon' => 'fa-users', 'label' => 'Usuarios', 'route' => 'controlecp.administrador.usuarios'],
                 ['icon' => 'fa-id-card', 'label' => 'Fichas', 'route' => 'controlecp.administrador.fichas'],
-                ['icon' => 'fa-star', 'label' => 'Momentos', 'route' => NULL],
-                ['icon' => 'fa-list-check', 'label' => 'Actividades', 'route' => NULL],
-                ['icon' => 'fa-calendar-days', 'label' => 'Cronograma', 'route' => NULL],
+                ['icon' => 'fa-star', 'label' => 'Momentos', 'route' => 'controlecp.administrador.momentos'],
+                ['icon' => 'fa-list-check', 'label' => 'Actividades', 'route' => 'controlecp.administrador.actividades'],
+                ['icon' => 'fa-calendar-days', 'label' => 'Cronograma', 'route' => 'controlecp.administrador.cronograma'],
                 ['icon' => 'fa-user-check', 'label' => 'Asistencia', 'route' => 'controlecp.administrador.asistencia'],
                 [
                     'icon' => 'fa-folder-open',
@@ -77,8 +77,8 @@
                 ],
                 ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.administrador.asesorias'],
                 ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => 'controlecp.administrador.certificados'],
-                ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => NULL],
-                ['icon' => 'fa-comment-dots', 'label' => 'PQR', 'route' => NULL],
+                ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => 'controlecp.administrador.inventario'],
+                ['icon' => 'fa-comment-dots', 'label' => 'PQR', 'route' => 'controlecp.administrador.pqr'],
             ];
         @endphp
 
