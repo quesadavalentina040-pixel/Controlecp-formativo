@@ -292,6 +292,68 @@ class ControlECPController extends Controller
     }
 
     /**
+     * Métodos auxiliares para las secciones del Instructor
+     */
+    private function verificarAccesoInstructor()
+    {
+        $usuario = Auth::user();
+        if (!$usuario->hasRole('controlecp.instructor')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder al área de Instructor.');
+        }
+        return null;
+    }
+
+    public function cronogramaInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.cronograma');
+    }
+
+    public function momentosInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.momentos');
+    }
+
+    public function actividadesInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.actividades');
+    }
+
+    public function asistenciaInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.asistencia');
+    }
+
+    public function asesoriasInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.asesorias');
+    }
+
+    public function certificadosInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.certificados');
+    }
+
+    public function poeInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.poe');
+    }
+
+    public function acompaniamientoInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+        return view('controlecp::instructor.acompaniamiento');
+    }
+
+    /**
      * Muestra el inicio del rol Aprendiz.
      */
     public function inicioAprendiz()
@@ -305,5 +367,43 @@ class ControlECPController extends Controller
         }
 
         return view('controlecp::aprendiz.inicio');
+    }
+
+    /**
+     * Métodos auxiliares para las secciones del Aprendiz
+     */
+    private function verificarAccesoAprendiz()
+    {
+        $usuario = Auth::user();
+        if (!$usuario->hasRole('controlecp.apprentice')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder al área de Aprendiz.');
+        }
+        return null;
+    }
+
+    public function cronogramaAprendiz()
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+        return view('controlecp::aprendiz.cronograma');
+    }
+
+    public function encuestaAprendiz()
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+        return view('controlecp::aprendiz.encuesta');
+    }
+
+    public function asesoriasAprendiz()
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+        return view('controlecp::aprendiz.asesorias');
+    }
+
+    public function pqrAprendiz()
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+        return view('controlecp::aprendiz.pqr');
     }
 }

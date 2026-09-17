@@ -127,9 +127,33 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- Panel Instructor ---
     Route::get('/control-ecp/instructor', [ControlECPController::class, 'inicioInstructor'])
         ->name('controlecp.instructor.inicio');
+    Route::get('/control-ecp/instructor/cronograma', [ControlECPController::class, 'cronogramaInstructor'])
+        ->name('controlecp.instructor.cronograma');
+    Route::get('/control-ecp/instructor/momentos', [ControlECPController::class, 'momentosInstructor'])
+        ->name('controlecp.instructor.momentos');
+    Route::get('/control-ecp/instructor/actividades', [ControlECPController::class, 'actividadesInstructor'])
+        ->name('controlecp.instructor.actividades');
+    Route::get('/control-ecp/instructor/asistencia', [ControlECPController::class, 'asistenciaInstructor'])
+        ->name('controlecp.instructor.asistencia');
+    Route::get('/control-ecp/instructor/asesorias', [ControlECPController::class, 'asesoriasInstructor'])
+        ->name('controlecp.instructor.asesorias');
+    Route::get('/control-ecp/instructor/certificados', [ControlECPController::class, 'certificadosInstructor'])
+        ->name('controlecp.instructor.certificados');
+    Route::get('/control-ecp/instructor/poe', [ControlECPController::class, 'poeInstructor'])
+        ->name('controlecp.instructor.poe');
+    Route::get('/control-ecp/instructor/acompaniamiento', [ControlECPController::class, 'acompaniamientoInstructor'])
+        ->name('controlecp.instructor.acompaniamiento');
 
     // --- Panel Aprendiz ---
     Route::get('/control-ecp/aprendiz', [ControlECPController::class, 'inicioAprendiz'])
         ->name('controlecp.aprendiz.inicio');
+    Route::get('/control-ecp/aprendiz/cronograma', [ControlECPController::class, 'cronogramaAprendiz'])
+        ->name('controlecp.aprendiz.cronograma');
+    Route::get('/control-ecp/aprendiz/encuesta', [ControlECPController::class, 'encuestaAprendiz'])
+        ->name('controlecp.aprendiz.encuesta');
+    Route::get('/control-ecp/aprendiz/asesorias', [ControlECPController::class, 'asesoriasAprendiz'])
+        ->name('controlecp.aprendiz.asesorias');
+    Route::get('/control-ecp/aprendiz/pqr', [ControlECPController::class, 'pqrAprendiz'])
+        ->name('controlecp.aprendiz.pqr');
 
  });
