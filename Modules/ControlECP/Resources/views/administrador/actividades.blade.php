@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Actividades
                     </li>
                 </ol>
@@ -25,7 +25,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.administrador.momentos') }}" class="btn btn-outline-success rounded-pill px-3">
+            <a href="{{ route('controlecp.administrador.momentos') }}" class="btn text-white rounded-pill px-3" style="background-color: #39A900;">
                 <i class="fas fa-star me-1"></i> Ver Momentos
             </a>
             <a href="{{ route('controlecp.administrador.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3">
@@ -40,12 +40,12 @@
         <!-- Momento 1: Autoconciencia -->
         <div class="col-12">
             <div class="card border-0 shadow-sm" style="border-radius: 18px;">
-                <div class="card-header bg-success text-white p-3 px-4 d-flex justify-content-between align-items-center" style="border-top-left-radius: 18px; border-top-right-radius: 18px; background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%) !important;">
+                <div class="card-header text-white p-3 px-4 d-flex justify-content-between align-items-center" style="border-top-left-radius: 18px; border-top-right-radius: 18px; background: linear-gradient(135deg, #001A29 0%, #00324D 100%) !important;">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="fas fa-brain fa-lg"></i>
+                        <i class="fas fa-brain fa-lg" style="color: #62E31D;"></i>
                         <h5 class="fw-bold mb-0">Momento 1: Autoconciencia</h5>
                     </div>
-                    <span class="badge bg-white text-success rounded-pill px-3 py-1 fw-bold">10 Actividades</span>
+                    <span class="badge bg-white text-dark rounded-pill px-3 py-1 fw-bold" style="color: #001A29 !important;">10 Actividades</span>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">

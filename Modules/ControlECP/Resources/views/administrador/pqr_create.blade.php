@@ -8,15 +8,15 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-1 small text-muted">
                 <li class="breadcrumb-item">
-                    <a href="{{ route('controlecp.administrador.pqr') }}" class="text-decoration-none" style="color:#2E7D32;">
-                        <i class="fas fa-comment-dots me-1"></i>PQR
+                    <a href="{{ route('controlecp.administrador.pqr') }}" class="text-decoration-none" style="color:#39A900;">
+                        <i class="fas fa-comment-dots me-1"></i>PQRS
                     </a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page" style="color:#1B5E20; font-weight:600;">Radicar</li>
+                <li class="breadcrumb-item active" aria-current="page" style="color:#001A29; font-weight:600;">Radicar</li>
             </ol>
         </nav>
         <h2 class="h3 fw-bold mb-0" style="color:#001A29; font-family:'Outfit', sans-serif;">
-            <i class="fas fa-file-circle-plus me-2" style="color:#39A900;"></i>Radicar Nueva PQR
+            <i class="fas fa-file-circle-plus me-2" style="color:#39A900;"></i>Radicar Nueva PQRS
         </h2>
         <p class="text-muted small mb-0">Registra una petición, queja, reclamo, sugerencia o felicitación</p>
     </div>
@@ -28,11 +28,11 @@
 
                     {{-- Radicado asignado --}}
                     <div class="alert d-flex align-items-center gap-3 border-0 mb-4"
-                         style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9); border-radius:12px;">
-                        <i class="fas fa-hashtag fa-lg" style="color:#1B5E20;"></i>
+                         style="background:linear-gradient(135deg,#f0fbf4,#d8f3dc); border-radius:12px;">
+                        <i class="fas fa-hashtag fa-lg" style="color:#39A900;"></i>
                         <div>
                             <div class="small text-muted">Número de radicado asignado</div>
-                            <div class="fw-bold h5 mb-0" style="color:#1B5E20;">{{ $radicado }}</div>
+                            <div class="fw-bold h5 mb-0" style="color:#001A29;">{{ $radicado }}</div>
                         </div>
                     </div>
 
@@ -76,7 +76,7 @@
                         </div>
 
                         {{-- Datos del solicitante --}}
-                        <h6 class="fw-bold mb-3 pb-2 border-bottom" style="color:#1B5E20;">
+                        <h6 class="fw-bold mb-3 pb-2 border-bottom" style="color:#001A29;">
                             <i class="fas fa-user me-1"></i> Datos del solicitante
                         </h6>
                         <div class="row g-3 mb-4">
@@ -123,7 +123,7 @@
                         </div>
 
                         {{-- Detalle de la solicitud --}}
-                        <h6 class="fw-bold mb-3 pb-2 border-bottom" style="color:#1B5E20;">
+                        <h6 class="fw-bold mb-3 pb-2 border-bottom" style="color:#001A29;">
                             <i class="fas fa-file-lines me-1"></i> Detalle de la solicitud
                         </h6>
                         <div class="row g-3">
@@ -176,7 +176,7 @@
                                 Cancelar
                             </a>
                             <button type="submit" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color:#39A900;">
-                                <i class="fas fa-paper-plane me-1"></i> Radicar PQR
+                                <i class="fas fa-paper-plane me-1"></i> Radicar PQRS
                             </button>
                         </div>
                     </form>
@@ -215,7 +215,7 @@
         box-shadow: 0 4px 12px rgba(57,169,0,.18);
     }
     .tipo-radio:checked + .tipo-card i { color: #39A900; }
-    .tipo-radio:checked + .tipo-card span { color: #1B5E20; }
+    .tipo-radio:checked + .tipo-card span { color: #001A29; }
 
     /* Zona de anexo */
     .anexo-drop {

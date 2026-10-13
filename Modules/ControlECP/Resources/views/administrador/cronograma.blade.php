@@ -11,8 +11,8 @@
         box-shadow: 0 0 8px rgba(0,0,0,0.15);
     }
     .semaforo-verde {
-        background-color: #2e7d32;
-        box-shadow: 0 0 10px rgba(46, 125, 50, 0.6);
+        background-color: #39A900;
+        box-shadow: 0 0 10px rgba(57, 169, 0, 0.6);
         animation: pulse-green 2s infinite;
     }
     .semaforo-amarillo {
@@ -27,9 +27,9 @@
     }
 
     @keyframes pulse-green {
-        0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); }
-        70% { box-shadow: 0 0 0 8px rgba(46, 125, 50, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+        0% { box-shadow: 0 0 0 0 rgba(57, 169, 0, 0.7); }
+        70% { box-shadow: 0 0 0 8px rgba(57, 169, 0, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(57, 169, 0, 0); }
     }
     @keyframes pulse-yellow {
         0% { box-shadow: 0 0 0 0 rgba(245, 127, 23, 0.7); }
@@ -62,8 +62,8 @@
         overflow: hidden;
     }
     .calendar-day-header {
-        background-color: #E8F5E9;
-        color: #1B5E20;
+        background-color: #f0fbf4;
+        color: #001A29;
         font-weight: 700;
         text-align: center;
         padding: 12px 6px;
@@ -120,9 +120,9 @@
         transform: scale(1.02);
     }
     .event-verde {
-        background-color: #E8F5E9;
-        color: #1B5E20;
-        border-left: 3px solid #2E7D32;
+        background-color: #f0fbf4;
+        color: #001A29;
+        border-left: 3px solid #39A900;
     }
     .event-amarillo {
         background-color: #FFF8E1;
@@ -146,11 +146,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Cronograma & Calendario
                     </li>
                 </ol>
@@ -162,7 +162,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <button class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #2E7D32; border-color: #2E7D32;" data-bs-toggle="modal" data-bs-target="#modalNuevaSesion">
+            <button class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #39A900; border-color: #39A900;" data-bs-toggle="modal" data-bs-target="#modalNuevaSesion">
                 <i class="fas fa-plus me-1"></i> Programar Sesión
             </button>
             <a href="{{ route('controlecp.administrador.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3">
@@ -175,13 +175,13 @@
     <div class="row g-3 mb-4">
         <!-- Verde: Ejecutado / Al día -->
         <div class="col-12 col-md-4">
-            <div class="card card-semaforo-box shadow-sm" style="background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);">
+            <div class="card card-semaforo-box shadow-sm" style="background: linear-gradient(135deg, #f0fbf4 0%, #d8f3dc 100%);">
                 <div class="card-body p-3 d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-3">
                         <span class="semaforo-indicator semaforo-verde" style="width: 22px; height: 22px;"></span>
                         <div>
-                            <span class="d-block fw-bold text-uppercase small" style="color: #1B5E20; letter-spacing: 0.5px;">Al Día / Completado</span>
-                            <span class="h3 fw-bold mb-0" style="color: #1B5E20;">12</span>
+                            <span class="d-block fw-bold text-uppercase small" style="color: #001A29; letter-spacing: 0.5px;">Al Día / Completado</span>
+                            <span class="h3 fw-bold mb-0" style="color: #39A900;">12</span>
                             <span class="small text-muted d-block">Sesiones ejecutadas a tiempo</span>
                         </div>
                     </div>
@@ -401,7 +401,7 @@
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" id="tablaCronograma">
-                            <thead style="background-color: #E8F5E9; color: #1B5E20;" class="small fw-bold">
+                            <thead style="background-color: #f0fbf4; color: #001A29;" class="small fw-bold">
                                 <tr>
                                     <th class="ps-4 py-3 text-center">Semáforo</th>
                                     <th class="py-3">Fecha y Hora</th>
@@ -594,7 +594,7 @@
             </div>
             <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn text-white rounded-pill px-4" style="background-color: #2E7D32;" data-bs-dismiss="modal">Guardar Sesión</button>
+                <button type="button" class="btn text-white rounded-pill px-4" style="background-color: #39A900;" data-bs-dismiss="modal">Guardar Sesión</button>
             </div>
         </div>
     </div>

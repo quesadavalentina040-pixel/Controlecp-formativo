@@ -14,7 +14,7 @@
         <button class="btn d-flex align-items-center gap-2 border-0" type="button" data-bs-toggle="dropdown"
                 style="background-color: var(--sena-pastel-xlight); border-radius: 50px; padding: 0.35rem 1rem 0.35rem 0.35rem; transition: all 0.2s ease;">
             <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white"
-                 style="width: 38px; height: 38px; background-color: #164A19;">
+                 style="width: 38px; height: 38px; background-color: var(--sena-green);">
                 {{ $iniciales }}
             </div>
             <div class="text-start d-none d-sm-block">

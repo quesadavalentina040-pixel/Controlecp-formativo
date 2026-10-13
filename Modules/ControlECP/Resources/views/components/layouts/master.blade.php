@@ -13,9 +13,11 @@
     <meta name="keywords" content="SENA, Cultura de Paz, Convivencia, Formación, La Angostura, Control ECP, ERP SENA Empresa">
     <meta name="author" content="SENA Empresa - La Angostura">
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('general/assets/img/logo-ecp.png') }}">
-    <link rel="shortcut icon" type="image/png" href="{{ asset('general/assets/img/logo-ecp.png') }}">
+    <!-- Favicon Redondo -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('general/assets/img/favicon-ecp.png') }}?v={{ time() }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('general/assets/img/logo-ecp-round.png') }}?v={{ time() }}">
+    <link rel="apple-touch-icon" href="{{ asset('general/assets/img/logo-ecp-round.png') }}?v={{ time() }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('general/assets/img/logo-ecp-round.png') }}?v={{ time() }}">
 
     <!-- Google Fonts: Poppins & Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,14 +33,21 @@
 
     <style>
         :root {
-            /* Paleta Oficial SENA Empresa ERP (Verde SENA y Azul Marino) */
+            /* Paleta Oficial SENA Empresa ERP (Verde SENA y Azul Marino ERP) */
+            --sena-green: #39A900;
+            --sena-green-hover: #2b8000;
+            --sena-neon: #62E31D;
+            --sena-dark: #00131E;
+            --sena-navy: #001A29;
+            --sena-light-navy: #00324D;
+
             --sena-pastel-primary: #39A900;
             --sena-pastel-hover: #2b8000;
             --sena-pastel-light: #d8f3dc;
             --sena-pastel-xlight: #f0fbf4;
             --sena-pastel-white-green: #f9fcfb;
             --sena-pastel-accent: #62E31D;
-            --sena-pastel-sage: #2d6a4f;
+            --sena-pastel-sage: #00324D;
             
             /* Textos y Contrastes Oficiales SENA */
             --sena-pastel-text-title: #001A29;

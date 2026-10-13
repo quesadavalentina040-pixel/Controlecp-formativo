@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Asistencias
                     </li>
                 </ol>
@@ -52,13 +52,13 @@
                     </select>
                 </div>
                 <div class="col-md-2 d-grid">
-                    <button class="btn text-white rounded-pill" style="background-color: #2E7D32;">Cargar Lista</button>
+                    <button class="btn text-white rounded-pill" style="background-color: #39A900;">Cargar Lista</button>
                 </div>
             </div>
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead style="background-color: #E8F5E9; color: #1B5E20;" class="small">
+                    <thead style="background-color: #f0fbf4; color: #001A29;" class="small">
                         <tr>
                             <th class="ps-3">Documento</th>
                             <th>Aprendiz</th>
@@ -98,7 +98,7 @@
             </div>
 
             <div class="mt-4 text-end">
-                <button class="btn text-white rounded-pill px-4" style="background-color: #2E7D32;"><i class="fas fa-floppy-disk me-1"></i> Guardar Asistencia</button>
+                <button class="btn text-white rounded-pill px-4" style="background-color: #39A900;"><i class="fas fa-floppy-disk me-1"></i> Guardar Asistencia</button>
             </div>
         </div>
     </div>

@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Certificados
                     </li>
                 </ol>
@@ -34,7 +34,7 @@
     <!-- Contenido Certificados -->
     <div class="card border-0 shadow-sm" style="border-radius: 18px;">
         <div class="card-body p-4 text-center py-5">
-            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px; background-color: #E8F5E9; color: #2E7D32;">
+            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px; background-color: #d8f3dc; color: #39A900;">
                 <i class="fas fa-certificate fa-2x"></i>
             </div>
             <h5 class="fw-bold" style="color: #001A29;">Estado de Certificaciones</h5>

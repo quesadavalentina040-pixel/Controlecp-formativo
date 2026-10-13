@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Actividades
                     </li>
                 </ol>
@@ -37,7 +37,7 @@
     <!-- Lista de Actividades -->
     <div class="card border-0 shadow-sm" style="border-radius: 18px;">
         <div class="card-body p-4">
-            <h5 class="fw-bold mb-3" style="color: #1B5E20;"><i class="fas fa-book-open me-2"></i>Guía de Talleres Formativos</h5>
+            <h5 class="fw-bold mb-3" style="color: #001A29;"><i class="fas fa-book-open me-2" style="color: #39A900;"></i>Guía de Talleres Formativos</h5>
             <div class="list-group list-group-flush">
                 <div class="list-group-item px-0 py-3">
                     <div class="d-flex justify-content-between align-items-start">

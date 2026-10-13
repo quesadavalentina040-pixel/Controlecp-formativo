@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Fichas de Formación
                     </li>
                 </ol>
@@ -35,19 +35,19 @@
     </div>
 
     <!-- Alerta Principal: Aviso de API para Fichas -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px; background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%); border-left: 6px solid #2E7D32 !important;">
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px; background: linear-gradient(135deg, #f0fbf4 0%, #d8f3dc 100%); border-left: 6px solid #39A900 !important;">
         <div class="card-body p-4">
             <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
                 <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
-                     style="width: 60px; height: 60px; background: #FFFFFF; color: #2E7D32; font-size: 1.7rem;">
+                     style="width: 60px; height: 60px; background: #FFFFFF; color: #39A900; font-size: 1.7rem;">
                     <i class="fas fa-id-card"></i>
                 </div>
                 <div class="flex-grow-1">
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                        <h4 class="h5 fw-bold mb-0" style="color: #1B5E20;">
+                        <h4 class="h5 fw-bold mb-0" style="color: #001A29;">
                             Las fichas de formación se obtienen directamente a través de la API Central
                         </h4>
-                        <span class="badge rounded-pill" style="background-color: #2E7D32; font-size: 0.75rem;">
+                        <span class="badge rounded-pill" style="background-color: #39A900; font-size: 0.75rem;">
                             <i class="fas fa-link me-1"></i> Sincronización Externa
                         </span>
                     </div>
@@ -169,8 +169,8 @@
                     </div>
                 </div>
                 <div class="col-lg-4 text-center">
-                    <div class="p-3 rounded-4" style="background-color: #F8F9FA; border: 2px dashed #C8E6C9;">
-                        <i class="fas fa-layer-group fa-2x mb-2" style="color: #2E7D32;"></i>
+                    <div class="p-3 rounded-4" style="background-color: #F8F9FA; border: 2px dashed #d8f3dc;">
+                        <i class="fas fa-layer-group fa-2x mb-2" style="color: #39A900;"></i>
                         <div class="fw-bold small text-dark">Sincronización de Fichas</div>
                         <p class="text-muted mb-2" style="font-size: 0.78rem;">
                             Las actividades, asistencias y registros de momentos de paz seleccionarán las fichas consumidas de este servicio.

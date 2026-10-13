@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.pqr') }}" class="text-decoration-none" style="color:#2E7D32;">
-                            <i class="fas fa-comment-dots me-1"></i>PQR
+                        <a href="{{ route('controlecp.administrador.pqr') }}" class="text-decoration-none" style="color:#39A900;">
+                            <i class="fas fa-comment-dots me-1"></i>PQRS
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color:#1B5E20; font-weight:600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color:#001A29; font-weight:600;">
                         {{ $pqr->radicado }}
                     </li>
                 </ol>
@@ -121,7 +121,7 @@
 
                         <div class="row g-2 align-items-end">
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Estado de la PQR <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold">Estado de la PQRS <span class="text-danger">*</span></label>
                                 <select name="estado" class="form-select @error('estado') is-invalid @enderror">
                                     @foreach($estados as $est)
                                         <option value="{{ $est }}" {{ old('estado', $pqr->estado) == $est ? 'selected' : '' }}>{{ $est }}</option>
@@ -161,7 +161,7 @@
                             </tr>
                             <tr>
                                 <th class="text-muted ps-0">Perfil</th>
-                                <td><span class="badge" style="background:#d8f3dc; color:#1B5E20;">{{ $pqr->perfil }}</span></td>
+                                <td><span class="badge" style="background:#d8f3dc; color:#001A29;">{{ $pqr->perfil }}</span></td>
                             </tr>
                             <tr>
                                 <th class="text-muted ps-0">Documento</th>
@@ -169,7 +169,7 @@
                             </tr>
                             <tr>
                                 <th class="text-muted ps-0">Correo</th>
-                                <td><a href="mailto:{{ $pqr->email }}" class="text-decoration-none" style="color:#2E7D32;">{{ $pqr->email }}</a></td>
+                                <td><a href="mailto:{{ $pqr->email }}" class="text-decoration-none" style="color:#39A900;">{{ $pqr->email }}</a></td>
                             </tr>
                             <tr>
                                 <th class="text-muted ps-0">Teléfono</th>
@@ -232,14 +232,14 @@
             <div class="card border-0 shadow-sm" style="border-radius:16px;">
                 <div class="card-body p-4 text-center">
                     <p class="small text-muted mb-3">
-                        Esta acción elimina la PQR y su documento anexo del sistema.
+                        Esta acción elimina la PQRS y su documento anexo del sistema.
                     </p>
                     <form action="{{ route('controlecp.administrador.pqr.destroy', $pqr->id) }}" method="POST"
-                          onsubmit="return confirm('¿Eliminar definitivamente la PQR {{ $pqr->radicado }}?');">
+                          onsubmit="return confirm('¿Eliminar definitivamente la PQRS {{ $pqr->radicado }}?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-outline-danger rounded-pill px-4">
-                            <i class="fas fa-trash me-1"></i> Eliminar PQR
+                            <i class="fas fa-trash me-1"></i> Eliminar PQRS
                         </button>
                     </form>
                 </div>

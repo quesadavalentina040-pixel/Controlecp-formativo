@@ -8,11 +8,11 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-1 small text-muted">
                 <li class="breadcrumb-item">
-                    <a href="{{ route('controlecp.administrador.inventario') }}" class="text-decoration-none" style="color: #2E7D32;">
+                    <a href="{{ route('controlecp.administrador.inventario') }}" class="text-decoration-none" style="color: #39A900;">
                         <i class="fas fa-boxes-stacked me-1"></i>Inventario
                     </a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                     Editar Material
                 </li>
             </ol>

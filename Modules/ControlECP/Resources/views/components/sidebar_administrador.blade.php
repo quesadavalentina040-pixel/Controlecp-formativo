@@ -1,16 +1,17 @@
 <style>
     .ecp-sidebar-link {
-        color: #1B5E20;
+        color: rgba(255, 255, 255, 0.85);
         background-color: transparent;
         text-decoration: none;
     }
     .ecp-sidebar-link:hover {
-        background-color: #A8F59B !important;
-        color: #1B5E20 !important;
+        background-color: rgba(57, 169, 0, 0.2) !important;
+        color: #62E31D !important;
     }
     .ecp-sidebar-link.ecp-active {
-        background-color: #2E7D32 !important;
+        background-color: #39A900 !important;
         color: #FFFFFF !important;
+        box-shadow: 0 4px 14px rgba(57, 169, 0, 0.4);
     }
     .ecp-submenu-toggle {
         cursor: pointer;
@@ -41,14 +42,14 @@
     }
 </style>
 
-<div style="width: 260px; min-height: 100%; background-color: #C8FFBE; padding: 1.5rem 0.9rem;">
+<div style="width: 260px; min-height: 100%; background-color: #001A29; padding: 1.5rem 0.9rem; border-right: 1px solid rgba(57, 169, 0, 0.2);">
 
     <div class="d-flex flex-column align-items-center text-center gap-2 px-2 mb-4">
         <img src="{{ asset('general/assets/img/logo-ecp.png') }}" alt="Logo ECP"
-             style="height: 64px; width: 64px; object-fit: contain; background: #fff; border-radius: 50%; padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+             style="height: 64px; width: 64px; object-fit: contain; background: #fff; border-radius: 50%; padding: 4px; box-shadow: 0 2px 10px rgba(57, 169, 0, 0.3); border: 2px solid #39A900;">
         <div>
-            <span class="d-block fw-bold" style="font-size: 1rem; line-height: 1.1; color: #1B5E20;">Control ECP</span>
-            <span class="d-block" style="font-size: 0.72rem; color: #1B5E20;">Escuela Cultura de Paz</span>
+            <span class="d-block fw-bold text-white" style="font-size: 1rem; line-height: 1.1;">Control ECP</span>
+            <span class="d-block" style="font-size: 0.72rem; color: #62E31D;">Escuela Cultura de Paz</span>
         </div>
     </div>
 
@@ -78,7 +79,7 @@
                 ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.administrador.asesorias'],
                 ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => 'controlecp.administrador.certificados'],
                 ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => 'controlecp.administrador.inventario'],
-                ['icon' => 'fa-comment-dots', 'label' => 'PQR', 'route' => 'controlecp.administrador.pqr'],
+                ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.administrador.pqr'],
             ];
         @endphp
 

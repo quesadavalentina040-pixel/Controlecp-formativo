@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.aprendiz.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.aprendiz.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Encuesta
                     </li>
                 </ol>
@@ -42,7 +42,7 @@
                     <h6 class="fw-bold mb-1 text-dark">Encuesta Momento 1: Autoconciencia</h6>
                     <p class="small text-muted mb-0">Por favor responde esta breve encuesta de 5 preguntas sobre tu experiencia en el Momento 1.</p>
                 </div>
-                <button class="btn text-white rounded-pill px-4" style="background-color: #2E7D32;">Responder Encuesta</button>
+                <button class="btn text-white rounded-pill px-4" style="background-color: #39A900;">Responder Encuesta</button>
             </div>
         </div>
     </div>

@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Inventario
                     </li>
                 </ol>
@@ -25,15 +25,15 @@
         </div>
 
         <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.administrador.inventario.create') }}" class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #2E7D32; border-color: #2E7D32;">
+            <a href="{{ route('controlecp.administrador.inventario.create') }}" class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #39A900; border-color: #39A900;">
                 <i class="fas fa-plus me-1"></i> Registrar Material
             </a>
         </div>
     </div>
 
     @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert" style="background-color: #E8F5E9; color: #1B5E20;">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+        <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert" style="background-color: #f0fbf4; color: #001A29;">
+            <i class="fas fa-check-circle me-2" style="color: #39A900;"></i>{{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
@@ -50,7 +50,7 @@
         <div class="col-6 col-md-3">
             <div class="card border-0 shadow-sm h-100" style="border-radius: 16px; background: #F8F9FA;">
                 <div class="card-body p-3 d-flex align-items-center gap-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 48px; height: 48px; background-color: #2E7D32;">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 48px; height: 48px; background-color: #39A900;">
                         <i class="fas fa-box fa-lg"></i>
                     </div>
                     <div>
@@ -138,7 +138,7 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead style="background-color: #E8F5E9; color: #1B5E20;" class="small fw-bold">
+                    <thead style="background-color: #f0fbf4; color: #001A29;" class="small fw-bold">
                         <tr>
                             <th class="ps-4 py-3">Código</th>
                             <th class="py-3">Material</th>

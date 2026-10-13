@@ -9,11 +9,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Momentos
                     </li>
                 </ol>
@@ -36,7 +36,7 @@
         <!-- Momento 1: Autoconciencia -->
         <div class="col-12 col-md-4">
             <div class="card border-0 shadow-sm h-100" style="border-radius: 18px;">
-                <div class="card-header p-4 text-white border-0" style="background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); border-top-left-radius: 18px; border-top-right-radius: 18px;">
+                <div class="card-header p-4 text-white border-0" style="background: linear-gradient(135deg, #001A29 0%, #39A900 100%); border-top-left-radius: 18px; border-top-right-radius: 18px;">
                     <span class="badge bg-white text-success rounded-pill px-3 py-1 fw-bold text-uppercase small mb-2">Momento 01</span>
                     <h4 class="fw-bold mb-1">Autoconciencia</h4>
                     <p class="small mb-0 text-white-50">10 Actividades pedagógicas de introspección</p>

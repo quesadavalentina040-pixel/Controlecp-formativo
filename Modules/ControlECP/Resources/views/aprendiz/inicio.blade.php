@@ -180,7 +180,7 @@
         </a>
     </div>
 
-    <!-- Mis Solicitudes PQR -->
+    <!-- Mis Solicitudes PQRS -->
     <div class="col-12 col-sm-6 col-lg-3">
         <a href="{{ route('controlecp.aprendiz.pqr') }}" class="text-decoration-none">
             <div class="stat-card">
@@ -189,7 +189,7 @@
                 </div>
                 <div class="stat-body">
                     <div class="stat-value">0</div>
-                    <div class="stat-label">Mis PQR</div>
+                    <div class="stat-label">Mis PQRS</div>
                     <div class="stat-hint">Solicitudes enviadas</div>
                 </div>
             </div>
@@ -223,22 +223,22 @@
         </div>
     </div>
 
-    <!-- Radicar PQR -->
+    <!-- Radicar PQRS -->
     <div class="col-12 col-md-6">
         <div class="alert-card d-flex flex-column justify-content-between">
             <div>
                 <div class="d-flex align-items-center gap-3 mb-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 45px; height: 45px; background-color: #e8f5e9; font-size: 1.2rem;">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width: 45px; height: 45px; background-color: #d8f3dc; font-size: 1.2rem;">
                         <i class="fas fa-comment-dots"></i>
                     </div>
                     <div>
                         <h6 class="fw-bold mb-0 text-dark">Radicar Petición o Sugerencia</h6>
-                        <span class="small text-muted">Sistema de PQR Control ECP</span>
+                        <span class="small text-muted">Sistema de PQRS Control ECP</span>
                     </div>
                 </div>
-                <p class="small text-muted">Envía tus comentarios, inquietudes, felicidades o reclamos sobre los talleres e instalaciones.</p>
+                <p class="small text-muted">Envía tus comentarios, inquietudes, felicitaciones o reclamos sobre los talleres e instalaciones.</p>
             </div>
-            <a href="{{ route('controlecp.aprendiz.pqr') }}" class="btn btn-outline-success rounded-pill btn-sm align-self-start px-4">Radicar PQR</a>
+            <a href="{{ route('controlecp.aprendiz.pqr') }}" class="btn text-white rounded-pill btn-sm align-self-start px-4" style="background-color: #39A900;">Radicar PQRS</a>
         </div>
     </div>
 

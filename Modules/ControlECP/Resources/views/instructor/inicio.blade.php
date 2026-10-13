@@ -240,7 +240,7 @@
                     <div class="fw-bold small text-dark">Ficha 2670192 - ADSO</div>
                     <div class="small text-muted">Momento 1: Autoconciencia</div>
                 </div>
-                <a href="{{ route('controlecp.instructor.asistencia') }}" class="btn btn-sm text-white rounded-pill px-3" style="background-color: #2E7D32;">Registrar</a>
+                <a href="{{ route('controlecp.instructor.asistencia') }}" class="btn btn-sm text-white rounded-pill px-3" style="background-color: #39A900;">Registrar</a>
             </div>
         </div>
     </div>

@@ -8,11 +8,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Repositorio &bull; Historias
                     </li>
                 </ol>
@@ -157,7 +157,7 @@
                     </div>
 
                     <div class="d-flex gap-2">
-                        <button type="submit" class="btn text-white rounded-pill px-4" style="background-color: #2E7D32;">
+                        <button type="submit" class="btn text-white rounded-pill px-4" style="background-color: #39A900;">
                             <i class="fas fa-floppy-disk me-1"></i> Guardar cambios
                         </button>
                         <button type="button" class="btn btn-outline-secondary rounded-pill px-4" onclick="toggleEdicion()">

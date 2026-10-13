@@ -8,11 +8,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Repositorio &bull; Tabulación
                     </li>
                 </ol>
@@ -42,7 +42,7 @@
             <div class="card h-100 border-0 shadow-sm" style="border-radius: 16px;">
                 <div class="card-body p-3 text-center">
                     <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-2"
-                         style="width: 46px; height: 46px; background: #E8F5E9; color: #2E7D32; font-size: 1.15rem;">
+                         style="width: 46px; height: 46px; background: #d8f3dc; color: #39A900; font-size: 1.15rem;">
                         <i class="fas fa-users"></i>
                     </div>
                     <h4 class="fw-bold mb-0" style="color:#001A29;">42</h4>
@@ -97,7 +97,7 @@
         <div class="card-body px-4 pb-4">
             @php
                 $opciones = [
-                    ['label' => 'Excelente', 'valor' => 60, 'color' => '#2E7D32'],
+                    ['label' => 'Excelente', 'valor' => 60, 'color' => '#39A900'],
                     ['label' => 'Bueno', 'valor' => 28, 'color' => '#66BB6A'],
                     ['label' => 'Regular', 'valor' => 9, 'color' => '#FDD835'],
                     ['label' => 'Malo', 'valor' => 3, 'color' => '#E53935'],
@@ -147,8 +147,8 @@
         <div class="card-body px-4 pb-4">
             <div class="row g-3 text-center">
                 <div class="col-6">
-                    <div class="p-3 rounded-4" style="background-color: #E8F5E9;">
-                        <h3 class="fw-bold mb-0" style="color:#2E7D32;">91%</h3>
+                    <div class="p-3 rounded-4" style="background-color: #d8f3dc;">
+                        <h3 class="fw-bold mb-0" style="color:#39A900;">91%</h3>
                         <span class="small text-muted">Sí</span>
                     </div>
                 </div>
@@ -179,7 +179,7 @@
     </div>
 
     <div class="d-flex justify-content-end">
-        <button type="button" class="btn text-white rounded-pill px-4" style="background-color: #2E7D32;" onclick="alert('Falta conectar la exportación real a Excel/PDF.')">
+        <button type="button" class="btn text-white rounded-pill px-4" style="background-color: #39A900;" onclick="alert('Falta conectar la exportación real a Excel/PDF.')">
             <i class="fas fa-file-export me-1"></i> Exportar resultados
         </button>
     </div>

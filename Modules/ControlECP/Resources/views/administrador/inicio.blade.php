@@ -258,7 +258,7 @@
                 <div class="stat-body">
                     <div class="stat-value">{{ $solicitudesPendientes ?? 0 }}</div>
                     <div class="stat-label">Solicitudes Pendientes</div>
-                    <div class="stat-hint">PQR por atender</div>
+                    <div class="stat-hint">PQRS por atender</div>
                 </div>
             </div>
         </a>

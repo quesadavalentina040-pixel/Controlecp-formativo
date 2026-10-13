@@ -15,15 +15,15 @@
         box-shadow: 0 15px 35px rgba(0, 50, 77, 0.12);
     }
     .momento-header-1 {
-        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+        background: linear-gradient(135deg, #001A29 0%, #39A900 100%);
         color: #ffffff;
     }
     .momento-header-2 {
-        background: linear-gradient(135deg, #0277BD 0%, #0288D1 100%);
+        background: linear-gradient(135deg, #002336 0%, #0070B8 100%);
         color: #ffffff;
     }
     .momento-header-3 {
-        background: linear-gradient(135deg, #6A1B9A 0%, #8E24AA 100%);
+        background: linear-gradient(135deg, #001A29 0%, #00324D 100%);
         color: #ffffff;
     }
     .badge-actividades {
@@ -38,7 +38,7 @@
         transition: all 0.2s ease;
     }
     .actividad-item:hover {
-        background-color: #f0f7f3;
+        background-color: #f0fbf4;
         border-left-color: #39A900;
     }
 </style>
@@ -53,11 +53,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Momentos
                     </li>
                 </ol>
@@ -69,7 +69,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.administrador.actividades') }}" class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #2E7D32; border-color: #2E7D32;">
+            <a href="{{ route('controlecp.administrador.actividades') }}" class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #39A900; border-color: #39A900;">
                 <i class="fas fa-list-check me-1"></i> Ver Actividades
             </a>
             <a href="{{ route('controlecp.administrador.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3">
@@ -79,13 +79,13 @@
     </div>
 
     <!-- Banner Informativo -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px; background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);">
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px; background: linear-gradient(135deg, #f0fbf4 0%, #d8f3dc 100%); border-left: 5px solid #39A900 !important;">
         <div class="card-body p-4 d-flex align-items-center gap-3">
-            <div class="rounded-circle bg-white text-success d-flex align-items-center justify-content-center shadow-sm flex-shrink-0" style="width: 56px; height: 56px; font-size: 1.5rem;">
+            <div class="rounded-circle bg-white text-success d-flex align-items-center justify-content-center shadow-sm flex-shrink-0" style="width: 56px; height: 56px; font-size: 1.5rem; color: #39A900 !important;">
                 <i class="fas fa-shapes"></i>
             </div>
             <div>
-                <h5 class="fw-bold mb-1" style="color: #1B5E20;">Estructura del Programa ECP</h5>
+                <h5 class="fw-bold mb-1" style="color: #001A29;">Estructura del Programa ECP</h5>
                 <p class="mb-0 text-secondary small">
                     El proceso formativo comprende <strong>3 Momentos Clave</strong> con un total de <strong>18 actividades pedagógicas</strong> orientadas al desarrollo personal, la convivencia armónica y la resolución pacífica de conflictos.
                 </p>

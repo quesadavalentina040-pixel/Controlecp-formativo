@@ -8,7 +8,7 @@
         border-radius: 50%;
         display: inline-block;
     }
-    .semaforo-verde { background-color: #2e7d32; box-shadow: 0 0 8px rgba(46, 125, 50, 0.6); }
+    .semaforo-verde { background-color: #39A900; box-shadow: 0 0 8px rgba(57, 169, 0, 0.6); }
     .semaforo-amarillo { background-color: #f57f17; box-shadow: 0 0 8px rgba(245, 127, 23, 0.6); }
     .semaforo-rojo { background-color: #d32f2f; box-shadow: 0 0 8px rgba(211, 47, 47, 0.6); }
 </style>
@@ -23,11 +23,11 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 small text-muted">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #2E7D32;">
+                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
                             <i class="fas fa-house me-1"></i>Inicio
                         </a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #1B5E20; font-weight: 600;">
+                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
                         Cronograma Instructor
                     </li>
                 </ol>
@@ -50,7 +50,7 @@
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead style="background-color: #E8F5E9; color: #1B5E20;" class="small fw-bold">
+                    <thead style="background-color: #f0fbf4; color: #001A29;" class="small fw-bold">
                         <tr>
                             <th class="ps-4 py-3 text-center">Semáforo</th>
                             <th class="py-3">Fecha y Hora</th>
