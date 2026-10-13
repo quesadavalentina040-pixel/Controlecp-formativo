@@ -5,6 +5,7 @@ use Modules\ControlECP\Http\Controllers\ControlECPController;
 use Modules\ControlECP\Http\Controllers\ElementoController;
 use Modules\ControlECP\Http\Controllers\MaterialController;
 use Modules\ControlECP\Http\Controllers\PqrController;
+use Modules\ControlECP\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.administrador.usuarios');
     Route::get('/control-ecp/usuarios', [ControlECPController::class, 'usuariosAdmin'])
         ->name('controlecp.usuarios');
+
+    // ─── Gestión de Usuarios (CRUD + Sync SICEFA) ───────────────────────────
+    Route::prefix('control-ecp/administrador/usuarios')->name('controlecp.usuarios.')->group(function () {
+        Route::get('/',                              [UserController::class, 'index'])              ->name('index');
+        Route::get('/crear',                         [UserController::class, 'create'])             ->name('create');
+        Route::post('/',                             [UserController::class, 'store'])              ->name('store');
+        Route::get('/{id}/datos',                    [UserController::class, 'editData'])           ->name('edit.data');
+        Route::put('/{id}',                          [UserController::class, 'update'])             ->name('update');
+        Route::patch('/{id}/desactivar',             [UserController::class, 'desactivar'])         ->name('desactivar');
+        Route::patch('/{id}/activar',                [UserController::class, 'activar'])            ->name('activar');
+        Route::get('/historial/inactivos',           [UserController::class, 'historial'])          ->name('historial');
+        Route::get('/sincronizar/preview',           [UserController::class, 'sincronizarPreview']) ->name('sincronizar.preview');
+        Route::post('/sincronizar/aplicar',          [UserController::class, 'sincronizarAplicar']) ->name('sincronizar.aplicar');
+    });
 
     Route::get('/control-ecp/administrador/fichas', [ControlECPController::class, 'fichasAdmin'])
         ->name('controlecp.administrador.fichas');

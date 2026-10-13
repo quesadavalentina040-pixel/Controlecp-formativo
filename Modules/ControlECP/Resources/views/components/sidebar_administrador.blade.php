@@ -57,7 +57,7 @@
         @php
             $items = [
                 ['icon' => 'fa-house', 'label' => 'Inicio', 'route' => 'controlecp.administrador.inicio'],
-                ['icon' => 'fa-users', 'label' => 'Usuarios', 'route' => 'controlecp.administrador.usuarios'],
+                ['icon' => 'fa-users', 'label' => 'Usuarios', 'route' => 'controlecp.usuarios.index'],
                 ['icon' => 'fa-id-card', 'label' => 'Fichas', 'route' => 'controlecp.administrador.fichas'],
                 ['icon' => 'fa-star', 'label' => 'Momentos', 'route' => 'controlecp.administrador.momentos'],
                 ['icon' => 'fa-list-check', 'label' => 'Actividades', 'route' => 'controlecp.administrador.actividades'],
