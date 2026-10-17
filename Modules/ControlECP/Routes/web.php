@@ -5,6 +5,8 @@ use Modules\ControlECP\Http\Controllers\ControlECPController;
 use Modules\ControlECP\Http\Controllers\ElementoController;
 use Modules\ControlECP\Http\Controllers\MaterialController;
 use Modules\ControlECP\Http\Controllers\PqrController;
+use Modules\ControlECP\Http\Controllers\UsuarioSyncController;
+use Modules\ControlECP\Http\Controllers\FichaSyncController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,10 +14,15 @@ use Modules\ControlECP\Http\Controllers\PqrController;
 |--------------------------------------------------------------------------
 */
 
-// --- 1. RUTA PÚBLICA (Landing / Index accesible antes de iniciar sesión) ---
+// --- 1. RUTA PÚBLICA (Landing / Index y Endpoints Mock API SICEFA) ---
 Route::get('/control-ecp', [ControlECPController::class, 'index'])->name('controlecp.index');
 Route::get('/controlecp', [ControlECPController::class, 'index']);
 Route::get('/control-ecp/inicio', [ControlECPController::class, 'index'])->name('controlecp.welcome');
+Route::get('/api/v1/controlecp/sicefa-usuarios', [UsuarioSyncController::class, 'mockSicefaApi'])
+    ->name('controlecp.api.usuarios.mock');
+Route::get('/api/v1/controlecp/sicefa-fichas', [FichaSyncController::class, 'mockSicefaFichasApi'])
+    ->name('controlecp.api.fichas.mock');
+
 
 // --- 2. RUTAS PROTEGIDAS (Gestión interna / CRUD de Elementos y Vistas por Rol) ---
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -50,15 +57,37 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/administrador', [ControlECPController::class, 'inicioAdmin'])
         ->name('controlecp.administrador.inicio');
 
-    Route::get('/control-ecp/administrador/usuarios', [ControlECPController::class, 'usuariosAdmin'])
+    // --- Gestión de Usuarios (Integración y Sincronización API Central) ---
+    Route::get('/control-ecp/administrador/usuarios', [UsuarioSyncController::class, 'index'])
         ->name('controlecp.administrador.usuarios');
-    Route::get('/control-ecp/usuarios', [ControlECPController::class, 'usuariosAdmin'])
+    Route::get('/control-ecp/usuarios', [UsuarioSyncController::class, 'index'])
         ->name('controlecp.usuarios');
+    Route::post('/control-ecp/administrador/usuarios/test-api', [UsuarioSyncController::class, 'testApi'])
+        ->name('controlecp.administrador.usuarios.test_api');
+    Route::post('/control-ecp/administrador/usuarios/sync', [UsuarioSyncController::class, 'sync'])
+        ->name('controlecp.administrador.usuarios.sync');
+    Route::post('/control-ecp/administrador/usuarios/search-central', [UsuarioSyncController::class, 'searchCentral'])
+        ->name('controlecp.administrador.usuarios.search_central');
+    Route::post('/control-ecp/administrador/usuarios/link-user', [UsuarioSyncController::class, 'linkUser'])
+        ->name('controlecp.administrador.usuarios.link_user');
+    Route::post('/control-ecp/administrador/usuarios/{id}/change-role', [UsuarioSyncController::class, 'changeRole'])
+        ->name('controlecp.administrador.usuarios.change_role');
+    Route::post('/control-ecp/administrador/usuarios/config', [UsuarioSyncController::class, 'saveConfig'])
+        ->name('controlecp.administrador.usuarios.save_config');
 
-    Route::get('/control-ecp/administrador/fichas', [ControlECPController::class, 'fichasAdmin'])
+    // --- Gestión de Fichas (Integración y Sincronización API Académica Central) ---
+    Route::get('/control-ecp/administrador/fichas', [FichaSyncController::class, 'index'])
         ->name('controlecp.administrador.fichas');
-    Route::get('/control-ecp/fichas', [ControlECPController::class, 'fichasAdmin'])
+    Route::get('/control-ecp/fichas', [FichaSyncController::class, 'index'])
         ->name('controlecp.fichas');
+    Route::post('/control-ecp/administrador/fichas/test-api', [FichaSyncController::class, 'testApi'])
+        ->name('controlecp.administrador.fichas.test_api');
+    Route::post('/control-ecp/administrador/fichas/sync', [FichaSyncController::class, 'sync'])
+        ->name('controlecp.administrador.fichas.sync');
+    Route::post('/control-ecp/administrador/fichas/config', [FichaSyncController::class, 'saveConfig'])
+        ->name('controlecp.administrador.fichas.save_config');
+    Route::get('/control-ecp/administrador/fichas/{id}/aprendices', [FichaSyncController::class, 'getAprendices'])
+        ->name('controlecp.administrador.fichas.aprendices');
 
     Route::get('/control-ecp/administrador/momentos', [ControlECPController::class, 'momentosAdmin'])
         ->name('controlecp.administrador.momentos');
