@@ -25,7 +25,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.administrador.pqr.create') }}" class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #39A900;">
+            <a href="#" class="btn text-white rounded-pill px-3 shadow-sm" style="background-color: #39A900;">
                 <i class="fas fa-plus me-1"></i> Radicar PQRS
             </a>
             <a href="{{ route('controlecp.aprendiz.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">

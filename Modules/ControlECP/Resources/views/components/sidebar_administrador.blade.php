@@ -57,29 +57,27 @@
         @php
             $items = [
                 ['icon' => 'fa-house', 'label' => 'Inicio', 'route' => 'controlecp.administrador.inicio'],
-                ['icon' => 'fa-users', 'label' => 'Usuarios', 'route' => 'controlecp.usuarios.index'],
-                ['icon' => 'fa-id-card', 'label' => 'Fichas', 'route' => 'controlecp.administrador.fichas'],
-                ['icon' => 'fa-star', 'label' => 'Momentos', 'route' => 'controlecp.administrador.momentos'],
-                ['icon' => 'fa-list-check', 'label' => 'Actividades', 'route' => 'controlecp.administrador.actividades'],
-                ['icon' => 'fa-calendar-days', 'label' => 'Cronograma', 'route' => 'controlecp.administrador.cronograma'],
-                ['icon' => 'fa-user-check', 'label' => 'Asistencia', 'route' => 'controlecp.administrador.asistencia'],
+                ['icon' => 'fa-users', 'label' => 'Usuarios', 'route' => null],
+                ['icon' => 'fa-id-card', 'label' => 'Fichas', 'route' => null],
+                ['icon' => 'fa-star', 'label' => 'Momentos', 'route' => null],
+                ['icon' => 'fa-list-check', 'label' => 'Actividades', 'route' => null],
+                ['icon' => 'fa-calendar-days', 'label' => 'Cronograma', 'route' => null],
+                ['icon' => 'fa-user-check', 'label' => 'Asistencia', 'route' => null],
                 [
                     'icon' => 'fa-folder-open',
                     'label' => 'Repositorio',
-                    // Un padre con "children" NUNCA debe tener 'route' propio,
-                    // porque esa ruta no existe (solo existen las 4 rutas hijas).
-                    'route' => NULL,
+                    'route' => null,
                     'children' => [
-                        ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => 'controlecp.administrador.repositorio.historia'],
-                        ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.administrador.repositorio.encuesta'],
-                        ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => 'controlecp.administrador.repositorio.tabulacion'],
-                        ['icon' => 'fa-file-contract', 'label' => 'POE', 'route' => 'controlecp.administrador.repositorio.poe'],
+                        ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => null],
+                        ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => null],
+                        ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => null],
+                        ['icon' => 'fa-file-contract', 'label' => 'POE', 'route' => null],
                     ],
                 ],
-                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.administrador.asesorias'],
-                ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => 'controlecp.administrador.certificados'],
-                ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => 'controlecp.administrador.inventario'],
-                ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.administrador.pqr'],
+                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => null],
+                ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => null],
+                ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => null],
+                ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => null],
             ];
         @endphp
 
@@ -87,19 +85,15 @@
             @php
                 $hasChildren = !empty($item['children']);
                 $childActive = $hasChildren
-                    ? collect($item['children'])->contains(fn($c) => $c['route'] && (request()->routeIs($c['route']) || request()->is('control-ecp/administrador/repositorio*')))
+                    ? collect($item['children'])->contains(fn($c) => !empty($c['route']) && request()->routeIs($c['route']))
                     : false;
 
-                $isRepositoryItem = $item['label'] === 'Repositorio';
-                $repositoryExpanded = $isRepositoryItem
-                    && (request()->routeIs('controlecp.administrador.repositorio.*') || request()->is('control-ecp/administrador/repositorio*'));
-
-                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $childActive;
+                $active = (!empty($item['route']) && request()->routeIs($item['route'])) || $childActive;
             @endphp
 
             @if ($hasChildren)
                 <li class="nav-item">
-                    <input type="checkbox" id="ecp-submenu-{{ $index }}" class="ecp-submenu-checkbox" {{ $childActive || $repositoryExpanded ? 'checked' : '' }}>
+                    <input type="checkbox" id="ecp-submenu-{{ $index }}" class="ecp-submenu-checkbox" {{ $childActive ? 'checked' : '' }}>
                     <label for="ecp-submenu-{{ $index }}"
                            class="nav-link ecp-sidebar-link ecp-submenu-toggle d-flex align-items-center gap-2 px-3 py-2 rounded-3 mb-0 {{ $active ? 'ecp-active' : '' }}"
                            style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
@@ -109,9 +103,9 @@
                     <div class="ecp-submenu-body">
                         <ul class="nav flex-column gap-1 mt-1">
                             @foreach ($item['children'] as $child)
-                                @php $childIsActive = $child['route'] && request()->routeIs($child['route']); @endphp
+                                @php $childIsActive = !empty($child['route']) && request()->routeIs($child['route']); @endphp
                                 <li class="nav-item">
-                                    <a href="{{ $child['route'] ? route($child['route']) : '#' }}"
+                                    <a href="{{ !empty($child['route']) && \Illuminate\Support\Facades\Route::has($child['route']) ? route($child['route']) : '#' }}"
                                        class="nav-link ecp-sidebar-link ecp-sublink d-flex align-items-center gap-2 py-2 rounded-3 {{ $childIsActive ? 'ecp-active' : '' }}"
                                        style="font-weight: {{ $childIsActive ? '700' : '500' }};">
                                         <i class="fas {{ $child['icon'] ?? 'fa-circle' }}" style="font-size: {{ isset($child['icon']) ? '0.85rem' : '0.4rem' }};"></i> {{ $child['label'] }}
@@ -123,7 +117,7 @@
                 </li>
             @else
                 <li class="nav-item">
-                    <a href="{{ $item['route'] ? route($item['route']) : '#' }}"
+                    <a href="{{ !empty($item['route']) && \Illuminate\Support\Facades\Route::has($item['route']) ? route($item['route']) : '#' }}"
                        class="nav-link ecp-sidebar-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 {{ $active ? 'ecp-active' : '' }}"
                        style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
                         <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
