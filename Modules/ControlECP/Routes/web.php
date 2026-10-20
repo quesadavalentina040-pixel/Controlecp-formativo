@@ -7,6 +7,8 @@ use Modules\ControlECP\Http\Controllers\MaterialController;
 use Modules\ControlECP\Http\Controllers\PqrController;
 use Modules\ControlECP\Http\Controllers\UsuarioSyncController;
 use Modules\ControlECP\Http\Controllers\FichaSyncController;
+use Modules\ControlECP\Http\Controllers\AsistenciaController;
+use Modules\ControlECP\Http\Controllers\CertificadoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -96,20 +98,59 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/administrador/cronograma', [ControlECPController::class, 'cronogramaAdmin'])
         ->name('controlecp.administrador.cronograma');
 
-    Route::get('/control-ecp/administrador/asistencia', [ControlECPController::class, 'asistenciaAdmin'])
+    Route::get('/control-ecp/administrador/asistencia', [AsistenciaController::class, 'adminIndex'])
         ->name('controlecp.administrador.asistencia');
-    Route::get('/control-ecp/asistencia', [ControlECPController::class, 'asistenciaAdmin'])
+    Route::get('/control-ecp/asistencia', [AsistenciaController::class, 'adminIndex'])
         ->name('controlecp.asistencia');
 
+    // --- Asistencia Instructor (con carga de aprendices desde API) ---
+    Route::get('/control-ecp/instructor/asistencia', [AsistenciaController::class, 'instructorIndex'])
+        ->name('controlecp.instructor.asistencia');
+    Route::get('/control-ecp/instructor/asistencia/aprendices/{fichaId}', [AsistenciaController::class, 'getAprendicesFicha'])
+        ->name('controlecp.instructor.asistencia.aprendices');
+    Route::post('/control-ecp/instructor/asistencia/guardar', [AsistenciaController::class, 'store'])
+        ->name('controlecp.instructor.asistencia.store');
+    Route::post('/control-ecp/instructor/asistencia/evidencia', [AsistenciaController::class, 'subirEvidencia'])
+        ->name('controlecp.instructor.asistencia.evidencia');
+
+    // --- Asistencia: Editar, Anular, Detalle, Historial (HU-004..010) ---
+    Route::put('/control-ecp/asistencia/{id}/editar', [AsistenciaController::class, 'editar'])
+        ->name('controlecp.asistencia.editar');
+    Route::put('/control-ecp/asistencia/{id}/anular', [AsistenciaController::class, 'anular'])
+        ->name('controlecp.asistencia.anular');
+    Route::get('/control-ecp/asistencia/detalle/{fichaId}/{actividadId}/{fecha}', [AsistenciaController::class, 'detalle'])
+        ->name('controlecp.asistencia.detalle');
+    Route::get('/control-ecp/asistencia/aprendiz', [AsistenciaController::class, 'historialAprendiz'])
+        ->name('controlecp.asistencia.historial_aprendiz');
+    Route::get('/control-ecp/asistencia/{id}/historial', [AsistenciaController::class, 'historialCambios'])
+        ->name('controlecp.asistencia.historial_cambios');
+    Route::get('/control-ecp/asistencia/reporte', [AsistenciaController::class, 'reporte'])
+        ->name('controlecp.asistencia.reporte');
     Route::get('/control-ecp/administrador/asesorias', [ControlECPController::class, 'asesoriasAdmin'])
         ->name('controlecp.administrador.asesorias');
     Route::get('/control-ecp/asesorias', [ControlECPController::class, 'asesoriasAdmin'])
         ->name('controlecp.asesorias');
 
-    Route::get('/control-ecp/administrador/certificados', [ControlECPController::class, 'certificadosAdmin'])
+    Route::get('/control-ecp/administrador/certificados', [CertificadoController::class, 'adminIndex'])
         ->name('controlecp.administrador.certificados');
-    Route::get('/control-ecp/certificados', [ControlECPController::class, 'certificadosAdmin'])
+    Route::get('/control-ecp/certificados', [CertificadoController::class, 'adminIndex'])
         ->name('controlecp.certificados');
+
+    // Certificados API endpoints (AJAX)
+    Route::post('/control-ecp/certificados/certificar', [CertificadoController::class, 'certificar'])
+        ->name('controlecp.certificados.certificar');
+    Route::get('/control-ecp/certificados/{id}/detalle', [CertificadoController::class, 'detalle'])
+        ->name('controlecp.certificados.detalle');
+    Route::get('/control-ecp/certificados/{id}/historial', [CertificadoController::class, 'historial'])
+        ->name('controlecp.certificados.historial');
+    Route::get('/control-ecp/certificados/ficha/{fichaId}/progreso', [CertificadoController::class, 'progresoPorFicha'])
+        ->name('controlecp.certificados.progreso');
+    Route::get('/control-ecp/certificados/reporte', [CertificadoController::class, 'reporte'])
+        ->name('controlecp.certificados.reporte');
+
+    // Certificados Instructor (solo lectura)
+    Route::get('/control-ecp/instructor/certificados', [CertificadoController::class, 'instructorIndex'])
+        ->name('controlecp.instructor.certificados');
 
     // --- Inventario / Materiales ---
     Route::get('/control-ecp/administrador/inventario', [MaterialController::class, 'index'])
@@ -162,11 +203,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.instructor.momentos');
     Route::get('/control-ecp/instructor/actividades', [ControlECPController::class, 'actividadesInstructor'])
         ->name('controlecp.instructor.actividades');
-    Route::get('/control-ecp/instructor/asistencia', [ControlECPController::class, 'asistenciaInstructor'])
+    Route::get('/control-ecp/instructor/asistencia', [AsistenciaController::class, 'instructorIndex'])
         ->name('controlecp.instructor.asistencia');
     Route::get('/control-ecp/instructor/asesorias', [ControlECPController::class, 'asesoriasInstructor'])
         ->name('controlecp.instructor.asesorias');
-    Route::get('/control-ecp/instructor/certificados', [ControlECPController::class, 'certificadosInstructor'])
+    Route::get('/control-ecp/instructor/certificados', [CertificadoController::class, 'instructorIndex'])
         ->name('controlecp.instructor.certificados');
     Route::get('/control-ecp/instructor/poe', [ControlECPController::class, 'poeInstructor'])
         ->name('controlecp.instructor.poe');

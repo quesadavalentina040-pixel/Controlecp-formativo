@@ -4,5 +4,7 @@
     "SST": true,
     "RUB": true,
     "CEFA": true,
-    "ControlECP": true
+    "ControlECP": true,
+    "SICA": true,
+    "SENAEMPRESA": true
 }

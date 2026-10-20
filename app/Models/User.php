@@ -147,6 +147,28 @@ class User extends Authenticatable
     }
 
     /**
+     * Verifica si el usuario tiene un permiso específico por slug.
+     * Si el usuario es superadmin, tiene todos los permisos.
+     *
+     * @param string $permissionSlug
+     * @return bool
+     */
+    public function havePermission(string $permissionSlug): bool
+    {
+        if ($this->hasSuperAdmin()) {
+            return true;
+        }
+
+        foreach ($this->roles as $role) {
+            if ($role->permissions && $role->permissions->contains('slug', $permissionSlug)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Obtiene las iniciales del usuario para mostrar en el avatar
      */
     public function getInitialsAttribute(): string

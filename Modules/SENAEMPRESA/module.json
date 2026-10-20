@@ -1,0 +1,13 @@
+{
+    "name": "SENAEMPRESA",
+    "alias": "senaempresa",
+    "description": "Gestión de asistencia de aprendices en SENA Empresa e integración con la API REST central del ERP SICEFA.",
+    "keywords": ["sena", "empresa", "asistencia", "sicefa", "erp", "api"],
+    "priority": 1,
+    "providers": [
+        "Modules\\SENAEMPRESA\\Providers\\SENAEMPRESAServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

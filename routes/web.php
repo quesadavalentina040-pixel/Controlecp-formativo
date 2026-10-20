@@ -19,3 +19,11 @@ Route::get('/', function () {
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::match(['get', 'post'], '/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Cambio de idioma
+Route::get('/lang/{lang}', function ($lang) {
+    if (in_array($lang, ['es', 'en'])) {
+        session()->put('lang', $lang);
+    }
+    return redirect()->back();
+})->name('lang.switch');

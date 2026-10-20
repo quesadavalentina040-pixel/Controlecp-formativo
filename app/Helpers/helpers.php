@@ -76,3 +76,51 @@ if (!function_exists('currentUserPrimaryRole')) {
         return 'Usuario';
     }
 }
+
+
+if (!function_exists('getRoleRouteName')) {
+    /**
+     * Extract the role segment from a route name.
+     * Given 'sica.admin.people.events_attendance.index' returns 'admin'.
+     * Given 'sica.attendance.people.basic_data.search' returns 'attendance'.
+     *
+     * @param string $routeName
+     * @return string
+     */
+    function getRoleRouteName(string $routeName): string
+    {
+        $parts = explode('.', $routeName);
+        return $parts[1] ?? 'admin';
+    }
+}
+
+if (!function_exists('getEnumValues')) {
+    /**
+     * Get the allowed values of an ENUM column from the database.
+     *
+     * @param string $table
+     * @param string $column
+     * @return array
+     */
+    function getEnumValues(string $table, string $column): array
+    {
+        try {
+            $type = \DB::select(\DB::raw("SHOW COLUMNS FROM `{$table}` WHERE Field = '{$column}'"));
+            if (empty($type)) {
+                return [];
+            }
+            preg_match('/^enum\((.*)\)$/', $type[0]->Type, $matches);
+            if (!isset($matches[1])) {
+                return [];
+            }
+            $values = [];
+            foreach (explode(',', $matches[1]) as $value) {
+                $v = trim($value, "'");
+                $values[$v] = $v;
+            }
+            return $values;
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+}

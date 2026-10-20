@@ -127,5 +127,15 @@ class BloqueAppSeeder extends Seeder
             'description' => 'Control ECP es una plataforma web del SENA Regional Huila (Centro La Angostura) para gestionar y centralizar los procesos de la Escuela de Cultura de Paz.',
             'description_english' => 'Control ECP is a web platform of the SENA Regional Huila (Centro La Angostura) to manage and centralize the processes of the School of Peace Culture.'
         ]);
+
+        // Submódulo SENA Empresa - Gestión de Asistencias e integración SICEFA
+        App::updateOrCreate(['name' => 'SENA Empresa'], [
+            'bloque_id' => $misional->id,
+            'url' => '/senaempresa',
+            'color' => '#00324D',
+            'icon' => 'fas fa-industry',
+            'description' => 'Gestión de asistencia de aprendices en SENA Empresa, sincronización con la API REST central del ERP SICEFA y control de turnos operacionales.',
+            'description_english' => 'Apprentice attendance management in SENA Empresa, SICEFA ERP REST API integration and operational shift control.'
+        ]);
     }
 }
