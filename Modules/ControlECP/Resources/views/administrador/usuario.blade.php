@@ -135,6 +135,11 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2">
+            <a href="{{ route('controlecp.administrador.usuarios.create') }}"
+               class="btn text-white rounded-pill px-3 btn-sm shadow-sm"
+               style="background-color: var(--ecp-green); border-color: var(--ecp-green);">
+                <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
+            </a>
             <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" data-bs-toggle="modal" data-bs-target="#modalConfigApi">
                 <i class="fas fa-sliders me-1"></i> Configurar API
             </button>
@@ -144,7 +149,7 @@
             <button type="button" class="btn btn-outline-success rounded-pill px-3 btn-sm" onclick="probarConexionApi()">
                 <i class="fas fa-arrows-rotate me-1" id="btnSyncSpinIcon"></i> Comprobar Conexión
             </button>
-            <button type="button" class="btn text-white rounded-pill px-3 btn-sm shadow-sm" style="background-color: var(--ecp-green); border-color: var(--ecp-green);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
+            <button type="button" class="btn text-white rounded-pill px-3 btn-sm shadow-sm" style="background-color: var(--ecp-navy); border-color: var(--ecp-navy);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
                 <i class="fas fa-cloud-arrow-down me-1"></i> Sincronizar y Registrar Usuarios
             </button>
         </div>
@@ -270,6 +275,40 @@
         </div>
     </div>
 
+    {{-- KPI Estado: Activos / Inactivos (HU1) --}}
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="card stat-card shadow-sm h-100 bg-white">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small fw-semibold">Activos</span>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 36px; height: 36px; background: #e8f8e8; color: #1e7000;">
+                            <i class="fas fa-circle-check"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-0" style="color: #1e7000;">{{ $stats['activos'] }}</h3>
+                    <small class="text-success mt-1 d-block">Pueden iniciar sesión</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card stat-card shadow-sm h-100 bg-white">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="text-muted small fw-semibold">Inactivos</span>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 36px; height: 36px; background: #fdecea; color: #c0392b;">
+                            <i class="fas fa-ban"></i>
+                        </div>
+                    </div>
+                    <h3 class="fw-bold mb-0" style="color: #c0392b;">{{ $stats['inactivos'] }}</h3>
+                    <small class="text-danger mt-1 d-block">Sin acceso al sistema</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Panel de Detalles Técnicos del Endpoint y Última Sincronización -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
         <div class="card-header bg-white border-0 pt-3 pb-2 px-4">
@@ -349,47 +388,67 @@
         <div class="card-body p-3">
             <div class="row g-2 align-items-center justify-content-between">
                 <!-- Filtro por Rol (Pills) -->
-                <div class="col-lg-6">
+                <div class="col-lg-7">
                     <div class="d-flex flex-wrap align-items-center gap-2">
-                        <span class="small text-muted fw-semibold me-1"><i class="fas fa-filter me-1"></i>Filtrar por:</span>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['search' => $searchTerm]) }}"
+                        <span class="small text-muted fw-semibold me-1"><i class="fas fa-filter me-1"></i>Rol:</span>
+                        <a href="{{ route('controlecp.administrador.usuarios', ['search' => $searchTerm, 'estado' => $estadoFilter]) }}"
                            class="filter-pill {{ empty($roleFilter) ? 'active' : '' }}">
                             Todos ({{ $stats['total'] }})
                         </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'admin', 'search' => $searchTerm]) }}"
+                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'admin', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
                            class="filter-pill {{ $roleFilter === 'admin' ? 'active' : '' }}">
                             <i class="fas fa-shield-halved me-1"></i> Admin ({{ $stats['admins'] }})
                         </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'instructor', 'search' => $searchTerm]) }}"
+                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'instructor', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
                            class="filter-pill {{ $roleFilter === 'instructor' ? 'active' : '' }}">
                             <i class="fas fa-chalkboard-user me-1"></i> Instructor ({{ $stats['instructors'] }})
                         </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'apprentice', 'search' => $searchTerm]) }}"
+                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'apprentice', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
                            class="filter-pill {{ $roleFilter === 'apprentice' ? 'active' : '' }}">
                             <i class="fas fa-user-graduate me-1"></i> Aprendiz ({{ $stats['apprentices'] }})
+                        </a>
+                    </div>
+                    {{-- Filtro por Estado (HU2) --}}
+                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                        <span class="small text-muted fw-semibold me-1"><i class="fas fa-toggle-on me-1"></i>Estado:</span>
+                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm]) }}"
+                           class="filter-pill {{ empty($estadoFilter) ? 'active' : '' }}">
+                            Todos
+                        </a>
+                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Activo']) }}"
+                           class="filter-pill {{ $estadoFilter === 'Activo' ? 'active' : '' }}">
+                            <i class="fas fa-circle-check me-1"></i> Activos ({{ $stats['activos'] }})
+                        </a>
+                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Inactivo']) }}"
+                           class="filter-pill {{ $estadoFilter === 'Inactivo' ? 'active' : '' }}"
+                           style="{{ $estadoFilter === 'Inactivo' ? 'background-color: #dc3545 !important;' : '' }}">
+                            <i class="fas fa-ban me-1"></i> Inactivos ({{ $stats['inactivos'] }})
                         </a>
                     </div>
                 </div>
 
                 <!-- Buscador en tiempo real -->
-                <div class="col-lg-6">
+                <div class="col-lg-5">
                     <form method="GET" action="{{ route('controlecp.administrador.usuarios') }}" class="d-flex gap-2">
                         @if($roleFilter)
                             <input type="hidden" name="rol" value="{{ $roleFilter }}">
+                        @endif
+                        @if($estadoFilter)
+                            <input type="hidden" name="estado" value="{{ $estadoFilter }}">
                         @endif
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
                                 <i class="fas fa-magnifying-glass"></i>
                             </span>
                             <input type="text" name="search" id="inputSearchUser" class="form-control border-start-0 ps-0"
-                                   placeholder="Buscar por nombre, documento, correo o nickname..."
+                                   placeholder="Buscar por nombre, correo o rol..."
                                    value="{{ $searchTerm }}">
                             @if(!empty($searchTerm))
-                                <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter]) }}" class="input-group-text bg-white text-muted text-decoration-none">
+                                <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'estado' => $estadoFilter]) }}" class="input-group-text bg-white text-muted text-decoration-none">
                                     <i class="fas fa-xmark"></i>
                                 </a>
                             @endif
-                            <button class="btn btn-outline-secondary rounded-end-pill px-3" type="submit">Buscar</button>
+                            <button class="btn btn-outline-secondary rounded-end-pill px-3" type="submit">Filtrar</button>
                         </div>
                         <button type="button" class="btn btn-outline-secondary rounded-pill px-3 flex-shrink-0" onclick="exportarUsuariosCSV()" title="Exportar a CSV">
                             <i class="fas fa-file-csv"></i>
@@ -418,11 +477,12 @@
                         <thead class="table-light" style="font-size: 0.82rem; text-transform: uppercase; color: #52796f;">
                             <tr>
                                 <th class="ps-4 py-3" style="width: 5%;">#</th>
-                                <th style="width: 30%;">Persona / Documento</th>
-                                <th style="width: 25%;">Usuario & Contacto</th>
-                                <th style="width: 18%;">Rol Asignado en Control ECP</th>
-                                <th style="width: 12%;">Sincronización</th>
-                                <th class="text-end pe-4" style="width: 10%;">Acciones</th>
+                                <th style="width: 28%;">Persona / Documento</th>
+                                <th style="width: 22%;">Usuario & Contacto</th>
+                                <th style="width: 17%;">Rol Asignado en Control ECP</th>
+                                <th style="width: 10%;">Estado</th>
+                                <th style="width: 10%;">Sincronización</th>
+                                <th class="text-end pe-4" style="width: 8%;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody style="font-size: 0.88rem;">
@@ -505,6 +565,19 @@
                                         </div>
                                     </td>
 
+                                    <!-- Estado (HU1) -->
+                                    <td>
+                                        @if(($u->estado ?? 'Activo') === 'Activo')
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;">
+                                                <i class="fas fa-circle-check me-1"></i> Activo
+                                            </span>
+                                        @else
+                                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;">
+                                                <i class="fas fa-ban me-1"></i> Inactivo
+                                            </span>
+                                        @endif
+                                    </td>
+
                                     <!-- Sincronización -->
                                     <td>
                                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;">
@@ -540,6 +613,30 @@
                                                         <i class="fas fa-id-card me-2 text-primary"></i> Ver Ficha SICEFA
                                                     </button>
                                                 </li>
+                                                {{-- HU5: Editar usuario --}}
+                                                <li>
+                                                    <a class="dropdown-item py-2"
+                                                       href="{{ route('controlecp.administrador.usuarios.edit', $u->id) }}">
+                                                        <i class="fas fa-user-pen me-2 text-secondary"></i> Editar Usuario
+                                                    </a>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                {{-- HU7 / HU8: Desactivar / Activar --}}
+                                                @if(($u->estado ?? 'Activo') === 'Activo')
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-danger" type="button"
+                                                                onclick="confirmarCambioEstado({{ $u->id }}, 'desactivar', '{{ addslashes($u->full_name) }}')">
+                                                            <i class="fas fa-ban me-2"></i> Desactivar Usuario
+                                                        </button>
+                                                    </li>
+                                                @else
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-success" type="button"
+                                                                onclick="confirmarCambioEstado({{ $u->id }}, 'activar', '{{ addslashes($u->full_name) }}')">
+                                                            <i class="fas fa-circle-check me-2"></i> Activar Usuario
+                                                        </button>
+                                                    </li>
+                                                @endif
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li class="dropdown-header small text-muted">Cambiar Rol Control ECP:</li>
                                                 <li>
@@ -604,6 +701,38 @@
 <!-- ========================================================================================= -->
 <!-- MODALES DEL SISTEMA DE INTEGRACIÓN Y SINCRONIZACIÓN API                                   -->
 <!-- ========================================================================================= -->
+
+<!-- Modal: Confirmación Activar / Desactivar Usuario (HU7 / HU8) -->
+<div class="modal fade" id="modalCambioEstado" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center justify-content-center position-relative">
+                <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
+                <div id="estadoModalIcon" class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                     style="width: 65px; height: 65px; font-size: 1.8rem;">
+                    <i class="fas fa-ban"></i>
+                </div>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <h5 class="fw-bold mb-2" id="estadoModalTitle" style="color: var(--ecp-navy);">
+                    Desactivar Usuario
+                </h5>
+                <p class="text-muted small mb-4" id="estadoModalDesc">
+                    El usuario no podrá iniciar sesión, pero sus datos e historial se conservan.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn rounded-pill px-4 text-white" id="btnConfirmarEstado"
+                            onclick="ejecutarCambioEstado()">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- 1. Modal: Configuración de la API REST Central -->
 <div class="modal fade" id="modalConfigApi" tabindex="-1" aria-hidden="true">
@@ -1159,7 +1288,66 @@
         }
     }
 
-    // ── 7. Cambiar Rol de Usuario ───────────────────────────────────────────────────
+    // ── 7A. Confirmar cambio de estado (HU7 / HU8) ─────────────────────────────────
+    let _estadoUserId   = null;
+    let _estadoAccion   = null;
+
+    function confirmarCambioEstado(userId, accion, fullName) {
+        _estadoUserId = userId;
+        _estadoAccion = accion;
+
+        const icon  = document.getElementById('estadoModalIcon');
+        const title = document.getElementById('estadoModalTitle');
+        const desc  = document.getElementById('estadoModalDesc');
+        const btn   = document.getElementById('btnConfirmarEstado');
+
+        if (accion === 'desactivar') {
+            icon.style.background = '#fdecea';
+            icon.style.color      = '#c0392b';
+            icon.innerHTML        = '<i class="fas fa-ban"></i>';
+            title.innerText       = 'Desactivar usuario';
+            desc.innerText        = `¿Desactivar a "${fullName}"? El usuario no podrá iniciar sesión, pero sus datos e historial se conservan.`;
+            btn.style.background  = '#dc3545';
+            btn.style.borderColor = '#dc3545';
+        } else {
+            icon.style.background = '#e8f8e8';
+            icon.style.color      = '#1e7000';
+            icon.innerHTML        = '<i class="fas fa-circle-check"></i>';
+            title.innerText       = 'Activar usuario';
+            desc.innerText        = `¿Reactivar a "${fullName}"? El usuario podrá volver a iniciar sesión.`;
+            btn.style.background  = '#39A900';
+            btn.style.borderColor = '#39A900';
+        }
+
+        new bootstrap.Modal(document.getElementById('modalCambioEstado')).show();
+    }
+
+    async function ejecutarCambioEstado() {
+        const accion = _estadoAccion === 'desactivar' ? 'desactivar' : 'activar';
+        const url    = "{{ url('/control-ecp/administrador/usuarios') }}/" + _estadoUserId + '/' + accion;
+
+        try {
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({})
+            });
+            const data = await resp.json();
+
+            bootstrap.Modal.getInstance(document.getElementById('modalCambioEstado')).hide();
+
+            if (data.success) {
+                mostrarAlerta(data.message, 'success');
+                setTimeout(() => { window.location.reload(); }, 900);
+            } else {
+                mostrarAlerta(data.message, 'warning');
+            }
+        } catch (e) {
+            mostrarAlerta('Error al cambiar el estado: ' + e.message, 'danger');
+        }
+    }
+
+    // ── 7B. Cambiar Rol de Usuario ───────────────────────────────────────────────────
     async function cambiarRolUsuario(userId, roleSlug) {
         const url = "{{ url('/control-ecp/administrador/usuarios') }}/" + userId + "/change-role";
         try {

@@ -51,6 +51,12 @@ class UsuarioSyncController extends Controller
             });
         }
 
+        // HU2 — Filtro por Estado
+        $estadoFilter = $request->get('estado');
+        if ($estadoFilter && in_array($estadoFilter, ['Activo', 'Inactivo'])) {
+            $query->where('estado', $estadoFilter);
+        }
+
         // Filtro por término de búsqueda (nombre, documento, correo, nickname)
         $searchTerm = trim($request->get('search', ''));
         if (!empty($searchTerm)) {
@@ -84,6 +90,13 @@ class UsuarioSyncController extends Controller
             'apprentices' => User::whereHas('roles', function ($q) {
                 $q->where('slug', 'controlecp.apprentice');
             })->count(),
+            // HU1 / HU2 — contadores de estado
+            'activos' => User::whereHas('roles', function ($q) use ($roleIds) {
+                $q->whereIn('roles.id', $roleIds);
+            })->where('estado', 'Activo')->count(),
+            'inactivos' => User::whereHas('roles', function ($q) use ($roleIds) {
+                $q->whereIn('roles.id', $roleIds);
+            })->where('estado', 'Inactivo')->count(),
         ];
 
         // Configuración de la API REST Central
@@ -109,8 +122,291 @@ class UsuarioSyncController extends Controller
             'lastSync',
             'rolesEcp',
             'roleFilter',
+            'estadoFilter',
             'searchTerm'
         ));
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // HU3, HU4, HU5, HU6 — CRUD Manual de Usuarios
+    // ══════════════════════════════════════════════════════════
+
+    /**
+     * HU3 / HU4 / HU6 — Muestra el formulario de registro de un nuevo usuario.
+     */
+    public function create()
+    {
+        $user = Auth::user();
+        if (!$user || !$user->hasRole('controlecp.admin')) {
+            return redirect()->route('controlecp.administrador.usuarios')
+                ->with('error', 'No tienes permisos para registrar usuarios.');
+        }
+
+        $rolesEcp = Role::where('slug', 'like', 'controlecp%')->get();
+        return view('controlecp::administrador.usuario_form', compact('rolesEcp'));
+    }
+
+    /**
+     * HU3 / HU4 / HU6 — Registra un nuevo usuario con estado Activo por defecto.
+     * Valida que correo y documento no estén repetidos.
+     */
+    public function store(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->hasRole('controlecp.admin')) {
+            return redirect()->route('controlecp.administrador.usuarios')
+                ->with('error', 'No tienes permisos para registrar usuarios.');
+        }
+
+        $request->validate([
+            'document_number' => 'required|string|max:20',
+            'first_name'      => 'required|string|max:80',
+            'first_last_name' => 'required|string|max:80',
+            'email'           => 'required|email|max:150',
+            'nickname'        => 'required|string|max:80',
+            'role_slug'       => 'required|string',
+            'password'        => 'required|string|min:6',
+        ], [
+            'document_number.required' => 'El número de documento es obligatorio.',
+            'first_name.required'      => 'El nombre es obligatorio.',
+            'first_last_name.required' => 'El primer apellido es obligatorio.',
+            'email.required'           => 'El correo electrónico es obligatorio.',
+            'email.email'              => 'El correo no tiene un formato válido.',
+            'nickname.required'        => 'El nombre de usuario es obligatorio.',
+            'role_slug.required'       => 'Debes seleccionar un rol.',
+            'password.required'        => 'La contraseña es obligatoria.',
+            'password.min'             => 'La contraseña debe tener al menos 6 caracteres.',
+        ]);
+
+        // HU4 — Verificar correo duplicado
+        if (User::where('email', $request->email)->exists()) {
+            return back()->withInput()
+                ->withErrors(['email' => 'El correo electrónico ya está registrado para otro usuario.']);
+        }
+
+        // HU4 — Verificar nickname duplicado
+        if (User::where('nickname', $request->nickname)->exists()) {
+            return back()->withInput()
+                ->withErrors(['nickname' => 'El nombre de usuario ya existe. Elige uno diferente.']);
+        }
+
+        // HU4 — Verificar documento duplicado en persons
+        if (Person::where('document_number', $request->document_number)->exists()) {
+            $personExist = Person::where('document_number', $request->document_number)->first();
+            if (User::where('person_id', $personExist->id)->exists()) {
+                return back()->withInput()
+                    ->withErrors(['document_number' => 'El documento ya está asociado a un usuario existente.']);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            // Upsert persona
+            $person = Person::firstOrNew(['document_number' => $request->document_number]);
+            $person->document_type    = $request->input('document_type', 'Cédula de ciudadanía');
+            $person->first_name       = mb_strtoupper(trim($request->first_name));
+            $person->first_last_name  = mb_strtoupper(trim($request->first_last_name));
+            $person->second_last_name = mb_strtoupper(trim($request->input('second_last_name', '')));
+            $person->personal_email   = $request->email;
+            $person->misena_email     = $request->email;
+            $person->telephone1       = $request->input('telephone', '');
+
+            // Rellenar campos obligatorios con valores por defecto si es persona nueva
+            if (!$person->exists) {
+                $person->gender              = 'No registra';
+                $person->blood_type          = 'No registra';
+                $person->marital_status      = 'No registra';
+                $person->eps_id              = \Modules\SICA\Entities\EPS::first()->id ?? 1;
+                $person->population_group_id = \Modules\SICA\Entities\PopulationGroup::first()->id ?? 1;
+                $person->pension_entity_id   = \Modules\SICA\Entities\PensionEntity::first()->id ?? 1;
+            }
+            $person->save();
+
+            // Crear usuario con estado Activo (HU3)
+            $newUser = new User();
+            $newUser->person_id  = $person->id;
+            $newUser->email      = $request->email;
+            $newUser->nickname   = $request->nickname;
+            $newUser->password   = Hash::make($request->password);
+            $newUser->estado     = 'Activo';
+            $newUser->email_verified_at = now();
+            $newUser->save();
+
+            // HU6 — Asignar rol
+            $role = Role::where('slug', $request->role_slug)->first();
+            if ($role) {
+                $newUser->roles()->syncWithoutDetaching([$role->id]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('controlecp.administrador.usuarios')
+                ->with('success', "Usuario {$newUser->nickname} registrado exitosamente en estado Activo.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()
+                ->with('error', 'No se pudo registrar el usuario: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * HU5 / HU6 — Muestra el formulario de edición de un usuario.
+     */
+    public function editUser($id)
+    {
+        $authUser = Auth::user();
+        if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
+            return redirect()->route('controlecp.administrador.usuarios')
+                ->with('error', 'No tienes permisos para editar usuarios.');
+        }
+
+        $editUser = User::with(['person', 'roles'])->findOrFail($id);
+        $rolesEcp = Role::where('slug', 'like', 'controlecp%')->get();
+
+        return view('controlecp::administrador.usuario_form', compact('editUser', 'rolesEcp'));
+    }
+
+    /**
+     * HU5 / HU6 — Actualiza la información de un usuario.
+     * Valida duplicados excluyendo al propio usuario.
+     */
+    public function updateUser(Request $request, $id)
+    {
+        $authUser = Auth::user();
+        if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
+            return redirect()->route('controlecp.administrador.usuarios')
+                ->with('error', 'No tienes permisos para actualizar usuarios.');
+        }
+
+        $editUser = User::with('person')->findOrFail($id);
+
+        $request->validate([
+            'first_name'     => 'required|string|max:80',
+            'first_last_name'=> 'required|string|max:80',
+            'email'          => 'required|email|max:150',
+            'nickname'       => 'required|string|max:80',
+            'role_slug'      => 'required|string',
+        ], [
+            'first_name.required'      => 'El nombre es obligatorio.',
+            'first_last_name.required' => 'El primer apellido es obligatorio.',
+            'email.required'           => 'El correo es obligatorio.',
+            'email.email'              => 'El correo no tiene un formato válido.',
+            'nickname.required'        => 'El nombre de usuario es obligatorio.',
+            'role_slug.required'       => 'Debes seleccionar un rol.',
+        ]);
+
+        // HU4 — Verificar correo duplicado (excluir al mismo usuario)
+        if (User::where('email', $request->email)->where('id', '!=', $id)->exists()) {
+            return back()->withInput()
+                ->withErrors(['email' => 'El correo electrónico ya está registrado para otro usuario.']);
+        }
+
+        // HU4 — Verificar nickname duplicado (excluir al mismo usuario)
+        if (User::where('nickname', $request->nickname)->where('id', '!=', $id)->exists()) {
+            return back()->withInput()
+                ->withErrors(['nickname' => 'El nombre de usuario ya existe.']);
+        }
+
+        DB::beginTransaction();
+        try {
+            // Actualizar datos de la persona vinculada
+            if ($editUser->person) {
+                $editUser->person->first_name       = mb_strtoupper(trim($request->first_name));
+                $editUser->person->first_last_name  = mb_strtoupper(trim($request->first_last_name));
+                $editUser->person->second_last_name = mb_strtoupper(trim($request->input('second_last_name', '')));
+                $editUser->person->personal_email   = $request->email;
+                $editUser->person->misena_email     = $request->email;
+                $editUser->person->telephone1       = $request->input('telephone', $editUser->person->telephone1 ?? '');
+                $editUser->person->save();
+            }
+
+            // Actualizar datos del usuario
+            $editUser->email    = $request->email;
+            $editUser->nickname = $request->nickname;
+            if ($request->filled('password')) {
+                $editUser->password = Hash::make($request->password);
+            }
+            // Actualizar estado si viene del formulario
+            if ($request->filled('estado') && in_array($request->estado, ['Activo', 'Inactivo'])) {
+                $editUser->estado = $request->estado;
+            }
+            $editUser->save();
+
+            // HU6 — Actualizar rol ECP
+            $role = Role::where('slug', $request->role_slug)->first();
+            if ($role) {
+                $ecpRoleIds = Role::where('slug', 'like', 'controlecp%')->pluck('id')->toArray();
+                $editUser->roles()->detach($ecpRoleIds);
+                $editUser->roles()->attach($role->id);
+            }
+
+            DB::commit();
+
+            return redirect()->route('controlecp.administrador.usuarios')
+                ->with('success', "Usuario {$editUser->nickname} actualizado exitosamente.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withInput()
+                ->with('error', 'No se pudo actualizar el usuario: ' . $e->getMessage());
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════
+    // HU7 / HU8 — Activar y Desactivar Usuario
+    // ══════════════════════════════════════════════════════════
+
+    /**
+     * HU7 — Desactiva un usuario: cambia estado a 'Inactivo'.
+     * El usuario no puede iniciar sesión pero su historial se conserva.
+     */
+    public function deactivate($id)
+    {
+        $authUser = Auth::user();
+        if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
+            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+        }
+
+        $targetUser = User::findOrFail($id);
+
+        if ($targetUser->estado === 'Inactivo') {
+            return response()->json(['success' => false, 'message' => 'El usuario ya está inactivo.']);
+        }
+
+        $targetUser->estado = 'Inactivo';
+        $targetUser->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "El usuario {$targetUser->full_name} fue desactivado. Ya no podrá iniciar sesión.",
+        ]);
+    }
+
+    /**
+     * HU8 — Activa un usuario: cambia estado a 'Activo'.
+     * El usuario puede volver a iniciar sesión.
+     */
+    public function activate($id)
+    {
+        $authUser = Auth::user();
+        if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
+            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+        }
+
+        $targetUser = User::findOrFail($id);
+
+        if ($targetUser->estado === 'Activo') {
+            return response()->json(['success' => false, 'message' => 'El usuario ya está activo.']);
+        }
+
+        $targetUser->estado = 'Activo';
+        $targetUser->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "El usuario {$targetUser->full_name} fue reactivado. Ya puede iniciar sesión.",
+        ]);
     }
 
     /**

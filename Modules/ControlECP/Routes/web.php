@@ -7,6 +7,8 @@ use Modules\ControlECP\Http\Controllers\MaterialController;
 use Modules\ControlECP\Http\Controllers\PqrController;
 use Modules\ControlECP\Http\Controllers\UsuarioSyncController;
 use Modules\ControlECP\Http\Controllers\FichaSyncController;
+use Modules\ControlECP\Http\Controllers\MomentoController;
+use Modules\ControlECP\Http\Controllers\ActividadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +77,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/control-ecp/administrador/usuarios/config', [UsuarioSyncController::class, 'saveConfig'])
         ->name('controlecp.administrador.usuarios.save_config');
 
+    // --- Registro y edición manual de usuarios (HU3, HU4, HU5, HU6) ---
+    Route::get('/control-ecp/administrador/usuarios/crear', [UsuarioSyncController::class, 'create'])
+        ->name('controlecp.administrador.usuarios.create');
+    Route::post('/control-ecp/administrador/usuarios/crear', [UsuarioSyncController::class, 'store'])
+        ->name('controlecp.administrador.usuarios.store');
+    Route::get('/control-ecp/administrador/usuarios/{id}/editar', [UsuarioSyncController::class, 'editUser'])
+        ->name('controlecp.administrador.usuarios.edit');
+    Route::put('/control-ecp/administrador/usuarios/{id}', [UsuarioSyncController::class, 'updateUser'])
+        ->name('controlecp.administrador.usuarios.update');
+
+    // --- Activar / Desactivar usuario (HU7, HU8) ---
+    Route::post('/control-ecp/administrador/usuarios/{id}/desactivar', [UsuarioSyncController::class, 'deactivate'])
+        ->name('controlecp.administrador.usuarios.deactivate');
+    Route::post('/control-ecp/administrador/usuarios/{id}/activar', [UsuarioSyncController::class, 'activate'])
+        ->name('controlecp.administrador.usuarios.activate');
+
     // --- Gestión de Fichas (Integración y Sincronización API Académica Central) ---
     Route::get('/control-ecp/administrador/fichas', [FichaSyncController::class, 'index'])
         ->name('controlecp.administrador.fichas');
@@ -89,10 +107,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/administrador/fichas/{id}/aprendices', [FichaSyncController::class, 'getAprendices'])
         ->name('controlecp.administrador.fichas.aprendices');
 
-    Route::get('/control-ecp/administrador/momentos', [ControlECPController::class, 'momentosAdmin'])
+    // --- Detalle, activar/desactivar y sync de aprendices (HU2, HU4, HU6, HU7) ---
+    Route::get('/control-ecp/administrador/fichas/{id}', [FichaSyncController::class, 'show'])
+        ->name('controlecp.administrador.fichas.show');
+    Route::post('/control-ecp/administrador/fichas/{id}/activar', [FichaSyncController::class, 'activate'])
+        ->name('controlecp.administrador.fichas.activate');
+    Route::post('/control-ecp/administrador/fichas/{id}/desactivar', [FichaSyncController::class, 'deactivate'])
+        ->name('controlecp.administrador.fichas.deactivate');
+    Route::post('/control-ecp/administrador/fichas/{id}/sync-aprendices', [FichaSyncController::class, 'syncAprendices'])
+        ->name('controlecp.administrador.fichas.sync_aprendices');
+
+    // --- Momentos pedagógicos (HU1–HU7: CRUD + activar/desactivar + ver actividades) ---
+    Route::get('/control-ecp/administrador/momentos', [MomentoController::class, 'index'])
         ->name('controlecp.administrador.momentos');
-    Route::get('/control-ecp/administrador/actividades', [ControlECPController::class, 'actividadesAdmin'])
+    Route::get('/control-ecp/momentos', [MomentoController::class, 'index'])
+        ->name('controlecp.momentos');
+    Route::post('/control-ecp/administrador/momentos', [MomentoController::class, 'store'])
+        ->name('controlecp.administrador.momentos.store');
+    Route::put('/control-ecp/administrador/momentos/{id}', [MomentoController::class, 'update'])
+        ->name('controlecp.administrador.momentos.update');
+    Route::post('/control-ecp/administrador/momentos/{id}/activar', [MomentoController::class, 'activate'])
+        ->name('controlecp.administrador.momentos.activate');
+    Route::post('/control-ecp/administrador/momentos/{id}/desactivar', [MomentoController::class, 'deactivate'])
+        ->name('controlecp.administrador.momentos.deactivate');
+    Route::get('/control-ecp/administrador/momentos/{id}/actividades', [MomentoController::class, 'actividades'])
+        ->name('controlecp.administrador.momentos.actividades');
+    Route::get('/control-ecp/administrador/actividades', [ActividadController::class, 'index'])
         ->name('controlecp.administrador.actividades');
+    Route::post('/control-ecp/administrador/actividades', [ActividadController::class, 'store'])
+        ->name('controlecp.administrador.actividades.store');
+    Route::put('/control-ecp/administrador/actividades/{id}', [ActividadController::class, 'update'])
+        ->name('controlecp.administrador.actividades.update');
+    Route::post('/control-ecp/administrador/actividades/{id}/cambiar-momento', [ActividadController::class, 'cambiarMomento'])
+        ->name('controlecp.administrador.actividades.cambiar_momento');
+    Route::get('/control-ecp/administrador/actividades/{id}/componentes', [ActividadController::class, 'componentes'])
+        ->name('controlecp.administrador.actividades.componentes');
+    Route::post('/control-ecp/administrador/actividades/{id}/activar', [ActividadController::class, 'activate'])
+        ->name('controlecp.administrador.actividades.activate');
+    Route::post('/control-ecp/administrador/actividades/{id}/desactivar', [ActividadController::class, 'deactivate'])
+        ->name('controlecp.administrador.actividades.deactivate');
+    Route::post('/control-ecp/administrador/actividades/{id}/finalizar', [ActividadController::class, 'finalizar'])
+        ->name('controlecp.administrador.actividades.finalizar');
+    Route::post('/control-ecp/administrador/actividades/{id}/evidencias', [ActividadController::class, 'subirEvidencia'])
+        ->name('controlecp.administrador.actividades.evidencias.store');
+    Route::get('/control-ecp/administrador/actividades/{id}/evidencias', [ActividadController::class, 'evidencias'])
+        ->name('controlecp.administrador.actividades.evidencias');
+    Route::get('/control-ecp/administrador/actividades/{id}/calificaciones', [ActividadController::class, 'calificaciones'])
+        ->name('controlecp.administrador.actividades.calificaciones');
     Route::get('/control-ecp/administrador/cronograma', [ControlECPController::class, 'cronogramaAdmin'])
         ->name('controlecp.administrador.cronograma');
 

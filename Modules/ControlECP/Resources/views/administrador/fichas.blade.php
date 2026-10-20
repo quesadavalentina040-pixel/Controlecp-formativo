@@ -440,11 +440,52 @@
 
                                     <!-- Acciones -->
                                     <td class="text-end pe-4">
-                                        <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-xs"
-                                                style="background-color: var(--ecp-green);"
-                                                onclick="cargarAprendicesFicha({{ $f->id }})">
-                                            <i class="fas fa-users-viewfinder me-1"></i> Aprendices
-                                        </button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-light rounded-pill px-2" type="button" data-bs-toggle="dropdown">
+                                                <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; font-size: 0.85rem;">
+                                                {{-- HU2: Ver detalle --}}
+                                                <li>
+                                                    <a class="dropdown-item py-2"
+                                                       href="{{ route('controlecp.administrador.fichas.show', $f->id) }}">
+                                                        <i class="fas fa-eye me-2 text-primary"></i> Ver Detalle
+                                                    </a>
+                                                </li>
+                                                {{-- HU2: Ver aprendices (modal rápido) --}}
+                                                <li>
+                                                    <button type="button" class="dropdown-item py-2"
+                                                            onclick="cargarAprendicesFicha({{ $f->id }})">
+                                                        <i class="fas fa-users-viewfinder me-2 text-success"></i> Nómina de Aprendices
+                                                    </button>
+                                                </li>
+                                                {{-- HU4: Sincronizar aprendices de esta ficha --}}
+                                                <li>
+                                                    <button type="button" class="dropdown-item py-2"
+                                                            onclick="sincronizarAprendicesFicha({{ $f->id }}, '{{ $f->code }}')">
+                                                        <i class="fas fa-arrows-rotate me-2 text-info"></i> Sincronizar Aprendices
+                                                    </button>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                {{-- HU5: No hay opción de crear/editar manualmente --}}
+                                                {{-- HU6 / HU7: Desactivar / Activar ficha --}}
+                                                @if($isActive)
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-danger" type="button"
+                                                                onclick="confirmarCambioEstadoFicha({{ $f->id }}, 'desactivar', '{{ $f->code }}')">
+                                                            <i class="fas fa-ban me-2"></i> Desactivar Ficha
+                                                        </button>
+                                                    </li>
+                                                @else
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-success" type="button"
+                                                                onclick="confirmarCambioEstadoFicha({{ $f->id }}, 'activar', '{{ $f->code }}')">
+                                                            <i class="fas fa-circle-check me-2"></i> Activar Ficha
+                                                        </button>
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -489,6 +530,71 @@
 <!-- ========================================================================================= -->
 <!-- MODALES DEL SISTEMA DE GESTIÓN Y SINCRONIZACIÓN DE FICHAS                                  -->
 <!-- ========================================================================================= -->
+
+<!-- Modal: Confirmación Activar / Desactivar Ficha (HU6 / HU7 / HU8) -->
+<div class="modal fade" id="modalCambioEstadoFicha" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center justify-content-center position-relative">
+                <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
+                <div id="fichaEstadoModalIcon" class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                     style="width: 65px; height: 65px; font-size: 1.8rem;">
+                    <i class="fas fa-ban"></i>
+                </div>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <h5 class="fw-bold mb-2" id="fichaEstadoModalTitle" style="color: var(--ecp-navy);">Desactivar Ficha</h5>
+                <p class="text-muted small mb-4" id="fichaEstadoModalDesc"></p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn rounded-pill px-4 text-white" id="btnConfirmarEstadoFicha" onclick="ejecutarCambioEstadoFicha()">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Sincronizar Aprendices de una Ficha (HU4 / HU8 / HU9) -->
+<div class="modal fade" id="modalSyncAprendices" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center justify-content-center position-relative">
+                <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                     style="width: 65px; height: 65px; background: #ebf5fb; color: #2980b9; font-size: 1.8rem;">
+                    <i class="fas fa-arrows-rotate" id="syncAprendicezIcon"></i>
+                </div>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <h5 class="fw-bold mb-1" style="color: var(--ecp-navy);">Sincronizar Aprendices</h5>
+                <p class="text-muted small mb-3">Ficha: <strong id="syncAprendicesCodigoLabel">--</strong></p>
+                <p class="text-muted small mb-3">Se obtendrá la nómina desde SICEFA, se agregarán los aprendices nuevos y se actualizarán los existentes por número de documento, sin duplicar.</p>
+
+                <div id="syncAprendicesProgress" class="d-none text-start mb-3">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span id="syncAprendicesLabel">Consultando SICEFA...</span>
+                        <span id="syncAprendicesPct">0%</span>
+                    </div>
+                    <div class="progress" style="height: 8px; border-radius: 8px;">
+                        <div id="syncAprendicesBar" class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <div id="syncAprendicesResult" class="d-none small text-start p-3 rounded-3 border mb-3"></div>
+
+                <div class="d-flex justify-content-center gap-3" id="syncAprendicesBtns">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn rounded-pill px-4 text-white" id="btnEjecutarSyncAprendices"
+                            style="background-color: #2980b9;" onclick="ejecutarSyncAprendices()">
+                        <i class="fas fa-arrows-rotate me-1"></i> Sincronizar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- 1. Modal: Configuración de la API REST Central de Fichas -->
 <div class="modal fade" id="modalConfigApiFichas" tabindex="-1" aria-hidden="true">
@@ -676,6 +782,9 @@
             <div class="modal-footer border-0 pt-0 px-4 pb-4">
                 <button type="button" class="btn btn-outline-secondary rounded-pill px-4 btn-sm" data-bs-dismiss="modal">
                     Cerrar
+                </button>
+                <button type="button" class="btn btn-outline-info rounded-pill px-4 btn-sm" id="btnSyncAprendicesDesdeModal">
+                    <i class="fas fa-arrows-rotate me-1"></i> Sincronizar Aprendices
                 </button>
                 <button type="button" class="btn text-white rounded-pill px-4 btn-sm" style="background-color: var(--ecp-navy);" onclick="window.print()">
                     <i class="fas fa-print me-1"></i> Imprimir Nómina
@@ -871,8 +980,183 @@
         }
     }
 
+    // ── 4A. Confirmar cambio de estado de ficha (HU6 / HU7 / HU8) ──────────────────
+    let _fichaEstadoId   = null;
+    let _fichaEstadoAccion = null;
+
+    function confirmarCambioEstadoFicha(fichaId, accion, codigo) {
+        _fichaEstadoId    = fichaId;
+        _fichaEstadoAccion = accion;
+
+        const icon  = document.getElementById('fichaEstadoModalIcon');
+        const title = document.getElementById('fichaEstadoModalTitle');
+        const desc  = document.getElementById('fichaEstadoModalDesc');
+        const btn   = document.getElementById('btnConfirmarEstadoFicha');
+
+        if (accion === 'desactivar') {
+            icon.style.background = '#fdecea';
+            icon.style.color      = '#c0392b';
+            icon.innerHTML        = '<i class="fas fa-ban"></i>';
+            title.innerText       = 'Desactivar Ficha';
+            desc.innerText        = `¿Desactivar la ficha ${codigo}? Se retirará de las fichas activas. No se puede desactivar si tiene aprendices EN FORMACIÓN.`;
+            btn.style.background  = '#dc3545';
+            btn.style.borderColor = '#dc3545';
+        } else {
+            icon.style.background = '#e8f8e8';
+            icon.style.color      = '#1e7000';
+            icon.innerHTML        = '<i class="fas fa-circle-check"></i>';
+            title.innerText       = 'Activar Ficha';
+            desc.innerText        = `¿Reactivar la ficha ${codigo}? Volverá a aparecer entre las fichas activas.`;
+            btn.style.background  = '#39A900';
+            btn.style.borderColor = '#39A900';
+        }
+
+        new bootstrap.Modal(document.getElementById('modalCambioEstadoFicha')).show();
+    }
+
+    async function ejecutarCambioEstadoFicha() {
+        const accion = _fichaEstadoAccion === 'desactivar' ? 'desactivar' : 'activar';
+        const url    = "{{ url('/control-ecp/administrador/fichas') }}/" + _fichaEstadoId + '/' + accion;
+
+        try {
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({})
+            });
+            const data = await resp.json();
+
+            bootstrap.Modal.getInstance(document.getElementById('modalCambioEstadoFicha')).hide();
+
+            if (data.success) {
+                // HU8 — Confirmación de operación exitosa
+                mostrarAlertaFichas(data.message, 'success');
+                setTimeout(() => { window.location.reload(); }, 1000);
+            } else {
+                // HU8 / HU9 — Mensaje de error claro
+                mostrarAlertaFichas(data.message, 'warning');
+            }
+        } catch (e) {
+            // HU9 — Error de conexión
+            mostrarAlertaFichas('Error al cambiar el estado de la ficha: ' + e.message, 'danger');
+        }
+    }
+
+    // ── 4B. Sincronizar aprendices de una ficha específica (HU4 / HU8 / HU9) ────────
+    let _syncAprendicesFichaId = null;
+
+    function sincronizarAprendicesFicha(fichaId, codigo) {
+        _syncAprendicesFichaId = fichaId;
+        document.getElementById('syncAprendicesCodigoLabel').innerText = codigo;
+
+        // Reset modal
+        document.getElementById('syncAprendicesProgress').classList.add('d-none');
+        document.getElementById('syncAprendicesResult').classList.add('d-none');
+        document.getElementById('syncAprendicesBtns').classList.remove('d-none');
+        document.getElementById('btnEjecutarSyncAprendices').disabled = false;
+        document.getElementById('syncAprendicezIcon').className = 'fas fa-arrows-rotate';
+
+        new bootstrap.Modal(document.getElementById('modalSyncAprendices')).show();
+    }
+
+    async function ejecutarSyncAprendices() {
+        const progressDiv = document.getElementById('syncAprendicesProgress');
+        const progressBar = document.getElementById('syncAprendicesBar');
+        const progressLbl = document.getElementById('syncAprendicesLabel');
+        const progressPct = document.getElementById('syncAprendicesPct');
+        const resultDiv   = document.getElementById('syncAprendicesResult');
+        const btns        = document.getElementById('syncAprendicesBtns');
+        const icon        = document.getElementById('syncAprendicezIcon');
+        const btn         = document.getElementById('btnEjecutarSyncAprendices');
+
+        progressDiv.classList.remove('d-none');
+        resultDiv.classList.add('d-none');
+        btns.classList.add('d-none');
+        btn.disabled = true;
+        icon.className = 'fas fa-arrows-rotate fa-spin';
+
+        let pct = 10;
+        progressBar.style.width = pct + '%';
+        progressPct.innerText   = pct + '%';
+        progressLbl.innerText   = 'Consultando SICEFA...';
+
+        const timer = setInterval(() => {
+            if (pct < 80) {
+                pct += 15;
+                progressBar.style.width = pct + '%';
+                progressPct.innerText   = pct + '%';
+                if (pct === 40) progressLbl.innerText = 'Validando documentos...';
+                if (pct === 70) progressLbl.innerText = 'Guardando aprendices...';
+            }
+        }, 350);
+
+        try {
+            const url = "{{ url('/control-ecp/administrador/fichas') }}/" + _syncAprendicesFichaId + "/sync-aprendices";
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                body: JSON.stringify({})
+            });
+
+            clearInterval(timer);
+            const data = await resp.json();
+
+            progressBar.style.width = '100%';
+            progressPct.innerText   = '100%';
+            progressLbl.innerText   = data.success ? '¡Completado!' : 'Error';
+
+            resultDiv.classList.remove('d-none');
+            btns.classList.remove('d-none');
+            icon.className = data.success ? 'fas fa-circle-check' : 'fas fa-triangle-exclamation';
+
+            if (data.success) {
+                // HU8 — Confirmación de operación
+                progressBar.classList.remove('bg-info');
+                progressBar.classList.add('bg-success');
+                resultDiv.className = 'd-block small text-start p-3 rounded-3 border mb-3 bg-success-subtle border-success-subtle';
+                resultDiv.innerHTML = `
+                    <div class="fw-bold text-success mb-1"><i class="fas fa-circle-check me-1"></i> ${data.message}</div>
+                    <div class="text-muted">Nuevos: <strong>${data.created}</strong> &bull; Actualizados: <strong>${data.updated}</strong> &bull; Total: <strong>${data.total}</strong></div>
+                `;
+                setTimeout(() => { window.location.reload(); }, 2000);
+            } else {
+                // HU9 — Error, información conservada
+                progressBar.classList.remove('bg-info');
+                progressBar.classList.add('bg-danger');
+                resultDiv.className = 'd-block small text-start p-3 rounded-3 border mb-3 bg-danger-subtle border-danger-subtle';
+                resultDiv.innerHTML = `<div class="fw-bold text-danger"><i class="fas fa-triangle-exclamation me-1"></i> ${data.message}</div>`;
+            }
+
+        } catch (e) {
+            clearInterval(timer);
+            // HU9 — Error de conexión con SICEFA
+            progressBar.classList.add('bg-danger');
+            progressLbl.innerText = 'Sin conexión con SICEFA';
+            resultDiv.classList.remove('d-none');
+            btns.classList.remove('d-none');
+            resultDiv.className = 'd-block small text-start p-3 rounded-3 border mb-3 bg-danger-subtle border-danger-subtle';
+            resultDiv.innerHTML = `<div class="fw-bold text-danger"><i class="fas fa-wifi me-1"></i> No fue posible consultar SICEFA: ${e.message}. La información existente se conserva sin cambios.</div>`;
+        }
+    }
+
     // ── 5. Cargar Aprendices de una Ficha ─────────────────────────────────────────────
+    let _aprendicesFichaId = null;
+
     async function cargarAprendicesFicha(courseId) {
+        _aprendicesFichaId = courseId;
+
+        // Configurar botón de sync en el footer del modal
+        const btnSync = document.getElementById('btnSyncAprendicesDesdeModal');
+        if (btnSync) {
+            btnSync.onclick = () => {
+                bootstrap.Modal.getInstance(document.getElementById('modalAprendicesFicha')).hide();
+                // Buscar el código de la ficha en el subtítulo del modal
+                const subTitle = document.getElementById('modalFichaSubTitle').innerText;
+                const codigoMatch = subTitle.match(/Ficha: (\S+)/);
+                const codigo = codigoMatch ? codigoMatch[1] : courseId;
+                sincronizarAprendicesFicha(courseId, codigo);
+            };
+        }
         const modal = new bootstrap.Modal(document.getElementById('modalAprendicesFicha'));
         const loading = document.getElementById('modalAprendicesLoading');
         const content = document.getElementById('modalAprendicesContent');
