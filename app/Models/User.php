@@ -25,6 +25,7 @@ class User extends Authenticatable
         'nickname',
         'person_id',
         'email',
+        'estado',
         'password',
     ];
 
@@ -49,6 +50,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Verifica si el usuario está activo
+     */
+    public function isActivo(): bool
+    {
+        return ($this->estado ?? 'Activo') === 'Activo';
     }
 
     /**
