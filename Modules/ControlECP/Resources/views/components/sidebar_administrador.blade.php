@@ -94,7 +94,15 @@
                 $repositoryExpanded = $isRepositoryItem
                     && (request()->routeIs('controlecp.administrador.repositorio.*') || request()->is('control-ecp/administrador/repositorio*'));
 
-                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $childActive;
+                $isInventoryItem = $item['label'] === 'Inventario';
+                $inventoryActive = $isInventoryItem
+                    && (request()->routeIs('controlecp.administrador.inventario*') || request()->is('control-ecp/administrador/inventario*'));
+
+                $isPqrsItem = $item['label'] === 'PQRS';
+                $pqrsActive = $isPqrsItem
+                    && (request()->routeIs('controlecp.administrador.pqr*') || request()->is('control-ecp/administrador/pqr*'));
+
+                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $inventoryActive || $pqrsActive || $childActive;
             @endphp
 
             @if ($hasChildren)

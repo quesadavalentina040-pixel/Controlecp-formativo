@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\ControlECP\Http\Controllers\ControlECPController;
 use Modules\ControlECP\Http\Controllers\ElementoController;
+use Modules\ControlECP\Http\Controllers\InventarioController;
 use Modules\ControlECP\Http\Controllers\MaterialController;
 use Modules\ControlECP\Http\Controllers\PqrController;
 use Modules\ControlECP\Http\Controllers\UsuarioSyncController;
@@ -213,31 +214,49 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/instructor/certificados', [CertificadoController::class, 'instructorIndex'])
         ->name('controlecp.instructor.certificados');
 
-    // --- Inventario / Materiales ---
-    Route::get('/control-ecp/administrador/inventario', [MaterialController::class, 'index'])
-        ->name('controlecp.administrador.inventario');
-    Route::get('/control-ecp/administrador/inventario/create', [MaterialController::class, 'create'])
-        ->name('controlecp.administrador.inventario.create');
-    Route::post('/control-ecp/administrador/inventario', [MaterialController::class, 'store'])
-        ->name('controlecp.administrador.inventario.store');
-    Route::get('/control-ecp/administrador/inventario/{id}/edit', [MaterialController::class, 'edit'])
-        ->name('controlecp.administrador.inventario.edit');
-    Route::put('/control-ecp/administrador/inventario/{id}', [MaterialController::class, 'update'])
-        ->name('controlecp.administrador.inventario.update');
-    Route::delete('/control-ecp/administrador/inventario/{id}', [MaterialController::class, 'destroy'])
-        ->name('controlecp.administrador.inventario.destroy');
+    // --- Gestión de Inventario (HU-014 - Rol Administrador) ---
+    Route::prefix('control-ecp/administrador/inventario')->name('controlecp.administrador.inventario')->group(function () {
+        Route::get('/', [InventarioController::class, 'index']);
+        Route::get('/create', [InventarioController::class, 'create'])->name('.create');
+        Route::post('/', [InventarioController::class, 'store'])->name('.store');
+        Route::get('/categorias', [InventarioController::class, 'categorias'])->name('.categorias');
+        Route::post('/categorias', [InventarioController::class, 'categoriaStore'])->name('.categorias.store');
+        Route::put('/categorias/{id}', [InventarioController::class, 'categoriaUpdate'])->name('.categorias.update');
+        Route::patch('/categorias/{id}/toggle', [InventarioController::class, 'categoriaToggle'])->name('.categorias.toggle');
+        Route::get('/movimientos', [InventarioController::class, 'movimientos'])->name('.movimientos');
+        Route::get('/reporte', [InventarioController::class, 'reporte'])->name('.reporte');
+        Route::get('/{id}', [InventarioController::class, 'show'])->name('.show');
+        Route::get('/{id}/edit', [InventarioController::class, 'edit'])->name('.edit');
+        Route::put('/{id}', [InventarioController::class, 'update'])->name('.update');
+        Route::delete('/{id}', [InventarioController::class, 'destroy'])->name('.destroy');
+        Route::post('/{id}/novedades', [InventarioController::class, 'storeNovedad'])->name('.novedades.store');
+        Route::post('/{id}/entrega', [InventarioController::class, 'registrarEntrega'])->name('.entrega');
+        Route::post('/{id}/devolucion', [InventarioController::class, 'registrarDevolucion'])->name('.devolucion');
+        Route::post('/{id}/dar-baja', [InventarioController::class, 'darDeBaja'])->name('.dar-baja');
+        Route::delete('/fotos/{idFoto}', [InventarioController::class, 'eliminarFoto'])->name('.fotos.destroy');
+        Route::delete('/foto/{idFoto}', [InventarioController::class, 'eliminarFoto'])->name('.foto.eliminar');
+        Route::get('/{id}/detalle-json', [InventarioController::class, 'getRecursoDetalle'])->name('.detalle-json');
+        Route::post('/verificar-disponibilidad', [InventarioController::class, 'verificarDisponibilidad'])->name('.verificar-disponibilidad');
+        Route::post('/movimiento-rapido', [InventarioController::class, 'registrarMovimientoRapido'])->name('.movimiento-rapido');
+    });
 
-    // --- PQR ---
+    // --- Módulo PQRS (Rol Administrador) ---
     Route::get('/control-ecp/administrador/pqr', [PqrController::class, 'index'])
         ->name('controlecp.administrador.pqr');
-    Route::get('/control-ecp/administrador/pqr/create', [PqrController::class, 'create'])
-        ->name('controlecp.administrador.pqr.create');
-    Route::post('/control-ecp/administrador/pqr', [PqrController::class, 'store'])
-        ->name('controlecp.administrador.pqr.store');
+    Route::get('/control-ecp/administrador/pqr/reporte', [PqrController::class, 'reporte'])
+        ->name('controlecp.administrador.pqr.reporte');
+    // HU 3: Las rutas create y store del admin están deshabilitadas.
+    // El administrador NO puede radicar PQRS. Solo los aprendices pueden hacerlo.
+    Route::get('/control-ecp/administrador/pqr/{id}/detalle-json', [PqrController::class, 'getDetalleJson'])
+        ->name('controlecp.administrador.pqr.detalle-json');
+    Route::get('/control-ecp/administrador/pqr/{id}/historial-json', [PqrController::class, 'getHistorialJson'])
+        ->name('controlecp.administrador.pqr.historial-json');
     Route::get('/control-ecp/administrador/pqr/{id}', [PqrController::class, 'show'])
         ->name('controlecp.administrador.pqr.show');
-    Route::put('/control-ecp/administrador/pqr/{id}/responder', [PqrController::class, 'responder'])
+    Route::match(['post', 'put'], '/control-ecp/administrador/pqr/{id}/responder', [PqrController::class, 'responder'])
         ->name('controlecp.administrador.pqr.responder');
+    Route::patch('/control-ecp/administrador/pqr/{id}/estado', [PqrController::class, 'cambiarEstado'])
+        ->name('controlecp.administrador.pqr.estado');
     Route::delete('/control-ecp/administrador/pqr/{id}', [PqrController::class, 'destroy'])
         ->name('controlecp.administrador.pqr.destroy');
 

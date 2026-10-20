@@ -12,6 +12,8 @@ use Modules\SICA\Entities\Role;
 use Modules\SICA\Entities\Apprentice;
 use Modules\ControlECP\Entities\Material;
 use Modules\ControlECP\Entities\Pqr;
+use Modules\ControlECP\Entities\Inventario;
+use Modules\ControlECP\Entities\Pqrs;
 
 class ControlECPController extends Controller
 {
@@ -113,10 +115,14 @@ class ControlECPController extends Controller
         $actividadesHoy = 3;
 
         // Solicitudes PQR y Materiales críticos
-        $solicitudesPendientes = Pqr::where('estado', 'Pendiente')->count();
-        $totalPqrs = Pqr::count();
-        $recursosCriticos      = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->count();
-        $materialesCriticos    = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->get();
+        $solicitudesPendientes = Pqrs::where('estado', 'Pendiente')->count();
+        $totalPqrs = Pqrs::count();
+        $materialesCriticos    = Inventario::where('estado', '!=', 'Inactivo')
+            ->where(function ($q) {
+                $q->where('estado', 'Agotado')
+                  ->orWhereColumn('cantidad_disponible', '<=', 'umbral_critico');
+            })->get();
+        $recursosCriticos      = $materialesCriticos->count();
 
         // Fichas próximas a completar los 3 momentos
         $fichasProximasVencer = min(4, $totalFichasActivas);
