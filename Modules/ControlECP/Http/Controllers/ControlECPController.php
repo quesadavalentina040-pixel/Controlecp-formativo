@@ -5,8 +5,8 @@ namespace Modules\ControlECP\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Modules\ControlECP\Entities\Material;
-use Modules\ControlECP\Entities\Pqr;
+use Modules\ControlECP\Entities\Inventario;
+use Modules\ControlECP\Entities\Pqrs;
 
 class ControlECPController extends Controller
 {
@@ -72,9 +72,13 @@ class ControlECPController extends Controller
                 ->with('error', 'No tienes permisos para acceder al panel de Administrador de Control ECP.');
         }
 
-        $solicitudesPendientes = Pqr::where('estado', 'Pendiente')->count();
-        $recursosCriticos      = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->count();
-        $materialesCriticos    = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->get();
+        $solicitudesPendientes = Pqrs::where('estado', 'Pendiente')->count();
+        $materialesCriticos    = Inventario::where('estado', '!=', 'Inactivo')
+            ->where(function ($q) {
+                $q->where('estado', 'Agotado')
+                  ->orWhereColumn('cantidad_disponible', '<=', 'umbral_critico');
+            })->get();
+        $recursosCriticos      = $materialesCriticos->count();
 
         return view('controlecp::administrador.inicio', compact(
             'solicitudesPendientes',

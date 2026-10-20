@@ -293,7 +293,7 @@
                     @foreach ($materialesCriticos as $mat)
                         <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-1 bg-transparent">
                             <span class="fw-semibold text-dark">{{ $mat->nombre }}</span>
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $mat->cantidad }} {{ $mat->unidad }} ({{ $mat->estado }})</span>
+                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">{{ $mat->cantidad_disponible ?? $mat->cantidad }} un. ({{ $mat->estado }})</span>
                         </div>
                     @endforeach
                 </div>
