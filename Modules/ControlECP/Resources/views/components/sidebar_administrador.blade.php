@@ -80,6 +80,21 @@
                 ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => 'controlecp.administrador.certificados'],
                 ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => 'controlecp.administrador.inventario'],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.administrador.pqr'],
+                [
+                    'icon' => 'fa-chart-bar',
+                    'label' => 'Reportes',
+                    'route' => NULL,
+                    'children' => [
+                        ['icon' => 'fa-chart-pie',       'label' => 'Inicio',          'route' => 'controlecp.administrador.reportes'],
+                        ['icon' => 'fa-user-check',      'label' => 'Asistencias',      'route' => 'controlecp.administrador.reportes.asistencias'],
+                        ['icon' => 'fa-star',            'label' => 'Encuestas',        'route' => 'controlecp.administrador.reportes.encuestas'],
+                        ['icon' => 'fa-comments',        'label' => 'Asesorías',        'route' => 'controlecp.administrador.reportes.asesorias'],
+                        ['icon' => 'fa-comment-dots',    'label' => 'PQRS',             'route' => 'controlecp.administrador.reportes.pqrs'],
+                        ['icon' => 'fa-certificate',     'label' => 'Certificación',    'route' => 'controlecp.administrador.reportes.certificacion'],
+                        ['icon' => 'fa-boxes-stacked',   'label' => 'Inventario',       'route' => 'controlecp.administrador.reportes.inventario'],
+                        ['icon' => 'fa-file-contract',   'label' => 'POE',              'route' => 'controlecp.administrador.reportes.poe'],
+                    ],
+                ],
             ];
         @endphp
 
@@ -87,12 +102,20 @@
             @php
                 $hasChildren = !empty($item['children']);
                 $childActive = $hasChildren
-                    ? collect($item['children'])->contains(fn($c) => $c['route'] && (request()->routeIs($c['route']) || request()->is('control-ecp/administrador/repositorio*')))
+                    ? collect($item['children'])->contains(fn($c) => $c['route'] && request()->routeIs($c['route']))
                     : false;
 
                 $isRepositoryItem = $item['label'] === 'Repositorio';
                 $repositoryExpanded = $isRepositoryItem
-                    && (request()->routeIs('controlecp.administrador.repositorio.*') || request()->is('control-ecp/administrador/repositorio*'));
+                    && (request()->routeIs('controlecp.administrador.repositorio.*')
+                        || request()->is('control-ecp/administrador/repositorio*')
+                        || $childActive);
+
+                $isReportesItem2 = $item['label'] === 'Reportes';
+                $reportesExpanded = $isReportesItem2
+                    && (request()->routeIs('controlecp.administrador.reportes*')
+                        || request()->is('control-ecp/administrador/reportes*')
+                        || $childActive);
 
                 $isInventoryItem = $item['label'] === 'Inventario';
                 $inventoryActive = $isInventoryItem
@@ -102,12 +125,17 @@
                 $pqrsActive = $isPqrsItem
                     && (request()->routeIs('controlecp.administrador.pqr*') || request()->is('control-ecp/administrador/pqr*'));
 
-                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $inventoryActive || $pqrsActive || $childActive;
+                $isReportesItem = $item['label'] === 'Reportes';
+                $reportesActive = $isReportesItem
+                    && (request()->routeIs('controlecp.administrador.reportes*') || request()->is('control-ecp/administrador/reportes*'));
+
+                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $inventoryActive || $pqrsActive || $reportesActive || $childActive;
             @endphp
 
             @if ($hasChildren)
                 <li class="nav-item">
-                    <input type="checkbox" id="ecp-submenu-{{ $index }}" class="ecp-submenu-checkbox" {{ $childActive || $repositoryExpanded ? 'checked' : '' }}>
+                    <input type="checkbox" id="ecp-submenu-{{ $index }}" class="ecp-submenu-checkbox"
+                        {{ ($childActive || $repositoryExpanded || $reportesExpanded) ? 'checked' : '' }}>
                     <label for="ecp-submenu-{{ $index }}"
                            class="nav-link ecp-sidebar-link ecp-submenu-toggle d-flex align-items-center gap-2 px-3 py-2 rounded-3 mb-0 {{ $active ? 'ecp-active' : '' }}"
                            style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">

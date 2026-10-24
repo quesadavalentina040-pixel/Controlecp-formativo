@@ -12,6 +12,7 @@ use Modules\ControlECP\Http\Controllers\AsistenciaController;
 use Modules\ControlECP\Http\Controllers\CertificadoController;
 use Modules\ControlECP\Http\Controllers\MomentoController;
 use Modules\ControlECP\Http\Controllers\ActividadController;
+use Modules\ControlECP\Http\Controllers\ReportesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -273,6 +274,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/poe', [ControlECPController::class, 'repositorioPoe'])
                 ->name('poe');
         });
+
+    // --- Módulo Reportes (HU: Generar reportes) ---
+    Route::prefix('control-ecp/administrador/reportes')->name('controlecp.administrador.reportes')->group(function () {
+        Route::get('/', [ReportesController::class, 'index']);
+        Route::get('/asistencias', [ReportesController::class, 'asistencias'])->name('.asistencias');
+        Route::get('/encuestas',   [ReportesController::class, 'encuestas'])->name('.encuestas');
+        Route::get('/asesorias',   [ReportesController::class, 'asesorias'])->name('.asesorias');
+        Route::get('/pqrs',        [ReportesController::class, 'pqrs'])->name('.pqrs');
+        Route::get('/certificacion', [ReportesController::class, 'certificacion'])->name('.certificacion');
+        Route::get('/inventario',  [ReportesController::class, 'inventario'])->name('.inventario');
+        Route::get('/poe',         [ReportesController::class, 'poe'])->name('.poe');
+    });
 
     // --- Panel Instructor ---
     Route::get('/control-ecp/instructor', [ControlECPController::class, 'inicioInstructor'])
