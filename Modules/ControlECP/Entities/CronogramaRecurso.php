@@ -27,4 +27,13 @@ class CronogramaRecurso extends Model
     {
         return $this->belongsTo(Inventario::class, 'id_inventario', 'id_inventario');
     }
+
+    /**
+     * Relación: Pertenece a una sesión de cronograma.
+     */
+    public function cronograma(): BelongsTo
+    {
+        return $this->belongsTo(Cronograma::class, 'id_cronograma', 'id_cronograma');
+    }
 }
+

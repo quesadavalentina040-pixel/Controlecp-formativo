@@ -59,6 +59,15 @@ class LoginController extends Controller
             ->first();
 
         if ($user && Hash::check($password, $user->password)) {
+            // HU7: impedir login si el usuario está Inactivo
+            if (($user->estado ?? 'Activo') === 'Inactivo') {
+                return back()
+                    ->withInput($request->only('email', 'remember', 'redirect'))
+                    ->withErrors([
+                        'email' => 'Tu cuenta está desactivada. Contacta al administrador para reactivarla.',
+                    ]);
+            }
+
             Auth::login($user, $remember);
             $request->session()->regenerate();
 

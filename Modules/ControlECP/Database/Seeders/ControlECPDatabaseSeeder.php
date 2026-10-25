@@ -19,7 +19,7 @@ class ControlECPDatabaseSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
+        {
         // 1. Obtener o crear Bloque de Apoyo
         $bloqueApoyo = Bloque::firstOrCreate(
             ['slug' => 'apoyos'],
