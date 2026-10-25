@@ -262,9 +262,9 @@
 
                                 {{-- HU3 / HU4: Desactivar / Activar --}}
                                 @if($isActivo)
-                                    <button type="button" class="btn btn-outline-danger rounded-pill btn-sm flex-fill"
+                                    <button type="button" class="btn btn-outline-warning text-dark rounded-pill btn-sm flex-fill"
                                             onclick="confirmarEstadoMomento({{ $m->id }}, 'desactivar', '{{ addslashes($m->nombre) }}')">
-                                        <i class="fas fa-ban me-1"></i> Desactivar
+                                        <i class="fas fa-ban me-1 text-danger"></i> Desactivar
                                     </button>
                                 @else
                                     <button type="button" class="btn btn-outline-success rounded-pill btn-sm flex-fill"
@@ -272,6 +272,13 @@
                                         <i class="fas fa-circle-check me-1"></i> Activar
                                     </button>
                                 @endif
+
+                                {{-- Eliminar --}}
+                                <button type="button" class="btn btn-outline-danger rounded-pill btn-sm flex-fill"
+                                        onclick="confirmarEliminarMomento({{ $m->id }}, '{{ addslashes($m->nombre) }}', {{ $m->actividades_count }})"
+                                        title="Eliminar Momento">
+                                    <i class="fas fa-trash-can me-1"></i> Eliminar
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -445,6 +452,35 @@
     </div>
 </div>
 
+{{-- Modal: Confirmar Eliminación de Momento --}}
+<div class="modal fade" id="modalConfirmEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center justify-content-center position-relative">
+                <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                     style="width: 65px; height: 65px; font-size: 1.8rem; background: #fdecea; color: #dc3545;">
+                    <i class="fas fa-trash-can"></i>
+                </div>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <h5 class="fw-bold mb-2 text-danger" id="confirmEliminarTitle">Eliminar Momento</h5>
+                <p class="text-muted small mb-3" id="confirmEliminarDesc"></p>
+                <div id="confirmEliminarWarning" class="alert alert-warning py-2 px-3 small rounded-3 mb-3 d-none text-start">
+                    <i class="fas fa-triangle-exclamation me-1"></i>
+                    <span id="confirmEliminarWarningText"></span>
+                </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4 text-white" id="btnConfirmEliminar" onclick="ejecutarEliminarMomento()">
+                        <i class="fas fa-trash-can me-1"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Modal: Ver actividades del momento (HU6) --}}
 <div class="modal fade" id="modalActividades" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -495,6 +531,7 @@
     // ── Estado global ─────────────────────────────────────────────────────────────
     let _estadoMomentoId     = null;
     let _estadoMomentoAccion = null;
+    let _eliminarMomentoId   = null;
 
     // ── HU1: Abrir modal para crear momento ───────────────────────────────────────
     function abrirModalCrear() {
@@ -644,6 +681,70 @@
             }
         } catch (e) {
             mostrarAlerta('Error al cambiar el estado: ' + e.message, 'danger');
+        }
+    }
+
+    // ── Confirmar y ejecutar eliminación de Momento ─────────────────────────────
+    function confirmarEliminarMomento(id, nombre, actividadesCount) {
+        _eliminarMomentoId = id;
+        document.getElementById('confirmEliminarTitle').innerText = 'Eliminar Momento';
+        document.getElementById('confirmEliminarDesc').innerHTML =
+            `¿Estás seguro de que deseas eliminar el momento <strong>"${nombre}"</strong>? Esta acción no se puede deshacer.`;
+
+        const warningEl   = document.getElementById('confirmEliminarWarning');
+        const warningText = document.getElementById('confirmEliminarWarningText');
+        if (actividadesCount > 0) {
+            warningText.innerText = `Este momento cuenta con ${actividadesCount} actividad(es) asociada(s). Si continúas, también serán eliminadas.`;
+            warningEl.classList.remove('d-none');
+        } else {
+            warningEl.classList.add('d-none');
+        }
+
+        new bootstrap.Modal(document.getElementById('modalConfirmEliminar')).show();
+    }
+
+    async function ejecutarEliminarMomento() {
+        if (!_eliminarMomentoId) return;
+
+        const btn = document.getElementById('btnConfirmEliminar');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Eliminando...';
+
+        const url = `{{ url('/control-ecp/administrador/momentos') }}/${_eliminarMomentoId}`;
+
+        try {
+            const resp = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+            });
+            const data = await resp.json();
+
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash-can me-1"></i> Eliminar';
+            bootstrap.Modal.getInstance(document.getElementById('modalConfirmEliminar')).hide();
+
+            if (data.success) {
+                mostrarAlerta(data.message, 'success');
+                const cardEl = document.getElementById(`card-momento-${_eliminarMomentoId}`);
+                if (cardEl) {
+                    cardEl.style.transition = 'all .4s ease';
+                    cardEl.style.opacity = '0';
+                    cardEl.style.transform = 'scale(0.85)';
+                    setTimeout(() => window.location.reload(), 600);
+                } else {
+                    setTimeout(() => window.location.reload(), 600);
+                }
+            } else {
+                mostrarAlerta(data.message || 'Error al eliminar el momento.', 'danger');
+            }
+        } catch (e) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-trash-can me-1"></i> Eliminar';
+            mostrarAlerta('Error de conexión: ' + e.message, 'danger');
         }
     }
 

@@ -441,7 +441,9 @@
                                     <!-- Acciones -->
                                     <td class="text-end pe-4">
                                         <div class="dropdown">
-                                            <button class="btn btn-sm btn-light rounded-pill px-2" type="button" data-bs-toggle="dropdown">
+                                            <button class="btn btn-sm btn-light rounded-pill px-2" type="button"
+                                                    data-bs-toggle="dropdown"
+                                                    data-bs-boundary="window">
                                                 <i class="fas fa-ellipsis-vertical text-muted"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; font-size: 0.85rem;">

@@ -231,4 +231,31 @@ class MomentoController extends Controller
             'actividades'       => $actividades,
         ]);
     }
+
+    /**
+     * Elimina un momento pedagógico (SoftDelete).
+     */
+    public function destroy($id)
+    {
+        $usuario = Auth::user();
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+        }
+
+        $momento = Momento::withCount('actividades')->findOrFail($id);
+
+        $nombre = $momento->nombre;
+
+        // Si tiene actividades asociadas, también se eliminan (soft delete)
+        if ($momento->actividades_count > 0) {
+            $momento->actividades()->delete();
+        }
+
+        $momento->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => "El momento \"{$nombre}\" fue eliminado exitosamente.",
+        ]);
+    }
 }

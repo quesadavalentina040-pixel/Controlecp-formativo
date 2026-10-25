@@ -34,10 +34,13 @@
         background: #fff; border-radius: 16px;
         box-shadow: 0 4px 16px rgba(0,26,41,.06);
         border: 1px solid rgba(0,0,0,.04);
-        transition: transform .2s, box-shadow .2s;
-        overflow: hidden;
+        transition: transform .2s, box-shadow .2s, z-index 0s;
+        position: relative;
+        z-index: 1;
     }
-    .act-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,26,41,.11); }
+    .act-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,26,41,.11); z-index: 2; }
+    /* Cuando el dropdown está abierto: elevar la tarjeta y neutralizar el transform */
+    .act-card:has(.dropdown-menu.show) { z-index: 1050 !important; transform: translateY(0) !important; box-shadow: 0 10px 28px rgba(0,26,41,.18) !important; }
     .act-card.estado-inactivo { opacity: .65; filter: grayscale(.4); }
     .act-card.estado-finalizado { border-top: 3px solid #6c757d; }
 
@@ -283,97 +286,121 @@
                                             <i class="far fa-clock me-1"></i>{{ $a->duracion }}
                                         </span>
 
-                                        {{-- Menú de acciones --}}
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light rounded-pill px-2" type="button"
-                                                    data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                        <div class="d-flex align-items-center gap-1">
+                                            {{-- HU10: Ícono de ver componentes --}}
+                                            <button class="btn btn-sm btn-light rounded-circle text-muted" type="button"
+                                                    style="width:30px; height:30px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                    onclick="verComponentes({{ $a->id }})" title="Ver componentes (asistencia, encuesta, evidencia)">
+                                                <i class="fas fa-eye text-primary"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                                                style="border-radius:12px; font-size:.84rem;">
-                                                {{-- HU4: Editar --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalEditar({{ json_encode([
-                                                                'id'               => $a->id,
-                                                                'nombre'           => $a->nombre,
-                                                                'descripcion'      => $a->descripcion,
-                                                                'objetivo'         => $a->objetivo,
-                                                                'duracion'         => $a->duracion,
-                                                                'duracion_min'     => $a->duracion_min,
-                                                                'metodologia'      => $a->metodologia,
-                                                                'momento_id'       => $a->momento_id,
-                                                                'tiene_asistencia' => $a->tiene_asistencia,
-                                                                'encuesta_id'      => $a->encuesta_id,
-                                                                'tiene_evidencia'  => $a->tiene_evidencia,
-                                                            ]) }})">
-                                                        <i class="fas fa-pen me-2 text-secondary"></i> Editar
-                                                    </button>
-                                                </li>
-                                                {{-- HU5: Cambiar momento --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalCambiarMomento({{ $a->id }}, {{ $a->momento_id }}, '{{ addslashes($a->nombre) }}')">
-                                                        <i class="fas fa-right-left me-2 text-info"></i> Cambiar Momento
-                                                    </button>
-                                                </li>
-                                                {{-- HU10: Ver componentes --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="verComponentes({{ $a->id }})">
-                                                        <i class="fas fa-puzzle-piece me-2" style="color:var(--ecp-green);"></i> Ver Componentes
-                                                    </button>
-                                                </li>
-                                                {{-- HU17: Ver evidencias --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="verEvidencias({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
-                                                        <i class="fas fa-photo-film me-2" style="color:var(--ecp-purple);"></i> Ver Evidencias
-                                                    </button>
-                                                </li>
-                                                {{-- HU18: Calificaciones --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="verCalificaciones({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
-                                                        <i class="fas fa-star me-2 text-warning"></i> Calificaciones
-                                                    </button>
-                                                </li>
-                                                {{-- HU15: Subir evidencia --}}
-                                                @if($a->tiene_evidencia)
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalEvidencia({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
-                                                        <i class="fas fa-upload me-2" style="color:var(--ecp-blue);"></i> Subir Evidencia
-                                                    </button>
-                                                </li>
-                                                @endif
-                                                <li><hr class="dropdown-divider"></li>
-                                                {{-- HU13: Finalizar --}}
-                                                @if($a->estado === 'Activo')
-                                                <li>
-                                                    <button class="dropdown-item py-2 text-primary" type="button"
-                                                            onclick="confirmarFinalizar({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
-                                                        <i class="fas fa-flag-checkered me-2"></i> Finalizar
-                                                    </button>
-                                                </li>
-                                                @endif
-                                                {{-- HU11/HU12: Desactivar / Activar --}}
-                                                @if($a->estado === 'Activo')
-                                                <li>
-                                                    <button class="dropdown-item py-2 text-danger" type="button"
-                                                            onclick="confirmarEstado({{ $a->id }}, 'desactivar', '{{ addslashes($a->nombre) }}')">
-                                                        <i class="fas fa-ban me-2"></i> Desactivar
-                                                    </button>
-                                                </li>
-                                                @elseif($a->estado === 'Inactivo')
-                                                <li>
-                                                    <button class="dropdown-item py-2 text-success" type="button"
-                                                            onclick="confirmarEstado({{ $a->id }}, 'activar', '{{ addslashes($a->nombre) }}')">
-                                                        <i class="fas fa-circle-check me-2"></i> Activar
-                                                    </button>
-                                                </li>
-                                                @endif
-                                            </ul>
+
+                                            {{-- Eliminar rápido --}}
+                                            <button class="btn btn-sm btn-light rounded-circle text-muted" type="button"
+                                                    style="width:30px; height:30px; padding:0; display:inline-flex; align-items:center; justify-content:center;"
+                                                    onclick="confirmarEliminarActividad({{ $a->id }}, '{{ addslashes($a->nombre) }}')" title="Eliminar actividad">
+                                                <i class="fas fa-trash-can text-danger"></i>
+                                            </button>
+
+                                            {{-- Menú de acciones --}}
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light rounded-pill px-2" type="button"
+                                                        data-bs-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
+                                                    style="border-radius:12px; font-size:.84rem;">
+                                                    {{-- HU4: Editar --}}
+                                                    <li>
+                                                        <button class="dropdown-item py-2" type="button"
+                                                                onclick="abrirModalEditar({{ json_encode([
+                                                                    'id'               => $a->id,
+                                                                    'nombre'           => $a->nombre,
+                                                                    'descripcion'      => $a->descripcion,
+                                                                    'objetivo'         => $a->objetivo,
+                                                                    'duracion'         => $a->duracion,
+                                                                    'duracion_min'     => $a->duracion_min,
+                                                                    'metodologia'      => $a->metodologia,
+                                                                    'momento_id'       => $a->momento_id,
+                                                                    'tiene_asistencia' => $a->tiene_asistencia,
+                                                                    'encuesta_id'      => $a->encuesta_id,
+                                                                    'tiene_evidencia'  => $a->tiene_evidencia,
+                                                                ]) }})">
+                                                            <i class="fas fa-pen me-2 text-secondary"></i> Editar actividad
+                                                        </button>
+                                                    </li>
+                                                    {{-- HU5: Cambiar momento --}}
+                                                    <li>
+                                                        <button class="dropdown-item py-2" type="button"
+                                                                onclick="abrirModalCambiarMomento({{ $a->id }}, {{ $a->momento_id }}, '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-right-left me-2 text-info"></i> Cambiar momento
+                                                        </button>
+                                                    </li>
+                                                    {{-- HU10: Ver componentes --}}
+                                                    <li>
+                                                        <button class="dropdown-item py-2" type="button"
+                                                                onclick="verComponentes({{ $a->id }})">
+                                                            <i class="fas fa-puzzle-piece me-2" style="color:var(--ecp-green);"></i> Ver componentes
+                                                        </button>
+                                                    </li>
+                                                    {{-- HU17: Ver evidencias --}}
+                                                    <li>
+                                                        <button class="dropdown-item py-2" type="button"
+                                                                onclick="verEvidencias({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-photo-film me-2" style="color:var(--ecp-purple);"></i> Ver evidencias
+                                                        </button>
+                                                    </li>
+                                                    {{-- HU18: Calificaciones --}}
+                                                    <li>
+                                                        <button class="dropdown-item py-2" type="button"
+                                                                onclick="verCalificaciones({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-star me-2 text-warning"></i> Calificaciones
+                                                        </button>
+                                                    </li>
+                                                    {{-- HU15: Subir evidencia --}}
+                                                    @if($a->tiene_evidencia)
+                                                    <li>
+                                                        <button class="dropdown-item py-2" type="button"
+                                                                onclick="abrirModalEvidencia({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-upload me-2" style="color:var(--ecp-blue);"></i> Subir evidencia
+                                                        </button>
+                                                    </li>
+                                                    @endif
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    {{-- HU13: Finalizar --}}
+                                                    @if($a->estado === 'Activo')
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-primary" type="button"
+                                                                onclick="confirmarFinalizar({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-flag-checkered me-2"></i> Finalizar actividad
+                                                        </button>
+                                                    </li>
+                                                    @endif
+                                                    {{-- HU11/HU12: Desactivar / Activar --}}
+                                                    @if($a->estado === 'Activo')
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-warning text-dark" type="button"
+                                                                onclick="confirmarEstado({{ $a->id }}, 'desactivar', '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-ban me-2 text-danger"></i> Desactivar
+                                                        </button>
+                                                    </li>
+                                                    @elseif($a->estado === 'Inactivo')
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-success" type="button"
+                                                                onclick="confirmarEstado({{ $a->id }}, 'activar', '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-circle-check me-2"></i> Activar
+                                                        </button>
+                                                    </li>
+                                                    @endif
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    {{-- Eliminar actividad --}}
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-danger" type="button"
+                                                                onclick="confirmarEliminarActividad({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            <i class="fas fa-trash-can me-2"></i> Eliminar
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -486,67 +513,88 @@
                     </div>
 
                     {{-- Duración --}}
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">
                             Duración <span class="text-danger">*</span>
                         </label>
                         <input type="text" id="formActDuracion" class="form-control"
-                               placeholder="Ej: 2 Horas" maxlength="30" required>
+                               placeholder="Ej: 2 Horas" maxlength="30" required value="2 Horas">
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">
                             Duración (minutos) <span class="text-danger">*</span>
                         </label>
                         <input type="number" id="formActDuracionMin" class="form-control"
-                               placeholder="120" min="15" max="600" required>
+                               placeholder="120" min="15" max="600" required value="120">
                     </div>
 
-                    {{-- Componentes --}}
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">Componentes activos</label>
-                        <div class="d-flex flex-column gap-2 mt-1">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="formActAsistencia" checked>
-                                <label class="form-check-label small" for="formActAsistencia">
-                                    <i class="fas fa-clipboard-list text-success me-1"></i> Asistencia
-                                </label>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="formActEvidencia" checked>
-                                <label class="form-check-label small" for="formActEvidencia">
-                                    <i class="fas fa-photo-film me-1" style="color:var(--ecp-purple);"></i> Evidencia
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Encuesta (HU7/HU8) --}}
+                    {{-- HU1 / HU6 / HU7 / HU8 / HU9: Tres Componentes Obligatorios --}}
                     <div class="col-12">
-                        <div class="p-3 rounded-3 border" style="background:#f8faf9;">
-                            <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" id="formActTieneEncuesta"
-                                       onchange="toggleEncuestaSelector()">
-                                <label class="form-check-label fw-semibold small" for="formActTieneEncuesta"
-                                       style="color:var(--ecp-blue);">
-                                    <i class="fas fa-clipboard-question me-1"></i> Asociar encuesta del repositorio
-                                </label>
-                            </div>
-                            <div id="encuestaSelectorWrap" class="d-none">
-                                @if($encuestasActivas->count() > 0)
-                                    <select id="formActEncuesta" class="form-select form-select-sm">
-                                        <option value="">— Seleccionar encuesta activa —</option>
-                                        @foreach($encuestasActivas as $enc)
-                                            <option value="{{ $enc->id }}">{{ $enc->titulo }}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    {{-- HU8: Sin encuestas disponibles --}}
-                                    <div class="alert alert-warning border-0 small py-2 mb-0" style="border-radius:10px;">
-                                        <i class="fas fa-triangle-exclamation me-1"></i>
-                                        <strong>No hay encuestas activas disponibles.</strong>
-                                        Primero cree y active una encuesta en el repositorio antes de asociarla.
+                        <div class="card border p-3 rounded-3" style="background:#f8faf9;">
+                            <label class="form-label fw-bold small text-uppercase mb-2" style="color:var(--ecp-navy); letter-spacing:.04em;">
+                                <i class="fas fa-layer-group me-1" style="color:var(--ecp-green);"></i> Componentes Asociados a la Actividad
+                            </label>
+                            <div class="row g-3">
+                                {{-- 1. Asistencia (HU6) --}}
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 border bg-white h-100 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                <span class="small fw-bold text-success">
+                                                    <i class="fas fa-clipboard-list me-1"></i> Asistencia
+                                                </span>
+                                                <span class="badge bg-success-subtle text-success border rounded-pill px-2" style="font-size:.7rem;">Asociada</span>
+                                            </div>
+                                            <p class="text-muted small mb-0" style="font-size:.75rem; line-height:1.35;">
+                                                Al programar la actividad se carga el checklist con los aprendices de la ficha.
+                                            </p>
+                                        </div>
                                     </div>
-                                @endif
+                                </div>
+
+                                {{-- 2. Evidencia (HU9) --}}
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 border bg-white h-100 d-flex flex-column justify-content-between">
+                                        <div>
+                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                <span class="small fw-bold" style="color:var(--ecp-purple);">
+                                                    <i class="fas fa-photo-film me-1"></i> Evidencia
+                                                </span>
+                                                <span class="badge rounded-pill px-2 border" style="background:#f4ecf7; color:var(--ecp-purple); font-size:.7rem;">Asociada</span>
+                                            </div>
+                                            <p class="text-muted small mb-0" style="font-size:.75rem; line-height:1.35;">
+                                                Habilitada para recibir fotos (JPG/PNG) o enlaces de video de cada ficha.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- 3. Encuesta (HU7 / HU8) --}}
+                                <div class="col-md-4">
+                                    <div class="p-3 rounded-3 border bg-white h-100">
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <span class="small fw-bold" style="color:var(--ecp-blue);">
+                                                <i class="fas fa-clipboard-question me-1"></i> Encuesta <span class="text-danger">*</span>
+                                            </span>
+                                            <span class="badge bg-primary-subtle text-primary border rounded-pill px-2" style="font-size:.7rem;">Repositorio</span>
+                                        </div>
+                                        @if($encuestasActivas->count() > 0)
+                                            <select id="formActEncuesta" class="form-select form-select-sm mt-1" required>
+                                                <option value="">— Seleccionar encuesta —</option>
+                                                @foreach($encuestasActivas as $enc)
+                                                    <option value="{{ $enc->id }}">{{ $enc->titulo }}</option>
+                                                @endforeach
+                                            </select>
+                                            <small class="text-muted d-block mt-1" style="font-size:.72rem;">Encuesta activa del repositorio</small>
+                                        @else
+                                            <div class="alert alert-warning border-0 p-2 mb-0 mt-1" style="border-radius:8px; font-size:.74rem;">
+                                                <i class="fas fa-triangle-exclamation me-1"></i>
+                                                <strong>Primero cree y active una encuesta en el repositorio</strong>
+                                            </div>
+                                            <input type="hidden" id="formActEncuesta" value="">
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -641,6 +689,36 @@
                     <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
                     <button type="button" class="btn rounded-pill px-4 text-white" id="btnConfirmActEstado"
                             onclick="ejecutarAccionActividad()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal: Confirmar Eliminación de Actividad --}}
+<div class="modal fade" id="modalConfirmEliminarActividad" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center justify-content-center position-relative">
+                <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
+                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                     style="width:65px; height:65px; font-size:1.8rem; background:#fdecea; color:#dc3545;">
+                    <i class="fas fa-trash-can"></i>
+                </div>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <h5 class="fw-bold mb-2 text-danger" id="confirmEliminarActTitle">Eliminar Actividad</h5>
+                <p class="text-muted small mb-3" id="confirmEliminarActDesc"></p>
+                <div class="alert alert-warning py-2 px-3 small rounded-3 mb-3 text-start">
+                    <i class="fas fa-triangle-exclamation me-1"></i>
+                    Esta acción eliminará la actividad de su momento pedagógico y sus registros asociados.
+                </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4 text-white" id="btnConfirmEliminarAct"
+                            onclick="ejecutarEliminarActividad()">
+                        <i class="fas fa-trash-can me-1"></i> Eliminar
+                    </button>
                 </div>
             </div>
         </div>
@@ -785,13 +863,13 @@ function abrirModalCrear(momentoId = null, momentoNombre = null) {
     document.getElementById('formActNombre').value = '';
     document.getElementById('formActDescripcion').value = '';
     document.getElementById('formActObjetivo').value = '';
-    document.getElementById('formActDuracion').value = '';
+    document.getElementById('formActDuracion').value = '2 Horas';
     document.getElementById('formActDuracionMin').value = '120';
     document.getElementById('formActMetodologia').value = '';
-    document.getElementById('formActAsistencia').checked = true;
-    document.getElementById('formActEvidencia').checked  = true;
-    document.getElementById('formActTieneEncuesta').checked = false;
-    toggleEncuestaSelector();
+    
+    const selEncuesta = document.getElementById('formActEncuesta');
+    if (selEncuesta) selEncuesta.value = '';
+
     document.getElementById('formActAlert').classList.add('d-none');
     document.getElementById('formActModalTitle').textContent = 'Registrar Actividad';
 
@@ -812,15 +890,11 @@ function abrirModalEditar(data) {
     document.getElementById('formActDuracionMin').value     = data.duracion_min;
     document.getElementById('formActMetodologia').value     = data.metodologia ?? '';
     document.getElementById('formActMomento').value         = data.momento_id;
-    document.getElementById('formActAsistencia').checked    = !!data.tiene_asistencia;
-    document.getElementById('formActEvidencia').checked     = !!data.tiene_evidencia;
-    document.getElementById('formActTieneEncuesta').checked = !!data.encuesta_id;
 
     if (data.encuesta_id) {
         const sel = document.getElementById('formActEncuesta');
         if (sel) sel.value = data.encuesta_id;
     }
-    toggleEncuestaSelector();
 
     document.getElementById('formActAlert').classList.add('d-none');
     document.getElementById('formActModalTitle').textContent = 'Editar Actividad';
@@ -833,23 +907,25 @@ async function guardarActividad() {
     const nombre       = document.getElementById('formActNombre').value.trim();
     const momentoId    = document.getElementById('formActMomento').value;
     const objetivo     = document.getElementById('formActObjetivo').value.trim();
-    const duracion     = document.getElementById('formActDuracion').value.trim();
-    const duracionMin  = document.getElementById('formActDuracionMin').value.trim();
+    const duracion     = document.getElementById('formActDuracion').value.trim() || '2 Horas';
+    const duracionMin  = document.getElementById('formActDuracionMin').value.trim() || '120';
     const desc         = document.getElementById('formActDescripcion').value.trim();
     const metodologia  = document.getElementById('formActMetodologia').value.trim();
-    const tieneAsist   = document.getElementById('formActAsistencia').checked;
-    const tieneEvid    = document.getElementById('formActEvidencia').checked;
-    const tieneEnc     = document.getElementById('formActTieneEncuesta').checked;
     const encuestaId   = document.getElementById('formActEncuesta')?.value ?? '';
 
     // HU2 — Validar campos obligatorios
     if (!nombre) { mostrarAlertaForm('El nombre de la actividad es obligatorio.'); return; }
-    if (!momentoId) { mostrarAlertaForm('Debes seleccionar un momento.'); return; }
+    if (!momentoId) { mostrarAlertaForm('Debes seleccionar un momento para la actividad.'); return; }
     if (!objetivo) { mostrarAlertaForm('El objetivo pedagógico es obligatorio.'); return; }
-    if (!duracion) { mostrarAlertaForm('La duración es obligatoria.'); return; }
-    if (!duracionMin || parseInt(duracionMin) < 15) { mostrarAlertaForm('La duración en minutos debe ser al menos 15.'); return; }
-    if (tieneEnc && !encuestaId) {
-        mostrarAlertaForm('Debes seleccionar una encuesta activa del repositorio, o desactiva el componente encuesta.');
+
+    // HU8 — Sin encuestas disponibles
+    @if($encuestasActivas->count() === 0)
+        mostrarAlertaForm('Primero cree y active una encuesta en el repositorio');
+        return;
+    @endif
+
+    if (!encuestaId) {
+        mostrarAlertaForm('Debes elegir una encuesta activa del repositorio.');
         return;
     }
 
@@ -868,8 +944,7 @@ async function guardarActividad() {
             body: JSON.stringify({
                 nombre, momento_id: momentoId, objetivo, descripcion: desc,
                 duracion, duracion_min: parseInt(duracionMin), metodologia,
-                tiene_asistencia: tieneAsist, tiene_evidencia: tieneEvid,
-                tiene_encuesta: tieneEnc, encuesta_id: tieneEnc ? encuestaId : null,
+                encuesta_id: encuestaId,
             }),
         });
 
@@ -888,6 +963,55 @@ async function guardarActividad() {
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-floppy-disk me-1"></i> Guardar';
         mostrarAlertaForm('Error de conexión: ' + e.message);
+    }
+}
+
+// ── Eliminar actividad ───────────────────────────────────────────────────────
+let _eliminarActId = null;
+
+function confirmarEliminarActividad(id, nombre) {
+    _eliminarActId = id;
+    document.getElementById('confirmEliminarActTitle').textContent = 'Eliminar Actividad';
+    document.getElementById('confirmEliminarActDesc').innerHTML =
+        `¿Estás seguro de que deseas eliminar la actividad <strong>"${nombre}"</strong>?`;
+    new bootstrap.Modal(document.getElementById('modalConfirmEliminarActividad')).show();
+}
+
+async function ejecutarEliminarActividad() {
+    if (!_eliminarActId) return;
+
+    const btn = document.getElementById('btnConfirmEliminarAct');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Eliminando...';
+
+    try {
+        const resp = await fetch(`${BASE_URL}/${_eliminarActId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+        });
+        const data = await resp.json();
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash-can me-1"></i> Eliminar';
+        bootstrap.Modal.getInstance(document.getElementById('modalConfirmEliminarActividad')).hide();
+
+        if (data.success) {
+            mostrarAlerta(data.message, 'success');
+            const cardEl = document.getElementById(`act-card-${_eliminarActId}`);
+            if (cardEl) {
+                cardEl.style.transition = 'all .4s ease';
+                cardEl.style.opacity = '0';
+                cardEl.style.transform = 'scale(0.85)';
+                setTimeout(() => window.location.reload(), 600);
+            } else {
+                setTimeout(() => window.location.reload(), 600);
+            }
+        } else {
+            mostrarAlerta(data.message || 'Error al eliminar la actividad.', 'danger');
+        }
+    } catch (e) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash-can me-1"></i> Eliminar';
+        mostrarAlerta('Error de conexión: ' + e.message, 'danger');
     }
 }
 
@@ -1238,6 +1362,51 @@ async function verCalificaciones(actId, nombre) {
         `;
     } catch (e) {
         document.getElementById('califBody').innerHTML = `<div class="text-danger small">Error: ${e.message}</div>`;
+    }
+}
+
+// ── Eliminar actividad ────────────────────────────────────────────────────────
+let _eliminarActividadId = null;
+
+function confirmarEliminarActividad(id, nombre) {
+    _eliminarActividadId = id;
+    document.getElementById('confirmEliminarActDesc').textContent =
+        `¿Está seguro que desea eliminar la actividad "${nombre}"? Esta acción no se puede deshacer.`;
+    new bootstrap.Modal(document.getElementById('modalConfirmEliminarActividad')).show();
+}
+
+async function ejecutarEliminarActividad() {
+    if (!_eliminarActividadId) return;
+    const btn = document.getElementById('btnConfirmEliminarAct');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Eliminando...';
+
+    try {
+        const resp = await fetch(`${BASE_URL}/${_eliminarActividadId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+        });
+        const data = await resp.json();
+        bootstrap.Modal.getInstance(document.getElementById('modalConfirmEliminarActividad')).hide();
+        if (data.success) {
+            mostrarAlerta(data.message, 'success');
+            // Quitar la tarjeta del DOM sin recargar toda la página
+            const card = document.getElementById(`act-card-${_eliminarActividadId}`);
+            if (card) card.closest('.col, .act-card').remove();
+            setTimeout(() => window.location.reload(), 900);
+        } else {
+            mostrarAlerta(data.message, 'danger');
+        }
+    } catch (e) {
+        mostrarAlerta('Error al eliminar la actividad: ' + e.message, 'danger');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash-can me-1"></i> Eliminar';
+        _eliminarActividadId = null;
     }
 }
 

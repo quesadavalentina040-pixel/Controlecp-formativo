@@ -130,6 +130,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.administrador.momentos.store');
     Route::put('/control-ecp/administrador/momentos/{id}', [MomentoController::class, 'update'])
         ->name('controlecp.administrador.momentos.update');
+    Route::delete('/control-ecp/administrador/momentos/{id}', [MomentoController::class, 'destroy'])
+        ->name('controlecp.administrador.momentos.destroy');
     Route::post('/control-ecp/administrador/momentos/{id}/activar', [MomentoController::class, 'activate'])
         ->name('controlecp.administrador.momentos.activate');
     Route::post('/control-ecp/administrador/momentos/{id}/desactivar', [MomentoController::class, 'deactivate'])
@@ -142,6 +144,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.administrador.actividades.store');
     Route::put('/control-ecp/administrador/actividades/{id}', [ActividadController::class, 'update'])
         ->name('controlecp.administrador.actividades.update');
+    Route::delete('/control-ecp/administrador/actividades/{id}', [ActividadController::class, 'destroy'])
+        ->name('controlecp.administrador.actividades.destroy');
     Route::post('/control-ecp/administrador/actividades/{id}/cambiar-momento', [ActividadController::class, 'cambiarMomento'])
         ->name('controlecp.administrador.actividades.cambiar_momento');
     Route::get('/control-ecp/administrador/actividades/{id}/componentes', [ActividadController::class, 'componentes'])
