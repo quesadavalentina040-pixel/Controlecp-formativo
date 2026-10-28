@@ -28,6 +28,20 @@ class ControlECPServiceProvider extends ModuleServiceProvider
     ];
 
     /**
+     * Register the service provider.
+     */
+    public function register(): void
+    {
+        parent::register();
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \Modules\ControlECP\Console\RevisarProgramacionesPoeCommand::class,
+            ]);
+        }
+    }
+
+    /**
      * Boot the application events.
      */
     public function boot(): void
@@ -39,5 +53,11 @@ class ControlECPServiceProvider extends ModuleServiceProvider
         
         $this->loadViewsFrom($path, 'controlecp');
         $this->loadViewsFrom($path, 'controlECP');
+
+        // Programa la revisión diaria de POE en el Scheduler de Laravel
+        $this->app->booted(function () {
+            $schedule = $this->app->make(Schedule::class);
+            $schedule->command('poe:revisar-programaciones')->daily();
+        });
     }
 }

@@ -1,5 +1,7 @@
+{{-- Vista: Vista del aprendiz para enviar peticiones, quejas o sugerencias. --}}
 @extends('controlecp::components.layouts.dashboard')
 
+{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
 

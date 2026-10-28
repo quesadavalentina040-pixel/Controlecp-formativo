@@ -1,3 +1,4 @@
+{{-- Vista: Navegación lateral disponible para el perfil administrador. --}}
 <style>
     .ecp-sidebar-link {
         color: rgba(255, 255, 255, 0.85);
@@ -68,27 +69,34 @@
                     'label' => 'Repositorio',
                     'route' => null,
                     'children' => [
-                        ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => null],
-                        ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => null],
-                        ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => null],
-                        ['icon' => 'fa-file-contract', 'label' => 'POE', 'route' => null],
+                        ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => 'controlecp.administrador.repositorio.historia.index'],
+                        ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.administrador.repositorio.encuesta.index'],
+                        ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => 'controlecp.administrador.repositorio.tabulacion.index'],
+                        ['icon' => 'fa-file-contract', 'label' => 'POE', 'route' => 'controlecp.administrador.repositorio.poe.index'],
                     ],
                 ],
-                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => null],
+                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.administrador.asesorias.index'],
                 ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => null],
                 ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => null],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => null],
+                ['icon' => 'fa-chart-line', 'label' => 'Reportes', 'route' => null],
+                ['icon' => 'fa-bell', 'label' => 'Notificaciones', 'route' => 'controlecp.notificaciones.index'],
             ];
         @endphp
 
+        {{-- Iteración que presenta los registros de items. --}}
         @foreach ($items as $index => $item)
             @php
                 $hasChildren = !empty($item['children']);
                 $childActive = $hasChildren
-                    ? collect($item['children'])->contains(fn($c) => !empty($c['route']) && request()->routeIs($c['route']))
+                    ? collect($item['children'])->contains(fn($c) => !empty($c['route']) && (request()->routeIs($c['route']) || request()->routeIs(str_replace('.index', '.*', $c['route']))))
                     : false;
 
-                $active = (!empty($item['route']) && request()->routeIs($item['route'])) || $childActive;
+                $itemActive = !empty($item['route']) && (
+                    request()->routeIs($item['route']) ||
+                    ($item['route'] === 'controlecp.administrador.asesorias.index' && request()->routeIs('controlecp.administrador.asesorias.*'))
+                );
+                $active = $itemActive || $childActive;
             @endphp
 
             @if ($hasChildren)
@@ -103,7 +111,7 @@
                     <div class="ecp-submenu-body">
                         <ul class="nav flex-column gap-1 mt-1">
                             @foreach ($item['children'] as $child)
-                                @php $childIsActive = !empty($child['route']) && request()->routeIs($child['route']); @endphp
+                                @php $childIsActive = !empty($child['route']) && (request()->routeIs($child['route']) || request()->routeIs(str_replace('.index', '.*', $child['route']))); @endphp
                                 <li class="nav-item">
                                     <a href="{{ !empty($child['route']) && \Illuminate\Support\Facades\Route::has($child['route']) ? route($child['route']) : '#' }}"
                                        class="nav-link ecp-sidebar-link ecp-sublink d-flex align-items-center gap-2 py-2 rounded-3 {{ $childIsActive ? 'ecp-active' : '' }}"
@@ -120,7 +128,11 @@
                     <a href="{{ !empty($item['route']) && \Illuminate\Support\Facades\Route::has($item['route']) ? route($item['route']) : '#' }}"
                        class="nav-link ecp-sidebar-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 {{ $active ? 'ecp-active' : '' }}"
                        style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
-                        <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
+                        <i class="fas {{ $item['icon'] }}"></i>
+                        <span>{{ $item['label'] }}</span>
+                        @if($item['label'] === 'Notificaciones')
+                            <span id="ecp-notif-sidebar-badge" class="badge rounded-pill bg-danger ms-auto d-none" style="font-size: 0.7rem; font-weight: 700;">0</span>
+                        @endif
                     </a>
                 </li>
             @endif

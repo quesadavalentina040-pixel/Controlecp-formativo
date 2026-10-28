@@ -1,3 +1,4 @@
+{{-- Vista: Navegación lateral disponible para el perfil aprendiz. --}}
 <style>
     .ecp-sidebar-link {
         color: rgba(255, 255, 255, 0.85);
@@ -37,6 +38,7 @@
             ];
         @endphp
 
+        {{-- Iteración que presenta los registros de items. --}}
         @foreach ($items as $item)
             @php
                 $active = $item['route'] && request()->routeIs($item['route']);

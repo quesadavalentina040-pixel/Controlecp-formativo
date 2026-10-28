@@ -1,5 +1,7 @@
+{{-- Vista: Listado de elementos con sus acciones de consulta y administración. --}}
 @extends('controlecp::components.layouts.master')
 
+{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('content')
 
     @php

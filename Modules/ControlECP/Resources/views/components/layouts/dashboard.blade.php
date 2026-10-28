@@ -1,5 +1,7 @@
+{{-- Vista: Distribución común del panel, con menú, encabezado y contenido del perfil. --}}
 @extends('controlecp::components.layouts.master')
 
+{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('content')
 
     <div class="d-flex" style="min-height: 100vh;">

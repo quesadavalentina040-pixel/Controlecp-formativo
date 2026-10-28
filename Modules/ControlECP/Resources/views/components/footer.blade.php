@@ -1,3 +1,4 @@
+{{-- Vista: Pie compartido de las páginas del módulo Control ECP. --}}
 <footer style="background-color: #001A29; color: #FFFFFF; border-top: 4px solid #39A900;">
     <div class="container py-4">
         <div class="row g-4">

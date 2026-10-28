@@ -1,6 +1,8 @@
+{{-- Vista: Panel de inicio y resumen de información del instructor. --}}
 @extends('controlecp::components.layouts.dashboard')
 
 @push('styles')
+{{-- Estilos locales para la presentación y los estados visuales de la vista. --}}
 <style>
 /* ── Encabezado de página ── */
 .page-title-bar {
@@ -136,6 +138,7 @@
 </style>
 @endpush
 
+{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 
 <div class="page-title-bar">

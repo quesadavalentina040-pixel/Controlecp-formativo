@@ -1,3 +1,4 @@
+
 @extends('controlecp::components.layouts.dashboard')
 
 @section('dashboard-content')
