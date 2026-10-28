@@ -5,8 +5,8 @@
         : (Auth::user()->hasRole('controlecp.instructor') ? 'INSTRUCTOR' : 'APRENDIZ');
 @endphp
 
-<nav class="d-flex align-items-center justify-content-between px-4 py-3 bg-white shadow-sm" style="border-bottom: 1px solid rgba(57,169,0,0.15);">
-    <h5 class="fw-bold mb-0" style="color: var(--sena-pastel-text-title);">
+<nav class="d-flex align-items-center justify-content-between px-4 py-3 shadow-sm" style="background-color: var(--sena-navy); border-bottom: 2px solid var(--sena-green);">
+    <h5 class="fw-bold mb-0 text-white">
         Panel de Inicio - {{ ucfirst(strtolower($rolActual)) }}
     </h5>
 
