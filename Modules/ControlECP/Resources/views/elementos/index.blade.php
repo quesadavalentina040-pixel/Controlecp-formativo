@@ -1,5 +1,7 @@
+{{-- Vista: Listado de elementos con opciones para consultarlos y administrarlos. --}}
 @extends('controlecp::components.layouts.master')
 
+{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('content')
 
     <div class="container py-4">
@@ -41,6 +43,7 @@
                     </thead>
 
                     <tbody>
+                        {{-- Iteración que presenta los registros de elementos. --}}
                         @forelse($elementos as $item)
                             <tr>
                                 <td class="ps-4">
@@ -67,6 +70,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
 
+                                    {{-- Formulario para enviar los datos de esta acción al módulo. --}}
                                     <form action="{{ route('controlecp.destroy', $item->id) }}"
                                           method="POST"
                                           class="d-inline"

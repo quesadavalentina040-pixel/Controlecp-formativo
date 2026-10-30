@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 use Modules\SICA\Entities\Course;
 use Modules\SICA\Entities\Role;
@@ -112,11 +113,21 @@ class ControlECPController extends Controller
         // Actividades programadas para hoy (Cultura de Paz)
         $actividadesHoy = 3;
 
-        // Solicitudes PQR y Materiales críticos
-        $solicitudesPendientes = Pqr::where('estado', 'Pendiente')->count();
-        $totalPqrs = Pqr::count();
-        $recursosCriticos      = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->count();
-        $materialesCriticos    = Material::where('estado', 'Agotado')->orWhereColumn('cantidad', '<=', 'stock_minimo')->get();
+        $tablaPqrs = Schema::hasTable((new Pqr())->getTable());
+        $solicitudesPendientes = $tablaPqrs
+            ? Pqr::where('estado', 'Pendiente')->count()
+            : 0;
+        $totalPqrs = $tablaPqrs ? Pqr::count() : 0;
+
+        if (Schema::hasTable((new Material())->getTable())) {
+            $materialesCriticos = Material::where('estado', 'Agotado')
+                ->orWhereColumn('cantidad', '<=', 'stock_minimo')
+                ->get();
+            $recursosCriticos = $materialesCriticos->count();
+        } else {
+            $materialesCriticos = collect();
+            $recursosCriticos = 0;
+        }
 
         // Fichas próximas a completar los 3 momentos
         $fichasProximasVencer = min(4, $totalFichasActivas);

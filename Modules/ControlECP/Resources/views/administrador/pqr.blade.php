@@ -215,7 +215,7 @@
     {{-- ══ FILTROS ══ --}}
     <div class="card border-0 shadow-sm mb-5" style="border-radius:16px;">
         <div class="card-body p-3">
-            <form action="{{ route('controlecp.administrador.pqr') }}" method="GET"
+            <form action="{{ route($soloInstructores ? 'controlecp.administrador.pqr.instructores' : 'controlecp.administrador.pqr') }}" method="GET"
                   class="row g-2 align-items-end">
                 <div class="col-12 col-md-3">
                     <div class="input-group inv-search">
@@ -260,7 +260,7 @@
                         <i class="fas fa-filter me-1"></i>Filtrar
                     </button>
                     @if(request()->hasAny(['buscar','id_tipo_pqrs','estado','id_instructor']))
-                        <a href="{{ route('controlecp.administrador.pqr') }}"
+                        <a href="{{ route($soloInstructores ? 'controlecp.administrador.pqr.instructores' : 'controlecp.administrador.pqr') }}"
                            class="btn btn-outline-secondary rounded-pill" title="Limpiar">
                             <i class="fas fa-rotate-left"></i>
                         </a>
@@ -270,6 +270,7 @@
         </div>
     </div>
 
+    @if(!$soloInstructores)
     {{-- ══ TABS: ADMINISTRACIÓN / INSTRUCTORES ══ --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <div class="d-flex gap-2">
@@ -298,10 +299,12 @@
             Total: <strong class="text-dark">{{ $total }}</strong> PQRS en el sistema
         </div>
     </div>
+    @endif
 
     {{-- ══════════════════════════════════════════════════════════════
          SECCIÓN 1 — PQRS DE ADMINISTRACIÓN (el admin puede responder)
          ══════════════════════════════════════════════════════════════ --}}
+    @if(!$soloInstructores)
     <div class="mb-5">
         <div class="d-flex align-items-center gap-2 mb-3">
             <span class="d-flex align-items-center justify-content-center rounded-circle"
@@ -311,7 +314,6 @@
                 <span class="text-muted fw-normal ms-1" style="font-size:.8rem;">— Puedes ver, responder y cambiar estado</span>
             </h6>
         </div>
-
         <div class="card border-0 shadow-sm" style="border-radius:16px; overflow:hidden;">
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -420,10 +422,12 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- ══════════════════════════════════════════════════════════════
          SECCIÓN 2 — PQRS DE INSTRUCTORES (solo lectura para el admin)
          ══════════════════════════════════════════════════════════════ --}}
+    @if($soloInstructores)
     <div class="mb-4">
         <div class="d-flex align-items-center gap-2 mb-3">
             <span class="d-flex align-items-center justify-content-center rounded-circle"
@@ -526,15 +530,6 @@
                                             onclick="abrirModalHistorial({{ $pqr->id_pqrs }}, '{{ $pqr->radicado }}')">
                                         <i class="fas fa-clock-rotate-left" style="color:#7C3AED;"></i>
                                     </button>
-                                    {{-- Acciones deshabilitadas visualmente --}}
-                                    <span class="btn-tbl-action" title="Responder — solo el instructor puede responder"
-                                          style="opacity:.3;cursor:not-allowed;">
-                                        <i class="fas fa-reply text-muted"></i>
-                                    </span>
-                                    <span class="btn-tbl-action" title="Cambiar estado — solo el instructor puede gestionar"
-                                          style="opacity:.3;cursor:not-allowed;">
-                                        <i class="fas fa-arrows-rotate text-muted"></i>
-                                    </span>
                                 </div>
                             </td>
                         </tr>
@@ -562,6 +557,7 @@
             @endif
         </div>
     </div>
+    @endif
 </div>
 
 {{-- ════════════════════════════════════════════════════════

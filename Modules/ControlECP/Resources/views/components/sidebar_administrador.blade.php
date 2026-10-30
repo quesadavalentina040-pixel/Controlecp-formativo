@@ -13,6 +13,11 @@
         color: #FFFFFF !important;
         box-shadow: 0 4px 14px rgba(57, 169, 0, 0.4);
     }
+    .ecp-sidebar-link[aria-disabled="true"] {
+        opacity: .55;
+        pointer-events: none;
+        cursor: not-allowed;
+    }
     .ecp-submenu-toggle {
         cursor: pointer;
     }
@@ -66,20 +71,25 @@
                 [
                     'icon' => 'fa-folder-open',
                     'label' => 'Repositorio',
-                    // Un padre con "children" NUNCA debe tener 'route' propio,
-                    // porque esa ruta no existe (solo existen las 4 rutas hijas).
                     'route' => NULL,
                     'children' => [
-                        ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => 'controlecp.administrador.repositorio.historia'],
-                        ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.administrador.repositorio.encuesta'],
-                        ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => 'controlecp.administrador.repositorio.tabulacion'],
-                        ['icon' => 'fa-file-contract', 'label' => 'POE', 'route' => 'controlecp.administrador.repositorio.poe'],
+                        ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => 'controlecp.administrador.repositorio.historia.index'],
+                        ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.administrador.repositorio.encuesta.index'],
+                        ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => 'controlecp.administrador.repositorio.tabulacion.index'],
+                        ['icon' => 'fa-file-contract', 'label' => 'POE', 'route' => 'controlecp.administrador.repositorio.poe.index'],
                     ],
                 ],
-                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.administrador.asesorias'],
+                ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.administrador.asesorias.index'],
                 ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => 'controlecp.administrador.certificados'],
                 ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => 'controlecp.administrador.inventario'],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.administrador.pqr'],
+                ['icon' => 'fa-chalkboard-user', 'label' => 'Instructores', 'route' => 'controlecp.administrador.pqr.instructores'],
+                [
+                    'icon' => 'fa-chart-column',
+                    'label' => 'Reportes',
+                    'route' => 'controlecp.administrador.reportes',
+                ],
+                ['icon' => 'fa-bell', 'label' => 'Notificaciones', 'route' => 'controlecp.notificaciones.index'],
             ];
         @endphp
 
@@ -87,12 +97,15 @@
             @php
                 $hasChildren = !empty($item['children']);
                 $childActive = $hasChildren
-                    ? collect($item['children'])->contains(fn($c) => $c['route'] && (request()->routeIs($c['route']) || request()->is('control-ecp/administrador/repositorio*')))
+                    ? collect($item['children'])->contains(fn($c) => $c['route'] && (request()->routeIs($c['route']) || request()->routeIs(str_replace('.index', '.*', $c['route']))))
                     : false;
 
                 $isRepositoryItem = $item['label'] === 'Repositorio';
                 $repositoryExpanded = $isRepositoryItem
                     && (request()->routeIs('controlecp.administrador.repositorio.*') || request()->is('control-ecp/administrador/repositorio*'));
+
+                $isReportsItem = $item['label'] === 'Reportes';
+                $reportsExpanded = $isReportsItem && request()->routeIs('controlecp.administrador.reportes');
 
                 $isInventoryItem = $item['label'] === 'Inventario';
                 $inventoryActive = $isInventoryItem
@@ -100,14 +113,21 @@
 
                 $isPqrsItem = $item['label'] === 'PQRS';
                 $pqrsActive = $isPqrsItem
-                    && (request()->routeIs('controlecp.administrador.pqr*') || request()->is('control-ecp/administrador/pqr*'));
+                    && request()->routeIs('controlecp.administrador.pqr')
+                    && request()->is('control-ecp/administrador/pqr');
 
-                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $inventoryActive || $pqrsActive || $childActive;
+                $isInstructoresItem = $item['label'] === 'Instructores';
+                $instructoresActive = $isInstructoresItem && request()->routeIs('controlecp.administrador.pqr.instructores');
+
+                $asesoriasActive = $item['label'] === 'Asesorías'
+                    && request()->routeIs('controlecp.administrador.asesorias.*');
+
+                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $reportsExpanded || $inventoryActive || $pqrsActive || $instructoresActive || $asesoriasActive || $childActive;
             @endphp
 
             @if ($hasChildren)
                 <li class="nav-item">
-                    <input type="checkbox" id="ecp-submenu-{{ $index }}" class="ecp-submenu-checkbox" {{ $childActive || $repositoryExpanded ? 'checked' : '' }}>
+                    <input type="checkbox" id="ecp-submenu-{{ $index }}" class="ecp-submenu-checkbox" {{ $childActive || $repositoryExpanded || $reportsExpanded ? 'checked' : '' }}>
                     <label for="ecp-submenu-{{ $index }}"
                            class="nav-link ecp-sidebar-link ecp-submenu-toggle d-flex align-items-center gap-2 px-3 py-2 rounded-3 mb-0 {{ $active ? 'ecp-active' : '' }}"
                            style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
@@ -132,9 +152,14 @@
             @else
                 <li class="nav-item">
                     <a href="{{ $item['route'] ? route($item['route']) : '#' }}"
+                       aria-disabled="{{ $item['route'] ? 'false' : 'true' }}"
+                       tabindex="{{ $item['route'] ? '0' : '-1' }}"
                        class="nav-link ecp-sidebar-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 {{ $active ? 'ecp-active' : '' }}"
                        style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
                         <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
+                        @if ($item['label'] === 'Instructores' && isset($pqrsInstructor))
+                            <span class="badge rounded-pill bg-danger ms-auto">{{ $pqrsInstructor->total() }}</span>
+                        @endif
                     </a>
                 </li>
             @endif

@@ -15,7 +15,9 @@
         border: 1px solid rgba(0,0,0,.04);
         transition: transform .22s ease, box-shadow .22s ease;
         overflow: hidden;
+        cursor: pointer;
     }
+    .momento-card:focus-visible { outline: 3px solid var(--ecp-green); outline-offset: 3px; }
     .momento-card:hover {
         transform: translateY(-4px);
         box-shadow: 0 14px 34px rgba(0,26,41,.12);
@@ -191,7 +193,11 @@
                     $gradient = "linear-gradient(135deg, var(--ecp-navy) 0%, {$m->color} 100%)";
                 @endphp
                 <div class="col-12 col-md-6 col-lg-4" id="card-momento-{{ $m->id }}">
-                    <div class="momento-card h-100 {{ !$isActivo ? 'inactivo' : '' }}">
+                    <div class="momento-card h-100 {{ !$isActivo ? 'inactivo' : '' }}"
+                         role="button" tabindex="0"
+                         aria-label="Ver actividades del momento {{ $m->nombre }}"
+                         onclick="abrirActividadesTarjeta(event, {{ $m->id }}, @js($m->nombre), @js($m->color), @js($m->icono))"
+                         onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); abrirActividadesTarjeta(event, {{ $m->id }}, @js($m->nombre), @js($m->color), @js($m->icono)); }">
 
                         {{-- Header con gradiente del color del momento --}}
                         <div class="p-4" style="background: {{ $gradient }}; color: #fff;">
@@ -246,7 +252,7 @@
                                 <button type="button"
                                         class="btn w-100 rounded-pill btn-sm mb-3 fw-semibold"
                                         style="background: {{ $m->color }}15; color: {{ $m->color }}; border: 1.5px solid {{ $m->color }}44;"
-                                        onclick="verActividadesMomento({{ $m->id }}, '{{ addslashes($m->nombre) }}', '{{ $m->color }}', '{{ $m->icono }}')">
+                                        onclick="event.stopPropagation(); verActividadesMomento({{ $m->id }}, @js($m->nombre), @js($m->color), @js($m->icono))">
                                     <i class="fas fa-eye me-1"></i>
                                     Ver {{ $m->actividades_count }} actividades
                                 </button>
@@ -256,19 +262,19 @@
                             <div class="d-flex gap-2 pt-3 border-top">
                                 {{-- HU2: Editar --}}
                                 <button type="button" class="btn btn-outline-secondary rounded-pill btn-sm flex-fill"
-                                        onclick="abrirModalEditar({{ json_encode(['id'=>$m->id,'nombre'=>$m->nombre,'descripcion'=>$m->descripcion,'icono'=>$m->icono,'color'=>$m->color,'orden'=>$m->orden]) }})">
+                                        onclick="event.stopPropagation(); abrirModalEditar(@js(['id'=>$m->id,'nombre'=>$m->nombre,'descripcion'=>$m->descripcion,'icono'=>$m->icono,'color'=>$m->color,'orden'=>$m->orden]))">
                                     <i class="fas fa-pen me-1"></i> Editar
                                 </button>
 
                                 {{-- HU3 / HU4: Desactivar / Activar --}}
                                 @if($isActivo)
                                     <button type="button" class="btn btn-outline-danger rounded-pill btn-sm flex-fill"
-                                            onclick="confirmarEstadoMomento({{ $m->id }}, 'desactivar', '{{ addslashes($m->nombre) }}')">
+                                            onclick="event.stopPropagation(); confirmarEstadoMomento({{ $m->id }}, 'desactivar', @js($m->nombre))">
                                         <i class="fas fa-ban me-1"></i> Desactivar
                                     </button>
                                 @else
                                     <button type="button" class="btn btn-outline-success rounded-pill btn-sm flex-fill"
-                                            onclick="confirmarEstadoMomento({{ $m->id }}, 'activar', '{{ addslashes($m->nombre) }}')">
+                                            onclick="event.stopPropagation(); confirmarEstadoMomento({{ $m->id }}, 'activar', @js($m->nombre))">
                                         <i class="fas fa-circle-check me-1"></i> Activar
                                     </button>
                                 @endif
@@ -340,9 +346,11 @@
 
                         {{-- Descripción --}}
                         <div class="col-12">
-                            <label class="form-label fw-semibold small" style="color: var(--ecp-navy);">Descripción</label>
+                            <label class="form-label fw-semibold small" style="color: var(--ecp-navy);">
+                                Descripción <span class="text-danger">*</span>
+                            </label>
                             <textarea id="formDescripcion" class="form-control" rows="3" maxlength="1000"
-                                      placeholder="Describe el propósito pedagógico de este momento..."></textarea>
+                                      placeholder="Describe el propósito pedagógico de este momento..." required></textarea>
                         </div>
 
                         {{-- Color e Ícono --}}
@@ -490,7 +498,7 @@
 
 @push('scripts')
 <script>
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const momentosCsrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     // ── Estado global ─────────────────────────────────────────────────────────────
     let _estadoMomentoId     = null;
@@ -549,7 +557,15 @@
             input.focus();
             return;
         }
+        if (!desc) {
+            const input = document.getElementById('formDescripcion');
+            input.classList.add('is-invalid');
+            mostrarAlertaForm('La descripción del momento es obligatoria. Por favor completa este campo.');
+            input.focus();
+            return;
+        }
         document.getElementById('formNombre').classList.remove('is-invalid');
+        document.getElementById('formDescripcion').classList.remove('is-invalid');
         document.getElementById('formAlertValidacion').classList.add('d-none');
 
         const btn = document.getElementById('btnGuardarMomento');
@@ -565,23 +581,23 @@
         try {
             const resp = await fetch(url, {
                 method,
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': momentosCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({ nombre, descripcion: desc, icono, color, orden }),
             });
 
-            const data = await resp.json();
+            const data = await resp.json().catch(() => ({}));
 
             btn.disabled = false;
             btn.innerHTML = '<i class="fas fa-floppy-disk me-1"></i> Guardar';
 
-            if (data.success) {
+            if (resp.ok && data.success) {
                 bootstrap.Modal.getInstance(document.getElementById('modalFormMomento')).hide();
                 // HU8 — Mensaje de confirmación
                 mostrarAlerta(data.message, 'success');
                 setTimeout(() => window.location.reload(), 900);
             } else {
                 // HU7 — Alerta de error de validación del servidor
-                mostrarAlertaForm(data.message ?? 'Error al guardar. Verifica los campos.');
+                mostrarAlertaForm(data.message || `Error al guardar el momento (${resp.status}). Verifica los campos.`);
             }
         } catch (e) {
             btn.disabled = false;
@@ -624,30 +640,48 @@
     async function ejecutarCambioEstado() {
         const accion = _estadoMomentoAccion === 'desactivar' ? 'desactivar' : 'activar';
         const url    = `{{ url('/control-ecp/administrador/momentos') }}/${_estadoMomentoId}/${accion}`;
+        const btn = document.getElementById('btnConfirmEstado');
+        btn.disabled = true;
 
         try {
             const resp = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': momentosCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({}),
             });
-            const data = await resp.json();
+            const data = await resp.json().catch(() => ({}));
 
-            bootstrap.Modal.getInstance(document.getElementById('modalConfirmEstado')).hide();
-
-            if (data.success) {
+            if (resp.ok && data.success) {
+                bootstrap.Modal.getInstance(document.getElementById('modalConfirmEstado')).hide();
                 // HU8 — Confirmación de operación
                 mostrarAlerta(data.message, 'success');
                 setTimeout(() => window.location.reload(), 900);
             } else {
-                mostrarAlerta(data.message, 'warning');
+                mostrarAlerta(data.message || `No se pudo cambiar el estado del momento (${resp.status}).`, 'warning');
             }
         } catch (e) {
             mostrarAlerta('Error al cambiar el estado: ' + e.message, 'danger');
+        } finally {
+            btn.disabled = false;
         }
     }
 
     // ── HU6: Ver actividades del momento ─────────────────────────────────────────
+    function abrirActividadesTarjeta(event, id, nombre, color, icono) {
+        if (event.target.closest('button, a, input, select, textarea')) return;
+        verActividadesMomento(id, nombre, color, icono);
+    }
+
+    function escaparHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[character]);
+    }
+
     async function verActividadesMomento(id, nombre, color, icono) {
         // Configurar modal
         document.getElementById('actModalTitle').innerText   = nombre;
@@ -665,55 +699,58 @@
         try {
             const url  = `{{ url('/control-ecp/administrador/momentos') }}/${id}/actividades`;
             const resp = await fetch(url, { headers: { 'Accept': 'application/json' } });
-            const data = await resp.json();
+            const data = await resp.json().catch(() => ({}));
 
             document.getElementById('actModalLoading').classList.add('d-none');
 
-            if (data.success) {
-                document.getElementById('actModalSubtitle').innerText =
-                    `${data.total_actividades} actividades pedagógicas`;
+            if (!resp.ok || !data.success) {
+                throw new Error(data.message || `No fue posible cargar las actividades (${resp.status}).`);
+            }
 
-                if (data.actividades.length > 0) {
-                    const list = document.getElementById('actModalList');
-                    list.innerHTML = data.actividades.map(a => `
+            document.getElementById('actModalSubtitle').innerText =
+                `${data.total_actividades} actividades pedagógicas`;
+
+            if (data.actividades.length > 0) {
+                const list = document.getElementById('actModalList');
+                list.innerHTML = data.actividades.map(a => `
                         <div class="act-list-item ${a.estado === 'Inactivo' ? 'inactiva' : ''}">
                             <div class="d-flex justify-content-between align-items-start gap-2">
                                 <div style="min-width:0;">
                                     <div class="d-flex align-items-center gap-2 mb-1">
                                         <span class="fw-bold small rounded-2 px-2 py-0"
                                               style="background: ${color}22; color: ${color}; font-size: .72rem;">
-                                            ${a.numero}
+                                            ${escaparHtml(a.numero)}
                                         </span>
-                                        <span class="fw-semibold text-dark small">${a.nombre}</span>
+                                        <span class="fw-semibold text-dark small">${escaparHtml(a.nombre)}</span>
                                     </div>
-                                    ${a.objetivo ? `<p class="text-muted mb-0" style="font-size:.8rem;line-height:1.4;">${a.objetivo}</p>` : ''}
+                                    ${a.objetivo ? `<p class="text-muted mb-0" style="font-size:.8rem;line-height:1.4;">${escaparHtml(a.objetivo)}</p>` : ''}
                                 </div>
                                 <div class="d-flex flex-column align-items-end gap-1 flex-shrink-0">
                                     <span class="badge bg-light text-muted border rounded-pill" style="font-size:.72rem;">
-                                        <i class="far fa-clock me-1"></i>${a.duracion}
+                                        <i class="far fa-clock me-1"></i>${escaparHtml(a.duracion)}
                                     </span>
                                     <span class="badge rounded-pill" style="font-size:.68rem;
                                           background: ${a.estado==='Activo'?'#e8f8e8':'#f5f5f5'};
                                           color: ${a.estado==='Activo'?'#1e7000':'#666'};
                                           border: 1px solid ${a.estado==='Activo'?'#c2eec2':'#ddd'};">
                                         ${a.estado === 'Activo' ? '<i class="fas fa-circle-check me-1"></i>' : '<i class="fas fa-ban me-1"></i>'}
-                                        ${a.estado}
+                                        ${escaparHtml(a.estado)}
                                     </span>
                                 </div>
                             </div>
                         </div>
-                    `).join('');
+                `).join('');
 
-                    document.getElementById('actModalContent').classList.remove('d-none');
-                } else {
-                    document.getElementById('actModalEmpty').classList.remove('d-none');
-                }
+                document.getElementById('actModalContent').classList.remove('d-none');
+            } else {
+                document.getElementById('actModalEmpty').classList.remove('d-none');
             }
         } catch (e) {
             document.getElementById('actModalLoading').classList.add('d-none');
-            document.getElementById('actModalEmpty').classList.remove('d-none');
-            document.getElementById('actModalEmpty').innerHTML =
-                `<i class="fas fa-triangle-exclamation fa-2x mb-2 text-danger"></i><p class="small text-danger mb-0">Error al cargar: ${e.message}</p>`;
+            const empty = document.getElementById('actModalEmpty');
+            empty.innerHTML = '<i class="fas fa-triangle-exclamation fa-2x mb-2 text-danger"></i><p class="small text-danger mb-0"></p>';
+            empty.querySelector('p').textContent = `Error al cargar: ${e.message}`;
+            empty.classList.remove('d-none');
         }
     }
 

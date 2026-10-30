@@ -41,6 +41,8 @@ class PqrController extends Controller
             return $redirect;
         }
 
+        $soloInstructores = $request->routeIs('controlecp.administrador.pqr.instructores');
+
         // ── Filtros comunes ──────────────────────────────────────────
         $applyFilters = function ($query) use ($request) {
             if ($request->filled('buscar')) {
@@ -115,7 +117,8 @@ class PqrController extends Controller
             'tipos', 'instructores',
             'reporteTiposLabels', 'reporteTiposCounts',
             'reporteEstadosLabels', 'reporteEstadosCounts',
-            'reporteInstructoresLabels', 'reporteInstructoresCounts'
+            'reporteInstructoresLabels', 'reporteInstructoresCounts',
+            'soloInstructores'
         ));
     }
 

@@ -64,13 +64,15 @@ class MomentoController extends Controller
         // HU7 — Validar campos obligatorios
         $request->validate([
             'nombre'      => 'required|string|max:120',
-            'descripcion' => 'nullable|string|max:1000',
-            'icono'       => 'nullable|string|max:80',
-            'color'       => 'nullable|string|max:20',
-            'orden'       => 'nullable|integer|min:0',
+            'descripcion' => 'required|string|max:1000',
+            'icono'       => ['nullable', 'string', 'max:80', 'regex:/^fa-[a-z0-9-]+$/'],
+            'color'       => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'orden'       => 'nullable|integer|min:0|max:99',
         ], [
             'nombre.required' => 'El nombre del momento es obligatorio.',
             'nombre.max'      => 'El nombre no puede superar los 120 caracteres.',
+            'descripcion.required' => 'La descripción del momento es obligatoria.',
+            'orden.max'      => 'El orden no puede ser superior a 99.',
         ]);
 
         $momento = Momento::create([
@@ -114,12 +116,14 @@ class MomentoController extends Controller
         // HU7 — Validar campos obligatorios
         $request->validate([
             'nombre'      => 'required|string|max:120',
-            'descripcion' => 'nullable|string|max:1000',
-            'icono'       => 'nullable|string|max:80',
-            'color'       => 'nullable|string|max:20',
-            'orden'       => 'nullable|integer|min:0',
+            'descripcion' => 'required|string|max:1000',
+            'icono'       => ['nullable', 'string', 'max:80', 'regex:/^fa-[a-z0-9-]+$/'],
+            'color'       => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            'orden'       => 'nullable|integer|min:0|max:99',
         ], [
             'nombre.required' => 'El nombre del momento es obligatorio.',
+            'descripcion.required' => 'La descripción del momento es obligatoria.',
+            'orden.max'      => 'El orden no puede ser superior a 99.',
         ]);
 
         $momento->update([

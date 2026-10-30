@@ -1,6 +1,8 @@
+{{-- Vista: Cronograma de actividades y eventos disponibles para el aprendiz. --}}
 @extends('controlecp::components.layouts.dashboard')
 
 @push('styles')
+{{-- Estilos locales para la presentación y los estados visuales de la vista. --}}
 <style>
     .semaforo-indicator {
         width: 14px;
@@ -14,6 +16,7 @@
 </style>
 @endpush
 
+{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
 

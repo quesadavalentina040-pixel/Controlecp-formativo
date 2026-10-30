@@ -9,7 +9,7 @@
         --ecp-blue:    #0070B8;
         --ecp-purple:  #6A1B9A;
     }
-    .act-page { font-family: 'Outfit', sans-serif; }
+    .act-page { font-family: 'Outfit', sans-serif; min-width: 0; }
 
     /* KPI cards */
     .kpi-card {
@@ -55,8 +55,24 @@
     .comp-off { background: #f5f5f5; opacity: .6; }
 
     /* Sección de momento */
-    .momento-section { border-radius: 18px; overflow: hidden; margin-bottom: 2rem; }
+    .momentos-list {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-width: 0;
+        gap: 0;
+    }
+    .momento-section {
+        display: block;
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 0;
+        border-radius: 18px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
     .momento-header  {
+        width: 100%;
         padding: 1rem 1.25rem;
         color: #fff;
         display: flex; align-items: center; justify-content: space-between;
@@ -64,10 +80,24 @@
     }
     .act-grid-sm {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 1rem;
-        padding: 1rem 1.25rem;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: .75rem;
+        padding: .85rem 1rem;
         background: #f8faf9;
+    }
+    .act-grid-sm > .act-card {
+        width: 100%;
+        min-width: 0;
+        grid-column: span 1;
+    }
+    @media (max-width: 1200px) {
+        .act-grid-sm { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 768px) {
+        .act-grid-sm { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 520px) {
+        .act-grid-sm { grid-template-columns: 1fr; }
     }
 
     /* Filtro pill */
@@ -194,8 +224,9 @@
 
     {{-- HU3: Listado agrupado por momento --}}
     @if($momentos->count() > 0)
-        @foreach($momentos as $momento)
-            <div class="card border-0 shadow-sm momento-section">
+        <div class="momentos-list" id="momentosActividades">
+            @foreach($momentos as $momento)
+                <section class="card border-0 shadow-sm momento-section">
                 {{-- Encabezado del momento --}}
                 <div class="momento-header"
                      style="background: linear-gradient(135deg, var(--ecp-navy) 0%, {{ $momento->color }} 100%);">
@@ -216,7 +247,7 @@
                         </span>
                         <button type="button" class="btn btn-sm rounded-pill px-3 fw-semibold"
                                 style="background:rgba(255,255,255,.2); color:#fff; border:1.5px solid rgba(255,255,255,.4);"
-                                onclick="abrirModalCrear({{ $momento->id }}, '{{ addslashes($momento->nombre) }}')">
+                                onclick="abrirModalCrear({{ $momento->id }}, @js($momento->nombre))">
                             <i class="fas fa-plus me-1"></i> Agregar
                         </button>
                     </div>
@@ -239,6 +270,19 @@
                                     'Finalizado'=> 'fa-flag-checkered',
                                     default     => 'fa-ban',
                                 };
+                                $datosActividad = [
+                                    'id'               => $a->id,
+                                    'nombre'           => $a->nombre,
+                                    'descripcion'      => $a->descripcion,
+                                    'objetivo'         => $a->objetivo,
+                                    'duracion'         => $a->duracion,
+                                    'duracion_min'     => $a->duracion_min,
+                                    'metodologia'      => $a->metodologia,
+                                    'momento_id'       => $a->momento_id,
+                                    'tiene_asistencia' => $a->tiene_asistencia,
+                                    'encuesta_id'      => $a->encuesta_id,
+                                    'tiene_evidencia'  => $a->tiene_evidencia,
+                                ];
                             @endphp
                             <div class="act-card estado-{{ strtolower($a->estado) }}"
                                  id="act-card-{{ $a->id }}">
@@ -278,42 +322,38 @@
                                         </span>
                                     </div>
 
-                                    <div class="d-flex align-items-center justify-content-between border-top pt-2">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top pt-2">
                                         <span class="small text-muted">
                                             <i class="far fa-clock me-1"></i>{{ $a->duracion }}
                                         </span>
 
-                                        {{-- Menú de acciones --}}
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light rounded-pill px-2" type="button"
-                                                    data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <button class="btn btn-sm btn-outline-secondary rounded-pill px-2"
+                                                    type="button" onclick="abrirModalEditar(@js($datosActividad))">
+                                                <i class="fas fa-pen me-1"></i>Editar
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                                                style="border-radius:12px; font-size:.84rem;">
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-2"
+                                                    type="button" onclick="verComponentes({{ $a->id }})">
+                                                <i class="fas fa-puzzle-piece me-1"></i>Componentes
+                                            </button>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light rounded-pill px-2" type="button"
+                                                        data-bs-toggle="dropdown" aria-label="Más acciones para {{ $a->nombre }}">
+                                                    <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
+                                                    style="border-radius:12px; font-size:.84rem;">
                                                 {{-- HU4: Editar --}}
                                                 <li>
                                                     <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalEditar({{ json_encode([
-                                                                'id'               => $a->id,
-                                                                'nombre'           => $a->nombre,
-                                                                'descripcion'      => $a->descripcion,
-                                                                'objetivo'         => $a->objetivo,
-                                                                'duracion'         => $a->duracion,
-                                                                'duracion_min'     => $a->duracion_min,
-                                                                'metodologia'      => $a->metodologia,
-                                                                'momento_id'       => $a->momento_id,
-                                                                'tiene_asistencia' => $a->tiene_asistencia,
-                                                                'encuesta_id'      => $a->encuesta_id,
-                                                                'tiene_evidencia'  => $a->tiene_evidencia,
-                                                            ]) }})">
+                                                            onclick="abrirModalEditar(@js($datosActividad))">
                                                         <i class="fas fa-pen me-2 text-secondary"></i> Editar
                                                     </button>
                                                 </li>
                                                 {{-- HU5: Cambiar momento --}}
                                                 <li>
                                                     <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalCambiarMomento({{ $a->id }}, {{ $a->momento_id }}, '{{ addslashes($a->nombre) }}')">
+                                                            onclick="abrirModalCambiarMomento({{ $a->id }}, {{ $a->momento_id }}, @js($a->nombre))">
                                                         <i class="fas fa-right-left me-2 text-info"></i> Cambiar Momento
                                                     </button>
                                                 </li>
@@ -327,14 +367,14 @@
                                                 {{-- HU17: Ver evidencias --}}
                                                 <li>
                                                     <button class="dropdown-item py-2" type="button"
-                                                            onclick="verEvidencias({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            onclick="verEvidencias({{ $a->id }}, @js($a->nombre))">
                                                         <i class="fas fa-photo-film me-2" style="color:var(--ecp-purple);"></i> Ver Evidencias
                                                     </button>
                                                 </li>
                                                 {{-- HU18: Calificaciones --}}
                                                 <li>
                                                     <button class="dropdown-item py-2" type="button"
-                                                            onclick="verCalificaciones({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            onclick="verCalificaciones({{ $a->id }}, @js($a->nombre))">
                                                         <i class="fas fa-star me-2 text-warning"></i> Calificaciones
                                                     </button>
                                                 </li>
@@ -342,7 +382,7 @@
                                                 @if($a->tiene_evidencia)
                                                 <li>
                                                     <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalEvidencia({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            onclick="abrirModalEvidencia({{ $a->id }}, @js($a->nombre))">
                                                         <i class="fas fa-upload me-2" style="color:var(--ecp-blue);"></i> Subir Evidencia
                                                     </button>
                                                 </li>
@@ -352,7 +392,7 @@
                                                 @if($a->estado === 'Activo')
                                                 <li>
                                                     <button class="dropdown-item py-2 text-primary" type="button"
-                                                            onclick="confirmarFinalizar({{ $a->id }}, '{{ addslashes($a->nombre) }}')">
+                                                            onclick="confirmarFinalizar({{ $a->id }}, @js($a->nombre))">
                                                         <i class="fas fa-flag-checkered me-2"></i> Finalizar
                                                     </button>
                                                 </li>
@@ -361,14 +401,14 @@
                                                 @if($a->estado === 'Activo')
                                                 <li>
                                                     <button class="dropdown-item py-2 text-danger" type="button"
-                                                            onclick="confirmarEstado({{ $a->id }}, 'desactivar', '{{ addslashes($a->nombre) }}')">
+                                                            onclick="confirmarEstado({{ $a->id }}, 'desactivar', @js($a->nombre))">
                                                         <i class="fas fa-ban me-2"></i> Desactivar
                                                     </button>
                                                 </li>
                                                 @elseif($a->estado === 'Inactivo')
                                                 <li>
                                                     <button class="dropdown-item py-2 text-success" type="button"
-                                                            onclick="confirmarEstado({{ $a->id }}, 'activar', '{{ addslashes($a->nombre) }}')">
+                                                            onclick="confirmarEstado({{ $a->id }}, 'activar', @js($a->nombre))">
                                                         <i class="fas fa-circle-check me-2"></i> Activar
                                                     </button>
                                                 </li>
@@ -378,21 +418,23 @@
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
+                            @endforeach
+                        </div>
                 @else
                     <div class="text-center py-4 text-muted small" style="background:#f8faf9;">
                         <i class="fas fa-list-check fa-2x mb-2 text-muted" style="opacity:.4;"></i>
                         <p class="mb-2">No hay actividades en este momento.</p>
                         <button type="button" class="btn btn-sm rounded-pill px-3 text-white"
                                 style="background:{{ $momento->color }};"
-                                onclick="abrirModalCrear({{ $momento->id }}, '{{ addslashes($momento->nombre) }}')">
+                                onclick="abrirModalCrear({{ $momento->id }}, @js($momento->nombre))">
                             <i class="fas fa-plus me-1"></i> Agregar primera actividad
                         </button>
                     </div>
                 @endif
-            </div>
+                </section>
         @endforeach
+        </div>
     @else
         <div class="text-center py-5">
             <i class="fas fa-list-check fa-3x mb-3" style="color:#d5dae2;"></i>
@@ -457,7 +499,10 @@
                         <select id="formActMomento" class="form-select" required>
                             <option value="">— Seleccionar —</option>
                             @foreach($momentos as $m)
-                                <option value="{{ $m->id }}" data-color="{{ $m->color }}">{{ $m->nombre }}</option>
+                                <option value="{{ $m->id }}" data-color="{{ $m->color }}"
+                                        @disabled($m->estado !== 'Activo')>
+                                    {{ $m->nombre }}{{ $m->estado !== 'Activo' ? ' (Inactivo)' : '' }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -506,13 +551,13 @@
                         <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">Componentes activos</label>
                         <div class="d-flex flex-column gap-2 mt-1">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="formActAsistencia" checked>
+                                <input class="form-check-input" type="checkbox" id="formActAsistencia" checked disabled>
                                 <label class="form-check-label small" for="formActAsistencia">
                                     <i class="fas fa-clipboard-list text-success me-1"></i> Asistencia
                                 </label>
                             </div>
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="formActEvidencia" checked>
+                                <input class="form-check-input" type="checkbox" id="formActEvidencia" checked disabled>
                                 <label class="form-check-label small" for="formActEvidencia">
                                     <i class="fas fa-photo-film me-1" style="color:var(--ecp-purple);"></i> Evidencia
                                 </label>
@@ -525,10 +570,10 @@
                         <div class="p-3 rounded-3 border" style="background:#f8faf9;">
                             <div class="form-check form-switch mb-2">
                                 <input class="form-check-input" type="checkbox" id="formActTieneEncuesta"
-                                       onchange="toggleEncuestaSelector()">
+                                       checked disabled>
                                 <label class="form-check-label fw-semibold small" for="formActTieneEncuesta"
                                        style="color:var(--ecp-blue);">
-                                    <i class="fas fa-clipboard-question me-1"></i> Asociar encuesta del repositorio
+                                    <i class="fas fa-clipboard-question me-1"></i> Encuesta del repositorio (obligatoria)
                                 </label>
                             </div>
                             <div id="encuestaSelectorWrap" class="d-none">
@@ -536,7 +581,7 @@
                                     <select id="formActEncuesta" class="form-select form-select-sm">
                                         <option value="">— Seleccionar encuesta activa —</option>
                                         @foreach($encuestasActivas as $enc)
-                                            <option value="{{ $enc->id }}">{{ $enc->titulo }}</option>
+                                            <option value="{{ $enc->id }}">{{ $enc->titulo ?? $enc->nombre }}</option>
                                         @endforeach
                                     </select>
                                 @else
@@ -586,7 +631,9 @@
                 </label>
                 <select id="cambiarMomentoSelect" class="form-select">
                     @foreach($momentos as $m)
-                        <option value="{{ $m->id }}">{{ $m->nombre }}</option>
+                        <option value="{{ $m->id }}" @disabled($m->estado !== 'Activo')>
+                            {{ $m->nombre }}{{ $m->estado !== 'Activo' ? ' (Inactivo)' : '' }}
+                        </option>
                     @endforeach
                 </select>
                 <input type="hidden" id="cambiarMomentoActividadId" value="">
@@ -776,7 +823,7 @@
 
 @push('scripts')
 <script>
-const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+const actividadesCsrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 const BASE_URL  = "{{ url('/control-ecp/administrador/actividades') }}";
 
 // ── HU1: Abrir modal crear ────────────────────────────────────────────────────
@@ -790,7 +837,7 @@ function abrirModalCrear(momentoId = null, momentoNombre = null) {
     document.getElementById('formActMetodologia').value = '';
     document.getElementById('formActAsistencia').checked = true;
     document.getElementById('formActEvidencia').checked  = true;
-    document.getElementById('formActTieneEncuesta').checked = false;
+    document.getElementById('formActTieneEncuesta').checked = true;
     toggleEncuestaSelector();
     document.getElementById('formActAlert').classList.add('d-none');
     document.getElementById('formActModalTitle').textContent = 'Registrar Actividad';
@@ -812,9 +859,9 @@ function abrirModalEditar(data) {
     document.getElementById('formActDuracionMin').value     = data.duracion_min;
     document.getElementById('formActMetodologia').value     = data.metodologia ?? '';
     document.getElementById('formActMomento').value         = data.momento_id;
-    document.getElementById('formActAsistencia').checked    = !!data.tiene_asistencia;
-    document.getElementById('formActEvidencia').checked     = !!data.tiene_evidencia;
-    document.getElementById('formActTieneEncuesta').checked = !!data.encuesta_id;
+    document.getElementById('formActAsistencia').checked = true;
+    document.getElementById('formActEvidencia').checked  = true;
+    document.getElementById('formActTieneEncuesta').checked = true;
 
     if (data.encuesta_id) {
         const sel = document.getElementById('formActEncuesta');
@@ -848,8 +895,8 @@ async function guardarActividad() {
     if (!objetivo) { mostrarAlertaForm('El objetivo pedagógico es obligatorio.'); return; }
     if (!duracion) { mostrarAlertaForm('La duración es obligatoria.'); return; }
     if (!duracionMin || parseInt(duracionMin) < 15) { mostrarAlertaForm('La duración en minutos debe ser al menos 15.'); return; }
-    if (tieneEnc && !encuestaId) {
-        mostrarAlertaForm('Debes seleccionar una encuesta activa del repositorio, o desactiva el componente encuesta.');
+    if (!tieneEnc || !encuestaId) {
+        mostrarAlertaForm('Debes seleccionar una encuesta activa del repositorio.');
         return;
     }
 
@@ -864,7 +911,7 @@ async function guardarActividad() {
     try {
         const resp = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': actividadesCsrfToken, 'Accept': 'application/json' },
             body: JSON.stringify({
                 nombre, momento_id: momentoId, objetivo, descripcion: desc,
                 duracion, duracion_min: parseInt(duracionMin), metodologia,
@@ -909,7 +956,7 @@ async function ejecutarCambiarMomento() {
     try {
         const resp = await fetch(`${BASE_URL}/${actId}/cambiar-momento`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': actividadesCsrfToken, 'Accept': 'application/json' },
             body: JSON.stringify({ momento_id: momentoId }),
         });
         const data = await resp.json();
@@ -1021,7 +1068,7 @@ async function ejecutarAccionActividad() {
     try {
         const resp = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': actividadesCsrfToken, 'Accept': 'application/json' },
             body: JSON.stringify({}),
         });
         const data = await resp.json();
@@ -1109,7 +1156,7 @@ async function ejecutarSubirEvidencia() {
     try {
         const resp = await fetch(`${BASE_URL}/${actId}/evidencias`, {
             method: 'POST',
-            headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            headers: { 'X-CSRF-TOKEN': actividadesCsrfToken, 'Accept': 'application/json' },
             body: formData,
         });
         const data = await resp.json();
@@ -1244,7 +1291,7 @@ async function verCalificaciones(actId, nombre) {
 // ── Utilidades ────────────────────────────────────────────────────────────────
 function toggleEncuestaSelector() {
     const wrap = document.getElementById('encuestaSelectorWrap');
-    if (wrap) wrap.classList.toggle('d-none', !document.getElementById('formActTieneEncuesta').checked);
+    if (wrap) wrap.classList.remove('d-none');
 }
 
 function mostrarAlertaForm(msg) {

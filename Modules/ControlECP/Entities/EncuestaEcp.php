@@ -12,6 +12,7 @@ class EncuestaEcp extends Model
     protected $table = 'controlecp_encuestas';
 
     protected $fillable = [
+        'nombre',
         'titulo',
         'descripcion',
         'estado',
@@ -24,6 +25,6 @@ class EncuestaEcp extends Model
 
     public function scopeActivas($query)
     {
-        return $query->where('estado', 'Activo');
+        return $query->whereIn('estado', ['Activo', 'Activa']);
     }
 }

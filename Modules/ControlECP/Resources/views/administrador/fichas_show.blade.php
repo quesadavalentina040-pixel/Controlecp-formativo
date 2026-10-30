@@ -420,7 +420,7 @@
 
 @push('scripts')
 <script>
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const fichaShowCsrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     // ── Confirmación activar / desactivar (HU6 / HU7 / HU8) ─────────────────────────
     let _fichaEstadoId    = null;
@@ -463,7 +463,7 @@
         try {
             const resp = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fichaShowCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({})
             });
             const data = await resp.json();
@@ -532,7 +532,7 @@
             const url = "{{ url('/control-ecp/administrador/fichas') }}/" + _syncAprendicesFichaId + "/sync-aprendices";
             const resp = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fichaShowCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({})
             });
 

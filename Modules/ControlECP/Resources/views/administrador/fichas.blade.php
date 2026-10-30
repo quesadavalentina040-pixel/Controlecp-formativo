@@ -796,7 +796,7 @@
 
 @push('scripts')
 <script>
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const fichasCsrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     // ── 1. Probar Conexión con la API Central de Fichas ─────────────────────────────
     async function probarConexionApiFichas() {
@@ -812,7 +812,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': fichasCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({})
@@ -855,7 +855,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': fichasCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ url, token, timeout })
@@ -891,7 +891,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': fichasCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ url, token, timeout })
@@ -947,7 +947,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': fichasCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({})
@@ -1021,7 +1021,7 @@
         try {
             const resp = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fichasCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({})
             });
             const data = await resp.json();
@@ -1094,7 +1094,7 @@
             const url = "{{ url('/control-ecp/administrador/fichas') }}/" + _syncAprendicesFichaId + "/sync-aprendices";
             const resp = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': fichasCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({})
             });
 

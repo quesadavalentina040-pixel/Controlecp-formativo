@@ -242,7 +242,9 @@
 
         <!-- KPI 3: Instructores -->
         <div class="col-6 col-md-3">
-            <div class="card stat-card shadow-sm h-100 bg-white">
+            <a href="{{ route('controlecp.administrador.pqr.instructores') }}"
+               class="card stat-card shadow-sm h-100 bg-white text-decoration-none"
+               title="Ver PQRS de instructores">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Instructores</span>
@@ -254,7 +256,7 @@
                     <h3 class="fw-bold mb-0 text-dark" id="kpiInstructorUsers">{{ $stats['instructors'] }}</h3>
                     <small class="text-muted mt-1 d-block">Formadores & Mediadores</small>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- KPI 4: Aprendices -->
@@ -991,7 +993,7 @@
 @push('scripts')
 <script>
     // Token CSRF de Laravel
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    const usuarioCsrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     // ── 1. Probar Conexión con la API REST Central ──────────────────────────────────
     async function probarConexionApi() {
@@ -1007,7 +1009,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': usuarioCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({})
@@ -1052,7 +1054,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': usuarioCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ url, token, timeout })
@@ -1089,7 +1091,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': usuarioCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ url, token, timeout })
@@ -1146,7 +1148,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': usuarioCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({})
@@ -1206,7 +1208,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': usuarioCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ term })
@@ -1270,7 +1272,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': usuarioCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ person_id: personId, role_slug: roleSlug })
@@ -1329,7 +1331,7 @@
         try {
             const resp = await fetch(url, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': usuarioCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({})
             });
             const data = await resp.json();
@@ -1355,7 +1357,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
+                    'X-CSRF-TOKEN': usuarioCsrfToken,
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({ role_slug: roleSlug })

@@ -1,3 +1,4 @@
+{{-- Vista: Formulario para crear un elemento del módulo Control ECP. --}}
 <x-controlecp::layouts.master>
 
     <div class="row justify-content-center">
@@ -20,6 +21,7 @@
                     </div>
                 @endif
 
+                {{-- Formulario para enviar los datos de esta acción al módulo. --}}
                 <form action="{{ route('controlecp.store') }}" method="POST">
 
                     @csrf

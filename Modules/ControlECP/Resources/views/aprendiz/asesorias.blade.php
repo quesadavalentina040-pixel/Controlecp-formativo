@@ -1,5 +1,7 @@
+{{-- Vista: Vista del aprendiz para consultar el módulo de solicitud de asesoría. --}}
 @extends('controlecp::components.layouts.dashboard')
 
+{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
 

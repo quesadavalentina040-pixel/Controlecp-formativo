@@ -1,3 +1,4 @@
+{{-- Vista: Plantilla base con metadatos, recursos y estructura visual compartida. --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="scroll-smooth">
 
@@ -31,6 +32,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    {{-- Estilos locales para la presentación y los estados visuales de la vista. --}}
     <style>
         :root {
             /* Paleta Oficial SENA Empresa ERP (Verde SENA y Azul Marino ERP) */
@@ -456,6 +458,7 @@
     @yield('content')
 
     <!-- Bootstrap 5.3 JS Bundle -->
+    {{-- Interacciones de la vista y eventos que conectan la interfaz con sus acciones. --}}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     @stack('scripts')

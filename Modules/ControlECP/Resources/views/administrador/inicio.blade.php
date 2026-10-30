@@ -223,10 +223,10 @@
             </div>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.administrador.usuarios') }}" class="btn btn-outline-success rounded-pill px-3 btn-sm bg-white shadow-sm">
+            <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? route('controlecp.administrador.usuarios') : '#' }}" class="btn btn-outline-success rounded-pill px-3 btn-sm bg-white shadow-sm" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? 'false' : 'true' }}">
                 <i class="fas fa-users-gear me-1"></i> Gestión de Usuarios
             </a>
-            <a href="{{ route('controlecp.administrador.fichas') }}" class="btn btn-outline-primary rounded-pill px-3 btn-sm bg-white shadow-sm">
+            <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="btn btn-outline-primary rounded-pill px-3 btn-sm bg-white shadow-sm" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
                 <i class="fas fa-id-card-clip me-1"></i> Fichas SICEFA
             </a>
         </div>
@@ -256,7 +256,7 @@
                 </div>
             </div>
         </div>
-        <a href="{{ route('controlecp.administrador.usuarios') }}" class="btn btn-sm text-white rounded-pill px-3 flex-shrink-0 shadow-sm" style="background-color: #39A900;">
+        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? route('controlecp.administrador.usuarios') : '#' }}" class="btn btn-sm text-white rounded-pill px-3 flex-shrink-0 shadow-sm" style="background-color: #39A900;" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? 'false' : 'true' }}">
             <i class="fas fa-rotate me-1"></i> Sincronizar Ahora
         </a>
     </div>
@@ -271,7 +271,7 @@
 
     {{-- Total usuarios activos --}}
     <div class="col-12 col-sm-6">
-        <a href="{{ route('controlecp.administrador.usuarios') }}" class="text-decoration-none">
+        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? route('controlecp.administrador.usuarios') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? 'false' : 'true' }}">
             <div class="stat-card">
                 <div class="stat-icon si-green">
                     <i class="fas fa-users"></i>
@@ -283,7 +283,12 @@
                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0">
                             {{ $conteoAdmins ?? 2 }} Admin
                         </span>
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-0">
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-0"
+                              role="link" tabindex="0"
+                              title="Ver PQRS de instructores"
+                              onclick="event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('controlecp.administrador.pqr.instructores') }}';"
+                              onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.stopPropagation(); window.location.href='{{ route('controlecp.administrador.pqr.instructores') }}'; }"
+                              style="cursor:pointer;">
                             {{ $conteoInstructores ?? 2 }} Instructores
                         </span>
                         <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0">
@@ -297,7 +302,7 @@
 
     {{-- Total fichas activas --}}
     <div class="col-12 col-sm-6">
-        <a href="{{ route('controlecp.administrador.fichas') }}" class="text-decoration-none">
+        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
             <div class="stat-card">
                 <div class="stat-icon si-blue">
                     <i class="fas fa-id-card"></i>
@@ -315,7 +320,7 @@
 
     {{-- Actividades programadas para hoy --}}
     <div class="col-12 col-sm-6">
-        <a href="{{ route('controlecp.administrador.cronograma') }}" class="text-decoration-none">
+        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.cronograma') ? route('controlecp.administrador.cronograma') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.cronograma') ? 'false' : 'true' }}">
             <div class="stat-card">
                 <div class="stat-icon si-amber">
                     <i class="fas fa-calendar-check"></i>
@@ -331,7 +336,7 @@
 
     {{-- Solicitudes pendientes --}}
     <div class="col-12 col-sm-6">
-        <a href="{{ route('controlecp.administrador.pqr') }}" class="text-decoration-none">
+        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.pqr') ? route('controlecp.administrador.pqr') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.pqr') ? 'false' : 'true' }}">
             <div class="stat-card">
                 <div class="stat-icon si-purple">
                     <i class="fas fa-clock"></i>
@@ -375,7 +380,7 @@
                         <span class="alert-card-sub">recursos con stock bajo o agotado</span>
                     </div>
                 </div>
-                <a href="{{ route('controlecp.administrador.inventario') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.inventario') ? route('controlecp.administrador.inventario') : '#' }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.inventario') ? 'false' : 'true' }}">
                     Ver Inventario
                 </a>
             </div>
@@ -412,7 +417,7 @@
                         <span class="alert-card-sub">en proceso de cierre y certificación</span>
                     </div>
                 </div>
-                <a href="{{ route('controlecp.administrador.momentos') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.momentos') ? route('controlecp.administrador.momentos') : '#' }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.momentos') ? 'false' : 'true' }}">
                     Ver Momentos
                 </a>
             </div>
@@ -456,7 +461,7 @@
             </h6>
             <small class="text-muted">Cursos sincronizados del directorio académico central de SICEFA</small>
         </div>
-        <a href="{{ route('controlecp.administrador.fichas') }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="btn btn-sm btn-outline-success rounded-pill px-3" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
             Ver Todas las Fichas ({{ $totalFichas ?? 537 }})
         </a>
     </div>
@@ -499,7 +504,7 @@
                                 </div>
                             </td>
                             <td class="text-end pe-4">
-                                <a href="{{ route('controlecp.administrador.fichas') }}" class="btn btn-sm btn-light rounded-pill px-2" title="Consultar ficha">
+                                <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="btn btn-sm btn-light rounded-pill px-2" title="Consultar ficha" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
                                     <i class="fas fa-arrow-right text-muted"></i>
                                 </a>
                             </td>
