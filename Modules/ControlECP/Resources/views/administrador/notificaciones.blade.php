@@ -40,15 +40,55 @@
         background-color: #f0fdf4 !important;
         font-weight: 500;
     }
+
+    .notificaciones-header-card {
+        background-color: #001A29;
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .notificaciones-header-card h1 {
+        color: #ffffff !important;
+    }
+
+    .notificaciones-header-card p {
+        color: #c7d4da !important;
+    }
+
+    .notificaciones-header-card .btn-outline-success {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, .75);
+    }
+
+    .notificaciones-header-card .btn-outline-success:hover {
+        background-color: #ffffff;
+        color: #001A29;
+        border-color: #ffffff;
+    }
+
+    .notif-card form .btn-outline-secondary {
+        background-color: #ffffff;
+        color: #001A29;
+        border-color: #ffffff;
+    }
+
+    .notif-card form .btn-outline-secondary:hover {
+        background-color: #f1f5f9;
+        color: #001A29;
+        border-color: #ffffff;
+    }
 </style>
 @endpush
 
 @section('dashboard-content')
 <div class="container-fluid px-3 py-3">
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
+    <div class="notificaciones-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h1 class="h3 fw-bold mb-1" style="color: #001A29; font-family: 'Outfit', sans-serif;">
+            <div class="small fw-semibold mb-1" style="color: #39A900;">
+                <i class="fas fa-bell me-2"></i>Control ECP · Panel administrativo
+            </div>
+            <h1 class="h3 fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">
                 <i class="fas fa-bell me-2" style="color: #39A900;"></i>Historial de Notificaciones
             </h1>
             <p class="mb-0 small text-muted">

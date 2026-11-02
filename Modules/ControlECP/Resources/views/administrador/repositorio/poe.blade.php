@@ -57,6 +57,18 @@
         transform: translateY(-1px);
     }
 
+    .poe-card form .btn-outline-secondary {
+        background-color: #ffffff;
+        color: var(--petroleo-ecp);
+        border-color: #ffffff;
+    }
+
+    .poe-card form .btn-outline-secondary:hover {
+        background-color: #f1f5f9;
+        color: var(--petroleo-ecp);
+        border-color: #ffffff;
+    }
+
     .btn-ecp-outline-navy {
         background-color: transparent;
         color: var(--petroleo-ecp) !important;
@@ -200,26 +212,50 @@
         border-top: 1px solid #e2e8f0;
         padding: 1.25rem 1.75rem;
     }
+
+    .poe-header-card {
+        background-color: var(--petroleo-ecp);
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .poe-header-card h2 {
+        color: #ffffff !important;
+    }
+
+    .poe-header-card p {
+        color: #c7d4da !important;
+    }
+
+    .poe-header-card .btn-ecp-navy,
+    .poe-header-card .btn-ecp-outline-navy {
+        background-color: transparent;
+        color: #ffffff !important;
+        border-color: rgba(255, 255, 255, .75);
+    }
+
+    .poe-header-card .btn-ecp-navy:hover,
+    .poe-header-card .btn-ecp-outline-navy:hover {
+        background-color: #ffffff;
+        color: var(--petroleo-ecp) !important;
+        border-color: #ffffff;
+    }
 </style>
 @endpush
 
 @section('dashboard-content')
 <div class="container-fluid px-3 py-3">
 
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div class="poe-header-card d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 text-muted" style="font-size: 0.85rem;">
-                    <li class="breadcrumb-item"><a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none text-muted">Control ECP</a></li>
-                    <li class="breadcrumb-item">Repositorio</li>
-                    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">POE</li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-1" style="color: var(--petroleo-ecp);">
-                Procedimiento Operativo Estandarizado (POE)
+            <div class="small fw-semibold mb-1" style="color: var(--verde-ecp);">
+                <i class="fas fa-file-contract me-2"></i>Control ECP · Panel administrativo
+            </div>
+            <h2 class="h3 fw-bold mb-1">
+                Procedimiento Operativo Estandarizado
             </h2>
             <p class="text-muted mb-0" style="font-size: 0.92rem;">
-                Gestión, versiones, programación de entregas e historial de líderes de los POE del cargo de Líder (ASIG-SGC-M-001).
+                Gestión de versiones, programación de entregas e historial de líderes.
             </p>
         </div>
 
@@ -287,7 +323,7 @@
     <div class="poe-card p-3 mb-4">
 
         <form method="GET" action="{{ route('controlecp.administrador.repositorio.poe.index') }}" class="row g-2 align-items-center" id="formBuscarPoe">
-            <div class="col-12 col-md-8 col-lg-9">
+            <div class="col-12 col-md-8 col-lg-8">
                 <div class="input-group">
                     <span class="input-group-text bg-white border-end-0 text-muted">
                         <i class="fa-solid fa-magnifying-glass"></i>
@@ -302,12 +338,12 @@
 
                 </div>
             </div>
-            <div class="col-6 col-md-2 col-lg-1.5 d-grid">
+            <div class="col-6 col-md-2 col-lg-2 d-grid">
                 <button type="submit" class="btn btn-ecp-navy py-2">
                     Buscar
                 </button>
             </div>
-            <div class="col-6 col-md-2 col-lg-1.5 d-grid">
+            <div class="col-6 col-md-2 col-lg-2 d-grid">
                 <a href="{{ route('controlecp.administrador.repositorio.poe.index') }}" class="btn btn-outline-secondary py-2" id="btnLimpiarBuscar">
                     <i class="fa-solid fa-rotate-left me-1"></i> Limpiar
                 </a>

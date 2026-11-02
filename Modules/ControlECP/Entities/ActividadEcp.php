@@ -23,6 +23,7 @@ class ActividadEcp extends Model
         'estado',
         'tiene_asistencia',
         'encuesta_id',
+        'id_encuesta',
         'tiene_evidencia',
     ];
 
@@ -40,7 +41,7 @@ class ActividadEcp extends Model
 
     public function encuesta()
     {
-        return $this->belongsTo(EncuestaEcp::class, 'encuesta_id');
+        return $this->belongsTo(Encuesta::class, 'id_encuesta', 'id_encuesta');
     }
 
     public function evidencias()

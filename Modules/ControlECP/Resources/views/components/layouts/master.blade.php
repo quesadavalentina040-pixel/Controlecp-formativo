@@ -453,7 +453,7 @@
     @stack('styles')
 </head>
 
-<body>
+<body class="{{ request()->boolean('modal') ? 'modal-user-form-page' : '' }}">
 
     @yield('content')
 

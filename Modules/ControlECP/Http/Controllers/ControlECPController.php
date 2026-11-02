@@ -104,12 +104,6 @@ class ControlECPController extends Controller
               ->orWhereNull('status');
         })->count();
 
-        // Fichas con programas para mostrar en el seguimiento de momentos
-        $fichasDestacadas = Course::with('program')
-            ->whereHas('program')
-            ->take(6)
-            ->get();
-
         // Actividades programadas para hoy (Cultura de Paz)
         $actividadesHoy = 3;
 
@@ -132,18 +126,6 @@ class ControlECPController extends Controller
         // Fichas próximas a completar los 3 momentos
         $fichasProximasVencer = min(4, $totalFichasActivas);
 
-        // Estado de integración con la API REST Central SICEFA
-        $apiConfig = Cache::store('file')->get('controlecp_api_config', [
-            'url' => route('controlecp.api.usuarios.mock'),
-            'token' => '',
-            'timeout' => 5,
-        ]);
-        $lastSync = Cache::store('file')->get('controlecp_last_sync', [
-            'date' => now()->format('d/m/Y H:i'),
-            'total_synced' => $totalUsuariosEcp,
-            'status' => 'Conectado',
-        ]);
-
         return view('controlecp::administrador.inicio', compact(
             'usuario',
             'totalUsuariosEcp',
@@ -153,15 +135,12 @@ class ControlECPController extends Controller
             'conteoAprendices',
             'totalFichas',
             'totalFichasActivas',
-            'fichasDestacadas',
             'actividadesHoy',
             'solicitudesPendientes',
             'totalPqrs',
             'recursosCriticos',
             'materialesCriticos',
             'fichasProximasVencer',
-            'apiConfig',
-            'lastSync'
         ));
     }
 

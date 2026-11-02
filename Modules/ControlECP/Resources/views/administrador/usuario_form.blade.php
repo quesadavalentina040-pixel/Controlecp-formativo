@@ -17,6 +17,25 @@
         letter-spacing: 0.06em;
         color: #52796f;
     }
+
+    body.modal-user-form-page {
+        overflow-x: hidden;
+    }
+
+    body.modal-user-form-page > .d-flex > div:first-child,
+    body.modal-user-form-page .ecp-navbar,
+    body.modal-user-form-page footer {
+        display: none !important;
+    }
+
+    body.modal-user-form-page > .d-flex > .flex-grow-1 > nav,
+    body.modal-user-form-page > .d-flex > .flex-grow-1 > .flex-grow-1 > .admin-dashboard-content::before {
+        display: none !important;
+    }
+
+    body.modal-user-form-page > .d-flex > .flex-grow-1 > .flex-grow-1 {
+        padding: 1.25rem !important;
+    }
 </style>
 @endpush
 
@@ -93,6 +112,9 @@
         <form method="POST" action="{{ route('controlecp.administrador.usuarios.store') }}" autocomplete="off">
     @endif
     @csrf
+    @if(request()->boolean('modal'))
+        <input type="hidden" name="modal" value="1">
+    @endif
 
     <div class="row g-4">
 
@@ -286,37 +308,6 @@
                 </div>
             </div>
 
-            {{-- Estado (solo visible en edición) --}}
-            @if($isEdit)
-            <div class="card border-0 shadow-sm card-form mb-4">
-                <div class="card-body p-4">
-                    <p class="section-title mb-3"><i class="fas fa-toggle-on me-2"></i>Estado del Usuario</p>
-                    <div class="d-flex gap-3">
-                        <label class="d-flex align-items-center gap-2 p-3 rounded-3 border flex-fill" style="cursor: pointer;">
-                            <input type="radio" name="estado" value="Activo"
-                                   class="form-check-input mt-0"
-                                   {{ ($editUser->estado ?? 'Activo') === 'Activo' ? 'checked' : '' }}>
-                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
-                                <i class="fas fa-circle-check me-1"></i> Activo
-                            </span>
-                        </label>
-                        <label class="d-flex align-items-center gap-2 p-3 rounded-3 border flex-fill" style="cursor: pointer;">
-                            <input type="radio" name="estado" value="Inactivo"
-                                   class="form-check-input mt-0"
-                                   {{ ($editUser->estado ?? 'Activo') === 'Inactivo' ? 'checked' : '' }}>
-                            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1">
-                                <i class="fas fa-ban me-1"></i> Inactivo
-                            </span>
-                        </label>
-                    </div>
-                    <div class="small text-muted mt-2">
-                        <i class="fas fa-info-circle me-1"></i>
-                        Un usuario Inactivo no puede iniciar sesión, pero su información y historial se conservan.
-                    </div>
-                </div>
-            </div>
-            @endif
-
             {{-- Botones --}}
             <div class="d-grid gap-2">
                 <button type="submit" class="btn text-white rounded-pill py-2 fw-semibold shadow-sm"
@@ -339,6 +330,13 @@
 
 @push('scripts')
 <script>
+    @if(session('success') && request()->boolean('modal'))
+        window.parent.postMessage({
+            type: 'user-saved',
+            message: @json(session('success'))
+        }, window.location.origin);
+    @endif
+
     function togglePass() {
         const input = document.getElementById('inputPassword');
         const icon  = document.getElementById('iconEye');

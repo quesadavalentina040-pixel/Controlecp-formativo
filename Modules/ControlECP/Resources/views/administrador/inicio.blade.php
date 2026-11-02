@@ -28,14 +28,27 @@
     font-family: 'Outfit', sans-serif;
     font-size: 2rem;
     font-weight: 800;
-    color: #001A29;
+    color: #fff;
     margin-bottom: .3rem;
     line-height: 1.2;
 }
 .dash-welcome .welcome-sub {
     font-size: .93rem;
-    color: #52796f;
+    color: #c7d4da;
     margin-bottom: 1.1rem;
+}
+.dash-welcome {
+    background: linear-gradient(120deg, #001A29, #00324D);
+    border-radius: 24px;
+    padding: 2rem 2.25rem;
+    color: #fff;
+}
+.dash-welcome .welcome-eyebrow {
+    color: #62E31D;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
 }
 .dash-welcome .welcome-section-label {
     font-size: .72rem;
@@ -46,33 +59,6 @@
 }
 
 /* ── Banner de Sincronización API Central ── */
-.api-sync-banner {
-    background: linear-gradient(135deg, #f0fbf4 0%, #d8f3dc 100%);
-    border-left: 6px solid #39A900 !important;
-    border-radius: 16px;
-    padding: 1.25rem 1.4rem;
-    transition: transform .18s, box-shadow .18s;
-}
-.api-sync-banner:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(57, 169, 0, 0.12);
-}
-
-.pulse-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background-color: #39A900;
-    display: inline-block;
-    box-shadow: 0 0 0 0 rgba(57, 169, 0, 0.7);
-    animation: pulse-dot 1.8s infinite;
-}
-@keyframes pulse-dot {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(57, 169, 0, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(57, 169, 0, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(57, 169, 0, 0); }
-}
-
 /* ── Tarjetas de resumen ── */
 .stat-card {
     background: #fff;
@@ -212,9 +198,12 @@
 {{-- ════════════════════════════════════════════════
      BIENVENIDA Y CABECERA
 ════════════════════════════════════════════════ --}}
-<div class="dash-welcome mb-3">
+<div class="dash-welcome mb-4">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
+            <div class="welcome-eyebrow">
+                <i class="fas fa-chart-line me-2"></i>Control ECP · Panel administrativo
+            </div>
             <div class="welcome-title">
                 Bienvenido, {{ Auth::user()->full_name ?? Auth::user()->name }} 👋
             </div>
@@ -222,47 +211,9 @@
                 Resumen general del sistema y datos en vivo sincronizados con el <strong>ERP SENA Empresa / SICEFA</strong>.
             </div>
         </div>
-        <div class="d-flex gap-2">
-            <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? route('controlecp.administrador.usuarios') : '#' }}" class="btn btn-outline-success rounded-pill px-3 btn-sm bg-white shadow-sm" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? 'false' : 'true' }}">
-                <i class="fas fa-users-gear me-1"></i> Gestión de Usuarios
-            </a>
-            <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="btn btn-outline-primary rounded-pill px-3 btn-sm bg-white shadow-sm" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
-                <i class="fas fa-id-card-clip me-1"></i> Fichas SICEFA
-            </a>
-        </div>
     </div>
 </div>
 
-{{-- ════════════════════════════════════════════════
-     BANNER DE INTEGRACIÓN API CENTRAL SICEFA
-════════════════════════════════════════════════ --}}
-<div class="api-sync-banner border-0 shadow-sm mb-4">
-    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3">
-        <div class="d-flex align-items-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
-                 style="width: 48px; height: 48px; background: #FFFFFF; color: #39A900; font-size: 1.35rem;">
-                <i class="fas fa-network-wired"></i>
-            </div>
-            <div>
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <strong class="text-dark" style="font-size: 0.95rem;">Integración API REST Central SICEFA / ERP SENA Empresa</strong>
-                    <span class="badge rounded-pill bg-white text-success border border-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.74rem;">
-                        <span class="pulse-dot"></span> Enlace Listo &bull; Sincronizado
-                    </span>
-                </div>
-                <div class="small text-dark mt-1" style="font-size: 0.83rem;">
-                    Origen: <code>{{ $apiConfig['url'] ?? route('controlecp.api.usuarios.mock') }}</code> &bull;
-                    <span class="text-muted">Última sincronización: <strong>{{ $lastSync['date'] ?? now()->format('d/m/Y H:i') }}</strong></span>
-                </div>
-            </div>
-        </div>
-        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? route('controlecp.administrador.usuarios') : '#' }}" class="btn btn-sm text-white rounded-pill px-3 flex-shrink-0 shadow-sm" style="background-color: #39A900;" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? 'false' : 'true' }}">
-            <i class="fas fa-rotate me-1"></i> Sincronizar Ahora
-        </a>
-    </div>
-</div>
-
-<div class="welcome-section-label mb-2">Resumen General</div>
 
 {{-- ════════════════════════════════════════════════
      TARJETAS DE RESUMEN (2 × 2) CON DATOS REALES
@@ -448,76 +399,6 @@
         </div>
     </div>
 
-</div>
-
-{{-- ════════════════════════════════════════════════
-     FICHAS ACADÉMICAS DESTACADAS DEL ERP SENA EMPRESA
-════════════════════════════════════════════════ --}}
-<div class="card border-0 shadow-sm" style="border-radius: 16px;">
-    <div class="card-header bg-white border-0 pt-3 pb-2 px-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
-        <div>
-            <h6 class="fw-bold mb-0 text-dark">
-                <i class="fas fa-graduation-cap me-2 text-success"></i>Fichas Académicas y Programas del Centro La Angostura
-            </h6>
-            <small class="text-muted">Cursos sincronizados del directorio académico central de SICEFA</small>
-        </div>
-        <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="btn btn-sm btn-outline-success rounded-pill px-3" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
-            Ver Todas las Fichas ({{ $totalFichas ?? 537 }})
-        </a>
-    </div>
-
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="font-size: 0.88rem;">
-                <thead class="table-light" style="font-size: 0.78rem; text-transform: uppercase; color: #52796f;">
-                    <tr>
-                        <th class="ps-4 py-2">Ficha</th>
-                        <th>Programa de Formación</th>
-                        <th>Estado Académico</th>
-                        <th>Ruta Cultura de Paz</th>
-                        <th class="text-end pe-4">Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($fichasDestacadas as $ficha)
-                        <tr>
-                            <td class="ps-4">
-                                <span class="badge bg-light text-dark border fw-bold px-2 py-1">
-                                    <i class="fas fa-id-badge text-success me-1"></i>{{ $ficha->code }}
-                                </span>
-                            </td>
-                            <td>
-                                <strong class="text-dark">{{ $ficha->program ? $ficha->program->name : 'PROGRAMA EN FORMACIÓN' }}</strong>
-                            </td>
-                            <td>
-                                <span class="badge {{ $ficha->status === 'Activo' ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-secondary-subtle text-secondary' }} rounded-pill px-2 py-1">
-                                    <i class="fas fa-circle {{ $ficha->status === 'Activo' ? 'text-success' : 'text-secondary' }} me-1" style="font-size: 0.55rem;"></i>
-                                    {{ $ficha->status ?? 'Activo' }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="progress flex-grow-1" style="height: 6px; width: 80px; border-radius: 4px;">
-                                        <div class="progress-bar bg-success" style="width: 75%;"></div>
-                                    </div>
-                                    <span class="small text-muted" style="font-size: 0.75rem;">Momento 2</span>
-                                </div>
-                            </td>
-                            <td class="text-end pe-4">
-                                <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="btn btn-sm btn-light rounded-pill px-2" title="Consultar ficha" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
-                                    <i class="fas fa-arrow-right text-muted"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-3 text-muted">No hay fichas disponibles en este momento.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 @endsection

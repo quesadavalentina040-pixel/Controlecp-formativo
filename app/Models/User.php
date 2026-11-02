@@ -26,6 +26,7 @@ class User extends Authenticatable
         'person_id',
         'email',
         'estado',
+        'origen_registro',
         'password',
     ];
 

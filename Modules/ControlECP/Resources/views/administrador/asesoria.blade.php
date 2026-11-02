@@ -23,6 +23,25 @@
         font-family: 'Outfit', sans-serif;
     }
 
+    .asesoria-header-card {
+        background-color: var(--petroleo);
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .asesoria-header-card h1 {
+        color: #ffffff !important;
+    }
+
+    .asesoria-header-card p {
+        color: #c7d4da !important;
+    }
+
+    .asesoria-header-card .btn-ecp-outline {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, .65);
+    }
+
     /* Tarjetas con elevación suave */
     .ecp-card {
         background: #ffffff;
@@ -65,6 +84,18 @@
     .btn-ecp-outline:hover {
         background-color: var(--petroleo);
         color: #ffffff;
+    }
+
+    .ecp-card form .btn-outline-secondary {
+        background-color: #ffffff;
+        color: var(--petroleo);
+        border-color: #ffffff;
+    }
+
+    .ecp-card form .btn-outline-secondary:hover {
+        background-color: #f1f5f9;
+        color: var(--petroleo);
+        border-color: #ffffff;
     }
 
     /* Badges de estado */
@@ -116,6 +147,12 @@
         background: var(--petroleo);
         color: #ffffff;
         border-color: var(--petroleo);
+    }
+
+    .asesoria-actions-dropdown .dropdown-menu {
+        position: fixed !important;
+        z-index: 1090;
+        min-width: 220px;
     }
 </style>
 @endpush
@@ -171,8 +208,11 @@
         </div>
     </div>
 
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
+    <div class="asesoria-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
+            <div class="small fw-semibold mb-1" style="color: var(--verde);">
+                <i class="fas fa-chart-line me-2"></i>Control ECP · Panel administrativo
+            </div>
             <h1 class="h3 fw-bold mb-1 font-outfit" style="color: var(--petroleo);">
                 <i class="fas fa-comments me-2" style="color: var(--verde);"></i>Gestión de Asesorías
             </h1>
@@ -189,9 +229,6 @@
             </button>
             <button type="button" class="btn btn-ecp-outline px-3" data-bs-toggle="modal" data-bs-target="#modalCategorias">
                 <i class="fas fa-tags me-1"></i> Categorías
-            </button>
-            <button type="button" class="btn btn-ecp-outline px-3" data-bs-toggle="modal" data-bs-target="#modalReporte">
-                <i class="fas fa-file-export me-1"></i> Generar reporte
             </button>
         </div>
     </div>
@@ -433,7 +470,7 @@
                                         </button>
                                     @endif
 
-                                    <div class="dropdown d-inline-block">
+                                    <div class="dropdown d-inline-block asesoria-actions-dropdown">
                                         <button class="btn-action-icon dropdown-toggle dropdown-toggle-split" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Más opciones">
                                             <i class="fas fa-ellipsis-vertical text-muted"></i>
                                         </button>
@@ -494,14 +531,11 @@
             </table>
         </div>
 
-        <div class="d-flex flex-wrap justify-content-between align-items-center p-3 border-top gap-2 bg-light">
-            <span class="small text-muted">
-                Mostrando {{ $asesorias->firstItem() ?? 0 }} a {{ $asesorias->lastItem() ?? 0 }} de {{ $asesorias->total() }} asesorías
-            </span>
-            <div>
+        @if($asesorias->hasPages())
+            <div class="d-flex justify-content-center align-items-center p-3 border-top bg-light">
                 {{ $asesorias->links() }}
             </div>
-        </div>
+        @endif
     </div>
 
 </div>

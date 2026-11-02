@@ -114,7 +114,7 @@ class ReporteController extends Controller
     private function poe(Request $request): array
     {
         if (!Schema::hasTable('poe_programaciones')) return $this->resultadoVacio('No existe información de POE.');
-        $rows = DB::table('poe_programaciones')->orderByDesc('created_at')->get();
+        $rows = DB::table('poe_programaciones')->orderByDesc('id_poe_programacion')->get();
         return $this->resultado($rows, ['Total' => $rows->count()]);
     }
 

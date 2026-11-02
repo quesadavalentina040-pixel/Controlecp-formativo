@@ -59,6 +59,18 @@
         transform: translateY(-1px);
     }
 
+    .encuesta-card form .btn-outline-secondary {
+        background-color: #ffffff;
+        color: var(--petroleo-ecp);
+        border-color: #ffffff;
+    }
+
+    .encuesta-card form .btn-outline-secondary:hover {
+        background-color: #f1f5f9;
+        color: var(--petroleo-ecp);
+        border-color: #ffffff;
+    }
+
     /* Botones circulares de acción en tabla */
     .btn-action-icon {
         width: 34px;
@@ -86,6 +98,27 @@
         background: var(--verde-ecp);
         color: #ffffff;
         border-color: var(--verde-ecp);
+    }
+
+    .encuesta-header-card {
+        background-color: var(--petroleo-ecp);
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .encuesta-header-card h1 {
+        color: #ffffff !important;
+    }
+
+    .encuesta-header-card p {
+        color: #c7d4da !important;
+    }
+
+    .encuesta-header-card .badge {
+        background-color: transparent !important;
+        color: var(--verde-ecp) !important;
+        border: 0;
+        padding-left: 0;
     }
 
     .btn-action-icon.btn-action-danger:hover {
@@ -274,31 +307,26 @@
         </div>
     @endif
 
-    <div class="encuesta-card p-4 mb-4">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
-            <div>
-                <div class="d-flex align-items-center gap-2 mb-1">
-                    <span class="badge rounded-pill" style="background-color: var(--verde-ecp-claro); color: #1b5e20; font-size: 0.75rem;">
-                        <i class="fas fa-landmark me-1"></i> Repositorio Institucional
-                    </span>
-                    <span class="badge rounded-pill bg-light text-muted border" style="font-size: 0.75rem;">
-                        HU-009: Gestión de Encuestas
-                    </span>
-                </div>
-                <h1 class="h3 font-outfit fw-bold text-dark mb-1">Encuestas - Escuela Cultura de Paz</h1>
-                <p class="text-muted small mb-0">
-                    Crea, estructura y administra los instrumentos de evaluación formativa y satisfacción vinculados a las actividades.
-                </p>
+    <div class="encuesta-header-card d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+        <div>
+            <div class="small fw-semibold mb-1" style="color: var(--verde-ecp);">
+                <i class="fas fa-square-poll-vertical me-2"></i>Control ECP · Panel administrativo
             </div>
-
-            <div>
-                <button type="button" class="btn btn-ecp-primary d-flex align-items-center gap-2 shadow-sm" onclick="abrirModalCrearEncuesta()">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Nueva Encuesta</span>
-                </button>
-            </div>
+            <h1 class="h3 font-outfit fw-bold mb-1">Gestión de Encuestas</h1>
+            <p class="text-muted small mb-0">
+                Crea, estructura y administra los instrumentos de evaluación formativa y satisfacción vinculados a las actividades.
+            </p>
         </div>
 
+        <div>
+            <button type="button" class="btn btn-ecp-primary d-flex align-items-center gap-2 shadow-sm" onclick="abrirModalCrearEncuesta()">
+                <i class="fas fa-plus-circle"></i>
+                <span>Nueva Encuesta</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="encuesta-card p-4 mb-4">
         <hr class="my-3" style="border-color: var(--gris-ecp-borde);">
         <div class="row g-3 text-center text-md-start">
             <div class="col-6 col-md-3">
@@ -376,12 +404,13 @@
                 </select>
             </div>
 
-            <div class="col-6 col-md-2 col-lg-4 text-end">
-                @if(request('buscar') || request('estado'))
-                    <a href="{{ route('controlecp.administrador.repositorio.encuesta.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-                        <i class="fas fa-rotate-left me-1"></i> Limpiar filtros
-                    </a>
-                @endif
+            <div class="col-12 col-md-6 col-lg-4 d-flex gap-2">
+                <button type="submit" class="btn btn-ecp-primary btn-sm rounded-pill px-4 flex-grow-1">
+                    <i class="fas fa-search me-1"></i> Buscar
+                </button>
+                <a href="{{ route('controlecp.administrador.repositorio.encuesta.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-4 flex-grow-1">
+                    <i class="fas fa-rotate-left me-1"></i> Limpiar
+                </a>
             </div>
         </form>
     </div>

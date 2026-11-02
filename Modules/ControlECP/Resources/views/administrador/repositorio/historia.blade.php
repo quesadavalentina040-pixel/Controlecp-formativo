@@ -23,11 +23,19 @@
     }
 
     .historia-header {
-        background: transparent;
+        background: var(--petroleo-ecp);
         border: none;
+        border-radius: 24px;
         box-shadow: none;
-        padding: 0.25rem 0 0.5rem;
-        border-bottom: 1px solid rgba(82, 121, 111, 0.18);
+        padding: 1.25rem 1.5rem;
+    }
+
+    .historia-header h1 {
+        color: #ffffff !important;
+    }
+
+    .historia-header p {
+        color: #c7d4da !important;
     }
 
     /* Tarjetas con sombra suave y estilo ECP */
@@ -404,7 +412,10 @@
     <div class="historia-header mb-4">
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
             <div>
-                <h1 class="display-6 fw-bold text-dark mb-1" style="font-size: clamp(2rem, 2.5vw, 3rem); line-height: 1.1; letter-spacing: -0.03em;">
+                <div class="small fw-semibold mb-1" style="color: var(--verde-ecp);">
+                    <i class="fas fa-feather-pointed me-2"></i>Control ECP · Panel administrativo
+                </div>
+                <h1 class="display-6 fw-bold mb-1" style="font-size: clamp(2rem, 2.5vw, 3rem); line-height: 1.1; letter-spacing: -0.03em;">
                     Historia de la Escuela Cultura de Paz
                 </h1>
                 <p class="text-muted mb-0">

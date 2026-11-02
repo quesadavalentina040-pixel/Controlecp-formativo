@@ -2,6 +2,18 @@
 
 @push('styles')
 <style>
+    .cronograma-header-card {
+        background-color: #001A29;
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+    .cronograma-header-card h2 {
+        color: #fff !important;
+    }
+    .cronograma-header-card .text-muted {
+        color: #c7d4da !important;
+    }
+
     /* ── Estilos del Semáforo ── */
     .semaforo-indicator {
         width: 14px;
@@ -191,21 +203,12 @@
 <div class="container-fluid px-2 px-md-3 py-2">
 
     <!-- ── Breadcrumb & Cabecera Principal ── -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
+    <div class="cronograma-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: #39A900;">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
-                        Gestión de Cronograma (HU-006)
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: #001A29; font-family: 'Outfit', sans-serif;">
+            <div class="small fw-semibold mb-1" style="color: #39A900;">
+                <i class="fas fa-calendar-days me-2"></i>Control ECP · Gestión de Cronograma
+            </div>
+            <h2 class="h3 fw-bold mb-0" style="font-family: 'Outfit', sans-serif;">
                 <i class="fas fa-calendar-days me-2" style="color: #39A900;"></i>Cronograma de Actividades
             </h2>
             <p class="text-muted small mb-0">Programación, control temporal, semaforización de cercanía y asignación de recursos</p>
@@ -215,9 +218,6 @@
             <button class="btn text-white rounded-pill px-4 shadow-sm fw-semibold" style="background-color: #39A900; border-color: #39A900;" data-bs-toggle="modal" data-bs-target="#modalProgramarActividad">
                 <i class="fas fa-plus-circle me-2"></i>Programar Actividad
             </button>
-            <a href="{{ route('controlecp.administrador.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3">
-                <i class="fas fa-arrow-left me-1"></i>Inicio
-            </a>
         </div>
     </div>
 

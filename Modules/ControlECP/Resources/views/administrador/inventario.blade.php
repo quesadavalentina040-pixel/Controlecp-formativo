@@ -96,23 +96,41 @@
         width: 520px !important;
         max-width: 95vw;
     }
+
+    .inventario-header-card {
+        background-color: #001A29;
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .inventario-header-card h2 {
+        color: #ffffff !important;
+    }
+
+    .inventario-header-card .text-muted {
+        color: #c7d4da !important;
+    }
+
+    .inventario-header-card .btn-outline-primary,
+    .inventario-header-card .btn-outline-secondary,
+    .inventario-header-card .btn-outline-info,
+    .inventario-header-card .btn-outline-success {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, .65);
+    }
 </style>
 @endpush
 
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
 
-    <!-- Cabecera Institucional (Mockup Rol Administrador - Image 2) -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-3 border-bottom">
+    <div class="inventario-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge px-2 py-1 small fw-bold" style="background-color: #E2F5D7; color: #39A900; font-size: 0.72rem; letter-spacing: 0.5px;">
-                    ROL ADMINISTRADOR
-                </span>
-                <span class="text-muted small">&bull; Escuela Cultura de Paz</span>
+            <div class="small fw-semibold mb-1" style="color: #39A900;">
+                <i class="fas fa-star me-2"></i>Control ECP · Gestión de Inventario
             </div>
-            <h2 class="h3 fw-bold mb-0" style="color: #001A29; font-family: 'Outfit', sans-serif;">
-                Gestionar Recursos e Inventario
+            <h2 class="h3 fw-bold mb-0" style="font-family: 'Outfit', sans-serif;">
+                <i class="fas fa-boxes-stacked me-2" style="color: #39A900;"></i>Gestión de Inventario
             </h2>
             <p class="text-muted small mb-0">Administra espacios, materiales y equipos para las actividades de la Escuela</p>
         </div>
@@ -128,24 +146,6 @@
             <button type="button" class="btn btn-outline-secondary rounded-pill px-3 shadow-sm btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalGestionCategorias">
                 <i class="fas fa-folder-open text-primary"></i>
                 <span>Categorías</span>
-            </button>
-
-            <!-- Botón Generar Reporte (Abre Modal de Reporte con Gráficas sin salir) -->
-            <button type="button" class="btn btn-outline-dark rounded-pill px-3 shadow-sm btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalReporteInventario" onclick="inicializarGraficasReporte()">
-                <i class="fas fa-chart-pie text-success"></i>
-                <span>Generar reporte</span>
-            </button>
-
-            <!-- HU 16: Botón Historial de Movimientos -->
-            <a href="{{ route('controlecp.administrador.inventario.movimientos') }}" class="btn btn-outline-info rounded-pill px-3 shadow-sm btn-sm d-flex align-items-center gap-2">
-                <i class="fas fa-clock-rotate-left"></i>
-                <span>Historial de movimientos</span>
-            </a>
-
-            <!-- Botón Movimiento Rápido (Modal) -->
-            <button type="button" class="btn btn-outline-success rounded-pill px-3 shadow-sm btn-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalRegistrarMovimiento">
-                <i class="fas fa-right-left"></i>
-                <span>Registrar movimiento</span>
             </button>
 
             <!-- Botón Registrar Recurso (Abre Cajón / Drawer Lateral sin salir) -->
@@ -348,14 +348,18 @@
                 <a href="{{ route('controlecp.administrador.inventario') }}" class="nav-link rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2 {{ request('ver_bajas') != '1' ? 'active' : '' }}" style="{{ request('ver_bajas') != '1' ? 'background-color: #39A900; color: #FFFFFF;' : 'background-color: #F1F5F9; color: #475569;' }}">
                     <i class="fas fa-boxes-stacked"></i>
                     <span>Recursos activos</span>
-                    <span class="badge {{ request('ver_bajas') != '1' ? 'bg-white text-success' : 'bg-secondary text-white' }} rounded-pill">{{ $activosCount }}</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('controlecp.administrador.inventario', ['ver_bajas' => 1]) }}" class="nav-link rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2 {{ request('ver_bajas') == '1' ? 'active' : '' }}" style="{{ request('ver_bajas') == '1' ? 'background-color: #DC2626; color: #FFFFFF;' : 'background-color: #F1F5F9; color: #475569;' }}">
                     <i class="fas fa-ban"></i>
                     <span>Recursos dados de baja</span>
-                    <span class="badge {{ request('ver_bajas') == '1' ? 'bg-white text-danger' : 'bg-danger text-white' }} rounded-pill">{{ $bajasCount }}</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('controlecp.administrador.inventario.movimientos') }}" class="nav-link rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2" style="background-color: #F1F5F9; color: #475569;">
+                    <i class="fas fa-clock-rotate-left"></i>
+                    <span>Historial de movimientos</span>
                 </a>
             </li>
         </ul>
@@ -363,10 +367,6 @@
         @if(request('ver_bajas') == '1')
             <div class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill border border-danger-subtle small fw-semibold">
                 <i class="fas fa-circle-exclamation me-1"></i> Visualizando recursos dados de baja (Inactivos). El historial de movimientos permanece conservado.
-            </div>
-        @else
-            <div class="text-muted small">
-                Mostrando <strong class="text-dark">{{ $recursos->total() }}</strong> recurso(s) activo(s)
             </div>
         @endif
     </div>
@@ -542,11 +542,8 @@
                 </table>
             </div>
 
-            <!-- Paginación con texto 'Mostrando X - Y de Z' -->
-            <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <div class="small text-muted">
-                    Mostrando {{ $recursos->firstItem() ?? 0 }} - {{ $recursos->lastItem() ?? 0 }} de {{ $recursos->total() }} recursos
-                </div>
+            <!-- Paginación -->
+            <div class="p-3 border-top d-flex flex-wrap justify-content-end align-items-center gap-2">
                 <div>
                     {{ $recursos->links() }}
                 </div>

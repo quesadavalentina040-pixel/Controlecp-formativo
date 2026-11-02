@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
 use Modules\ControlECP\Entities\ActividadEcp;
 use Modules\ControlECP\Entities\Momento;
-use Modules\ControlECP\Entities\EncuestaEcp;
+use Modules\ControlECP\Entities\Encuesta;
 use Modules\ControlECP\Entities\EvidenciaEcp;
 use Modules\ControlECP\Entities\CalificacionEcp;
 use Modules\SICA\Entities\Course;
@@ -37,9 +37,8 @@ class ActividadController extends Controller
         ->orderBy('orden')
         ->get();
 
-        $nombreEncuesta = Schema::hasColumn('controlecp_encuestas', 'nombre') ? 'nombre' : 'titulo';
-        $encuestasActivas = EncuestaEcp::whereIn('estado', ['Activo', 'Activa'])
-            ->orderBy($nombreEncuesta)
+        $encuestasActivas = Encuesta::where('estado', 'Activa')
+            ->orderBy('nombre')
             ->get();
 
         $stats = [
@@ -74,14 +73,14 @@ class ActividadController extends Controller
             'objetivo'    => 'required|string',
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
-            'encuesta_id' => 'required|exists:controlecp_encuestas,id',
+            'id_encuesta'  => 'required|exists:encuestas,id_encuesta',
         ], [
             'momento_id.required'  => 'Debes seleccionar un momento.',
             'nombre.required'      => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'    => 'El objetivo pedagógico es obligatorio.',
             'duracion.required'    => 'La duración es obligatoria.',
             'duracion_min.required'=> 'La duración en minutos es obligatoria.',
-            'encuesta_id.required' => 'Debes seleccionar una encuesta activa.',
+            'id_encuesta.required' => 'Debes seleccionar una encuesta activa.',
         ]);
 
         if (!Momento::whereKey($request->momento_id)->where('estado', 'Activo')->exists()) {
@@ -101,14 +100,14 @@ class ActividadController extends Controller
         }
 
         // HU7/HU8 — La encuesta es un componente obligatorio.
-        $encuesta = EncuestaEcp::whereKey($request->encuesta_id)
-            ->whereIn('estado', ['Activo', 'Activa'])
+        $encuesta = Encuesta::where('id_encuesta', $request->id_encuesta)
+            ->where('estado', 'Activa')
             ->first();
         if (!$encuesta) {
             return response()->json([
                 'success' => false,
                 'message' => 'Primero cree y active una encuesta en el repositorio antes de asociarla a esta actividad.',
-                'field'   => 'encuesta_id',
+                'field'   => 'id_encuesta',
             ], 422);
         }
 
@@ -128,7 +127,7 @@ class ActividadController extends Controller
             'metodologia'      => trim($request->metodologia ?? ''),
             'estado'           => 'Activo',
             'tiene_asistencia' => true,
-            'encuesta_id'      => $encuesta->id,
+            'id_encuesta'      => $encuesta->id_encuesta,
             'tiene_evidencia'  => true,
         ]);
 
@@ -158,11 +157,11 @@ class ActividadController extends Controller
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
             'momento_id'  => 'required|exists:controlecp_momentos,id',
-            'encuesta_id' => 'required|exists:controlecp_encuestas,id',
+            'id_encuesta'  => 'required|exists:encuestas,id_encuesta',
         ], [
             'nombre.required'  => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'=> 'El objetivo pedagógico es obligatorio.',
-            'encuesta_id.required' => 'Debes seleccionar una encuesta activa.',
+            'id_encuesta.required' => 'Debes seleccionar una encuesta activa.',
         ]);
 
         $momentoId = (int) $request->momento_id;
@@ -183,14 +182,14 @@ class ActividadController extends Controller
             ], 422);
         }
 
-        $encuesta = EncuestaEcp::whereKey($request->encuesta_id)
-            ->whereIn('estado', ['Activo', 'Activa'])
+        $encuesta = Encuesta::where('id_encuesta', $request->id_encuesta)
+            ->where('estado', 'Activa')
             ->first();
         if (!$encuesta) {
             return response()->json(['success' => false, 'message' => 'La encuesta seleccionada debe estar activa.'], 422);
         }
 
-        if ((int) $encuesta->id !== (int) $actividad->encuesta_id
+        if ((int) $encuesta->id_encuesta !== (int) $actividad->id_encuesta
             && Schema::hasTable('respuestas_encuesta')
             && DB::table('respuestas_encuesta')->where('actividad_id', $actividad->id)->exists()) {
             return response()->json([
@@ -208,7 +207,7 @@ class ActividadController extends Controller
             'duracion_min'     => (int) $request->duracion_min,
             'metodologia'      => trim($request->metodologia ?? ''),
             'tiene_asistencia' => true,
-            'encuesta_id'      => $encuesta->id,
+            'id_encuesta'      => $encuesta->id_encuesta,
             'tiene_evidencia'  => true,
         ]);
 
@@ -282,8 +281,8 @@ class ActividadController extends Controller
                     'color'        => '#39A900',
                 ],
                 'encuesta' => [
-                    'activo'       => !is_null($actividad->encuesta_id),
-                    'encuesta_id'  => $actividad->encuesta_id,
+                    'activo'       => !is_null($actividad->id_encuesta),
+                    'encuesta_id'  => $actividad->id_encuesta,
                     'encuesta'     => $actividad->encuesta?->titulo ?? $actividad->encuesta?->nombre,
                     'descripcion'  => 'Encuesta del repositorio asociada a esta actividad.',
                     'icono'        => 'fa-clipboard-question',
@@ -408,9 +407,9 @@ class ActividadController extends Controller
 
         // HU13 — Habilitar encuesta para aprendices si la actividad tiene encuesta
         $encuestaHabilitada = false;
-        if ($actividad->encuesta_id) {
-            $encuesta = EncuestaEcp::find($actividad->encuesta_id);
-            if ($encuesta && in_array($encuesta->estado, ['Activo', 'Activa'], true)) {
+        if ($actividad->id_encuesta) {
+            $encuesta = Encuesta::find($actividad->id_encuesta);
+            if ($encuesta && $encuesta->estado === 'Activa') {
                 $encuestaHabilitada = true;
             }
         }
@@ -604,7 +603,7 @@ class ActividadController extends Controller
             'metodologia'      => $a->metodologia,
             'estado'           => $a->estado,
             'tiene_asistencia' => $a->tiene_asistencia,
-            'encuesta_id'      => $a->encuesta_id,
+            'encuesta_id'      => $a->id_encuesta,
             'encuesta'         => $a->encuesta?->titulo ?? $a->encuesta?->nombre,
             'tiene_evidencia'  => $a->tiene_evidencia,
             'momento_id'       => $a->momento_id,

@@ -100,7 +100,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
 
         $asesorias = $query->orderBy('fecha', 'desc') // orderBy ordena primero por fecha y luego por hora, paginate consulta una página y withQueryString conserva filtros en los enlaces.
             ->orderBy('hora_inicio', 'desc')
-            ->paginate(10)
+            ->paginate(6)
             ->withQueryString();
 
         $graficas = $this->obtenerDatosGraficas(); // Datos para gráficas (día, semana, trimestre) | El método auxiliar realiza los conteos agrupados que consumen las gráficas.

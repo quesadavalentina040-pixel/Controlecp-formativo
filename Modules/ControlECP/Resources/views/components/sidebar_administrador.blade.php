@@ -83,7 +83,6 @@
                 ['icon' => 'fa-certificate', 'label' => 'Certificados', 'route' => 'controlecp.administrador.certificados'],
                 ['icon' => 'fa-boxes-stacked', 'label' => 'Inventario', 'route' => 'controlecp.administrador.inventario'],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.administrador.pqr'],
-                ['icon' => 'fa-chalkboard-user', 'label' => 'Instructores', 'route' => 'controlecp.administrador.pqr.instructores'],
                 [
                     'icon' => 'fa-chart-column',
                     'label' => 'Reportes',
@@ -113,16 +112,14 @@
 
                 $isPqrsItem = $item['label'] === 'PQRS';
                 $pqrsActive = $isPqrsItem
-                    && request()->routeIs('controlecp.administrador.pqr')
-                    && request()->is('control-ecp/administrador/pqr');
-
-                $isInstructoresItem = $item['label'] === 'Instructores';
-                $instructoresActive = $isInstructoresItem && request()->routeIs('controlecp.administrador.pqr.instructores');
+                    && (request()->routeIs('controlecp.administrador.pqr')
+                        || request()->routeIs('controlecp.administrador.pqr.instructores'))
+                    && request()->is('control-ecp/administrador/pqr*');
 
                 $asesoriasActive = $item['label'] === 'Asesorías'
                     && request()->routeIs('controlecp.administrador.asesorias.*');
 
-                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $reportsExpanded || $inventoryActive || $pqrsActive || $instructoresActive || $asesoriasActive || $childActive;
+                $active = ($item['route'] && request()->routeIs($item['route'])) || ($isRepositoryItem && $repositoryExpanded) || $reportsExpanded || $inventoryActive || $pqrsActive || $asesoriasActive || $childActive;
             @endphp
 
             @if ($hasChildren)
@@ -157,9 +154,6 @@
                        class="nav-link ecp-sidebar-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 {{ $active ? 'ecp-active' : '' }}"
                        style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
                         <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
-                        @if ($item['label'] === 'Instructores' && isset($pqrsInstructor))
-                            <span class="badge rounded-pill bg-danger ms-auto">{{ $pqrsInstructor->total() }}</span>
-                        @endif
                     </a>
                 </li>
             @endif

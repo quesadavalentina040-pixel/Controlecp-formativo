@@ -35,12 +35,10 @@ class UsuarioSyncController extends Controller
         $rolesEcp = Role::where('slug', 'like', 'controlecp%')->get()->keyBy('slug');
         $roleIds = $rolesEcp->pluck('id')->toArray();
 
-        // Consulta de usuarios que tienen algún rol de Control ECP o superadmin
+        // Mostrar únicamente usuarios creados directamente desde Control ECP.
         $query = User::with(['person', 'roles' => function ($q) use ($roleIds) {
             $q->whereIn('roles.id', $roleIds)->orWhere('slug', 'superadmin');
-        }])->whereHas('roles', function ($q) use ($roleIds) {
-            $q->whereIn('roles.id', $roleIds);
-        });
+        }])->where('origen_registro', 'sistema');
 
         // Filtro por Rol
         $roleFilter = $request->get('rol');
@@ -74,29 +72,26 @@ class UsuarioSyncController extends Controller
             });
         }
 
-        $usuarios = $query->orderBy('updated_at', 'desc')->paginate(15)->withQueryString();
+        $usuarios = $query->orderBy('created_at', 'asc')
+            ->orderBy('id', 'asc')
+            ->paginate(10)
+            ->withQueryString();
 
         // Estadísticas generales
         $stats = [
-            'total' => User::whereHas('roles', function ($q) use ($roleIds) {
-                $q->whereIn('roles.id', $roleIds);
-            })->count(),
-            'admins' => User::whereHas('roles', function ($q) {
+            'total' => User::where('origen_registro', 'sistema')->count(),
+            'admins' => User::where('origen_registro', 'sistema')->whereHas('roles', function ($q) {
                 $q->where('slug', 'controlecp.admin');
             })->count(),
-            'instructors' => User::whereHas('roles', function ($q) {
+            'instructors' => User::where('origen_registro', 'sistema')->whereHas('roles', function ($q) {
                 $q->where('slug', 'controlecp.instructor');
             })->count(),
-            'apprentices' => User::whereHas('roles', function ($q) {
+            'apprentices' => User::where('origen_registro', 'sistema')->whereHas('roles', function ($q) {
                 $q->where('slug', 'controlecp.apprentice');
             })->count(),
             // HU1 / HU2 — contadores de estado
-            'activos' => User::whereHas('roles', function ($q) use ($roleIds) {
-                $q->whereIn('roles.id', $roleIds);
-            })->where('estado', 'Activo')->count(),
-            'inactivos' => User::whereHas('roles', function ($q) use ($roleIds) {
-                $q->whereIn('roles.id', $roleIds);
-            })->where('estado', 'Inactivo')->count(),
+            'activos' => User::where('origen_registro', 'sistema')->where('estado', 'Activo')->count(),
+            'inactivos' => User::where('origen_registro', 'sistema')->where('estado', 'Inactivo')->count(),
         ];
 
         // Configuración de la API REST Central
@@ -229,6 +224,7 @@ class UsuarioSyncController extends Controller
             $newUser->nickname   = $request->nickname;
             $newUser->password   = Hash::make($request->password);
             $newUser->estado     = 'Activo';
+            $newUser->origen_registro = 'sistema';
             $newUser->email_verified_at = now();
             $newUser->save();
 
@@ -239,6 +235,12 @@ class UsuarioSyncController extends Controller
             }
 
             DB::commit();
+
+            if ($request->boolean('modal')) {
+                return redirect()
+                    ->route('controlecp.administrador.usuarios.create', ['modal' => 1])
+                    ->with('success', "Usuario {$newUser->nickname} registrado exitosamente en estado Activo.");
+            }
 
             return redirect()->route('controlecp.administrador.usuarios')
                 ->with('success', "Usuario {$newUser->nickname} registrado exitosamente en estado Activo.");
@@ -342,6 +344,12 @@ class UsuarioSyncController extends Controller
             }
 
             DB::commit();
+
+            if ($request->boolean('modal')) {
+                return redirect()
+                    ->route('controlecp.administrador.usuarios.edit', ['id' => $editUser->id, 'modal' => 1])
+                    ->with('success', "Usuario {$editUser->nickname} actualizado exitosamente.");
+            }
 
             return redirect()->route('controlecp.administrador.usuarios')
                 ->with('success', "Usuario {$editUser->nickname} actualizado exitosamente.");

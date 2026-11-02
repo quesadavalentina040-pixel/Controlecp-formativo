@@ -57,6 +57,18 @@
         transform: translateY(-1px);
     }
 
+    .tabulacion-card form .btn-outline-secondary {
+        background-color: #ffffff;
+        color: var(--petroleo-ecp);
+        border-color: #ffffff;
+    }
+
+    .tabulacion-card form .btn-outline-secondary:hover {
+        background-color: #f1f5f9;
+        color: var(--petroleo-ecp);
+        border-color: #ffffff;
+    }
+
     /* Tarjetas de Indicadores */
     .indicator-card {
         background: #ffffff;
@@ -147,22 +159,37 @@
     .item-respuesta-texto:hover {
         background-color: #f1f5f9;
     }
+
+    .tabulacion-header-card {
+        background-color: var(--petroleo-ecp);
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .tabulacion-header-card h2 {
+        color: #ffffff !important;
+    }
+
+    .tabulacion-header-card p {
+        color: #c7d4da !important;
+    }
+
+    .tabulacion-header-card .btn-outline-secondary {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, .75);
+    }
 </style>
 @endpush
 
 @section('dashboard-content')
 <div class="container-fluid px-3 py-3">
 
-    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div class="tabulacion-header-card d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 text-muted" style="font-size: 0.85rem;">
-                    <li class="breadcrumb-item"><a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none text-muted">Control ECP</a></li>
-                    <li class="breadcrumb-item">Repositorio</li>
-                    <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Tabulación</li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-1" style="color: var(--petroleo-ecp);">
+            <div class="small fw-semibold mb-1" style="color: var(--verde-ecp);">
+                <i class="fas fa-chart-column me-2"></i>Control ECP · Panel administrativo
+            </div>
+            <h2 class="h3 fw-bold mb-1">
                 Tabulación y Estadísticas de Encuestas
             </h2>
             <p class="text-muted mb-0" style="font-size: 0.92rem;">
@@ -170,30 +197,6 @@
             </p>
         </div>
 
-        <div>
-            @php // Inicia un bloque PHP para preparar datos que usará la vista.
-                $hayRespuestas = ($resultados && ($resultados['consolidado']['total_respuestas'] ?? 0) > 0);
-            @endphp
-            @if($hayRespuestas)
-
-                <form action="{{ route('controlecp.administrador.repositorio.tabulacion.exportar') }}" method="GET" target="_blank" class="d-inline">
-                    <input type="hidden" name="id_encuesta" value="{{ $encuestaActual?->id_encuesta }}">
-                    <input type="hidden" name="id_actividad" value="{{ request('id_actividad') }}">
-                    <input type="hidden" name="id_ficha" value="{{ request('id_ficha') }}">
-                    <input type="hidden" name="fecha_desde" value="{{ request('fecha_desde') }}">
-                    <input type="hidden" name="fecha_hasta" value="{{ request('fecha_hasta') }}">
-                    <button type="submit" class="btn btn-ecp-navy d-inline-flex align-items-center gap-2">
-                        <i class="fa-solid fa-file-pdf text-danger"></i>
-                        <span>Exportar PDF</span>
-                    </button>
-                </form>
-            @else
-                <button type="button" class="btn btn-outline-secondary d-inline-flex align-items-center gap-2" disabled title="No hay respuestas disponibles para exportar">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    <span>Exportar PDF</span>
-                </button>
-            @endif
-        </div>
     </div>
 
     <div class="tabulacion-card p-3 mb-4">
@@ -217,7 +220,7 @@
                     </select>
                 </div>
 
-                <div class="col-12 col-md-4 col-lg-3">
+                <div class="col-12 col-md-4 col-lg-2">
                     <label for="filtroActividad" class="form-label fw-semibold text-muted mb-1" style="font-size: 0.85rem;">
                         Actividad Formativa:
                     </label>
@@ -269,7 +272,7 @@
 
                 </div>
 
-                <div class="col-12 col-md-6 col-lg-2 d-flex gap-2">
+                <div class="col-12 col-md-6 col-lg-3 d-flex gap-2">
                     <button type="submit" class="btn btn-ecp-primary flex-grow-1 px-2 py-2" title="Aplicar filtros">
                         <i class="fa-solid fa-filter me-1"></i> Aplicar
                     </button>

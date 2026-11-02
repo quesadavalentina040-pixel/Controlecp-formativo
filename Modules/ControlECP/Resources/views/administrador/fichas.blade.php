@@ -10,6 +10,40 @@
         --ecp-navy-light: #00324D;
     }
 
+    .fichas-hero {
+        background: linear-gradient(120deg, #001A29, #00324D);
+        border-radius: 24px;
+        padding: 2rem 2.25rem;
+        color: #fff;
+    }
+    .fichas-hero .breadcrumb {
+        --bs-breadcrumb-divider-color: #c7d4da;
+    }
+    .fichas-hero .breadcrumb-item,
+    .fichas-hero .breadcrumb-item.active {
+        color: #c7d4da !important;
+    }
+    .fichas-hero .breadcrumb-item a {
+        color: #62E31D !important;
+    }
+    .fichas-hero h2 {
+        color: #fff !important;
+    }
+    .fichas-hero .hero-eyebrow {
+        color: #62E31D;
+        font-size: .7rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+    .fichas-hero .hero-subtitle {
+        color: #c7d4da;
+    }
+    .fichas-hero .btn-outline-secondary {
+        color: #fff;
+        border-color: rgba(255, 255, 255, .65);
+    }
+
     .stat-card-ficha {
         border-radius: 16px;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -21,40 +55,22 @@
         box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08) !important;
     }
 
-    .pulse-dot-fichas {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: var(--ecp-green);
-        display: inline-block;
-        box-shadow: 0 0 0 0 rgba(57, 169, 0, 0.7);
-        animation: pulse-dot-fichas 1.8s infinite;
-    }
-    @keyframes pulse-dot-fichas {
-        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(57, 169, 0, 0.7); }
-        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(57, 169, 0, 0); }
-        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(57, 169, 0, 0); }
-    }
-
-    .filter-pill-ficha {
-        border-radius: 20px;
-        font-size: 0.82rem;
-        font-weight: 600;
-        padding: 6px 14px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-    }
-    .filter-pill-ficha.active {
-        background-color: var(--ecp-green);
-        color: #ffffff !important;
-        box-shadow: 0 4px 10px rgba(57, 169, 0, 0.3);
-    }
-    .filter-pill-ficha:not(.active) {
-        background-color: #f1f4f3;
+    .fichas-status-select {
+        min-width: 220px;
+        border-color: #dce5df;
         color: var(--ecp-navy);
+        font-weight: 600;
     }
-    .filter-pill-ficha:not(.active):hover {
-        background-color: #e5ece9;
+    .fichas-status-select:focus {
+        border-color: var(--ecp-green);
+        box-shadow: 0 0 0 0.2rem rgba(57, 169, 0, 0.15);
+    }
+    .fichas-filter-card {
+        background-color: var(--ecp-navy);
+        border-radius: 24px !important;
+    }
+    .fichas-filter-card .text-muted {
+        color: #ffffff !important;
     }
 
     .table-fichas tbody tr {
@@ -70,6 +86,74 @@
         letter-spacing: 0.5px;
         font-size: 0.9rem;
     }
+
+    .fichas-pagination {
+        display: flex;
+        justify-content: center;
+        margin: 1rem auto;
+        padding: 0;
+        border-top: 1px solid #eef1f2;
+        width: fit-content;
+    }
+    .fichas-pagination nav {
+        display: flex;
+        justify-content: center;
+    }
+    .fichas-pagination nav > div:first-child {
+        display: none !important;
+    }
+    .fichas-pagination nav > div:last-child > div:first-child {
+        display: none !important;
+    }
+    .fichas-pagination nav > div:last-child {
+        justify-content: center !important;
+    }
+    .fichas-pagination .pagination {
+        margin-bottom: 0;
+        gap: 0;
+    }
+    .fichas-pagination .page-link {
+        min-width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #b8dfc4;
+        border-radius: 0 !important;
+        color: var(--ecp-green);
+        text-align: center;
+        margin-left: -1px;
+    }
+    .fichas-pagination .page-link:hover {
+        background-color: #e8f8e8;
+        border-color: var(--ecp-green);
+        color: var(--ecp-green-hover);
+    }
+    .fichas-pagination .page-item.active .page-link {
+        background-color: var(--ecp-green);
+        border-color: var(--ecp-green);
+        color: #fff;
+    }
+    .fichas-pagination .page-item.disabled .page-link {
+        color: #9ab5a1;
+        background-color: #f7fbf8;
+        border-color: #dceee0;
+    }
+
+    .fichas-search-icon {
+        color: var(--ecp-green);
+    }
+    .btn-search-ficha {
+        background-color: var(--ecp-green);
+        border-color: var(--ecp-green);
+        color: #fff;
+    }
+    .btn-search-ficha:hover,
+    .btn-search-ficha:focus {
+        background-color: var(--ecp-green-hover);
+        border-color: var(--ecp-green-hover);
+        color: #fff;
+    }
 </style>
 @endpush
 
@@ -77,34 +161,21 @@
 <div class="container-fluid px-2 px-md-3 py-2">
 
     <!-- Breadcrumb & Cabecera -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
+    <div class="fichas-hero d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: var(--ecp-green);">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: var(--ecp-navy); font-weight: 600;">
-                        Fichas de Formación
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: var(--ecp-navy); font-family: 'Outfit', sans-serif;">
-                <i class="fas fa-id-card-clip me-2" style="color: var(--ecp-green);"></i>Gestión de Fichas de Formación
+            <div class="hero-eyebrow mb-2">
+                <i class="fas fa-id-card-clip me-2"></i>Control ECP · Gestión académica
+            </div>
+            <h2 class="h3 fw-bold mb-0" style="font-family: 'Outfit', sans-serif;">
+                Gestión de Fichas de Formación
             </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; Sincronización e integración con la API Académica Central (SICEFA / SOFIA Plus)</p>
+            <p class="hero-subtitle small mb-0">Consulta y administra las fichas de formación registradas en SICEFA.</p>
         </div>
-
-        <div class="d-flex flex-wrap gap-2">
-            <a href="{{ route('controlecp.administrador.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Volver al Inicio
-            </a>
+        <div class="d-flex flex-wrap gap-2 hero-actions">
             <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" data-bs-toggle="modal" data-bs-target="#modalConfigApiFichas">
                 <i class="fas fa-sliders me-1"></i> Configurar API Fichas
             </button>
-            <button type="button" class="btn btn-outline-success rounded-pill px-3 btn-sm" onclick="probarConexionApiFichas()">
+            <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" onclick="probarConexionApiFichas()">
                 <i class="fas fa-arrows-rotate me-1" id="syncIconFichas"></i> Comprobar Conexión
             </button>
             <button type="button" class="btn text-white rounded-pill px-3 btn-sm shadow-sm" style="background-color: var(--ecp-green); border-color: var(--ecp-green);" data-bs-toggle="modal" data-bs-target="#modalSyncFichasConfirm">
@@ -122,42 +193,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
-    <!-- Alerta Principal: Estado de la API Central de Fichas -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px; background: linear-gradient(135deg, #f0fbf4 0%, #d8f3dc 100%); border-left: 6px solid var(--ecp-green) !important;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
-                         style="width: 58px; height: 58px; background: #FFFFFF; color: var(--ecp-green); font-size: 1.6rem;">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                            <h4 class="h5 fw-bold mb-0" style="color: var(--ecp-navy);">
-                                Sincronización Automática con la API Académica Central
-                            </h4>
-                            <span class="badge rounded-pill bg-white text-success border border-success-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
-                                <span class="pulse-dot-fichas"></span> Servicio Activo &bull; SICEFA
-                            </span>
-                        </div>
-                        <p class="mb-0 text-dark" style="font-size: 0.9rem; line-height: 1.45;">
-                            La información de <strong>número de ficha, programa de formación, fechas lectivas y aprendices matriculados</strong> se consume y homologa directamente desde la <strong>API REST Central del ERP SENA Empresa / SOFIA Plus / SICEFA</strong> para asignación de asistencias y momentos de paz.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
-                    <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: var(--ecp-navy);" data-bs-toggle="modal" data-bs-target="#modalConfigApiFichas">
-                        <i class="fas fa-gear me-1"></i> Ver Endpoint
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-success bg-white rounded-pill px-3 shadow-sm" onclick="probarConexionApiFichas()">
-                        <i class="fas fa-plug me-1"></i> Test Ping Fichas
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Tarjetas de Estadísticas (KPIs) -->
     <div class="row g-3 mb-4">
@@ -232,95 +267,26 @@
         </div>
     </div>
 
-    <!-- Panel de Estado Técnico del Servicio API de Fichas -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-        <div class="card-header bg-white border-0 pt-3 pb-2 px-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <h5 class="fw-bold mb-0" style="color: var(--ecp-navy); font-size: 1.05rem;">
-                <i class="fas fa-server me-2 text-success"></i>Estado del Servicio API de Fichas
-            </h5>
-            <div class="d-flex align-items-center gap-2">
-                <span id="apiFichasConnectionBadge" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">
-                    <i class="fas fa-circle-check me-1"></i> Servicio Listo
-                </span>
-                <span class="small text-muted" id="apiFichasLatencyText">Latencia: -- ms</span>
-            </div>
-        </div>
-        <div class="card-body px-4 pb-3 pt-1">
-            <div class="row g-3">
-                <div class="col-md-7">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 0.85rem;">
-                            <tbody>
-                                <tr>
-                                    <th class="bg-light text-muted" style="width: 35%;">Endpoint de Consumo:</th>
-                                    <td>
-                                        <code class="text-primary fw-bold text-break" id="lblFichasEndpointUrl">{{ $apiConfig['url'] ?? route('controlecp.api.fichas.mock') }}</code>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="bg-light text-muted">Datos Homologados:</th>
-                                    <td>Número de Ficha, Programa, Nivel, Fechas Lectivas, Aprendices Matriculados</td>
-                                </tr>
-                                <tr>
-                                    <th class="bg-light text-muted">Última Sincronización:</th>
-                                    <td id="lblFichasLastSyncText">
-                                        <span class="text-dark fw-semibold">{{ $lastSync['date'] ?? now()->format('d/m/Y H:i') }}</span> &bull;
-                                        <span class="badge bg-light text-success border border-success-subtle">
-                                            {{ $lastSync['total_synced'] ?? $stats['total'] }} fichas sincronizadas
-                                        </span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="col-md-5">
-                    <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background-color: #f8fbf9; border: 1px dashed #bce5c6;">
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="fas fa-bolt text-warning"></i>
-                                <strong class="small text-dark">Sincronización Automatizada</strong>
-                            </div>
-                            <p class="text-muted mb-2" style="font-size: 0.78rem; line-height: 1.35;">
-                                Al sincronizar fichas, las actividades, asistencias y sesiones de los tres momentos de Control ECP se vincularán de manera automática a la nómina de aprendices.
-                            </p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 flex-grow-1" onclick="probarConexionApiFichas()">
-                                <i class="fas fa-arrows-rotate me-1"></i> Probar Enlace
-                            </button>
-                            <button type="button" class="btn btn-sm text-white rounded-pill px-3 flex-grow-1" style="background-color: var(--ecp-green);" data-bs-toggle="modal" data-bs-target="#modalSyncFichasConfirm">
-                                <i class="fas fa-download me-1"></i> Sincronizar Fichas
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Barra de Filtros y Búsqueda -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+    <div class="card border-0 shadow-sm mb-4 fichas-filter-card">
         <div class="card-body p-3">
             <div class="row g-2 align-items-center justify-content-between">
-                <!-- Filtro por Estado (Pills) -->
+                <!-- Filtro por Estado -->
                 <div class="col-lg-5">
-                    <div class="d-flex flex-wrap align-items-center gap-2">
-                        <span class="small text-muted fw-semibold me-1"><i class="fas fa-filter me-1"></i>Estado:</span>
-                        <a href="{{ route('controlecp.administrador.fichas', ['search' => $searchTerm]) }}"
-                           class="filter-pill-ficha {{ empty($statusFilter) ? 'active' : '' }}">
-                            Todas ({{ $stats['total'] }})
-                        </a>
-                        <a href="{{ route('controlecp.administrador.fichas', ['estado' => 'activo', 'search' => $searchTerm]) }}"
-                           class="filter-pill-ficha {{ $statusFilter === 'activo' ? 'active' : '' }}">
-                            <i class="fas fa-circle-check me-1"></i> Activas ({{ $stats['activas'] }})
-                        </a>
-                        <a href="{{ route('controlecp.administrador.fichas', ['estado' => 'inactivo', 'search' => $searchTerm]) }}"
-                           class="filter-pill-ficha {{ $statusFilter === 'inactivo' ? 'active' : '' }}">
-                            <i class="fas fa-circle-pause me-1"></i> Inactivas ({{ $stats['inactivas'] }})
-                        </a>
-                    </div>
+                    <form method="GET" action="{{ route('controlecp.administrador.fichas') }}" class="d-flex align-items-center gap-2">
+                        @if(!empty($searchTerm))
+                            <input type="hidden" name="search" value="{{ $searchTerm }}">
+                        @endif
+                        <label for="filtroEstadoFicha" class="small text-muted fw-semibold text-nowrap mb-0">
+                            <i class="fas fa-filter me-1"></i>Estados de las fichas:
+                        </label>
+                        <select name="estado" id="filtroEstadoFicha" class="form-select form-select-sm fichas-status-select"
+                                onchange="this.form.submit()">
+                            <option value="" {{ empty($statusFilter) ? 'selected' : '' }}>Todos ({{ $stats['total'] }})</option>
+                            <option value="activo" {{ $statusFilter === 'activo' ? 'selected' : '' }}>Activos ({{ $stats['activas'] }})</option>
+                            <option value="inactivo" {{ $statusFilter === 'inactivo' ? 'selected' : '' }}>Inactivos ({{ $stats['inactivas'] }})</option>
+                        </select>
+                    </form>
                 </div>
 
                 <!-- Buscador de Fichas -->
@@ -331,7 +297,7 @@
                         @endif
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
-                                <i class="fas fa-magnifying-glass"></i>
+                                <i class="fas fa-magnifying-glass fichas-search-icon"></i>
                             </span>
                             <input type="text" name="search" id="inputSearchFicha" class="form-control border-start-0 ps-0"
                                    placeholder="Buscar por número de ficha o nombre del programa académico..."
@@ -341,11 +307,8 @@
                                     <i class="fas fa-xmark"></i>
                                 </a>
                             @endif
-                            <button class="btn btn-outline-secondary rounded-end-pill px-3" type="submit">Buscar</button>
+                            <button class="btn btn-search-ficha rounded-end-pill px-3" type="submit">Buscar</button>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 flex-shrink-0" onclick="exportarFichasCSV()" title="Exportar Fichas a CSV">
-                            <i class="fas fa-file-csv"></i>
-                        </button>
                     </form>
                 </div>
             </div>
@@ -358,9 +321,6 @@
             <h5 class="fw-bold mb-0" style="color: var(--ecp-navy);">
                 <i class="fas fa-graduation-cap me-2 text-success"></i>Directorio de Fichas Académicas SICEFA
             </h5>
-            <span class="small text-muted">
-                Mostrando {{ $fichas->count() }} de {{ $fichas->total() }} fichas registradas
-            </span>
         </div>
 
         <div class="card-body p-0">
@@ -493,15 +453,10 @@
                     </table>
                 </div>
 
-                <!-- Paginación -->
-                <div class="p-3 border-top d-flex justify-content-between align-items-center">
-                    <span class="small text-muted">
-                        Página {{ $fichas->currentPage() }} de {{ $fichas->lastPage() }}
-                    </span>
-                    <div>
-                        {{ $fichas->links('pagination::bootstrap-5') }}
-                    </div>
+                <div class="fichas-pagination">
+                    {{ $fichas->onEachSide(1)->links('pagination::bootstrap-5') }}
                 </div>
+
             @else
                 <div class="text-center py-5 px-3">
                     <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center mb-3"
@@ -1219,7 +1174,7 @@
         }
     }
 
-    // ── 6. Utilidades (Alertas y CSV) ───────────────────────────────────────────────
+    // ── 6. Utilidades (Alertas) ─────────────────────────────────────────────────────
     function mostrarAlertaFichas(mensaje, tipo = 'success') {
         const container = document.getElementById('liveAlertFichasBox');
         if (!container) return;
@@ -1241,30 +1196,6 @@
         }, 5000);
     }
 
-    function exportarFichasCSV() {
-        const table = document.getElementById('tablaFichasEcp');
-        if (!table) return;
-
-        let csv = [];
-        const rows = table.querySelectorAll('tr');
-
-        for (let i = 0; i < rows.length; i++) {
-            let row = [], cols = rows[i].querySelectorAll('td, th');
-            for (let j = 0; j < cols.length - 1; j++) {
-                let text = cols[j].innerText.replace(/"/g, '""').trim();
-                row.push('"' + text + '"');
-            }
-            csv.push(row.join(','));
-        }
-
-        const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv.join('\n'));
-        const link = document.createElement('a');
-        link.setAttribute('href', csvContent);
-        link.setAttribute('download', 'fichas_controlecp_sicefa_' + new Date().toISOString().slice(0, 10) + '.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
 </script>
 @endpush
 @endsection

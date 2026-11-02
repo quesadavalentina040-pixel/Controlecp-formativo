@@ -10,6 +10,21 @@
         --ecp-purple:  #6A1B9A;
     }
     .act-page { font-family: 'Outfit', sans-serif; min-width: 0; }
+    .actividades-header-card {
+        background-color: var(--ecp-navy);
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+    .actividades-header-card h2 {
+        color: #fff !important;
+    }
+    .actividades-header-card .text-muted {
+        color: #c7d4da !important;
+    }
+    .actividades-header-card .btn-outline-secondary {
+        color: #fff;
+        border-color: rgba(255, 255, 255, .65);
+    }
 
     /* KPI cards */
     .kpi-card {
@@ -46,13 +61,13 @@
     .badge-inactivo   { background:#f5f5f5; color:#666; border:1px solid #ddd; }
     .badge-finalizado { background:#e8f0fe; color:#3949ab; border:1px solid #c5cae9; }
 
-    /* Componentes de la actividad */
     .comp-badge {
         font-size: .72rem; padding: .25rem .65rem; border-radius: 50px; font-weight: 600;
         border: 1.5px solid; display: inline-flex; align-items: center; gap: .3rem;
     }
     .comp-on  { background: #f0fbf4; }
     .comp-off { background: #f5f5f5; opacity: .6; }
+    button.comp-badge { cursor: pointer; }
 
     /* Sección de momento */
     .momentos-list {
@@ -115,19 +130,12 @@
 <div class="act-page container-fluid px-2 px-md-3 py-2">
 
     {{-- Breadcrumb & Cabecera --}}
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
+    <div class="actividades-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color:var(--ecp-green);">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" style="color:var(--ecp-navy);font-weight:600;">Actividades</li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color:var(--ecp-navy);">
+            <div class="small fw-semibold mb-1" style="color: var(--ecp-green);">
+                <i class="fas fa-list-check me-2"></i>Control ECP · Gestión de Actividades
+            </div>
+            <h2 class="h3 fw-bold mb-0">
                 <i class="fas fa-list-check me-2" style="color:var(--ecp-green);"></i>Gestión de Actividades
             </h2>
             <p class="text-muted small mb-0">
@@ -145,10 +153,6 @@
             <a href="{{ route('controlecp.administrador.momentos') }}"
                class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
                 <i class="fas fa-star me-1"></i> Ver Momentos
-            </a>
-            <a href="{{ route('controlecp.administrador.inicio') }}"
-               class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Inicio
             </a>
         </div>
     </div>
@@ -280,11 +284,12 @@
                                     'metodologia'      => $a->metodologia,
                                     'momento_id'       => $a->momento_id,
                                     'tiene_asistencia' => $a->tiene_asistencia,
-                                    'encuesta_id'      => $a->encuesta_id,
+                                    'encuesta_id'      => $a->id_encuesta,
                                     'tiene_evidencia'  => $a->tiene_evidencia,
                                 ];
                             @endphp
                             <div class="act-card estado-{{ strtolower($a->estado) }}"
+                                 style="border: 2px solid {{ $momento->color }}44; border-top: 4px solid {{ $momento->color }}; border-radius: 20px;"
                                  id="act-card-{{ $a->id }}">
                                 <div class="p-3">
                                     {{-- Número + estado --}}
@@ -306,115 +311,31 @@
                                         {{ Str::limit($a->objetivo, 90) }}
                                     </p>
 
-                                    {{-- Componentes (HU6/HU9) --}}
+                                    {{-- Acciones rápidas de la actividad --}}
                                     <div class="d-flex flex-wrap gap-1 mb-3">
-                                        <span class="comp-badge comp-{{ $a->tiene_asistencia ? 'on' : 'off' }}"
+                                        <button type="button" class="comp-badge comp-{{ $a->tiene_asistencia ? 'on' : 'off' }}"
+                                              onclick="abrirModalComponente('asistencia', {{ $a->id }}, @js($a->nombre))"
                                               style="color:{{ $a->tiene_asistencia ? '#39A900' : '#999' }}; border-color:{{ $a->tiene_asistencia ? '#c2eec2' : '#ddd' }};">
                                             <i class="fas fa-clipboard-list"></i> Asistencia
-                                        </span>
-                                        <span class="comp-badge comp-{{ $a->encuesta_id ? 'on' : 'off' }}"
+                                        </button>
+                                        <button type="button" class="comp-badge comp-{{ $a->encuesta_id ? 'on' : 'off' }}"
+                                              onclick="abrirModalComponente('encuesta', {{ $a->id }}, @js($a->nombre))"
                                               style="color:{{ $a->encuesta_id ? '#0070B8' : '#999' }}; border-color:{{ $a->encuesta_id ? '#bce1f7' : '#ddd' }};">
                                             <i class="fas fa-clipboard-question"></i> Encuesta
-                                        </span>
-                                        <span class="comp-badge comp-{{ $a->tiene_evidencia ? 'on' : 'off' }}"
+                                        </button>
+                                        <button type="button" class="comp-badge comp-{{ $a->tiene_evidencia ? 'on' : 'off' }}"
+                                              onclick="abrirModalComponente('evidencia', {{ $a->id }}, @js($a->nombre))"
                                               style="color:{{ $a->tiene_evidencia ? '#6A1B9A' : '#999' }}; border-color:{{ $a->tiene_evidencia ? '#e1bee7' : '#ddd' }};">
                                             <i class="fas fa-photo-film"></i> Evidencia
-                                        </span>
+                                        </button>
                                     </div>
 
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 border-top pt-2">
-                                        <span class="small text-muted">
-                                            <i class="far fa-clock me-1"></i>{{ $a->duracion }}
-                                        </span>
-
+                                    <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 border-top pt-2">
                                         <div class="d-flex align-items-center gap-1">
                                             <button class="btn btn-sm btn-outline-secondary rounded-pill px-2"
                                                     type="button" onclick="abrirModalEditar(@js($datosActividad))">
                                                 <i class="fas fa-pen me-1"></i>Editar
                                             </button>
-                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-2"
-                                                    type="button" onclick="verComponentes({{ $a->id }})">
-                                                <i class="fas fa-puzzle-piece me-1"></i>Componentes
-                                            </button>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-light rounded-pill px-2" type="button"
-                                                        data-bs-toggle="dropdown" aria-label="Más acciones para {{ $a->nombre }}">
-                                                    <i class="fas fa-ellipsis-vertical text-muted"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0"
-                                                    style="border-radius:12px; font-size:.84rem;">
-                                                {{-- HU4: Editar --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalEditar(@js($datosActividad))">
-                                                        <i class="fas fa-pen me-2 text-secondary"></i> Editar
-                                                    </button>
-                                                </li>
-                                                {{-- HU5: Cambiar momento --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalCambiarMomento({{ $a->id }}, {{ $a->momento_id }}, @js($a->nombre))">
-                                                        <i class="fas fa-right-left me-2 text-info"></i> Cambiar Momento
-                                                    </button>
-                                                </li>
-                                                {{-- HU10: Ver componentes --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="verComponentes({{ $a->id }})">
-                                                        <i class="fas fa-puzzle-piece me-2" style="color:var(--ecp-green);"></i> Ver Componentes
-                                                    </button>
-                                                </li>
-                                                {{-- HU17: Ver evidencias --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="verEvidencias({{ $a->id }}, @js($a->nombre))">
-                                                        <i class="fas fa-photo-film me-2" style="color:var(--ecp-purple);"></i> Ver Evidencias
-                                                    </button>
-                                                </li>
-                                                {{-- HU18: Calificaciones --}}
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="verCalificaciones({{ $a->id }}, @js($a->nombre))">
-                                                        <i class="fas fa-star me-2 text-warning"></i> Calificaciones
-                                                    </button>
-                                                </li>
-                                                {{-- HU15: Subir evidencia --}}
-                                                @if($a->tiene_evidencia)
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="abrirModalEvidencia({{ $a->id }}, @js($a->nombre))">
-                                                        <i class="fas fa-upload me-2" style="color:var(--ecp-blue);"></i> Subir Evidencia
-                                                    </button>
-                                                </li>
-                                                @endif
-                                                <li><hr class="dropdown-divider"></li>
-                                                {{-- HU13: Finalizar --}}
-                                                @if($a->estado === 'Activo')
-                                                <li>
-                                                    <button class="dropdown-item py-2 text-primary" type="button"
-                                                            onclick="confirmarFinalizar({{ $a->id }}, @js($a->nombre))">
-                                                        <i class="fas fa-flag-checkered me-2"></i> Finalizar
-                                                    </button>
-                                                </li>
-                                                @endif
-                                                {{-- HU11/HU12: Desactivar / Activar --}}
-                                                @if($a->estado === 'Activo')
-                                                <li>
-                                                    <button class="dropdown-item py-2 text-danger" type="button"
-                                                            onclick="confirmarEstado({{ $a->id }}, 'desactivar', @js($a->nombre))">
-                                                        <i class="fas fa-ban me-2"></i> Desactivar
-                                                    </button>
-                                                </li>
-                                                @elseif($a->estado === 'Inactivo')
-                                                <li>
-                                                    <button class="dropdown-item py-2 text-success" type="button"
-                                                            onclick="confirmarEstado({{ $a->id }}, 'activar', @js($a->nombre))">
-                                                        <i class="fas fa-circle-check me-2"></i> Activar
-                                                    </button>
-                                                </li>
-                                                @endif
-                                            </ul>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -530,24 +451,8 @@
                                   placeholder="Dinámicas, técnicas y recursos pedagógicos..."></textarea>
                     </div>
 
-                    {{-- Duración --}}
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">
-                            Duración <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" id="formActDuracion" class="form-control"
-                               placeholder="Ej: 2 Horas" maxlength="30" required>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">
-                            Duración (minutos) <span class="text-danger">*</span>
-                        </label>
-                        <input type="number" id="formActDuracionMin" class="form-control"
-                               placeholder="120" min="15" max="600" required>
-                    </div>
-
                     {{-- Componentes --}}
-                    <div class="col-md-4">
+                    <div class="col-12">
                         <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">Componentes activos</label>
                         <div class="d-flex flex-column gap-2 mt-1">
                             <div class="form-check form-switch">
@@ -576,12 +481,12 @@
                                     <i class="fas fa-clipboard-question me-1"></i> Encuesta del repositorio (obligatoria)
                                 </label>
                             </div>
-                            <div id="encuestaSelectorWrap" class="d-none">
+                            <div id="encuestaSelectorWrap">
                                 @if($encuestasActivas->count() > 0)
                                     <select id="formActEncuesta" class="form-select form-select-sm">
                                         <option value="">— Seleccionar encuesta activa —</option>
                                         @foreach($encuestasActivas as $enc)
-                                            <option value="{{ $enc->id }}">{{ $enc->titulo ?? $enc->nombre }}</option>
+                                            <option value="{{ $enc->id_encuesta }}">{{ $enc->nombre }}</option>
                                         @endforeach
                                     </select>
                                 @else
@@ -666,6 +571,30 @@
             <div class="modal-body p-4" id="compModalBody">
                 <div class="text-center py-4">
                     <i class="fas fa-spinner fa-spin fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Modal: Acciones rápidas de componentes --}}
+<div class="modal fade" id="modalAccionComponente" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius:20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <div>
+                    <h5 class="modal-title fw-bold mb-0" id="accionComponenteTitle" style="color:var(--ecp-navy);"></h5>
+                    <p class="text-muted small mb-0" id="accionComponenteSubtitle"></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small mb-4" id="accionComponenteDescription"></p>
+                <div class="d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+                    <a id="accionComponenteLink" href="#" class="btn text-white rounded-pill px-4">
+                        <i class="fas fa-arrow-up-right-from-square me-1"></i>Ir al módulo
+                    </a>
                 </div>
             </div>
         </div>
@@ -832,8 +761,6 @@ function abrirModalCrear(momentoId = null, momentoNombre = null) {
     document.getElementById('formActNombre').value = '';
     document.getElementById('formActDescripcion').value = '';
     document.getElementById('formActObjetivo').value = '';
-    document.getElementById('formActDuracion').value = '';
-    document.getElementById('formActDuracionMin').value = '120';
     document.getElementById('formActMetodologia').value = '';
     document.getElementById('formActAsistencia').checked = true;
     document.getElementById('formActEvidencia').checked  = true;
@@ -855,8 +782,6 @@ function abrirModalEditar(data) {
     document.getElementById('formActNombre').value          = data.nombre;
     document.getElementById('formActDescripcion').value     = data.descripcion ?? '';
     document.getElementById('formActObjetivo').value        = data.objetivo ?? '';
-    document.getElementById('formActDuracion').value        = data.duracion;
-    document.getElementById('formActDuracionMin').value     = data.duracion_min;
     document.getElementById('formActMetodologia').value     = data.metodologia ?? '';
     document.getElementById('formActMomento').value         = data.momento_id;
     document.getElementById('formActAsistencia').checked = true;
@@ -880,8 +805,6 @@ async function guardarActividad() {
     const nombre       = document.getElementById('formActNombre').value.trim();
     const momentoId    = document.getElementById('formActMomento').value;
     const objetivo     = document.getElementById('formActObjetivo').value.trim();
-    const duracion     = document.getElementById('formActDuracion').value.trim();
-    const duracionMin  = document.getElementById('formActDuracionMin').value.trim();
     const desc         = document.getElementById('formActDescripcion').value.trim();
     const metodologia  = document.getElementById('formActMetodologia').value.trim();
     const tieneAsist   = document.getElementById('formActAsistencia').checked;
@@ -893,8 +816,6 @@ async function guardarActividad() {
     if (!nombre) { mostrarAlertaForm('El nombre de la actividad es obligatorio.'); return; }
     if (!momentoId) { mostrarAlertaForm('Debes seleccionar un momento.'); return; }
     if (!objetivo) { mostrarAlertaForm('El objetivo pedagógico es obligatorio.'); return; }
-    if (!duracion) { mostrarAlertaForm('La duración es obligatoria.'); return; }
-    if (!duracionMin || parseInt(duracionMin) < 15) { mostrarAlertaForm('La duración en minutos debe ser al menos 15.'); return; }
     if (!tieneEnc || !encuestaId) {
         mostrarAlertaForm('Debes seleccionar una encuesta activa del repositorio.');
         return;
@@ -914,9 +835,9 @@ async function guardarActividad() {
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': actividadesCsrfToken, 'Accept': 'application/json' },
             body: JSON.stringify({
                 nombre, momento_id: momentoId, objetivo, descripcion: desc,
-                duracion, duracion_min: parseInt(duracionMin), metodologia,
-                tiene_asistencia: tieneAsist, tiene_evidencia: tieneEvid,
-                tiene_encuesta: tieneEnc, encuesta_id: tieneEnc ? encuestaId : null,
+                duracion: '2 Horas', duracion_min: 120, metodologia,
+                tiene_evidencia: tieneEvid,
+                id_encuesta: tieneEnc ? encuestaId : null,
             }),
         });
 
@@ -975,6 +896,35 @@ async function ejecutarCambiarMomento() {
 }
 
 // ── HU10: Ver componentes ─────────────────────────────────────────────────────
+function abrirModalComponente(tipo, actId, nombre) {
+    if (tipo === 'evidencia') {
+        abrirModalEvidencia(actId, nombre);
+        return;
+    }
+
+    const config = tipo === 'asistencia'
+        ? {
+            title: 'Registrar asistencia',
+            description: 'Desde el módulo de asistencia podrás consultar y gestionar el registro de los aprendices.',
+            color: 'var(--ecp-green)',
+            url: "{{ route('controlecp.administrador.asistencia') }}",
+        }
+        : {
+            title: 'Gestionar encuesta',
+            description: 'Abre el repositorio de encuestas para crear o administrar la encuesta asociada a esta actividad.',
+            color: 'var(--ecp-blue)',
+            url: "{{ route('controlecp.administrador.repositorio.encuesta.index') }}",
+        };
+
+    document.getElementById('accionComponenteTitle').textContent = config.title;
+    document.getElementById('accionComponenteSubtitle').textContent = nombre;
+    document.getElementById('accionComponenteDescription').textContent = config.description;
+    const link = document.getElementById('accionComponenteLink');
+    link.href = config.url;
+    link.style.backgroundColor = config.color;
+    new bootstrap.Modal(document.getElementById('modalAccionComponente')).show();
+}
+
 async function verComponentes(actId) {
     document.getElementById('compModalSubtitle').textContent = 'Cargando...';
     document.getElementById('compModalBody').innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin fa-2x text-success"></i></div>';

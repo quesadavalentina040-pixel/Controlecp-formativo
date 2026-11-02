@@ -107,50 +107,136 @@
     .filter-pill:not(.active):hover {
         background-color: #e5ece9;
     }
+
+    .btn-action-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background-color: #f1f5f9;
+        color: var(--ecp-navy);
+        transition: all .2s ease;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .btn-action-icon:hover {
+        transform: scale(1.1);
+    }
+    .btn-action-view:hover {
+        background-color: #e0f2fe;
+        color: #0284c7;
+    }
+    .btn-action-edit:hover {
+        background-color: #e2e8f0;
+        color: #475569;
+    }
+    .btn-action-enable:hover {
+        background-color: #dcfce7;
+        color: #16a34a;
+    }
+    .btn-action-disable:hover {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+
+    .usuarios-header-card {
+        background-color: var(--ecp-navy);
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .usuarios-header-card h2 {
+        color: #ffffff !important;
+    }
+
+    .usuarios-header-card p {
+        color: #c7d4da !important;
+    }
+
+    .usuarios-header-card .btn-outline-secondary,
+    .usuarios-header-card .btn-outline-primary,
+    .usuarios-header-card .btn-outline-success {
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, .75);
+    }
+
+    .usuarios-filter-bar {
+        background-color: var(--ecp-navy) !important;
+    }
+
+    .usuarios-filter-bar .form-select,
+    .usuarios-filter-bar .form-control,
+    .usuarios-filter-bar .input-group-text {
+        border-color: #ffffff;
+        color: var(--ecp-navy);
+    }
+
+    .usuarios-filter-bar .form-select {
+        background-color: #ffffff;
+    }
+
+    .usuarios-filter-bar .form-select:focus,
+    .usuarios-filter-bar .form-control:focus {
+        border-color: var(--ecp-green);
+        box-shadow: 0 0 0 0.2rem rgba(57, 169, 0, 0.25);
+    }
+
+    .usuarios-filter-bar .input-group-text {
+        background-color: #ffffff;
+    }
+
+    .usuarios-filter-bar .input-group-text.text-success {
+        color: var(--ecp-green) !important;
+    }
+
+    .usuarios-filter-bar .btn-filter {
+        background-color: var(--ecp-green);
+        border-color: var(--ecp-green);
+    }
+
+    .usuarios-filter-bar .btn-filter:hover,
+    .usuarios-filter-bar .btn-filter:focus {
+        background-color: var(--ecp-green-hover);
+        border-color: var(--ecp-green-hover);
+    }
+
+    .btn-clear-filters {
+        color: var(--ecp-navy);
+        border-color: var(--ecp-navy-light);
+    }
+
+    .btn-clear-filters:hover {
+        color: #ffffff;
+        background-color: var(--ecp-navy);
+        border-color: var(--ecp-navy);
+    }
 </style>
 @endpush
 
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
 
-    <!-- Breadcrumb & Cabecera -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
+    <div class="usuarios-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: var(--ecp-green);">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: var(--ecp-navy); font-weight: 600;">
-                        Usuarios
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: var(--ecp-navy); font-family: 'Outfit', sans-serif;">
+            <div class="small fw-semibold mb-1" style="color: var(--ecp-green);">
+                <i class="fas fa-users-gear me-2"></i>Control ECP · Panel administrativo
+            </div>
+            <h2 class="h3 fw-bold mb-0" style="font-family: 'Outfit', sans-serif;">
                 <i class="fas fa-users-gear me-2" style="color: var(--ecp-green);"></i>Gestión de Usuarios
             </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; Sincronización e integración con la API REST Central del ERP SENA Empresa / SICEFA</p>
+            <p class="text-muted small mb-0">Control ECP &bull; Gestiona y supervisa los usuarios del sistema</p>
         </div>
 
         <div class="d-flex flex-wrap gap-2">
-            <a href="{{ route('controlecp.administrador.usuarios.create') }}"
+            <button type="button"
                class="btn text-white rounded-pill px-3 btn-sm shadow-sm"
+               data-bs-toggle="modal"
+               data-bs-target="#nuevoUsuarioModal"
                style="background-color: var(--ecp-green); border-color: var(--ecp-green);">
                 <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
-            </a>
-            <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" data-bs-toggle="modal" data-bs-target="#modalConfigApi">
-                <i class="fas fa-sliders me-1"></i> Configurar API
-            </button>
-            <button type="button" class="btn btn-outline-primary rounded-pill px-3 btn-sm" data-bs-toggle="modal" data-bs-target="#modalBuscarCentral">
-                <i class="fas fa-magnifying-glass me-1"></i> Buscar en SICEFA
-            </button>
-            <button type="button" class="btn btn-outline-success rounded-pill px-3 btn-sm" onclick="probarConexionApi()">
-                <i class="fas fa-arrows-rotate me-1" id="btnSyncSpinIcon"></i> Comprobar Conexión
-            </button>
-            <button type="button" class="btn text-white rounded-pill px-3 btn-sm shadow-sm" style="background-color: var(--ecp-navy); border-color: var(--ecp-navy);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
-                <i class="fas fa-cloud-arrow-down me-1"></i> Sincronizar y Registrar Usuarios
             </button>
         </div>
     </div>
@@ -165,47 +251,10 @@
         </div>
     @endif
 
-    <!-- Tarjeta Principal: Estado del Servicio API SICEFA -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px; background: linear-gradient(135deg, #f0fbf4 0%, #d8f3dc 100%); border-left: 6px solid var(--ecp-green) !important;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
-                         style="width: 58px; height: 58px; background: #FFFFFF; color: var(--ecp-green); font-size: 1.6rem;">
-                        <i class="fas fa-network-wired"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                            <h4 class="h5 fw-bold mb-0" style="color: var(--ecp-navy);">
-                                Integración Directa con la API REST Central SICEFA
-                            </h4>
-                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1" style="background-color: var(--ecp-green); font-size: 0.75rem;">
-                                <span class="pulse-indicator bg-white" style="width: 6px; height: 6px;"></span>
-                                Conexión Activa
-                            </span>
-                        </div>
-                        <p class="mb-0 text-dark" style="font-size: 0.9rem; line-height: 1.45;">
-                            Este módulo está preparado para consumir y registrar en tiempo real a los <strong>aprendices, instructores y directivos</strong> directamente desde el ERP SENA Empresa / SICEFA, vinculando automáticamente sus roles y credenciales para Control ECP.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
-                    <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: var(--ecp-navy);" data-bs-toggle="modal" data-bs-target="#modalConfigApi">
-                        <i class="fas fa-gear me-1"></i> Ver Endpoint
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-success bg-white rounded-pill px-3 shadow-sm" onclick="probarConexionApi()">
-                        <i class="fas fa-plug me-1"></i> Test Ping API
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Tarjetas de Estadísticas (KPIs) -->
     <div class="row g-3 mb-4">
         <!-- KPI 1: Total Usuarios Control ECP -->
-        <div class="col-6 col-md-3">
+        <div class="col-12 col-md-4">
             <div class="card stat-card shadow-sm h-100 bg-white">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -217,69 +266,14 @@
                     </div>
                     <h3 class="fw-bold mb-0" style="color: var(--ecp-navy);" id="kpiTotalUsers">{{ $stats['total'] }}</h3>
                     <small class="text-success d-flex align-items-center gap-1 mt-1">
-                        <i class="fas fa-circle-check" style="font-size: 0.7rem;"></i> Sincronizados
+                        <i class="fas fa-circle-check" style="font-size: 0.7rem;"></i> Registrados en la base de datos
                     </small>
                 </div>
             </div>
         </div>
 
-        <!-- KPI 2: Administradores -->
-        <div class="col-6 col-md-3">
-            <div class="card stat-card shadow-sm h-100 bg-white">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted small fw-semibold">Administradores</span>
-                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                             style="width: 36px; height: 36px; background: #f0fbf4; color: #1e7000;">
-                            <i class="fas fa-user-shield"></i>
-                        </div>
-                    </div>
-                    <h3 class="fw-bold mb-0 text-dark" id="kpiAdminUsers">{{ $stats['admins'] }}</h3>
-                    <small class="text-muted mt-1 d-block">Rol ECP Admin</small>
-                </div>
-            </div>
-        </div>
-
-        <!-- KPI 3: Instructores -->
-        <div class="col-6 col-md-3">
-            <a href="{{ route('controlecp.administrador.pqr.instructores') }}"
-               class="card stat-card shadow-sm h-100 bg-white text-decoration-none"
-               title="Ver PQRS de instructores">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted small fw-semibold">Instructores</span>
-                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                             style="width: 36px; height: 36px; background: #ebf5fb; color: #2980b9;">
-                            <i class="fas fa-chalkboard-user"></i>
-                        </div>
-                    </div>
-                    <h3 class="fw-bold mb-0 text-dark" id="kpiInstructorUsers">{{ $stats['instructors'] }}</h3>
-                    <small class="text-muted mt-1 d-block">Formadores & Mediadores</small>
-                </div>
-            </a>
-        </div>
-
-        <!-- KPI 4: Aprendices -->
-        <div class="col-6 col-md-3">
-            <div class="card stat-card shadow-sm h-100 bg-white">
-                <div class="card-body p-3">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <span class="text-muted small fw-semibold">Aprendices</span>
-                        <div class="rounded-circle d-flex align-items-center justify-content-center"
-                             style="width: 36px; height: 36px; background: #fef9e7; color: #d68910;">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                    </div>
-                    <h3 class="fw-bold mb-0 text-dark" id="kpiApprenticeUsers">{{ $stats['apprentices'] }}</h3>
-                    <small class="text-muted mt-1 d-block">Fichas de Formación</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {{-- KPI Estado: Activos / Inactivos (HU1) --}}
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-md-3">
+        {{-- KPI Estado: Activos / Inactivos (HU1) --}}
+        <div class="col-12 col-md-4">
             <div class="card stat-card shadow-sm h-100 bg-white">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -294,7 +288,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-3">
+        <div class="col-12 col-md-4">
             <div class="card stat-card shadow-sm h-100 bg-white">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
@@ -311,126 +305,68 @@
         </div>
     </div>
 
-    <!-- Panel de Detalles Técnicos del Endpoint y Última Sincronización -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-        <div class="card-header bg-white border-0 pt-3 pb-2 px-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                <h5 class="fw-bold mb-0" style="color: var(--ecp-navy); font-size: 1.05rem;">
-                    <i class="fas fa-server me-2 text-success"></i>Parámetros de Integración API REST
-                </h5>
-                <div class="d-flex align-items-center gap-2">
-                    <span id="apiConnectionBadge" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">
-                        <i class="fas fa-circle-check me-1"></i> Servicio Listo
-                    </span>
-                    <span class="small text-muted" id="apiLatencyText">Latencia: -- ms</span>
-                </div>
-            </div>
-        </div>
-        <div class="card-body px-4 pb-3 pt-1">
-            <div class="row g-3">
-                <div class="col-md-7">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 0.85rem;">
-                            <tbody>
-                                <tr>
-                                    <th class="bg-light text-muted" style="width: 35%;">Endpoint API Central:</th>
-                                    <td>
-                                        <code class="text-primary fw-bold text-break" id="lblEndpointUrl">{{ $apiConfig['url'] ?? route('controlecp.api.usuarios.mock') }}</code>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="bg-light text-muted">Protocolo y Formato:</th>
-                                    <td>RESTful JSON &bull; HTTP GET &bull; Estandarizado SICEFA</td>
-                                </tr>
-                                <tr>
-                                    <th class="bg-light text-muted">Última Sincronización:</th>
-                                    <td id="lblLastSyncText">
-                                        @if(!empty($lastSync['date']))
-                                            <span class="text-dark fw-semibold">{{ $lastSync['date'] }}</span> &bull;
-                                            <span class="badge bg-light text-success border border-success-subtle">
-                                                {{ $lastSync['total_synced'] }} usuarios sincronizados
-                                            </span>
-                                        @else
-                                            <span class="text-muted fst-italic">Pendiente de sincronizar</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="col-md-5">
-                    <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background-color: #f8fbf9; border: 1px dashed #bce5c6;">
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="fas fa-bolt text-warning"></i>
-                                <strong class="small text-dark">Sincronización Automatizada</strong>
-                            </div>
-                            <p class="text-muted mb-2" style="font-size: 0.78rem; line-height: 1.35;">
-                                Al ejecutar la sincronización, se actualizan las tablas maestras de personas, usuarios y roles de Control ECP sin duplicar información.
-                            </p>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 flex-grow-1" onclick="probarConexionApi()">
-                                <i class="fas fa-arrows-rotate me-1"></i> Probar Enlace
-                            </button>
-                            <button type="button" class="btn btn-sm text-white rounded-pill px-3 flex-grow-1" style="background-color: var(--ecp-green);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
-                                <i class="fas fa-download me-1"></i> Sincronizar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Barra de Filtros y Búsqueda -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-        <div class="card-body p-3">
-            <div class="row g-2 align-items-center justify-content-between">
-                <!-- Filtro por Rol (Pills) -->
-                <div class="col-lg-7">
-                    <div class="d-flex flex-wrap align-items-center gap-2">
-                        <span class="small text-muted fw-semibold me-1"><i class="fas fa-filter me-1"></i>Rol:</span>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                           class="filter-pill {{ empty($roleFilter) ? 'active' : '' }}">
-                            Todos ({{ $stats['total'] }})
-                        </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'admin', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                           class="filter-pill {{ $roleFilter === 'admin' ? 'active' : '' }}">
-                            <i class="fas fa-shield-halved me-1"></i> Admin ({{ $stats['admins'] }})
-                        </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'instructor', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                           class="filter-pill {{ $roleFilter === 'instructor' ? 'active' : '' }}">
-                            <i class="fas fa-chalkboard-user me-1"></i> Instructor ({{ $stats['instructors'] }})
-                        </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => 'apprentice', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                           class="filter-pill {{ $roleFilter === 'apprentice' ? 'active' : '' }}">
-                            <i class="fas fa-user-graduate me-1"></i> Aprendiz ({{ $stats['apprentices'] }})
-                        </a>
+    <div class="card usuarios-filter-bar border-0 shadow-sm mb-4" style="border-radius: 24px;">
+        <div class="card-body p-3 p-lg-4">
+            <div class="row g-3 align-items-center">
+                <!-- Filtro por Rol -->
+                <div class="col-lg-auto">
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="filtroRolUsuarios" class="small text-white fw-semibold mb-0 text-nowrap">
+                            <i class="fas fa-filter me-1"></i>Rol:
+                        </label>
+                        <select id="filtroRolUsuarios"
+                                class="form-select form-select-sm rounded-pill fw-semibold border-0"
+                                style="width: 240px;"
+                                onchange="window.location.href = this.value;">
+                            <option value="{{ route('controlecp.administrador.usuarios', ['search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                                {{ empty($roleFilter) ? 'selected' : '' }}>
+                                Todos
+                            </option>
+                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'admin', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                                {{ $roleFilter === 'admin' ? 'selected' : '' }}>
+                                Administradores
+                            </option>
+                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'instructor', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                                {{ $roleFilter === 'instructor' ? 'selected' : '' }}>
+                                Instructores
+                            </option>
+                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'apprentice', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                                {{ $roleFilter === 'apprentice' ? 'selected' : '' }}>
+                                Aprendices
+                            </option>
+                        </select>
                     </div>
-                    {{-- Filtro por Estado (HU2) --}}
-                    <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
-                        <span class="small text-muted fw-semibold me-1"><i class="fas fa-toggle-on me-1"></i>Estado:</span>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm]) }}"
-                           class="filter-pill {{ empty($estadoFilter) ? 'active' : '' }}">
-                            Todos
-                        </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Activo']) }}"
-                           class="filter-pill {{ $estadoFilter === 'Activo' ? 'active' : '' }}">
-                            <i class="fas fa-circle-check me-1"></i> Activos ({{ $stats['activos'] }})
-                        </a>
-                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Inactivo']) }}"
-                           class="filter-pill {{ $estadoFilter === 'Inactivo' ? 'active' : '' }}"
-                           style="{{ $estadoFilter === 'Inactivo' ? 'background-color: #dc3545 !important;' : '' }}">
-                            <i class="fas fa-ban me-1"></i> Inactivos ({{ $stats['inactivos'] }})
-                        </a>
+                </div>
+
+                {{-- Filtro por Estado (HU2) --}}
+                <div class="col-lg-auto">
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="filtroEstadoUsuarios" class="small text-white fw-semibold mb-0 text-nowrap">
+                            <i class="fas fa-toggle-on me-1"></i>Estado:
+                        </label>
+                        <select id="filtroEstadoUsuarios"
+                                class="form-select form-select-sm rounded-pill fw-semibold border-0"
+                                style="width: 210px;"
+                                onchange="window.location.href = this.value;">
+                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm]) }}"
+                                {{ empty($estadoFilter) ? 'selected' : '' }}>
+                                Todos
+                            </option>
+                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Activo']) }}"
+                                {{ $estadoFilter === 'Activo' ? 'selected' : '' }}>
+                                Activos
+                            </option>
+                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Inactivo']) }}"
+                                {{ $estadoFilter === 'Inactivo' ? 'selected' : '' }}>
+                                Inactivos
+                            </option>
+                        </select>
                     </div>
                 </div>
 
                 <!-- Buscador en tiempo real -->
-                <div class="col-lg-5">
+                <div class="col-lg flex-grow-1">
                     <form method="GET" action="{{ route('controlecp.administrador.usuarios') }}" class="d-flex gap-2">
                         @if($roleFilter)
                             <input type="hidden" name="rol" value="{{ $roleFilter }}">
@@ -439,7 +375,7 @@
                             <input type="hidden" name="estado" value="{{ $estadoFilter }}">
                         @endif
                         <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted">
+                            <span class="input-group-text bg-white border-end-0 rounded-start-pill text-success">
                                 <i class="fas fa-magnifying-glass"></i>
                             </span>
                             <input type="text" name="search" id="inputSearchUser" class="form-control border-start-0 ps-0"
@@ -450,26 +386,20 @@
                                     <i class="fas fa-xmark"></i>
                                 </a>
                             @endif
-                            <button class="btn btn-outline-secondary rounded-end-pill px-3" type="submit">Filtrar</button>
+                            <button class="btn btn-filter rounded-end-pill px-4 text-white fw-semibold" type="submit">Filtrar</button>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 flex-shrink-0" onclick="exportarUsuariosCSV()" title="Exportar a CSV">
-                            <i class="fas fa-file-csv"></i>
-                        </button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Tabla Principal de Usuarios Sincronizados -->
+    <!-- Tabla Principal de Usuarios Locales -->
     <div class="card border-0 shadow-sm" style="border-radius: 18px;">
         <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0" style="color: var(--ecp-navy);">
-                <i class="fas fa-id-card-clip me-2" style="color: var(--ecp-green);"></i>Nómina de Usuarios SICEFA en Control ECP
+                <i class="fas fa-id-card-clip me-2" style="color: var(--ecp-green);"></i>Usuarios registrados en Control ECP
             </h5>
-            <span class="small text-muted">
-                Mostrando {{ $usuarios->count() }} de {{ $usuarios->total() }} registros
-            </span>
         </div>
 
         <div class="card-body p-0">
@@ -478,17 +408,15 @@
                     <table class="table table-users align-middle mb-0" id="tablaUsuariosEcp">
                         <thead class="table-light" style="font-size: 0.82rem; text-transform: uppercase; color: #52796f;">
                             <tr>
-                                <th class="ps-4 py-3" style="width: 5%;">#</th>
-                                <th style="width: 28%;">Persona / Documento</th>
-                                <th style="width: 22%;">Usuario & Contacto</th>
-                                <th style="width: 17%;">Rol Asignado en Control ECP</th>
-                                <th style="width: 10%;">Estado</th>
-                                <th style="width: 10%;">Sincronización</th>
-                                <th class="text-end pe-4" style="width: 8%;">Acciones</th>
+                                <th style="width: 33%;">Persona / Documento</th>
+                                <th style="width: 26%;">Usuario & Contacto</th>
+                                <th style="width: 20%;">Rol</th>
+                                <th style="width: 12%;">Estado</th>
+                                <th class="text-end pe-4" style="width: 9%;">Acciones</th>
                             </tr>
                         </thead>
                         <tbody style="font-size: 0.88rem;">
-                            @foreach($usuarios as $index => $u)
+                            @foreach($usuarios as $u)
                                 @php
                                     $p = $u->person;
                                     $hasAdmin = $u->hasRole('controlecp.admin');
@@ -499,15 +427,13 @@
                                     $avatarColor = $hasAdmin ? '#1e7000' : ($hasInstructor ? '#0b5e94' : '#9c6c03');
                                 @endphp
                                 <tr>
-                                    <!-- Avatar & Número -->
-                                    <td class="ps-4">
-                                        <div class="avatar-circle shadow-sm" style="background-color: {{ $avatarBg }}; color: {{ $avatarColor }};">
-                                            {{ $u->initials }}
-                                        </div>
-                                    </td>
-
                                     <!-- Datos de Persona -->
-                                    <td>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="avatar-circle shadow-sm flex-shrink-0" style="background-color: {{ $avatarBg }}; color: {{ $avatarColor }};">
+                                                {{ $u->initials }}
+                                            </div>
+                                            <div>
                                         <div class="fw-bold text-dark mb-0">
                                             {{ $u->full_name }}
                                         </div>
@@ -521,6 +447,8 @@
                                                     <i class="far fa-copy" style="font-size: 0.75rem;"></i>
                                                 </button>
                                             @endif
+                                        </div>
+                                            </div>
                                         </div>
                                     </td>
 
@@ -580,83 +508,44 @@
                                         @endif
                                     </td>
 
-                                    <!-- Sincronización -->
-                                    <td>
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;">
-                                            <i class="fas fa-link me-1"></i> API SICEFA
-                                        </span>
-                                        <div class="small text-muted mt-1" style="font-size: 0.72rem;">
-                                            {{ $u->updated_at ? $u->updated_at->format('d/m/Y H:i') : 'Activo' }}
-                                        </div>
-                                    </td>
-
                                     <!-- Acciones -->
                                     <td class="text-end pe-4">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light rounded-pill px-2" type="button" data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button class="btn-action-icon btn-action-view" type="button"
+                                                    title="Ver ficha"
+                                                    onclick="verCredencialUsuario({{ json_encode([
+                                                        'id' => $u->id,
+                                                        'nickname' => $u->nickname,
+                                                        'email' => $u->email,
+                                                        'full_name' => $u->full_name,
+                                                        'initials' => $u->initials,
+                                                        'document_type' => $p ? $p->document_type : 'Cédula de ciudadanía',
+                                                        'document_number' => $p ? $p->document_number : '',
+                                                        'telephone' => $p ? $p->telephone1 : '',
+                                                        'misena_email' => $p ? $p->misena_email : '',
+                                                        'role' => $hasAdmin ? 'Administrador' : ($hasInstructor ? 'Instructor' : ($hasApprentice ? 'Aprendiz' : 'Usuario')),
+                                                        'updated_at' => $u->updated_at ? $u->updated_at->format('d/m/Y H:i') : 'Activo'
+                                                    ]) }})">
+                                                <i class="fas fa-eye"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; font-size: 0.85rem;">
-                                                <li>
-                                                    <button class="dropdown-item py-2" type="button"
-                                                            onclick="verCredencialUsuario({{ json_encode([
-                                                                'id' => $u->id,
-                                                                'nickname' => $u->nickname,
-                                                                'email' => $u->email,
-                                                                'full_name' => $u->full_name,
-                                                                'initials' => $u->initials,
-                                                                'document_type' => $p ? $p->document_type : 'Cédula de ciudadanía',
-                                                                'document_number' => $p ? $p->document_number : '',
-                                                                'telephone' => $p ? $p->telephone1 : '',
-                                                                'misena_email' => $p ? $p->misena_email : '',
-                                                                'role' => $hasAdmin ? 'Administrador' : ($hasInstructor ? 'Instructor' : ($hasApprentice ? 'Aprendiz' : 'Usuario')),
-                                                                'updated_at' => $u->updated_at ? $u->updated_at->format('d/m/Y H:i') : 'Activo'
-                                                            ]) }})">
-                                                        <i class="fas fa-id-card me-2 text-primary"></i> Ver Ficha SICEFA
-                                                    </button>
-                                                </li>
-                                                {{-- HU5: Editar usuario --}}
-                                                <li>
-                                                    <a class="dropdown-item py-2"
-                                                       href="{{ route('controlecp.administrador.usuarios.edit', $u->id) }}">
-                                                        <i class="fas fa-user-pen me-2 text-secondary"></i> Editar Usuario
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                {{-- HU7 / HU8: Desactivar / Activar --}}
+                                            <button class="btn-action-icon btn-action-edit" type="button"
+                                                    title="Editar usuario"
+                                                    onclick="abrirEditarUsuario('{{ route('controlecp.administrador.usuarios.edit', $u->id, false) }}')">
+                                                <i class="fas fa-pen"></i>
+                                            </button>
                                                 @if(($u->estado ?? 'Activo') === 'Activo')
-                                                    <li>
-                                                        <button class="dropdown-item py-2 text-danger" type="button"
-                                                                onclick="confirmarCambioEstado({{ $u->id }}, 'desactivar', '{{ addslashes($u->full_name) }}')">
-                                                            <i class="fas fa-ban me-2"></i> Desactivar Usuario
-                                                        </button>
-                                                    </li>
+                                                    <button class="btn-action-icon btn-action-disable" type="button"
+                                                            title="Desactivar usuario"
+                                                            onclick="confirmarCambioEstado({{ $u->id }}, 'desactivar', '{{ addslashes($u->full_name) }}')">
+                                                        <i class="fas fa-ban"></i>
+                                                    </button>
                                                 @else
-                                                    <li>
-                                                        <button class="dropdown-item py-2 text-success" type="button"
-                                                                onclick="confirmarCambioEstado({{ $u->id }}, 'activar', '{{ addslashes($u->full_name) }}')">
-                                                            <i class="fas fa-circle-check me-2"></i> Activar Usuario
-                                                        </button>
-                                                    </li>
+                                                    <button class="btn-action-icon btn-action-enable" type="button"
+                                                            title="Activar usuario"
+                                                            onclick="confirmarCambioEstado({{ $u->id }}, 'activar', '{{ addslashes($u->full_name) }}')">
+                                                        <i class="fas fa-circle-check"></i>
+                                                    </button>
                                                 @endif
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li class="dropdown-header small text-muted">Cambiar Rol Control ECP:</li>
-                                                <li>
-                                                    <button class="dropdown-item py-1" type="button" onclick="cambiarRolUsuario({{ $u->id }}, 'controlecp.admin')">
-                                                        <i class="fas fa-user-shield me-2 text-success"></i> Asignar Administrador
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item py-1" type="button" onclick="cambiarRolUsuario({{ $u->id }}, 'controlecp.instructor')">
-                                                        <i class="fas fa-chalkboard-user me-2 text-info"></i> Asignar Instructor
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item py-1" type="button" onclick="cambiarRolUsuario({{ $u->id }}, 'controlecp.apprentice')">
-                                                        <i class="fas fa-user-graduate me-2 text-warning"></i> Asignar Aprendiz
-                                                    </button>
-                                                </li>
-                                            </ul>
                                         </div>
                                     </td>
                                 </tr>
@@ -666,10 +555,7 @@
                 </div>
 
                 <!-- Paginación -->
-                <div class="p-3 border-top d-flex justify-content-between align-items-center">
-                    <span class="small text-muted">
-                        Página {{ $usuarios->currentPage() }} de {{ $usuarios->lastPage() }}
-                    </span>
+                <div class="p-3 border-top d-flex justify-content-end align-items-center">
                     <div>
                         {{ $usuarios->links('pagination::bootstrap-5') }}
                     </div>
@@ -689,7 +575,7 @@
                         <button type="button" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color: var(--ecp-green);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
                             <i class="fas fa-cloud-arrow-down me-1"></i> Sincronizar Usuarios Ahora
                         </button>
-                        <a href="{{ route('controlecp.administrador.usuarios') }}" class="btn btn-outline-secondary rounded-pill px-4">
+                        <a href="{{ route('controlecp.administrador.usuarios') }}" class="btn btn-clear-filters rounded-pill px-4">
                             Limpiar Filtros
                         </a>
                     </div>
@@ -1327,6 +1213,15 @@
     async function ejecutarCambioEstado() {
         const accion = _estadoAccion === 'desactivar' ? 'desactivar' : 'activar';
         const url    = "{{ url('/control-ecp/administrador/usuarios') }}/" + _estadoUserId + '/' + accion;
+        const modalElement = document.getElementById('modalCambioEstado');
+        const confirmButton = document.getElementById('btnConfirmarEstado');
+
+        if (!_estadoUserId || !_estadoAccion || confirmButton.disabled) {
+            return;
+        }
+
+        confirmButton.disabled = true;
+        confirmButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
 
         try {
             const resp = await fetch(url, {
@@ -1334,18 +1229,28 @@
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': usuarioCsrfToken, 'Accept': 'application/json' },
                 body: JSON.stringify({})
             });
-            const data = await resp.json();
+            const data = await resp.json().catch(() => ({}));
 
-            bootstrap.Modal.getInstance(document.getElementById('modalCambioEstado')).hide();
+            if (!resp.ok) {
+                throw new Error(data.message || 'No se pudo actualizar el estado del usuario.');
+            }
 
             if (data.success) {
-                mostrarAlerta(data.message, 'success');
-                setTimeout(() => { window.location.reload(); }, 900);
+                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+                modalElement.addEventListener('hidden.bs.modal', function mostrarResultado() {
+                    modalElement.removeEventListener('hidden.bs.modal', mostrarResultado);
+                    mostrarAlerta(data.message, 'success');
+                });
+                modal.hide();
+                setTimeout(() => { window.location.reload(); }, 1500);
             } else {
                 mostrarAlerta(data.message, 'warning');
             }
         } catch (e) {
             mostrarAlerta('Error al cambiar el estado: ' + e.message, 'danger');
+        } finally {
+            confirmButton.disabled = false;
+            confirmButton.innerHTML = 'Confirmar';
         }
     }
 
@@ -1403,7 +1308,7 @@
         window.print();
     }
 
-    // ── 9. Utilidades (Copiar, Alertas, Exportar) ───────────────────────────────────
+    // ── 9. Utilidades (Copiar, Alertas) ────────────────────────────────────────────
     function copiarAlPortapapeles(texto) {
         navigator.clipboard.writeText(texto).then(() => {
             mostrarAlerta('Documento copiado al portapapeles: ' + texto, 'success');
@@ -1440,30 +1345,96 @@
         }, 5000);
     }
 
-    function exportarUsuariosCSV() {
-        const table = document.getElementById('tablaUsuariosEcp');
-        if (!table) return;
+</script>
+@endpush
+<div class="modal fade" id="nuevoUsuarioModal" tabindex="-1" aria-labelledby="nuevoUsuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header text-white" style="background-color: var(--ecp-navy);">
+                <h5 class="modal-title" id="nuevoUsuarioModalLabel">
+                    <i class="fas fa-user-plus me-2" style="color: var(--ecp-green);"></i>Registrar Usuario
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe
+                    id="nuevoUsuarioFrame"
+                    src="{{ route('controlecp.administrador.usuarios.create', ['modal' => 1]) }}"
+                    title="Formulario para registrar usuario"
+                    style="display: block; width: 100%; height: 75vh; border: 0;">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
 
-        let csv = [];
-        const rows = table.querySelectorAll('tr');
+<div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header text-white" style="background-color: var(--ecp-navy);">
+                <h5 class="modal-title" id="editarUsuarioModalLabel">
+                    <i class="fas fa-user-pen me-2" style="color: var(--ecp-green);"></i>Editar Usuario
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-0">
+                <iframe
+                    id="editarUsuarioFrame"
+                    title="Formulario para editar usuario"
+                    style="display: block; width: 100%; height: 75vh; border: 0;">
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
 
-        for (let i = 0; i < rows.length; i++) {
-            let row = [], cols = rows[i].querySelectorAll('td, th');
-            for (let j = 0; j < cols.length - 1; j++) {
-                let text = cols[j].innerText.replace(/"/g, '""').trim();
-                row.push('"' + text + '"');
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        window.addEventListener('message', function (event) {
+            if (event.origin !== window.location.origin || !event.data || event.data.type !== 'user-saved') {
+                return;
             }
-            csv.push(row.join(','));
-        }
 
-        const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv.join('\n'));
-        const link = document.createElement('a');
-        link.setAttribute('href', csvContent);
-        link.setAttribute('download', 'usuarios_controlecp_sicefa_' + new Date().toISOString().slice(0, 10) + '.csv');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('nuevoUsuarioModal'));
+            const editModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editarUsuarioModal'));
+            const openModal = document.querySelector('.modal.show');
+            const modalElement = openModal || document.getElementById('nuevoUsuarioModal');
+            const modalInstance = openModal === document.getElementById('editarUsuarioModal') ? editModal : modal;
+
+            modalElement.addEventListener('hidden.bs.modal', function mostrarResultado() {
+                modalElement.removeEventListener('hidden.bs.modal', mostrarResultado);
+                mostrarAlerta(event.data.message, 'success');
+            });
+            modalInstance.hide();
+            setTimeout(() => { window.location.reload(); }, 1800);
+        });
+
+        const listPath = @json(parse_url(route('controlecp.administrador.usuarios'), PHP_URL_PATH));
+        const frames = [
+            { modal: document.getElementById('nuevoUsuarioModal'), frame: document.getElementById('nuevoUsuarioFrame') },
+            { modal: document.getElementById('editarUsuarioModal'), frame: document.getElementById('editarUsuarioFrame') }
+        ];
+
+        frames.forEach(function (item) {
+            item.frame.addEventListener('load', function () {
+                try {
+                    if (item.frame.contentWindow.location.pathname === listPath) {
+                        bootstrap.Modal.getOrCreateInstance(item.modal).hide();
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    console.error('No fue posible verificar el resultado del formulario:', error);
+                }
+            });
+        });
+    });
+
+    function abrirEditarUsuario(url) {
+        const frame = document.getElementById('editarUsuarioFrame');
+        frame.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('editarUsuarioModal')).show();
     }
 </script>
 @endpush
-@endsection

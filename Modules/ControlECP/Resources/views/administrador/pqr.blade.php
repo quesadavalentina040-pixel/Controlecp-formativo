@@ -102,6 +102,20 @@
         width: 12px; height: 12px; border-radius: 50%;
         border: 2px solid #fff; box-shadow: 0 0 0 2px #E2E8F0;
     }
+
+    .pqr-header-card {
+        background-color: #001A29;
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .pqr-header-card h2 {
+        color: #ffffff !important;
+    }
+
+    .pqr-header-card p {
+        color: #c7d4da !important;
+    }
 </style>
 @endpush
 
@@ -109,29 +123,18 @@
 <div class="container-fluid px-2 px-md-4 py-3">
 
     {{-- ══ CABECERA ══ --}}
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-3 border-bottom">
+    <div class="pqr-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge px-2 py-1 small fw-bold rounded-pill"
-                      style="background:#E2F5D7; color:#39A900; font-size:.7rem;">
-                    ROL ADMINISTRADOR
-                </span>
-                <span class="text-muted small">&bull; Escuela Cultura de Paz</span>
+            <div class="small fw-semibold mb-1" style="color:#39A900;">
+                <i class="fas fa-comment-dots me-2"></i>Control ECP · Panel administrativo
             </div>
-            <h2 class="h3 fw-bold mb-0" style="color:#001A29; font-family:'Outfit',sans-serif;">
+            <h2 class="h3 fw-bold mb-0" style="font-family:'Outfit',sans-serif;">
                 <i class="fas fa-comment-dots me-2" style="color:#39A900;"></i>Gestión de PQRS
             </h2>
             <p class="text-muted small mb-0 mt-1">
                 Supervisión y respuesta a solicitudes de la Escuela Cultura de Paz
             </p>
         </div>
-        <button type="button"
-                class="btn btn-outline-dark rounded-pill px-4 btn-sm shadow-sm d-flex align-items-center gap-2"
-                data-bs-toggle="modal" data-bs-target="#modalReportePqrs"
-                onclick="inicializarGraficasPqrs()">
-            <i class="fas fa-chart-pie text-success"></i>
-            <span class="fw-semibold">Generar reporte</span>
-        </button>
     </div>
 
     {{-- ══ ALERTAS FLASH ══ --}}
@@ -270,36 +273,25 @@
         </div>
     </div>
 
-    @if(!$soloInstructores)
     {{-- ══ TABS: ADMINISTRACIÓN / INSTRUCTORES ══ --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <div class="d-flex gap-2">
             {{-- Tab Administración --}}
-            <div class="d-flex align-items-center gap-2 rounded-pill px-4 py-2 fw-bold shadow-sm"
-                 style="background:#39A900; color:#fff; font-size:.88rem; cursor:default;">
+            <a href="{{ route('controlecp.administrador.pqr') }}"
+               class="d-flex align-items-center gap-2 rounded-pill px-4 py-2 fw-bold shadow-sm text-decoration-none"
+               style="background:{{ !$soloInstructores ? '#39A900' : '#F1F5F9' }}; color:{{ !$soloInstructores ? '#fff' : '#475569' }}; font-size:.88rem;">
                 <i class="fas fa-building-columns"></i>
                 <span>Administración</span>
-                <span class="badge rounded-pill fw-bold"
-                      style="background:#fff; color:#39A900; font-size:.75rem; padding:.2rem .55rem;">
-                    {{ $pqrsAdmin->total() }}
-                </span>
-            </div>
+            </a>
             {{-- Tab Instructores --}}
-            <div class="d-flex align-items-center gap-2 rounded-pill border px-4 py-2 fw-bold"
-                 style="background:#F1F5F9; color:#475569; font-size:.88rem; cursor:default;">
+            <a href="{{ route('controlecp.administrador.pqr.instructores') }}"
+               class="d-flex align-items-center gap-2 rounded-pill border px-4 py-2 fw-bold text-decoration-none"
+               style="background:{{ $soloInstructores ? '#39A900' : '#F1F5F9' }}; color:{{ $soloInstructores ? '#fff' : '#475569' }}; font-size:.88rem;">
                 <i class="fas fa-chalkboard-user"></i>
                 <span>Instructores</span>
-                <span class="badge rounded-pill fw-bold"
-                      style="background:#DC2626; color:#fff; font-size:.75rem; padding:.2rem .55rem;">
-                    {{ $pqrsInstructor->total() }}
-                </span>
-            </div>
-        </div>
-        <div class="text-muted small">
-            Total: <strong class="text-dark">{{ $total }}</strong> PQRS en el sistema
+            </a>
         </div>
     </div>
-    @endif
 
     {{-- ══════════════════════════════════════════════════════════════
          SECCIÓN 1 — PQRS DE ADMINISTRACIÓN (el admin puede responder)
@@ -411,11 +403,7 @@
                     </table>
                 </div>
                 @if($pqrsAdmin->hasPages())
-                <div class="px-4 py-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <div class="small text-muted">
-                        Mostrando {{ $pqrsAdmin->firstItem() }}–{{ $pqrsAdmin->lastItem() }}
-                        de {{ $pqrsAdmin->total() }}
-                    </div>
+                <div class="px-4 py-3 border-top d-flex flex-wrap justify-content-end align-items-center gap-2">
                     {{ $pqrsAdmin->links() }}
                 </div>
                 @endif
@@ -546,12 +534,8 @@
                 </table>
             </div>
             @if($pqrsInstructor->hasPages())
-            <div class="px-4 py-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2"
+            <div class="px-4 py-3 border-top d-flex flex-wrap justify-content-end align-items-center gap-2"
                  style="background:#FAFBFD;">
-                <div class="small text-muted">
-                    Mostrando {{ $pqrsInstructor->firstItem() }}–{{ $pqrsInstructor->lastItem() }}
-                    de {{ $pqrsInstructor->total() }}
-                </div>
                 {{ $pqrsInstructor->links() }}
             </div>
             @endif

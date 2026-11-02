@@ -54,7 +54,7 @@ class FichaSyncController extends Controller
 
         $fichas = $query->orderBy('status', 'asc')
                         ->orderBy('code', 'desc')
-                        ->paginate(15)
+                        ->paginate(10)
                         ->withQueryString();
 
         // Estadísticas generales reales

@@ -7,6 +7,23 @@
         --ecp-navy:  #001A29;
     }
 
+    .momentos-header-card {
+        background-color: var(--ecp-navy);
+        border-radius: 24px;
+        padding: 1.25rem 1.5rem;
+    }
+    .momentos-header-card .breadcrumb-item.active,
+    .momentos-header-card h2 {
+        color: #fff !important;
+    }
+    .momentos-header-card .text-muted {
+        color: #c7d4da !important;
+    }
+    .momentos-header-card .btn-outline-secondary {
+        color: #fff;
+        border-color: rgba(255, 255, 255, .65);
+    }
+
     /* ── Tarjeta de Momento ── */
     .momento-card {
         border-radius: 20px;
@@ -83,18 +100,11 @@
 <div class="container-fluid px-2 px-md-3 py-2">
 
     {{-- Breadcrumb & Cabecera --}}
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
+    <div class="momentos-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: var(--ecp-green);">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active fw-bold" style="color: var(--ecp-navy);">Momentos</li>
-                </ol>
-            </nav>
+            <div class="small fw-semibold mb-1" style="color: var(--ecp-green);">
+                <i class="fas fa-star me-2"></i>Control ECP · Gestión de Momentos
+            </div>
             <h2 class="h3 fw-bold mb-0" style="color: var(--ecp-navy); font-family: 'Outfit', sans-serif;">
                 <i class="fas fa-star me-2" style="color: var(--ecp-green);"></i>Gestión de Momentos Pedagógicos
             </h2>
@@ -111,9 +121,7 @@
             <a href="{{ route('controlecp.administrador.actividades') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
                 <i class="fas fa-list-check me-1"></i> Catálogo de Actividades
             </a>
-            <a href="{{ route('controlecp.administrador.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Volver
-            </a>
+
         </div>
     </div>
 
@@ -223,8 +231,8 @@
                                     </span>
                                 @endif
                             </div>
-                            <h4 class="fw-bold mb-1 fs-5">{{ $m->nombre }}</h4>
-                            <p class="mb-0 small" style="opacity: .8; line-height: 1.4;">
+                            <h4 class="fw-bold mb-1 fs-5" style="color: #fff !important;">{{ $m->nombre }}</h4>
+                            <p class="mb-0 small fw-bold" style="color: #fff !important; opacity: 1; line-height: 1.4;">
                                 {{ Str::limit($m->descripcion, 100) }}
                             </p>
                         </div>
@@ -238,10 +246,6 @@
                                         Actividades
                                     </span>
                                     <div class="d-flex gap-2">
-                                        <span class="badge rounded-pill px-3 py-1 fw-bold"
-                                              style="background: {{ $m->color }}22; color: {{ $m->color }}; font-size: .82rem; border: 1px solid {{ $m->color }}44;">
-                                            {{ $m->actividades_activas_count }} activas
-                                        </span>
                                         <span class="badge bg-light text-muted border rounded-pill px-2 py-1 fw-bold" style="font-size: .82rem;">
                                             {{ $m->actividades_count }} total
                                         </span>
@@ -410,8 +414,8 @@
                                     <i class="fas fa-star" id="previewIcono"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold" id="previewNombre">Nombre del Momento</div>
-                                    <div class="small" style="opacity: .8;" id="previewDesc">Descripción...</div>
+                                    <div class="fw-bold text-white" id="previewNombre">Nombre del Momento</div>
+                                    <div class="small fw-bold text-white" id="previewDesc">Descripción...</div>
                                 </div>
                             </div>
                         </div>

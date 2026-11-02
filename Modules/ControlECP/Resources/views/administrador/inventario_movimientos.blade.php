@@ -85,6 +85,27 @@
         </div>
     </div>
 
+    <ul class="nav nav-pills gap-2 mb-3" role="tablist">
+        <li class="nav-item">
+            <a href="{{ route('controlecp.administrador.inventario') }}" class="nav-link rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2" style="background-color: #F1F5F9; color: #475569;">
+                <i class="fas fa-boxes-stacked"></i>
+                <span>Recursos activos</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('controlecp.administrador.inventario', ['ver_bajas' => 1]) }}" class="nav-link rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2" style="background-color: #F1F5F9; color: #475569;">
+                <i class="fas fa-ban"></i>
+                <span>Recursos dados de baja</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('controlecp.administrador.inventario.movimientos') }}" class="nav-link rounded-pill px-3 py-2 fw-semibold d-flex align-items-center gap-2" style="background-color: #0d6efd; color: #FFFFFF;">
+                <i class="fas fa-clock-rotate-left"></i>
+                <span>Historial de movimientos</span>
+            </a>
+        </li>
+    </ul>
+
     <!-- Alertas Flash -->
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4" role="alert" style="background-color: #f0fbf4; color: #001A29;">
@@ -244,14 +265,12 @@
             <button class="nav-link active d-flex align-items-center gap-2" id="tab-completo" data-bs-toggle="pill" data-bs-target="#pane-completo" type="button" role="tab">
                 <i class="fas fa-clock-rotate-left"></i>
                 <span>Historial completo</span>
-                <span class="badge bg-white text-dark rounded-pill">{{ $movimientos->total() }}</span>
             </button>
         </li>
         <li class="nav-item">
             <button class="nav-link d-flex align-items-center gap-2" id="tab-pendientes" data-bs-toggle="pill" data-bs-target="#pane-pendientes" type="button" role="tab">
                 <i class="fas fa-hand-holding-box text-warning"></i>
                 <span>Préstamos pendientes de devolución</span>
-                <span class="badge bg-danger text-white rounded-pill">{{ $prestamosPendientes->count() }}</span>
             </button>
         </li>
     </ul>
