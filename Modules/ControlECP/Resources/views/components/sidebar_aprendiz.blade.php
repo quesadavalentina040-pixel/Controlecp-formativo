@@ -32,7 +32,10 @@
             $items = [
                 ['icon' => 'fa-house', 'label' => 'Inicio', 'route' => 'controlecp.aprendiz.inicio'],
                 ['icon' => 'fa-calendar-days', 'label' => 'Cronograma', 'route' => 'controlecp.aprendiz.cronograma'],
+                ['icon' => 'fa-book-open', 'label' => 'Historia', 'route' => 'controlecp.aprendiz.historia'],
                 ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuesta', 'route' => 'controlecp.aprendiz.encuesta'],
+                ['icon' => 'fa-star', 'label' => 'Mis calificaciones', 'route' => 'controlecp.aprendiz.calificaciones'],
+                ['icon' => 'fa-bell', 'label' => 'Notificaciones', 'route' => 'controlecp.notificaciones.index'],
                 ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.aprendiz.asesorias'],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.aprendiz.pqr'],
             ];

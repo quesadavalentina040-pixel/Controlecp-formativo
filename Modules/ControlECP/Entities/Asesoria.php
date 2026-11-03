@@ -79,4 +79,9 @@ class Asesoria extends Model
     {
         return $this->hasMany(AsesoriaRecurso::class, 'id_asesoria', 'id_asesoria');
     }
+
+    public function calificacion()
+    {
+        return $this->hasOne(CalificacionAsesoria::class, 'id_asesoria', 'id_asesoria');
+    }
 }

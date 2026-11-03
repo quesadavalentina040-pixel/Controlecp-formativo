@@ -51,6 +51,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
                 'modulo'     => $n->modulo,
                 'titulo'     => $n->titulo,
                 'mensaje'    => $n->mensaje,
+                'causante'   => $n->causante?->nickname,
                 'url'        => $n->url_referencia,
                 'fecha'      => $n->fecha_generacion->diffForHumans(), // Presenta el tiempo en forma relativa, por ejemplo «hace 5 minutos».
             ]),
@@ -59,6 +60,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
                 'modulo'     => $n->modulo,
                 'titulo'     => $n->titulo,
                 'mensaje'    => $n->mensaje,
+                'causante'   => $n->causante?->nickname,
                 'cantidad'   => $n->cantidad,
                 'leida'      => $n->leida,
                 'url'        => route('controlecp.notificaciones.ir', $n->id_notificacion),

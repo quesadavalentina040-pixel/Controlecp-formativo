@@ -262,7 +262,7 @@
                             <div class="d-flex gap-2 pt-3 border-top">
                                 {{-- HU2: Editar --}}
                                 <button type="button" class="btn btn-outline-secondary rounded-pill btn-sm flex-fill"
-                                        onclick="event.stopPropagation(); abrirModalEditar(@js(['id'=>$m->id,'nombre'=>$m->nombre,'descripcion'=>$m->descripcion,'icono'=>$m->icono,'color'=>$m->color,'orden'=>$m->orden]))">
+                                        onclick="event.stopPropagation(); abrirModalEditar(@js(['id'=>$m->id,'nombre'=>$m->nombre,'descripcion'=>$m->descripcion,'icono'=>$m->icono,'color'=>$m->color,'orden'=>$m->orden,'encuesta_id'=>$m->encuesta_id]))">
                                     <i class="fas fa-pen me-1"></i> Editar
                                 </button>
 
@@ -400,6 +400,19 @@
                                    placeholder="0">
                         </div>
 
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small" style="color: var(--ecp-navy);">
+                                Encuesta para este momento
+                            </label>
+                            <select id="formEncuesta" class="form-select">
+                                <option value="">— Seleccionar encuesta activa —</option>
+                                @foreach($encuestasActivas as $enc)
+                                    <option value="{{ $enc->id }}">{{ $enc->nombre ?? $enc->titulo }}</option>
+                                @endforeach
+                            </select>
+                            <div class="form-text">Las actividades de este momento usarán esta encuesta automáticamente.</div>
+                        </div>
+
                         {{-- Preview en vivo --}}
                         <div class="col-md-8">
                             <label class="form-label fw-semibold small" style="color: var(--ecp-navy);">Vista previa</label>
@@ -510,6 +523,7 @@
         document.getElementById('formNombre').value       = '';
         document.getElementById('formDescripcion').value  = '';
         document.getElementById('formOrden').value        = {{ $stats['total_momentos'] + 1 }};
+        document.getElementById('formEncuesta').value     = '';
 
         seleccionarColor('#39A900');
         seleccionarIcono('fa-star');
@@ -528,6 +542,7 @@
         document.getElementById('formNombre').value       = data.nombre;
         document.getElementById('formDescripcion').value  = data.descripcion ?? '';
         document.getElementById('formOrden').value        = data.orden ?? 0;
+        document.getElementById('formEncuesta').value     = data.encuesta_id ?? '';
 
         seleccionarColor(data.color ?? '#39A900');
         seleccionarIcono(data.icono ?? 'fa-star');
@@ -548,6 +563,7 @@
         const icono  = document.getElementById('formIcono').value;
         const color  = document.getElementById('formColor').value;
         const orden  = parseInt(document.getElementById('formOrden').value) || 0;
+        const encuesta_id = document.getElementById('formEncuesta').value || null;
 
         // HU7 — Validar campos obligatorios en el front
         if (!nombre) {
@@ -582,7 +598,7 @@
             const resp = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': momentosCsrfToken, 'Accept': 'application/json' },
-                body: JSON.stringify({ nombre, descripcion: desc, icono, color, orden }),
+                body: JSON.stringify({ nombre, descripcion: desc, icono, color, orden, encuesta_id }),
             });
 
             const data = await resp.json().catch(() => ({}));

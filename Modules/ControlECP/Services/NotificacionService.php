@@ -162,7 +162,10 @@ class NotificacionService
     private function protegerContenidoAcompaniamiento(string $modulo, string $titulo, ?string $mensaje): array
     {
         // Normaliza el módulo para comparar sin distinguir mayúsculas ni espacios externos.
-        $esModuloSensible = in_array(mb_strtolower(trim($modulo)), $this->modulosSensibles, true);
+        $moduloNormalizado = mb_strtolower(trim($modulo));
+        $esModuloSensible = in_array($moduloNormalizado, $this->modulosSensibles, true)
+            || str_contains($moduloNormalizado, 'acompañ')
+            || str_contains($moduloNormalizado, 'acompani');
         // Combina y pasa a minúsculas el título y el mensaje para buscar términos sensibles.
         $textoCompleto = mb_strtolower($titulo . ' ' . ($mensaje ?? ''));
 
@@ -340,7 +343,8 @@ class NotificacionService
     public function listarHistorial(int $idUsuario, array $filtros = [], int $perPage = 15): LengthAwarePaginator
     {
         // Inicia una consulta restringida al usuario y ordenada de más nuevo a más antiguo.
-        $query = Notification::where('id_usuario_receptor', $idUsuario)
+        $query = Notification::with('causante')
+            ->where('id_usuario_receptor', $idUsuario)
             // Presenta primero las notificaciones generadas más recientemente.
             ->orderBy('fecha_generacion', 'desc');
 

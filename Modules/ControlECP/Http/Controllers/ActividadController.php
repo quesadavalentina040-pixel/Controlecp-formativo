@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Schema;
 use Modules\ControlECP\Entities\ActividadEcp;
 use Modules\ControlECP\Entities\Momento;
-use Modules\ControlECP\Entities\EncuestaEcp;
+use Modules\ControlECP\Entities\Encuesta;
 use Modules\ControlECP\Entities\EvidenciaEcp;
 use Modules\ControlECP\Entities\CalificacionEcp;
+use Modules\ControlECP\Entities\Notification;
+use App\Models\User;
 use Modules\SICA\Entities\Course;
 use Modules\SICA\Entities\Apprentice;
 
@@ -37,9 +39,8 @@ class ActividadController extends Controller
         ->orderBy('orden')
         ->get();
 
-        $nombreEncuesta = Schema::hasColumn('controlecp_encuestas', 'nombre') ? 'nombre' : 'titulo';
-        $encuestasActivas = EncuestaEcp::whereIn('estado', ['Activo', 'Activa'])
-            ->orderBy($nombreEncuesta)
+        $encuestasActivas = Encuesta::where('estado', 'Activa')
+            ->orderBy('nombre')
             ->get();
 
         $stats = [
@@ -74,14 +75,13 @@ class ActividadController extends Controller
             'objetivo'    => 'required|string',
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
-            'encuesta_id' => 'required|exists:controlecp_encuestas,id',
+            'encuesta_id' => 'nullable|exists:encuestas,id_encuesta',
         ], [
             'momento_id.required'  => 'Debes seleccionar un momento.',
             'nombre.required'      => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'    => 'El objetivo pedagógico es obligatorio.',
             'duracion.required'    => 'La duración es obligatoria.',
             'duracion_min.required'=> 'La duración en minutos es obligatoria.',
-            'encuesta_id.required' => 'Debes seleccionar una encuesta activa.',
         ]);
 
         if (!Momento::whereKey($request->momento_id)->where('estado', 'Activo')->exists()) {
@@ -101,14 +101,17 @@ class ActividadController extends Controller
         }
 
         // HU7/HU8 — La encuesta es un componente obligatorio.
-        $encuesta = EncuestaEcp::whereKey($request->encuesta_id)
-            ->whereIn('estado', ['Activo', 'Activa'])
+        $encuesta = Encuesta::whereKey($request->encuesta_id)
+            ->where('estado', 'Activa')
             ->first();
+        if (!$encuesta) {
+            $encuesta = Momento::find($request->momento_id)?->encuesta;
+        }
         if (!$encuesta) {
             return response()->json([
                 'success' => false,
-                'message' => 'Primero cree y active una encuesta en el repositorio antes de asociarla a esta actividad.',
-                'field'   => 'encuesta_id',
+                'message' => 'Asigna una encuesta activa al momento antes de crear esta actividad.',
+                'field'   => 'momento_id',
             ], 422);
         }
 
@@ -128,7 +131,7 @@ class ActividadController extends Controller
             'metodologia'      => trim($request->metodologia ?? ''),
             'estado'           => 'Activo',
             'tiene_asistencia' => true,
-            'encuesta_id'      => $encuesta->id,
+            'encuesta_id'      => $encuesta->id_encuesta,
             'tiene_evidencia'  => true,
         ]);
 
@@ -158,11 +161,10 @@ class ActividadController extends Controller
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
             'momento_id'  => 'required|exists:controlecp_momentos,id',
-            'encuesta_id' => 'required|exists:controlecp_encuestas,id',
+            'encuesta_id' => 'nullable|exists:encuestas,id_encuesta',
         ], [
             'nombre.required'  => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'=> 'El objetivo pedagógico es obligatorio.',
-            'encuesta_id.required' => 'Debes seleccionar una encuesta activa.',
         ]);
 
         $momentoId = (int) $request->momento_id;
@@ -183,11 +185,14 @@ class ActividadController extends Controller
             ], 422);
         }
 
-        $encuesta = EncuestaEcp::whereKey($request->encuesta_id)
-            ->whereIn('estado', ['Activo', 'Activa'])
+        $encuesta = Encuesta::whereKey($request->encuesta_id)
+            ->where('estado', 'Activa')
             ->first();
         if (!$encuesta) {
-            return response()->json(['success' => false, 'message' => 'La encuesta seleccionada debe estar activa.'], 422);
+            $encuesta = Momento::find($momentoId)?->encuesta;
+        }
+        if (!$encuesta) {
+            return response()->json(['success' => false, 'message' => 'Asigna una encuesta activa al momento antes de guardar esta actividad.'], 422);
         }
 
         if ((int) $encuesta->id !== (int) $actividad->encuesta_id
@@ -208,7 +213,7 @@ class ActividadController extends Controller
             'duracion_min'     => (int) $request->duracion_min,
             'metodologia'      => trim($request->metodologia ?? ''),
             'tiene_asistencia' => true,
-            'encuesta_id'      => $encuesta->id,
+            'encuesta_id'      => $encuesta->id_encuesta,
             'tiene_evidencia'  => true,
         ]);
 
@@ -408,10 +413,41 @@ class ActividadController extends Controller
 
         // HU13 — Habilitar encuesta para aprendices si la actividad tiene encuesta
         $encuestaHabilitada = false;
-        if ($actividad->encuesta_id) {
-            $encuesta = EncuestaEcp::find($actividad->encuesta_id);
+        if ($actividad->id_encuesta) {
+            $encuesta = Encuesta::find($actividad->id_encuesta);
             if ($encuesta && in_array($encuesta->estado, ['Activo', 'Activa'], true)) {
                 $encuestaHabilitada = true;
+
+                $cronogramas = DB::table('cronograma')
+                    ->where('id_actividad', $actividad->id)
+                    ->pluck('id_cronograma');
+                $aprendizIds = DB::table('controlecp_asistencia_detalles as detalle')
+                    ->join('controlecp_asistencias as asistencia', 'asistencia.id_asistencia', '=', 'detalle.id_asistencia')
+                    ->whereIn('asistencia.id_cronograma', $cronogramas)
+                    ->where('detalle.presente', true)
+                    ->pluck('detalle.id_aprendiz');
+                $personIds = Apprentice::whereIn('id', $aprendizIds)->pluck('person_id');
+                $receptores = User::whereIn('person_id', $personIds)->get();
+
+                foreach ($receptores as $receptor) {
+                    foreach ($cronogramas as $cronogramaId) {
+                        Notification::firstOrCreate([
+                            'id_usuario_receptor' => $receptor->id,
+                            'referencia_tipo' => 'encuesta',
+                            'referencia_id' => $cronogramaId,
+                            'clave_evento' => 'encuesta_habilitada',
+                        ], [
+                            'id_usuario_causante' => $usuario->id,
+                            'modulo' => 'ControlECP',
+                            'titulo' => 'Nueva encuesta disponible',
+                            'mensaje' => "La encuesta \"{$encuesta->nombre}\" ya está disponible para responder.",
+                            'clave_agrupacion' => 'encuesta_' . $cronogramaId,
+                            'cantidad' => 1,
+                            'leida' => false,
+                            'fecha_generacion' => now(),
+                        ]);
+                    }
+                }
             }
         }
 

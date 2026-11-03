@@ -23,8 +23,6 @@ class EncuestaRequest extends FormRequest // Define autorización y validaciones
         return [ // Devuelve las reglas agrupadas por nombre de campo.
             'nombre'          => ['required', 'string', 'max:255'], // Exige un nombre de texto de hasta 255 caracteres.
             'descripcion'     => ['nullable', 'string', 'max:2000'], // Permite descripción vacía o texto de hasta 2000 caracteres.
-            'actividades_ids' => ['nullable', 'array'], // Permite no asociar actividades; si se envían, deben llegar como lista.
-            'actividades_ids.*' => ['integer', 'exists:controlecp_actividades,id'], // Exige que cada id de la lista sea entero y exista como actividad de ControlECP.
         ];
     }
 

@@ -1,109 +1,20 @@
-{{-- Vista: Vista del instructor para registrar y consultar asistencias. --}}
 @extends('controlecp::components.layouts.dashboard')
 
-{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
-
-    <!-- Breadcrumb & Cabecera -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
-                        Asistencias
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: #001A29; font-family: 'Outfit', sans-serif;">
-                <i class="fas fa-user-check me-2" style="color: #39A900;"></i>Registro de Asistencias
-            </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; Control y reporte de asistencia a sesiones de talleres ECP</p>
-        </div>
-
-        <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.instructor.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Volver al Inicio
-            </a>
-        </div>
+        <div><h2 class="h3 fw-bold mb-1" style="color:#001A29"><i class="fas fa-user-check me-2 text-success"></i>Asistencias</h2><p class="text-muted small mb-0">Registra y consulta la asistencia de tus actividades.</p></div><a href="{{ route('controlecp.instructor.asistencia.exportar') }}" class="btn btn-outline-success"><i class="fas fa-file-csv me-1"></i>Generar reporte</a>
     </div>
-
-    <!-- Formulario de Registro de Asistencia -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px;">
-        <div class="card-body p-4">
-            <h5 class="fw-bold mb-3" style="color: #001A29;"><i class="fas fa-clipboard-user me-2" style="color: #39A900;"></i>Seleccionar Ficha y Sesión</h5>
-            <div class="row g-3 align-items-end mb-4">
-                <div class="col-md-5">
-                    <label class="form-label small fw-semibold">Ficha a Cargo</label>
-                    <select class="form-select rounded-pill">
-                        <option value="">Ficha 2670192 - ADSO (Mañana)</option>
-                        <option value="">Ficha 2670195 - Gestión de Mercados</option>
-                        <option value="">Ficha 2558910 - Agroindustria</option>
-                    </select>
-                </div>
-                <div class="col-md-5">
-                    <label class="form-label small fw-semibold">Actividad / Sesión</label>
-                    <select class="form-select rounded-pill">
-                        <option value="">01. Reconocimiento y Gestión Emocional</option>
-                        <option value="">02. Taller de Autorreflexión</option>
-                    </select>
-                </div>
-                <div class="col-md-2 d-grid">
-                    <button class="btn text-white rounded-pill" style="background-color: #39A900;">Cargar Lista</button>
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead style="background-color: #f0fbf4; color: #001A29;" class="small">
-                        <tr>
-                            <th class="ps-3">Documento</th>
-                            <th>Aprendiz</th>
-                            <th class="text-center">Asistencia</th>
-                            <th class="text-end pe-3">Observación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="ps-3 fw-bold font-monospace">1012345678</td>
-                            <td>Ana Sofía Martínez</td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <input type="radio" class="btn-check" name="asist_1" id="a1_p" checked>
-                                    <label class="btn btn-outline-success" for="a1_p">Presente</label>
-                                    <input type="radio" class="btn-check" name="asist_1" id="a1_a">
-                                    <label class="btn btn-outline-danger" for="a1_a">Ausente</label>
-                                </div>
-                            </td>
-                            <td class="text-end pe-3"><input type="text" class="form-control form-control-sm rounded-pill d-inline-block" style="max-width: 200px;" placeholder="Nota opcional..."></td>
-                        </tr>
-                        <tr>
-                            <td class="ps-3 fw-bold font-monospace">1098765432</td>
-                            <td>Juan David Gómez</td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <input type="radio" class="btn-check" name="asist_2" id="a2_p" checked>
-                                    <label class="btn btn-outline-success" for="a2_p">Presente</label>
-                                    <input type="radio" class="btn-check" name="asist_2" id="a2_a">
-                                    <label class="btn btn-outline-danger" for="a2_a">Ausente</label>
-                                </div>
-                            </td>
-                            <td class="text-end pe-3"><input type="text" class="form-control form-control-sm rounded-pill d-inline-block" style="max-width: 200px;" placeholder="Nota opcional..."></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-4 text-end">
-                <button class="btn text-white rounded-pill px-4" style="background-color: #39A900;"><i class="fas fa-floppy-disk me-1"></i> Guardar Asistencia</button>
-            </div>
-        </div>
-    </div>
-
+    @if($errors->any()) <div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div> @endif
+    @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
+    <form class="card border-0 shadow-sm mb-4 p-3" method="GET"><div class="row g-2 align-items-end">
+        <div class="col-md-3"><label class="small">Ficha</label><select name="ficha_id" class="form-select"><option value="">Todas</option>@foreach($fichas as $ficha)<option value="{{ $ficha->id }}" @selected(request('ficha_id') == $ficha->id)>{{ $ficha->code }}</option>@endforeach</select></div>
+        <div class="col-md-3"><label class="small">Actividad</label><input name="actividad" class="form-control" value="{{ request('actividad') }}" placeholder="Nombre"></div>
+        <div class="col-md-2"><label class="small">Fecha</label><input type="date" name="fecha" class="form-control" value="{{ request('fecha') }}"></div>
+        <div class="col-md-2"><label class="small">Estado</label><select name="estado" class="form-select"><option value="">Todos</option><option @selected(request('estado') === 'Registrada')>Registrada</option><option @selected(request('estado') === 'Anulada')>Anulada</option></select></div>
+        <div class="col-md-2"><button class="btn btn-success w-100">Buscar</button></div>
+    </div></form>
+    <div class="card border-0 shadow-sm mb-4"><div class="card-body"><h5 class="fw-bold">Actividades listas para registrar</h5><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Fecha</th><th>Actividad</th><th>Ficha</th><th></th></tr></thead><tbody>@forelse($cronogramas as $cronograma)<tr><td>{{ $cronograma->fecha->format('d/m/Y') }}</td><td>Actividad {{ $cronograma->actividad->numero ?? $cronograma->id_actividad }} - {{ $cronograma->actividad->nombre ?? 'ECP' }}</td><td>{{ $cronograma->ficha->code ?? '-' }}</td><td class="text-end"><a class="btn btn-sm btn-success" href="{{ route('controlecp.instructor.asistencia.checklist',$cronograma->id_cronograma) }}">Registrar asistencia</a></td></tr>@empty<tr><td colspan="4" class="text-muted">No hay actividades disponibles.</td></tr>@endforelse</tbody></table></div></div></div>
+    <div class="card border-0 shadow-sm"><div class="card-body"><h5 class="fw-bold">Mis registros</h5><div class="table-responsive"><table class="table align-middle"><thead><tr><th>Fecha</th><th>Actividad</th><th>Ficha</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>@forelse($asistencias as $asistencia)<tr><td>{{ $asistencia->cronograma->fecha->format('d/m/Y') }}</td><td>{{ $asistencia->cronograma->actividad->nombre ?? 'Actividad ECP' }}</td><td>{{ $asistencia->cronograma->ficha->code ?? '-' }}</td><td><span class="badge text-bg-{{ $asistencia->estado === 'Registrada' ? 'success' : 'secondary' }}">{{ $asistencia->estado }}</span></td><td><button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#anular-{{ $asistencia->id_asistencia }}" @disabled($asistencia->estado === 'Anulada')>Anular</button></td></tr><div class="modal fade" id="anular-{{ $asistencia->id_asistencia }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.asistencia.anular',$asistencia->id_asistencia) }}" class="modal-content">@csrf<div class="modal-header"><h5>Anular asistencia</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><textarea name="motivo" class="form-control" required placeholder="Motivo"></textarea></div><div class="modal-footer"><button class="btn btn-danger">Confirmar</button></div></form></div></div>@empty<tr><td colspan="5" class="text-muted">Aún no tienes registros.</td></tr>@endforelse</tbody></table></div></div></div>
 </div>
 @endsection

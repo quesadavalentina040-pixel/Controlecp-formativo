@@ -392,7 +392,7 @@
                 <thead>
                     <tr>
                         <th class="ps-4">Nombre de la Encuesta</th>
-                        <th>Actividades Asociadas</th>
+                        <th>Reutilización</th>
                         <th class="text-center">Preguntas</th>
                         <th class="text-center">Estado</th>
                         <th>Fecha de Creación</th>
@@ -429,28 +429,10 @@
                             </td>
 
                             <td>
-                                @if($encuesta->actividades->isNotEmpty())
-                                    <div class="d-flex flex-wrap gap-1 align-items-center">
-                                        <span class="badge rounded-pill bg-light text-dark border fw-semibold px-2 py-1">
-                                            <i class="fas fa-link text-primary me-1"></i> {{ $encuesta->actividades->count() }}
-                                            {{ $encuesta->actividades->count() == 1 ? 'actividad' : 'actividades' }}
-                                        </span>
-                                        @foreach($encuesta->actividades->take(2) as $act)
-                                            <span class="badge bg-light text-muted border text-truncate" style="max-width: 150px;" title="{{ $act->nombre }}">
-                                                {{ $act->numero }}. {{ $act->nombre }}
-                                            </span>
-                                        @endforeach
-                                        @if($encuesta->actividades->count() > 2)
-                                            <span class="badge bg-light text-muted border" title="{{ $encuesta->actividades->pluck('nombre')->implode(', ') }}">
-                                                +{{ $encuesta->actividades->count() - 2 }} más
-                                            </span>
-                                        @endif
-                                    </div>
-                                @else
-                                    <span class="text-muted small">
-                                        <i class="fas fa-circle-minus text-muted me-1"></i> Sin actividades asignadas
-                                    </span>
-                                @endif
+                                <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle">
+                                    <i class="fas fa-repeat me-1"></i> Disponible para reutilizar
+                                </span>
+                                <div class="text-muted small mt-1">Asóciala desde cada actividad o momento.</div>
                             </td>
 
                             <td class="text-center">
@@ -605,26 +587,9 @@
 
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-bold font-outfit text-dark small mb-1 d-flex align-items-center justify-content-between">
-                            <span>Vincular a Actividades Formativas (Opcional)</span>
-                            <span class="text-muted fw-normal" style="font-size: 0.75rem;">Puedes asignarla ahora o más tarde</span>
-                        </label>
-                        <div class="border rounded-4 p-3 bg-light" style="max-height: 180px; overflow-y: auto;">
-                            @forelse($actividadesDisponibles as $act)
-                                <div class="form-check py-1">
-                                    <input class="form-check-input" type="checkbox" name="actividades_ids[]" value="{{ $act->id }}" id="check_act_{{ $act->id }}">
-                                    <label class="form-check-label small text-dark" for="check_act_{{ $act->id }}">
-                                        <strong>{{ $act->numero }}.</strong> {{ $act->nombre }}
-                                        @if($act->id_encuesta || $act->encuesta_id)
-                                            <span class="badge bg-secondary-subtle text-muted" style="font-size: 0.68rem;">Reemplazará encuesta previa</span>
-                                        @endif
-                                    </label>
-                                </div>
-                            @empty
-                                <div class="text-muted small fst-italic">No hay actividades registradas en el catálogo.</div>
-                            @endforelse
-                        </div>
+                    <div class="alert alert-info border-0 rounded-4 small">
+                        <i class="fas fa-repeat me-1"></i>
+                        Esta encuesta queda disponible en el repositorio y puede reutilizarse en varias actividades o momentos.
                     </div>
                 </div>
 
@@ -673,10 +638,8 @@
                         <strong class="text-dark ms-1" id="verEncuestaTotalPreguntas">0</strong>
                     </div>
                     <div class="col-12">
-                        <span class="text-muted">Actividades asociadas:</span>
-                        <div class="mt-1" id="verEncuestaActividadesContainer">
-                            <span class="text-muted fst-italic">Ninguna</span>
-                        </div>
+                        <span class="text-muted">Uso:</span>
+                        <span class="text-success fw-semibold ms-1">Disponible para reutilizar en varias actividades y momentos</span>
                     </div>
                 </div>
 
@@ -745,22 +708,9 @@
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label fw-bold font-outfit text-dark small mb-1">
-                                Actividades Asociadas (Reutilización por actividad)
-                            </label>
-                            <div class="border rounded-4 p-3 bg-light" style="max-height: 140px; overflow-y: auto;">
-                                <div class="row g-2">
-                                    @foreach($actividadesDisponibles as $act)
-                                        <div class="col-md-6">
-                                            <div class="form-check py-1">
-                                                <input class="form-check-input edit-check-actividad" type="checkbox" name="actividades_ids[]" value="{{ $act->id }}" id="edit_act_{{ $act->id }}">
-                                                <label class="form-check-label small text-dark" for="edit_act_{{ $act->id }}">
-                                                    <strong>{{ $act->numero }}.</strong> {{ $act->nombre }}
-                                                </label>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
+                            <div class="alert alert-info border-0 rounded-4 small mb-0">
+                                <i class="fas fa-repeat me-1"></i>
+                                Esta encuesta puede reutilizarse en varias actividades o momentos.
                             </div>
                         </div>
 
@@ -988,7 +938,18 @@
 
     function abrirModalVerEncuesta(id) {
         fetch(`${RUTA_BASE_ENCUESTAS}/${id}`)
-            .then(res => res.json())
+            .then(async res => {
+                const contentType = res.headers.get('content-type') || '';
+                const data = contentType.includes('application/json')
+                    ? await res.json()
+                    : {};
+
+                if (!res.ok) {
+                    throw new Error(data.message || `El servidor respondió con error ${res.status}.`);
+                }
+
+                return data;
+            })
             .then(data => {
                 if (!data.success) throw new Error(data.message || 'Error al obtener datos');
 
@@ -1009,14 +970,6 @@
                     badgeEstadoHtml = `<span class="badge-estado-inactiva"><i class="fas fa-ban me-1"></i> Inactiva</span>`;
                 }
                 document.getElementById('verEncuestaEstadoBadge').innerHTML = badgeEstadoHtml;
-
-                // Actividades
-                const actContainer = document.getElementById('verEncuestaActividadesContainer');
-                if (enc.actividades && enc.actividades.length > 0) {
-                    actContainer.innerHTML = enc.actividades.map(a => `<span class="badge bg-light text-dark border me-1 mb-1"><strong>${escapeHtml(a.numero)}.</strong> ${escapeHtml(a.nombre)}</span>`).join('');
-                } else {
-                    actContainer.innerHTML = `<span class="text-muted small fst-italic">Ninguna actividad asociada actualmente</span>`;
-                }
 
                 // Listado de preguntas
                 const preguntasContainer = document.getElementById('verEncuestaPreguntasListado');
@@ -1085,7 +1038,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: 'No se pudo cargar la información de la encuesta.',
+                    text: err.message || 'No se pudo cargar la información de la encuesta.',
                     confirmButtonColor: 'var(--petroleo-ecp)'
                 });
             });
@@ -1117,13 +1070,6 @@
                 // Cargar campos generales
                 document.getElementById('edit_nombre').value = enc.nombre;
                 document.getElementById('edit_descripcion').value = enc.descripcion || '';
-
-                // Actividades asociadas
-                const checks = document.querySelectorAll('.edit-check-actividad');
-                const activasIds = (enc.actividades || []).map(a => a.id);
-                checks.forEach(chk => {
-                    chk.checked = activasIds.includes(parseInt(chk.value));
-                });
 
                 // Alerta de respuestas
                 const alertaBloqueo = document.getElementById('alertaEncuestaConRespuestas');

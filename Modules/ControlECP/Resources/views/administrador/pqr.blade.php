@@ -270,37 +270,36 @@
         </div>
     </div>
 
-    @if(!$soloInstructores)
     {{-- ══ TABS: ADMINISTRACIÓN / INSTRUCTORES ══ --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
         <div class="d-flex gap-2">
             {{-- Tab Administración --}}
-            <div class="d-flex align-items-center gap-2 rounded-pill px-4 py-2 fw-bold shadow-sm"
-                 style="background:#39A900; color:#fff; font-size:.88rem; cursor:default;">
+            <a href="{{ route('controlecp.administrador.pqr') }}"
+               class="d-flex align-items-center gap-2 rounded-pill px-4 py-2 fw-bold shadow-sm text-decoration-none"
+               style="background:{{ !$soloInstructores ? '#39A900' : '#F1F5F9' }}; color:{{ !$soloInstructores ? '#fff' : '#475569' }}; font-size:.88rem;">
                 <i class="fas fa-building-columns"></i>
                 <span>Administración</span>
                 <span class="badge rounded-pill fw-bold"
                       style="background:#fff; color:#39A900; font-size:.75rem; padding:.2rem .55rem;">
                     {{ $pqrsAdmin->total() }}
                 </span>
-            </div>
+            </a>
             {{-- Tab Instructores --}}
-            <div class="d-flex align-items-center gap-2 rounded-pill border px-4 py-2 fw-bold"
-                 style="background:#F1F5F9; color:#475569; font-size:.88rem; cursor:default;">
+            <a href="{{ route('controlecp.administrador.pqr.instructores') }}"
+               class="d-flex align-items-center gap-2 rounded-pill border px-4 py-2 fw-bold text-decoration-none"
+               style="background:{{ $soloInstructores ? '#F1F5F9' : '#F1F5F9' }}; color:#475569; font-size:.88rem;">
                 <i class="fas fa-chalkboard-user"></i>
                 <span>Instructores</span>
                 <span class="badge rounded-pill fw-bold"
                       style="background:#DC2626; color:#fff; font-size:.75rem; padding:.2rem .55rem;">
                     {{ $pqrsInstructor->total() }}
                 </span>
-            </div>
+            </a>
         </div>
         <div class="text-muted small">
             Total: <strong class="text-dark">{{ $total }}</strong> PQRS en el sistema
         </div>
     </div>
-    @endif
-
     {{-- ══════════════════════════════════════════════════════════════
          SECCIÓN 1 — PQRS DE ADMINISTRACIÓN (el admin puede responder)
          ══════════════════════════════════════════════════════════════ --}}

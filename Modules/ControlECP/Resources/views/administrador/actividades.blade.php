@@ -500,6 +500,7 @@
                             <option value="">— Seleccionar —</option>
                             @foreach($momentos as $m)
                                 <option value="{{ $m->id }}" data-color="{{ $m->color }}"
+                                        data-encuesta-id="{{ $m->encuesta_id }}"
                                         @disabled($m->estado !== 'Activo')>
                                     {{ $m->nombre }}{{ $m->estado !== 'Activo' ? ' (Inactivo)' : '' }}
                                 </option>
@@ -579,11 +580,12 @@
                             <div id="encuestaSelectorWrap" class="d-none">
                                 @if($encuestasActivas->count() > 0)
                                     <select id="formActEncuesta" class="form-select form-select-sm">
-                                        <option value="">— Seleccionar encuesta activa —</option>
+                                        <option value="">— Usar encuesta del momento —</option>
                                         @foreach($encuestasActivas as $enc)
                                             <option value="{{ $enc->id }}">{{ $enc->titulo ?? $enc->nombre }}</option>
                                         @endforeach
                                     </select>
+                                    <div class="form-text">La misma encuesta puede reutilizarse en todas las actividades que la seleccionen.</div>
                                 @else
                                     {{-- HU8: Sin encuestas disponibles --}}
                                     <div class="alert alert-warning border-0 small py-2 mb-0" style="border-radius:10px;">
@@ -838,12 +840,14 @@ function abrirModalCrear(momentoId = null, momentoNombre = null) {
     document.getElementById('formActAsistencia').checked = true;
     document.getElementById('formActEvidencia').checked  = true;
     document.getElementById('formActTieneEncuesta').checked = true;
+    document.getElementById('formActEncuesta').value = '';
     toggleEncuestaSelector();
     document.getElementById('formActAlert').classList.add('d-none');
     document.getElementById('formActModalTitle').textContent = 'Registrar Actividad';
 
     if (momentoId) {
         document.getElementById('formActMomento').value = momentoId;
+        sincronizarEncuestaDelMomento();
     }
 
     new bootstrap.Modal(document.getElementById('modalFormActividad')).show();
@@ -866,6 +870,8 @@ function abrirModalEditar(data) {
     if (data.encuesta_id) {
         const sel = document.getElementById('formActEncuesta');
         if (sel) sel.value = data.encuesta_id;
+    } else {
+        sincronizarEncuestaDelMomento();
     }
     toggleEncuestaSelector();
 
@@ -895,8 +901,8 @@ async function guardarActividad() {
     if (!objetivo) { mostrarAlertaForm('El objetivo pedagógico es obligatorio.'); return; }
     if (!duracion) { mostrarAlertaForm('La duración es obligatoria.'); return; }
     if (!duracionMin || parseInt(duracionMin) < 15) { mostrarAlertaForm('La duración en minutos debe ser al menos 15.'); return; }
-    if (!tieneEnc || !encuestaId) {
-        mostrarAlertaForm('Debes seleccionar una encuesta activa del repositorio.');
+    if (!tieneEnc) {
+        mostrarAlertaForm('La encuesta del momento es obligatoria.');
         return;
     }
 
@@ -1292,6 +1298,15 @@ async function verCalificaciones(actId, nombre) {
 function toggleEncuestaSelector() {
     const wrap = document.getElementById('encuestaSelectorWrap');
     if (wrap) wrap.classList.remove('d-none');
+}
+
+function sincronizarEncuestaDelMomento() {
+    const momento = document.getElementById('formActMomento');
+    const encuesta = document.getElementById('formActEncuesta');
+    const encuestaDelMomento = momento?.selectedOptions[0]?.dataset.encuestaId || '';
+    if (encuesta && !encuesta.value) {
+        encuesta.value = encuestaDelMomento;
+    }
 }
 
 function mostrarAlertaForm(msg) {

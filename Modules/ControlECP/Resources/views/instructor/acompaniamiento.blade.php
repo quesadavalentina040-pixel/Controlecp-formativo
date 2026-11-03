@@ -1,51 +1,56 @@
-{{-- Vista: Vista del instructor para consultar el acompañamiento pedagógico. --}}
 @extends('controlecp::components.layouts.dashboard')
 
-{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
-
-    <!-- Breadcrumb & Cabecera -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
-                        Acompañamiento
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: #001A29; font-family: 'Outfit', sans-serif;">
-                <i class="fas fa-hand-holding-hand me-2" style="color: #39A900;"></i>Acompañamiento Pedagógico
-            </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; Seguimiento individualizado y casos especiales de aprendices</p>
-        </div>
-
-        <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.instructor.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Volver al Inicio
-            </a>
-        </div>
+        <div><h2 class="h3 fw-bold mb-1" style="color:#001A29"><i class="fas fa-hand-holding-hand me-2 text-success"></i>Acompañamiento pedagógico</h2><p class="text-muted small mb-0">Seguimiento reservado de tus aprendices.</p></div>
+        <button class="btn btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#nuevoAcompanamiento"><i class="fas fa-plus me-1"></i>Nuevo acompañamiento</button>
     </div>
-
-    <!-- Contenido Acompañamiento -->
-    <div class="card border-0 shadow-sm" style="border-radius: 18px;">
-        <div class="card-body p-4 text-center py-5">
-            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px; background-color: #E0F2FE; color: #0288D1;">
-                <i class="fas fa-hand-holding-hand fa-2x"></i>
+    @if($errors->any()) <div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div> @endif
+    @if(session('success')) <div class="alert alert-success">{{ session('success') }}</div> @endif
+    <div class="row g-3">
+        @forelse($acompanamientos as $acompanamiento)
+            @php($realizadas = $acompanamiento->sesiones->where('estado','Realizada')->count())
+            @php($faltantes = $acompanamiento->sesiones->where('estado','Programada')->count())
+            @php($inasistencias = $acompanamiento->sesiones->where('estado','No asistió')->count())
+            <div class="col-12 col-xl-6">
+                <div class="card border-0 shadow-sm h-100" style="border-radius:18px">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between gap-2"><div><h5 class="fw-bold mb-1">{{ $acompanamiento->aprendiz->full_name }}</h5><span class="badge text-bg-light">{{ $acompanamiento->categoria }}</span></div><span class="badge {{ $acompanamiento->estado === 'Activo' ? 'text-bg-success' : 'text-bg-secondary' }}">{{ $acompanamiento->estado }}</span></div>
+                        <p class="small text-muted mt-3 mb-2">{{ $acompanamiento->motivo }}</p>
+                        <div class="progress mb-2" style="height:8px"><div class="progress-bar bg-success" style="width:{{ $acompanamiento->total_sesiones ? round($realizadas / $acompanamiento->total_sesiones * 100) : 0 }}%"></div></div>
+                        <div class="d-flex justify-content-between small text-muted mb-3"><span>Inicio: {{ $acompanamiento->fecha_inicio->format('d/m/Y') }}</span><span>{{ $realizadas }} realizadas · {{ $faltantes }} pendientes · {{ $inasistencias }} no asistió</span></div>
+                        <div class="accordion" id="sesiones-{{ $acompanamiento->id_acompanamiento }}"><div class="accordion-item border-0">
+                            <h2 class="accordion-header"><button class="accordion-button collapsed px-0" data-bs-toggle="collapse" data-bs-target="#lista-{{ $acompanamiento->id_acompanamiento }}">Ver sesiones e historial</button></h2>
+                            <div id="lista-{{ $acompanamiento->id_acompanamiento }}" class="accordion-collapse collapse"><div class="accordion-body px-0">
+                                @foreach($acompanamiento->sesiones as $sesion)
+                                    <div class="border rounded-3 p-2 mb-2">
+                                        <div class="d-flex justify-content-between"><strong>{{ $sesion->fecha->format('d/m/Y') }} {{ substr($sesion->hora_inicio,0,5) }}</strong><span class="badge {{ $sesion->estado === 'Realizada' ? 'text-bg-success' : ($sesion->estado === 'No asistió' ? 'text-bg-danger' : ($sesion->estado === 'Cancelada' ? 'text-bg-secondary' : 'text-bg-warning')) }}">{{ $sesion->estado }}</span></div>
+                                        @if($sesion->estado === 'Programada' && $acompanamiento->estado === 'Activo')
+                                            <div class="d-flex flex-wrap gap-1 mt-2">
+                                                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#registrar-{{ $sesion->id_sesion }}">Registrar sesión</button>
+                                                <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#inasistencia-{{ $sesion->id_sesion }}">No asistió</button>
+                                                <button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reprogramar-{{ $sesion->id_sesion }}">Reprogramar</button>
+                                                <form method="POST" action="{{ route('controlecp.instructor.acompaniamiento.sesiones.cancelar',$sesion->id_sesion) }}" class="d-inline">@csrf<input type="hidden" name="motivo" value="Cancelada por el instructor"><button class="btn btn-sm btn-outline-danger">Cancelar</button></form>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="modal fade" id="registrar-{{ $sesion->id_sesion }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.acompaniamiento.sesiones.registrar',$sesion->id_sesion) }}" class="modal-content">@csrf<div class="modal-header"><h5>Registrar sesión</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><textarea name="observaciones" class="form-control mb-2" required placeholder="Observaciones"></textarea><textarea name="avances" class="form-control mb-2" placeholder="Avances"></textarea><textarea name="compromisos" class="form-control" placeholder="Compromisos"></textarea></div><div class="modal-footer"><button class="btn btn-success">Guardar</button></div></form></div></div>
+                                    <div class="modal fade" id="reprogramar-{{ $sesion->id_sesion }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.acompaniamiento.sesiones.reprogramar',$sesion->id_sesion) }}" class="modal-content">@csrf<div class="modal-header"><h5>Reprogramar sesión</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="date" name="fecha" class="form-control mb-2" value="{{ $sesion->fecha->format('Y-m-d') }}" required><div class="row g-2"><div class="col"><input type="time" name="hora_inicio" class="form-control" value="{{ substr($sesion->hora_inicio,0,5) }}" required></div><div class="col"><input type="time" name="hora_fin" class="form-control" value="{{ substr($sesion->hora_fin,0,5) }}" required></div></div><textarea name="motivo" class="form-control mt-2" required placeholder="Motivo"></textarea></div><div class="modal-footer"><button class="btn btn-warning">Guardar cambio</button></div></form></div></div>
+                                    <div class="modal fade" id="inasistencia-{{ $sesion->id_sesion }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.acompaniamiento.sesiones.no-asistio',$sesion->id_sesion) }}" class="modal-content">@csrf<div class="modal-header"><h5>Registrar inasistencia</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><textarea name="motivo" class="form-control" required placeholder="Motivo de la inasistencia"></textarea></div><div class="modal-footer"><button class="btn btn-danger">Guardar</button></div></form></div></div>
+                                @endforeach
+                                @if($acompanamiento->estado === 'Activo')
+                                    <div class="d-flex gap-2 mt-3"><button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#agregar-{{ $acompanamiento->id_acompanamiento }}">Agregar sesiones</button><button class="btn btn-sm btn-outline-dark" data-bs-toggle="modal" data-bs-target="#cerrar-{{ $acompanamiento->id_acompanamiento }}">Cerrar acompañamiento</button></div>
+                                @endif
+                            </div></div>
+                        </div></div>
+                    </div>
+                </div>
             </div>
-            <h5 class="fw-bold" style="color: #001A29;">Acompañamiento e Intervención</h5>
-            <p class="text-muted mx-auto small" style="max-width: 500px;">Registro y notas de seguimiento pedagógico para aprendices que requieren atención focalizada en cultura de paz.</p>
-            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">
-                <i class="fas fa-circle-check me-1"></i> Módulo habilitado correctamente
-            </span>
-        </div>
+            <div class="modal fade" id="agregar-{{ $acompanamiento->id_acompanamiento }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.acompaniamiento.sesiones.store',$acompanamiento->id_acompanamiento) }}" class="modal-content">@csrf<div class="modal-header"><h5>Agregar sesiones</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="number" name="cantidad" class="form-control mb-2" min="1" max="52" value="1" required><textarea name="motivo" class="form-control" required placeholder="Motivo"></textarea></div><div class="modal-footer"><button class="btn btn-primary">Agregar</button></div></form></div></div>
+            <div class="modal fade" id="cerrar-{{ $acompanamiento->id_acompanamiento }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.acompaniamiento.cerrar',$acompanamiento->id_acompanamiento) }}" class="modal-content">@csrf<div class="modal-header"><h5>Cerrar acompañamiento</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><textarea name="resumen_final" class="form-control mb-2" required placeholder="Resumen final"></textarea><select name="objetivo_cumplido" class="form-select" required><option value="">¿Se cumplió el objetivo?</option><option>Sí</option><option>No</option><option>Parcialmente</option></select></div><div class="modal-footer"><button class="btn btn-dark">Confirmar cierre</button></div></form></div></div>
+        @empty <div class="col-12"><div class="alert alert-info">No tienes acompañamientos registrados.</div></div> @endforelse
     </div>
-
 </div>
+<div class="modal fade" id="nuevoAcompanamiento" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.acompaniamiento.store') }}" class="modal-content">@csrf<div class="modal-header"><h5>Nuevo acompañamiento</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select name="id_aprendiz" class="form-select mb-2" required><option value="">Seleccione aprendiz</option>@foreach($aprendices as $aprendiz)<option value="{{ $aprendiz->id }}">{{ $aprendiz->full_name }}</option>@endforeach</select><input name="categoria" class="form-control mb-2" placeholder="Categoría (psicológica, espiritual...)" required><textarea name="motivo" class="form-control mb-2" placeholder="Motivo" required></textarea><label class="small">Fecha de inicio</label><input type="date" name="fecha_inicio" class="form-control mb-2" min="{{ now()->format('Y-m-d') }}" required><div class="row g-2"><div class="col"><label class="small">Cada cuántos días</label><input type="number" name="intervalo_dias" class="form-control" min="1" value="7" required></div><div class="col"><label class="small">Sesiones</label><input type="number" name="total_sesiones" class="form-control" min="1" max="52" value="4" required></div></div><div class="alert alert-info small mt-2 mb-0">Las sesiones se crean a las 08:00 y puedes reprogramarlas.</div></div><div class="modal-footer"><button class="btn btn-success">Guardar</button></div></form></div></div>
 @endsection

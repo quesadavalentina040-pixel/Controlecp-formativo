@@ -4,6 +4,7 @@ namespace Modules\ControlECP\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\ControlECP\Entities\Encuesta;
 
 class Momento extends Model
 {
@@ -18,6 +19,7 @@ class Momento extends Model
         'color',
         'orden',
         'estado',
+        'encuesta_id',
     ];
 
     protected $casts = [
@@ -42,6 +44,11 @@ class Momento extends Model
         return $this->hasMany(ActividadEcp::class, 'momento_id')
                     ->where('estado', 'Activo')
                     ->orderBy('numero');
+    }
+
+    public function encuesta()
+    {
+        return $this->belongsTo(Encuesta::class, 'encuesta_id', 'id_encuesta');
     }
 
     // ── Scopes ────────────────────────────────────────────────

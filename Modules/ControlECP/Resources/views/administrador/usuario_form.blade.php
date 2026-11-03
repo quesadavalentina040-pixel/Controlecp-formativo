@@ -122,7 +122,8 @@
                             </label>
                             <input type="text" class="form-control @error('document_number') is-invalid @enderror"
                                    name="document_number" value="{{ old('document_number') }}"
-                                   placeholder="Ej: 1012345678" required>
+                                   placeholder="Ej: 1012345678" inputmode="numeric" pattern="[0-9]{5,20}"
+                                   maxlength="20" oninput="this.value = this.value.replace(/\D/g, '')" required>
                             @error('document_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -143,7 +144,8 @@
                             <input type="text" class="form-control @error('first_name') is-invalid @enderror"
                                    name="first_name"
                                    value="{{ old('first_name', $person ? $person->first_name : '') }}"
-                                   placeholder="Ej: JUAN" required>
+                                   placeholder="Ej: JUAN" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜüÀ-ÿ' -]+"
+                                   oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
                             @error('first_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -155,7 +157,8 @@
                             <input type="text" class="form-control @error('first_last_name') is-invalid @enderror"
                                    name="first_last_name"
                                    value="{{ old('first_last_name', $person ? $person->first_last_name : '') }}"
-                                   placeholder="Ej: PÉREZ" required>
+                                   placeholder="Ej: PÉREZ" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜüÀ-ÿ' -]+"
+                                   oninput="this.value = this.value.replace(/[0-9]/g, '')" required>
                             @error('first_last_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -165,7 +168,8 @@
                             <input type="text" class="form-control"
                                    name="second_last_name"
                                    value="{{ old('second_last_name', $person ? $person->second_last_name : '') }}"
-                                   placeholder="Ej: GÓMEZ">
+                                   placeholder="Ej: GÓMEZ" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñÜüÀ-ÿ' -]+"
+                                   oninput="this.value = this.value.replace(/[0-9]/g, '')">
                         </div>
 
                         {{-- Teléfono --}}
@@ -174,7 +178,8 @@
                             <input type="text" class="form-control"
                                    name="telephone"
                                    value="{{ old('telephone', $person ? $person->telephone1 : '') }}"
-                                   placeholder="Ej: 3001234567">
+                                   placeholder="Ej: 3001234567" inputmode="numeric" pattern="[0-9]{7,15}"
+                                   maxlength="15" oninput="this.value = this.value.replace(/\D/g, '')">
                         </div>
 
                         {{-- Correo --}}

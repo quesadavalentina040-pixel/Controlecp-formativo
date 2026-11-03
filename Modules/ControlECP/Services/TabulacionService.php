@@ -16,6 +16,15 @@ use Modules\ControlECP\Entities\Encuesta;
 // Esta clase consulta y organiza los resultados usados por la tabulación web y PDF.
 class TabulacionService
 {
+    private ?int $instructorId = null;
+
+    public function paraInstructor(int $instructorId): self
+    {
+        $this->instructorId = $instructorId;
+
+        return $this;
+    }
+
     // Busca las encuestas relacionadas con actividades o que ya tienen respuestas registradas.
     public function obtenerEncuestasDisponibles(): Collection
     {
@@ -24,7 +33,16 @@ class TabulacionService
             // Agrupa dos maneras de considerar una encuesta disponible.
             ->where(function ($query) {
                 // Incluye encuestas que ya tienen al menos una actividad relacionada.
-                $query->whereHas('actividades')
+                $query->whereHas('actividades', function ($actividadQuery) {
+                    $actividadQuery->when($this->instructorId, function ($query) {
+                        $query->whereExists(function ($subquery) {
+                            $subquery->selectRaw('1')
+                                ->from('cronograma as instructor_cronograma')
+                                ->whereColumn('instructor_cronograma.id_actividad', 'controlecp_actividades.id')
+                                ->where('instructor_cronograma.id_instructor', $this->instructorId);
+                        });
+                    });
+                })
                     // También incluye encuestas con respuestas aunque no tengan actividad visible.
                     ->orWhereExists(function ($subquery) {
                         // Selecciona un valor constante para comprobar que existe una fila.
@@ -36,7 +54,8 @@ class TabulacionService
                             // Une los cronogramas con las respuestas asociadas.
                             ->join('encuesta_respuestas as er', 'er.id_cronograma', '=', 'c.id_cronograma')
                             // Relaciona la actividad consultada con la encuesta actual.
-                            ->whereColumn('a.id_encuesta', 'encuestas.id_encuesta');
+                            ->whereColumn('a.id_encuesta', 'encuestas.id_encuesta')
+                            ->when($this->instructorId, fn ($query) => $query->where('c.id_instructor', $this->instructorId));
                     });
             })
             // Ordena alfabéticamente por el nombre de la encuesta.
@@ -52,6 +71,14 @@ class TabulacionService
         $actividades = Actividad::query()
             // Filtra actividades por el id de la encuesta.
             ->where('id_encuesta', $idEncuesta)
+            ->when($this->instructorId, function ($query) {
+                $query->whereExists(function ($subquery) {
+                    $subquery->selectRaw('1')
+                        ->from('cronograma as instructor_cronograma')
+                        ->whereColumn('instructor_cronograma.id_actividad', 'controlecp_actividades.id')
+                        ->where('instructor_cronograma.id_instructor', $this->instructorId);
+                });
+            })
             // Limita las columnas obtenidas a id, número y nombre.
             ->select('id', 'numero', 'nombre')
             // Ordena las actividades por su número.
@@ -67,6 +94,7 @@ class TabulacionService
             ->join('courses as co', 'co.id', '=', 'c.id_ficha')
             // Limita las fichas a actividades de la encuesta elegida.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($this->instructorId, fn ($query) => $query->where('c.id_instructor', $this->instructorId))
             // Obtiene las columnas necesarias para mostrar el filtro de ficha.
             ->select('co.id', 'co.code', 'co.status')
             // Evita mostrar la misma ficha más de una vez.
@@ -94,6 +122,14 @@ class TabulacionService
         $actividades = Actividad::query()
             // Limita las actividades a la encuesta elegida.
             ->where('id_encuesta', $idEncuesta)
+            ->when($this->instructorId, function ($query) {
+                $query->whereExists(function ($subquery) {
+                    $subquery->selectRaw('1')
+                        ->from('cronograma as instructor_cronograma')
+                        ->whereColumn('instructor_cronograma.id_actividad', 'controlecp_actividades.id')
+                        ->where('instructor_cronograma.id_instructor', $this->instructorId);
+                });
+            })
             // Ordena las actividades por número.
             ->orderBy('numero')
             // Ejecuta la consulta.
@@ -370,6 +406,7 @@ class TabulacionService
             ->join('controlecp_actividades as a', 'a.id', '=', 'c.id_actividad')
             // Limita la consulta a actividades asociadas con esta encuesta.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($this->instructorId, fn ($query) => $query->where('c.id_instructor', $this->instructorId))
             // Añade filtro de actividad solo si el id fue proporcionado.
             ->when($idActividad, fn ($query) => $query->where('a.id', $idActividad))
             // Añade filtro de ficha solo si el id fue proporcionado.
@@ -389,6 +426,7 @@ class TabulacionService
             ->join('controlecp_actividades as a', 'a.id', '=', 'c.id_actividad')
             // Deja solo actividades asociadas a la encuesta indicada.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($this->instructorId, fn ($query) => $query->where('c.id_instructor', $this->instructorId))
             // Aplica el filtro de actividad si se eligió una.
             ->when($idActividad, fn ($query) => $query->where('a.id', $idActividad))
             // Aplica el filtro de ficha si se eligió una.
@@ -425,6 +463,7 @@ class TabulacionService
             })
             // Asegura que la actividad de la respuesta corresponda a la encuesta.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($this->instructorId, fn ($query) => $query->where('c.id_instructor', $this->instructorId))
             // Aplica el filtro de actividad cuando se proporcionó.
             ->when($idActividad, fn ($query) => $query->where('a.id', $idActividad))
             // Aplica el filtro de ficha cuando se proporcionó.

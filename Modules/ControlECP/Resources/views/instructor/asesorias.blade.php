@@ -1,51 +1,22 @@
-{{-- Vista: Vista del instructor para gestionar las asesorías asignadas. --}}
 @extends('controlecp::components.layouts.dashboard')
 
-{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
-
-    <!-- Breadcrumb & Cabecera -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.instructor.inicio') }}" class="text-decoration-none" style="color: #39A900;">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
-                        Asesorías
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: #001A29; font-family: 'Outfit', sans-serif;">
-                <i class="fas fa-comments me-2" style="color: #39A900;"></i>Atención de Asesorías
-            </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; Solicitudes de asesoría individual o grupal de aprendices</p>
-        </div>
-
-        <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.instructor.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Volver al Inicio
-            </a>
-        </div>
+        <div><h2 class="h3 fw-bold mb-1" style="color:#001A29"><i class="fas fa-comments me-2 text-success"></i>Mis asesorías</h2><p class="text-muted small mb-0">Disponibilidad, citas y seguimientos reservados.</p></div>
+        <div class="d-flex gap-2"><button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#disponibilidad">Mi disponibilidad</button><button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#nuevaSolicitud">Nueva solicitud</button></div>
     </div>
-
-    <!-- Lista de Asesorías -->
-    <div class="card border-0 shadow-sm" style="border-radius: 18px;">
-        <div class="card-body p-4 text-center py-5">
-            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px; background-color: #EDE9FE; color: #7C3AED;">
-                <i class="fas fa-comments fa-2x"></i>
-            </div>
-            <h5 class="fw-bold" style="color: #001A29;">Gestión de Asesorías</h5>
-            <p class="text-muted mx-auto small" style="max-width: 500px;">Aquí recibirás y gestionarás las agendas de asesorías solicitadas por tus aprendices.</p>
-            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">
-                <i class="fas fa-circle-check me-1"></i> Módulo habilitado correctamente
-            </span>
-        </div>
-    </div>
-
+    @if($errors->any())<div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+    @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+    <div class="row g-3 mb-4">@foreach([['programadas','Programadas','primary'],['realizadas','Realizadas','success'],['canceladas','Canceladas','secondary']] as $kpi)<div class="col-4"><div class="card border-0 shadow-sm p-3"><strong class="fs-3 text-{{ $kpi[2] }}">{{ $indicadores[$kpi[0]] }}</strong><small class="text-muted">{{ $kpi[1] }}</small></div></div>@endforeach</div>
+    <form class="card border-0 shadow-sm p-3 mb-4" method="GET"><div class="row g-2 align-items-end"><div class="col-md-3"><label class="small">Aprendiz</label><input name="aprendiz" class="form-control" value="{{ request('aprendiz') }}"></div><div class="col-md-2"><label class="small">Categoría</label><select name="categoria_id" class="form-select"><option value="">Todas</option>@foreach($categorias as $categoria)<option value="{{ $categoria->id_categoria_asesoria }}" @selected(request('categoria_id') == $categoria->id_categoria_asesoria)>{{ $categoria->nombre }}</option>@endforeach</select></div><div class="col-md-2"><label class="small">Estado</label><select name="estado" class="form-select"><option value="">Todos</option>@foreach(['Programada','Realizada','Cancelada'] as $estado)<option @selected(request('estado') === $estado)>{{ $estado }}</option>@endforeach</select></div><div class="col-md-2"><input type="date" name="fecha_desde" class="form-control" value="{{ request('fecha_desde') }}"></div><div class="col-md-2"><input type="date" name="fecha_hasta" class="form-control" value="{{ request('fecha_hasta') }}"></div><div class="col-md-1"><button class="btn btn-success w-100">Buscar</button></div></div></form>
+    <div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table align-middle mb-0"><thead><tr><th>Aprendiz</th><th>Categoría</th><th>Fecha y hora</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>@forelse($asesorias as $asesoria)<tr><td><strong>{{ $asesoria->aprendiz->full_name ?? 'Sin nombre' }}</strong><small class="d-block text-muted">{{ $asesoria->aprendiz->email ?? '' }}</small></td><td>{{ $asesoria->categoria->nombre ?? '-' }}</td><td>{{ $asesoria->fecha->format('d/m/Y') }}<br><small>{{ substr($asesoria->hora_inicio,0,5) }} - {{ substr($asesoria->hora_fin,0,5) }}</small></td><td><span class="badge text-bg-{{ $asesoria->estado === 'Realizada' ? 'success' : ($asesoria->estado === 'Cancelada' ? 'secondary' : 'primary') }}">{{ $asesoria->estado }}</span></td><td class="d-flex gap-1">@if($asesoria->estado === 'Programada')<button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#seguimiento-{{ $asesoria->id_asesoria }}">Seguimiento</button><button class="btn btn-sm btn-outline-warning" data-bs-toggle="modal" data-bs-target="#reprogramar-{{ $asesoria->id_asesoria }}">Reprogramar</button><button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#cancelar-{{ $asesoria->id_asesoria }}">Cancelar</button>@endif</td></tr>
+    <div class="modal fade" id="seguimiento-{{ $asesoria->id_asesoria }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.asesorias.seguimiento',$asesoria->id_asesoria) }}" class="modal-content">@csrf<div class="modal-header"><h5>Registrar seguimiento</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><textarea name="avances" class="form-control mb-2" required placeholder="Avances"></textarea><textarea name="compromisos" class="form-control mb-2" required placeholder="Compromisos"></textarea><textarea name="observaciones" class="form-control" placeholder="Observaciones"></textarea></div><div class="modal-footer"><button class="btn btn-success">Guardar y finalizar</button></div></form></div></div>
+    <div class="modal fade" id="reprogramar-{{ $asesoria->id_asesoria }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.asesorias.reprogramar',$asesoria->id_asesoria) }}" class="modal-content">@csrf<div class="modal-header"><h5>Reprogramar</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="date" name="fecha" class="form-control mb-2" required><div class="row g-2"><div class="col"><input type="time" name="hora_inicio" class="form-control" required></div><div class="col"><input type="time" name="hora_fin" class="form-control" required></div></div><textarea name="motivo" class="form-control mt-2" required placeholder="Motivo"></textarea></div><div class="modal-footer"><button class="btn btn-warning">Guardar</button></div></form></div></div>
+    <div class="modal fade" id="cancelar-{{ $asesoria->id_asesoria }}" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.asesorias.cancelar',$asesoria->id_asesoria) }}" class="modal-content">@csrf<div class="modal-header"><h5>Cancelar asesoría</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><textarea name="motivo" class="form-control" required placeholder="Motivo"></textarea></div><div class="modal-footer"><button class="btn btn-danger">Confirmar</button></div></form></div></div>
+    @empty<tr><td colspan="5" class="text-muted text-center">No hay asesorías propias.</td></tr>@endforelse</tbody></table></div></div>
 </div>
+<div class="modal fade" id="disponibilidad" tabindex="-1"><div class="modal-dialog modal-lg"><form method="POST" action="{{ route('controlecp.instructor.asesorias.disponibilidad') }}" class="modal-content">@csrf<div class="modal-header"><h5>Mi disponibilidad trimestral</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="row g-2 mb-3"><div class="col"><input type="number" name="anio" class="form-control" value="{{ now()->year }}" required></div><div class="col"><select name="trimestre" class="form-select">@for($t=1;$t<=4;$t++)<option value="{{ $t }}">Trimestre {{ $t }}</option>@endfor</select></div></div><div id="franjas"><div class="row g-2 mb-2 franja"><div class="col-md-3"><select name="franjas[0][dia_semana]" class="form-select">@foreach(['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'] as $i=>$dia)<option value="{{ $i+1 }}">{{ $dia }}</option>@endforeach</select></div><div class="col"><input type="time" name="franjas[0][hora_inicio]" class="form-control" value="08:00" required></div><div class="col"><input type="time" name="franjas[0][hora_fin]" class="form-control" value="12:00" required></div></div></div><button type="button" class="btn btn-sm btn-outline-success" id="agregarFranja">Agregar franja</button><hr><h6>Historial</h6><ul class="small">@foreach($disponibilidades->groupBy(fn($d) => $d->anio.' - T'.$d->trimestre) as $periodo=>$franjas)<li>{{ $periodo }} ({{ $franjas->where('vigente',true)->count() }} vigentes)</li>@endforeach</ul></div><div class="modal-footer"><button class="btn btn-success">Guardar disponibilidad</button></div></form></div></div>
+<div class="modal fade" id="nuevaSolicitud" tabindex="-1"><div class="modal-dialog"><form method="POST" action="{{ route('controlecp.instructor.asesorias.solicitar') }}" class="modal-content">@csrf<div class="modal-header"><h5>Nueva solicitud en nombre del aprendiz</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select name="id_usuario_aprendiz" class="form-select mb-2" required><option value="">Aprendiz</option>@foreach($aprendices as $aprendiz)<option value="{{ $aprendiz->id }}">{{ $aprendiz->full_name }}</option>@endforeach</select><select name="id_categoria_asesoria" class="form-select mb-2" required><option value="">Categoría</option>@foreach($categorias as $categoria)<option value="{{ $categoria->id_categoria_asesoria }}">{{ $categoria->nombre }}</option>@endforeach</select><input type="date" name="fecha" class="form-control mb-2" required><div class="row g-2"><div class="col"><input type="time" name="hora_inicio" class="form-control" required></div><div class="col"><input type="time" name="hora_fin" class="form-control" required></div></div><textarea name="motivo" class="form-control mt-2" required placeholder="Motivo"></textarea></div><div class="modal-footer"><button class="btn btn-success">Guardar solicitud</button></div></form></div></div>
+@push('scripts')<script>let n=1;document.getElementById('agregarFranja').addEventListener('click',()=>{let row=document.querySelector('.franja').cloneNode(true);row.querySelectorAll('[name]').forEach(e=>e.name=e.name.replace(/\[0\]/,'['+n+']'));document.getElementById('franjas').appendChild(row);n++;});</script>@endpush
 @endsection

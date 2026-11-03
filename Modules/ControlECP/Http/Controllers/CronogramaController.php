@@ -262,6 +262,78 @@ class CronogramaController extends Controller
         ]);
     }
 
+    public function instructor(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->hasRole('controlecp.instructor')) {
+            return redirect()->route('controlecp.index')->with('error', 'Sin permisos para consultar el cronograma.');
+        }
+
+        $query = Cronograma::with(['actividad.momento', 'ficha.program', 'recursos.inventario'])
+            ->where('id_instructor', $user->id);
+        if ($request->filled('ficha_id')) $query->where('id_ficha', $request->ficha_id);
+        if ($request->filled('momento_id')) $query->whereHas('actividad', fn ($q) => $q->where('momento_id', $request->momento_id));
+        if ($request->filled('estado')) $query->where('estado', $request->estado);
+        if ($request->filled('fecha_desde')) $query->whereDate('fecha', '>=', $request->fecha_desde);
+        if ($request->filled('fecha_hasta')) $query->whereDate('fecha', '<=', $request->fecha_hasta);
+
+        $cronogramas = $query->orderBy('fecha')->orderBy('hora_inicio')->get();
+        $fichas = $cronogramas->pluck('ficha')->filter()->unique('id')->sortBy('code');
+        $momentos = $cronogramas->pluck('actividad.momento')->filter()->unique('id')->sortBy('orden');
+        return view('controlecp::instructor.cronograma', compact('cronogramas', 'fichas', 'momentos'));
+    }
+
+    public function posponerInstructor(Request $request, $id)
+    {
+        $user = Auth::user();
+        if (!$user || !$user->hasRole('controlecp.instructor')) {
+            return back()->withErrors(['cronograma' => 'Sin permisos para posponer actividades.']);
+        }
+
+        $cronograma = Cronograma::with('actividad')->where('id_instructor', $user->id)->findOrFail($id);
+        if (in_array($cronograma->estado, ['Finalizada', 'Cancelada'], true)) {
+            return back()->withErrors(['nueva_fecha' => 'Esta actividad no puede posponerse.']);
+        }
+        $data = $request->validate([
+            'nueva_fecha' => ['required', 'date', 'after_or_equal:today'],
+            'hora_inicio' => ['required', 'date_format:H:i'],
+            'hora_fin' => ['required', 'date_format:H:i', 'after:hora_inicio'],
+            'motivo' => ['required', 'string', 'min:5', 'max:1000'],
+        ]);
+        $conflicto = Cronograma::where('id_instructor', $user->id)
+            ->where('id_cronograma', '!=', $cronograma->id_cronograma)
+            ->whereDate('fecha', $data['nueva_fecha'])->whereNotIn('estado', ['Cancelada'])
+            ->where('hora_inicio', '<', $data['hora_fin'])->where('hora_fin', '>', $data['hora_inicio'])->exists();
+        if ($conflicto) return back()->withErrors(['nueva_fecha' => 'La nueva fecha y hora cruzan con otra actividad tuya.'])->withInput();
+
+        $fechaAnterior = $cronograma->fecha;
+        DB::transaction(function () use ($cronograma, $data, $user, $fechaAnterior) {
+            $cronograma->update([
+                'fecha_original' => $cronograma->fecha_original ?: $fechaAnterior,
+                'fecha' => $data['nueva_fecha'], 'hora_inicio' => $data['hora_inicio'],
+                'hora_fin' => $data['hora_fin'], 'estado' => 'Pospuesta',
+                'motivo_posposicion' => trim($data['motivo']),
+            ]);
+            CronogramaHistorial::create([
+                'id_cronograma' => $cronograma->id_cronograma, 'id_usuario_autor' => $user->id,
+                'accion' => 'posponer', 'fecha_anterior' => $fechaAnterior,
+                'fecha_nueva' => $data['nueva_fecha'], 'motivo' => trim($data['motivo']), 'fecha' => now(),
+            ]);
+            User::whereHas('roles', fn ($q) => $q->where('slug', 'controlecp.admin'))->pluck('id')
+                ->each(fn ($adminId) => Notificacion::crear(
+                    (int) $adminId, $user->id, 'Actividad pospuesta',
+                    "El instructor pospuso la actividad {$cronograma->actividad?->nombre}.",
+                    'cronograma', $cronograma->id_cronograma, 'instructor-posponer-'.$cronograma->id_cronograma
+                ));
+            Notificacion::crear(
+                (int) $user->id, $user->id, 'Actividad pospuesta',
+                "La actividad {$cronograma->actividad?->nombre} fue movida al ".Carbon::parse($data['nueva_fecha'])->format('d/m/Y').".",
+                'cronograma', $cronograma->id_cronograma, 'instructor-posponer-propio-'.$cronograma->id_cronograma
+            );
+        });
+        return back()->with('success', 'Actividad pospuesta correctamente.');
+    }
+
     /**
      * Retorna detalle completo en JSON de una programación específica.
      */

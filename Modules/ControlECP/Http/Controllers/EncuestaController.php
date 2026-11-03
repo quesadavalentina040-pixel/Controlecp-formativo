@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use Modules\ControlECP\Entities\Actividad;
 use Modules\ControlECP\Entities\Encuesta;
 use Modules\ControlECP\Entities\OpcionPregunta;
 use Modules\ControlECP\Entities\Pregunta;
@@ -64,9 +63,7 @@ class EncuestaController extends Controller // Controlador de administración de
             'inactivas'  => Encuesta::where('estado', 'Inactiva')->count(), // Cuenta las encuestas cuyo estado es Inactiva.
         ];
 
-        $actividadesDisponibles = Actividad::orderBy('numero', 'asc')->get(); // Ordena actividades por número ascendente y get() obtiene todos los resultados. | Catálogo de actividades formativas para asociar en modal
-
-        return view('controlecp::administrador.repositorio.encuesta', compact('encuestas', 'indicadores', 'actividadesDisponibles')); // view() renderiza Blade; compact() prepara variables con esos nombres para la vista.
+        return view('controlecp::administrador.repositorio.encuesta', compact('encuestas', 'indicadores')); // view() renderiza Blade; compact() prepara variables con esos nombres para la vista.
     }
 
     /**
@@ -87,13 +84,6 @@ class EncuestaController extends Controller // Controlador de administración de
                 'estado'         => 'Borrador',
                 'fecha_creacion' => now(),
             ]);
-
-            if ($request->filled('actividades_ids') && is_array($request->actividades_ids)) { // Verifica que se enviaron IDs y que llegaron como arreglo. | Asociar actividades seleccionadas
-                Actividad::whereIn('id', $request->actividades_ids)->update([ // whereIn() filtra actividades cuyos ID estén en la lista; update() guarda su nueva asociación.
-                    'id_encuesta' => $encuesta->id_encuesta,
-                    'encuesta_id' => $encuesta->id_encuesta,
-                ]);
-            }
 
             DB::commit(); // Confirma y persiste todos los cambios de la transacción.
 
@@ -151,22 +141,6 @@ class EncuestaController extends Controller // Controlador de administración de
                 'nombre'      => trim($request->nombre),
                 'descripcion' => trim($request->descripcion ?? ''),
             ]);
-
-            $nuevasActividades = $request->input('actividades_ids', []); // input() lee ese dato enviado; el segundo argumento es el valor por defecto. | Actualizar relación con actividades
-
-            Actividad::where('id_encuesta', $encuesta->id_encuesta) // Inicia consulta de actividades actualmente ligadas a esta encuesta. | Desvincular las que ya no están seleccionadas
-                ->whereNotIn('id', $nuevasActividades) // whereNotIn() selecciona las actividades cuyo ID no aparece en la nueva lista.
-                ->update([ // update() desvincula en una sola consulta todas las filas seleccionadas.
-                    'id_encuesta' => null,
-                    'encuesta_id' => null,
-                ]);
-
-            if (!empty($nuevasActividades)) { // Solo busca y asocia actividades si la lista recibida tiene elementos. | Vincular las seleccionadas
-                Actividad::whereIn('id', $nuevasActividades)->update([ // whereIn() filtra por la lista de IDs y update() asigna la encuesta.
-                    'id_encuesta' => $encuesta->id_encuesta,
-                    'encuesta_id' => $encuesta->id_encuesta,
-                ]);
-            }
 
             DB::commit(); // Confirma los cambios después de guardar la encuesta y sus asociaciones.
 

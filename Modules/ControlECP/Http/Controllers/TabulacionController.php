@@ -21,13 +21,22 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
         $this->tabulacionService = $tabulacionService; // Conserva el servicio para reutilizar sus consultas y cálculos.
     }
 
+    private function servicio(): TabulacionService
+    {
+        $usuario = Auth::user();
+
+        return $usuario && $usuario->hasRole('controlecp.instructor')
+            ? $this->tabulacionService->paraInstructor((int) $usuario->id)
+            : $this->tabulacionService;
+    }
+
     /**
      * Verifica que el usuario tenga rol de administrador de Control ECP.
      */
     private function verificarAccesoAdmin() // verificarAccesoAdmin(): Comprueba el rol administrador antes de consultar resultados; se usa en los endpoints protegidos.
     {
         $usuario = Auth::user(); // Obtiene la cuenta autenticada para revisar su rol.
-        if (! $usuario || ! $usuario->hasRole('controlecp.admin')) {
+        if (! $usuario || (! $usuario->hasRole('controlecp.admin') && ! $usuario->hasRole('controlecp.instructor'))) {
             return redirect()
                 ->route('controlecp.index') // Envía al inicio del módulo si no hay permiso.
                 ->with('error', 'No tienes permisos para acceder a la tabulación de encuestas.'); // Prepara un aviso para la siguiente página.
@@ -45,7 +54,7 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
             return $res; // Devuelve la redirección de acceso denegado si corresponde.
         }
 
-        $encuestas = $this->tabulacionService->obtenerEncuestasDisponibles(); // Pide al servicio las encuestas que pueden tabularse.
+        $encuestas = $this->servicio()->obtenerEncuestasDisponibles(); // Pide al servicio las encuestas que pueden tabularse.
         $request->validate([ // Valida que el identificador elegido corresponda a una encuesta disponible.
             'id_encuesta' => [
                 'nullable',
@@ -65,9 +74,9 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
 
         if (! empty($idEncuestaSeleccionada)) { // Solo consulta datos específicos cuando hay una encuesta elegida.
             $encuestaActual = Encuesta::findOrFail($idEncuestaSeleccionada); // Busca la encuesta o responde con error 404.
-            $filtrosDisponibles = $this->tabulacionService->obtenerFiltrosParaEncuesta($encuestaActual->id_encuesta); // Obtiene actividades y fichas válidas para esa encuesta.
+            $filtrosDisponibles = $this->servicio()->obtenerFiltrosParaEncuesta($encuestaActual->id_encuesta); // Obtiene actividades y fichas válidas para esa encuesta.
             $filtros = $this->validarFiltros($request, $filtrosDisponibles); // Valida los filtros solicitados contra esas opciones.
-            $resultados = $this->tabulacionService->calcularResultados($encuestaActual->id_encuesta, $filtros); // Calcula los totales y detalles aplicando los filtros.
+            $resultados = $this->servicio()->calcularResultados($encuestaActual->id_encuesta, $filtros); // Calcula los totales y detalles aplicando los filtros.
         }
 
         return view('controlecp::administrador.repositorio.tabulacion', compact(
@@ -87,14 +96,14 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
             return response()->json(['error' => 'No autorizado'], 403); // Devuelve JSON con estado HTTP 403 cuando no está autorizado.
         }
 
-        $encuestas = $this->tabulacionService->obtenerEncuestasDisponibles(); // Obtiene la lista que servirá para validar el identificador.
+        $encuestas = $this->servicio()->obtenerEncuestasDisponibles(); // Obtiene la lista que servirá para validar el identificador.
         $datos = $request->validate([ // Valida el identificador requerido antes de consultar la encuesta.
             'id_encuesta' => ['required', 'integer', Rule::in($encuestas->pluck('id_encuesta')->all())],
         ]);
         $idEncuesta = (int) $datos['id_encuesta']; // Convierte el valor validado en entero para las consultas del servicio.
-        $filtrosDisponibles = $this->tabulacionService->obtenerFiltrosParaEncuesta($idEncuesta); // Carga las opciones que pueden filtrarse.
+        $filtrosDisponibles = $this->servicio()->obtenerFiltrosParaEncuesta($idEncuesta); // Carga las opciones que pueden filtrarse.
         $filtros = $this->validarFiltros($request, $filtrosDisponibles); // Acepta únicamente fechas, actividades y fichas permitidas.
-        $resultados = $this->tabulacionService->calcularResultados($idEncuesta, $filtros); // Calcula la información para la encuesta seleccionada.
+        $resultados = $this->servicio()->calcularResultados($idEncuesta, $filtros); // Calcula la información para la encuesta seleccionada.
 
         return response()->json([
             'resultados' => $resultados,
@@ -111,16 +120,16 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
             return $res;
         }
 
-        $encuestas = $this->tabulacionService->obtenerEncuestasDisponibles(); // Recupera encuestas válidas para comprobar el filtro.
+        $encuestas = $this->servicio()->obtenerEncuestasDisponibles(); // Recupera encuestas válidas para comprobar el filtro.
         $datos = $request->validate([ // Exige que el identificador pertenezca a la lista disponible.
             'id_encuesta' => ['required', 'integer', Rule::in($encuestas->pluck('id_encuesta')->all())],
         ]);
 
         $idEncuesta = (int) $datos['id_encuesta']; // Convierte el dato ya validado a entero.
-        $filtrosDisponibles = $this->tabulacionService->obtenerFiltrosParaEncuesta($idEncuesta); // Consulta valores válidos para cada filtro.
+        $filtrosDisponibles = $this->servicio()->obtenerFiltrosParaEncuesta($idEncuesta); // Consulta valores válidos para cada filtro.
         $filtros = $this->validarFiltros($request, $filtrosDisponibles); // Comprueba fechas, actividad y ficha antes del cálculo.
 
-        $resultados = $this->tabulacionService->calcularResultados($idEncuesta, $filtros); // Obtiene los datos que formarán el informe.
+        $resultados = $this->servicio()->calcularResultados($idEncuesta, $filtros); // Obtiene los datos que formarán el informe.
         $encuesta = $resultados['encuesta']; // Separa la encuesta para pasarla a la plantilla PDF.
 
         if ($resultados['consolidado']['total_respuestas'] === 0) { // Evita descargar un informe sin respuestas. | Si no hay respuestas registradas

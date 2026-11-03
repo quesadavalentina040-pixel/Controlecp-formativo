@@ -14,6 +14,139 @@ use App\Models\User;
 
 class PqrController extends Controller
 {
+    private function verificarAccesoAprendiz()
+    {
+        $usuario = Auth::user();
+        if (!$usuario || !$usuario->hasRole('controlecp.apprentice')) {
+            return redirect()
+                ->route('controlecp.index')
+                ->with('error', 'No tienes permisos para acceder a las PQRS del aprendiz.');
+        }
+
+        return null;
+    }
+
+    private function pqrsDelAprendiz(int $id): Pqrs
+    {
+        return Pqrs::with(['tipo', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])
+            ->where('id_pqrs', $id)
+            ->where('id_usuario_aprendiz', Auth::id())
+            ->firstOrFail();
+    }
+
+    public function indexAprendiz()
+    {
+        if ($redirect = $this->verificarAccesoAprendiz()) {
+            return $redirect;
+        }
+
+        $pqrs = Pqrs::with(['tipo', 'instructorDestino'])
+            ->where('id_usuario_aprendiz', Auth::id())
+            ->orderByDesc('fecha_radicacion')
+            ->get();
+        $tipos = TipoPqrs::orderBy('nombre')->get();
+        $instructores = User::whereHas('roles', fn($q) => $q->where('slug', 'controlecp.instructor'))
+            ->with('person')
+            ->orderBy('nickname')
+            ->get();
+
+        return view('controlecp::aprendiz.pqr', compact('pqrs', 'tipos', 'instructores'));
+    }
+
+    public function createAprendiz()
+    {
+        if ($redirect = $this->verificarAccesoAprendiz()) {
+            return $redirect;
+        }
+
+        $tipos = TipoPqrs::orderBy('nombre')->get();
+        $instructores = User::whereHas('roles', fn($q) => $q->where('slug', 'controlecp.instructor'))
+            ->with('person')
+            ->orderBy('nickname')
+            ->get();
+
+        return view('controlecp::aprendiz.pqr_create', compact('tipos', 'instructores'));
+    }
+
+    public function storeAprendiz(Request $request)
+    {
+        if ($redirect = $this->verificarAccesoAprendiz()) {
+            return $redirect;
+        }
+
+        $validated = $request->validate([
+            'id_tipo_pqrs' => ['required', 'exists:tipos_pqrs,id_tipo_pqrs'],
+            'id_usuario_instructor_destino' => [
+                'nullable',
+                'exists:users,id',
+                function ($attribute, $value, $fail) {
+                    if ($value && !User::whereKey($value)->whereHas('roles', fn($q) => $q->where('slug', 'controlecp.instructor'))->exists()) {
+                        $fail('El instructor seleccionado no es válido.');
+                    }
+                },
+            ],
+            'asunto' => ['required', 'string', 'max:255'],
+            'descripcion' => ['required', 'string', 'min:10', 'max:10000'],
+        ], [
+            'id_tipo_pqrs.required' => 'Debes seleccionar el tipo de PQRS.',
+            'asunto.required' => 'El asunto es obligatorio.',
+            'descripcion.required' => 'La descripción es obligatoria.',
+            'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            $pqr = Pqrs::create([
+                'radicado' => Pqrs::generarRadicado(),
+                'id_usuario_aprendiz' => Auth::id(),
+                'id_tipo_pqrs' => $validated['id_tipo_pqrs'],
+                'id_usuario_instructor_destino' => $validated['id_usuario_instructor_destino'] ?? null,
+                'asunto' => trim($validated['asunto']),
+                'descripcion' => trim($validated['descripcion']),
+                'estado' => 'Pendiente',
+                'fecha_radicacion' => now(),
+            ]);
+
+            PqrsHistorial::create([
+                'id_pqrs' => $pqr->id_pqrs,
+                'id_usuario' => Auth::id(),
+                'estado_nuevo' => 'Pendiente',
+                'observacion' => 'PQRS radicada por el aprendiz.',
+                'fecha' => now(),
+            ]);
+
+            $receptores = $validated['id_usuario_instructor_destino']
+                ? User::whereKey($validated['id_usuario_instructor_destino'])->get()
+                : User::whereHas('roles', fn($q) => $q->where('slug', 'controlecp.admin'))->get();
+
+            foreach ($receptores as $receptor) {
+                app(\Modules\ControlECP\Services\NotificacionService::class)->crear([
+                    'id_usuario_receptor' => $receptor->id,
+                    'id_usuario_causante' => Auth::id(),
+                    'titulo' => 'Nueva PQRS radicada',
+                    'mensaje' => "Se radicó la solicitud {$pqr->radicado}.",
+                    'modulo' => 'PQRS',
+                    'clave_evento' => "pqr-nueva-{$pqr->id_pqrs}-{$receptor->id}",
+                    'url_referencia' => $receptor->hasRole('controlecp.instructor')
+                        ? route('controlecp.instructor.pqr')
+                        : route('controlecp.administrador.pqr'),
+                ]);
+            }
+        });
+
+        return redirect()->route('controlecp.aprendiz.pqr')
+            ->with('success', 'PQRS radicada correctamente. Tu solicitud quedó en estado Pendiente.');
+    }
+
+    public function showAprendiz(int $id)
+    {
+        if ($redirect = $this->verificarAccesoAprendiz()) {
+            return $redirect;
+        }
+
+        $pqr = $this->pqrsDelAprendiz($id);
+        return view('controlecp::aprendiz.pqr_show', compact('pqr'));
+    }
+
     /**
      * Valida permisos de Administrador o Instructor.
      */
@@ -27,6 +160,56 @@ class PqrController extends Controller
         }
 
         return null;
+    }
+
+    private function pqrsDelInstructor(int $id): Pqrs
+    {
+        return Pqrs::where('id_pqrs', $id)
+            ->where('id_usuario_instructor_destino', Auth::id())
+            ->firstOrFail();
+    }
+
+    public function indexInstructor(Request $request)
+    {
+        if ($redirect = $this->verificarAcceso()) {
+            return $redirect;
+        }
+
+        $query = Pqrs::with(['tipo', 'aprendiz', 'respuestas.usuario', 'historial.usuario'])
+            ->where('id_usuario_instructor_destino', Auth::id());
+
+        if ($request->filled('buscar')) {
+            $buscar = trim($request->input('buscar'));
+            $query->where(function ($q) use ($buscar) {
+                $q->where('radicado', 'like', "%{$buscar}%")
+                    ->orWhere('asunto', 'like', "%{$buscar}%");
+            });
+        }
+        $query->when($request->filled('id_tipo_pqrs'), fn ($q) => $q->where('id_tipo_pqrs', $request->input('id_tipo_pqrs')));
+        $query->when($request->filled('estado'), fn ($q) => $q->where('estado', $request->input('estado')));
+
+        $pqrs = $query->orderByDesc('fecha_radicacion')->paginate(10)->withQueryString();
+        $tipos = TipoPqrs::orderBy('nombre')->get();
+        $totales = [
+            'total' => Pqrs::where('id_usuario_instructor_destino', Auth::id())->count(),
+            'pendientes' => Pqrs::where('id_usuario_instructor_destino', Auth::id())->where('estado', 'Pendiente')->count(),
+            'tramite' => Pqrs::where('id_usuario_instructor_destino', Auth::id())->where('estado', 'En trámite')->count(),
+            'resueltas' => Pqrs::where('id_usuario_instructor_destino', Auth::id())->whereIn('estado', ['Resuelto', 'Resuelta', 'Cerrado'])->count(),
+        ];
+
+        return view('controlecp::instructor.pqr', compact('pqrs', 'tipos', 'totales'));
+    }
+
+    public function showInstructor(int $id)
+    {
+        if ($redirect = $this->verificarAcceso()) {
+            return $redirect;
+        }
+
+        $pqr = $this->pqrsDelInstructor($id);
+        $pqr->load(['tipo', 'aprendiz', 'respuestas.usuario', 'historial.usuario']);
+
+        return view('controlecp::instructor.pqr_show', compact('pqr'));
     }
 
     /**
@@ -188,7 +371,9 @@ class PqrController extends Controller
             'observacion' => 'nullable|string|max:500',
         ]);
 
-        $pqr = Pqrs::findOrFail($id);
+        $pqr = Auth::user()->hasRole('controlecp.instructor')
+            ? $this->pqrsDelInstructor((int) $id)
+            : Pqrs::findOrFail($id);
         $estadoAnterior = $pqr->estado;
         $estadoNuevo    = $validated['estado'];
 
@@ -206,6 +391,16 @@ class PqrController extends Controller
             ]);
 
             DB::commit();
+            if ($pqr->aprendiz) {
+                app(\Modules\ControlECP\Services\NotificacionService::class)->crear([
+                    'id_usuario_receptor' => $pqr->id_usuario_aprendiz,
+                    'titulo' => 'Actualización de tu PQRS',
+                    'mensaje' => "La solicitud {$pqr->radicado} cambió a {$estadoNuevo}.",
+                    'modulo' => 'PQRS',
+                    'clave_evento' => "pqr-estado-{$pqr->id_pqrs}-" . now()->timestamp,
+                    'url_referencia' => route('controlecp.aprendiz.pqr'),
+                ]);
+            }
 
             return back()->with('success', "El estado de la solicitud {$pqr->radicado} ha cambiado a '{$estadoNuevo}'. Se notificó al aprendiz.");
         } catch (\Exception $e) {
@@ -366,7 +561,9 @@ class PqrController extends Controller
             'respuesta.required' => 'El texto de la respuesta es obligatorio.',
         ]);
 
-        $pqr = Pqrs::findOrFail($id);
+        $pqr = Auth::user()->hasRole('controlecp.instructor')
+            ? $this->pqrsDelInstructor((int) $id)
+            : Pqrs::findOrFail($id);
 
         DB::beginTransaction();
         try {
@@ -415,6 +612,16 @@ class PqrController extends Controller
             ]);
 
             DB::commit();
+            if ($pqr->aprendiz) {
+                app(\Modules\ControlECP\Services\NotificacionService::class)->crear([
+                    'id_usuario_receptor' => $pqr->id_usuario_aprendiz,
+                    'titulo' => 'Respuesta a tu PQRS',
+                    'mensaje' => "Ya puedes consultar la respuesta a la solicitud {$pqr->radicado}.",
+                    'modulo' => 'PQRS',
+                    'clave_evento' => "pqr-respuesta-{$pqr->id_pqrs}-" . now()->timestamp,
+                    'url_referencia' => route('controlecp.aprendiz.pqr'),
+                ]);
+            }
 
             return back()->with('success', "Respuesta registrada para {$pqr->radicado}. Estado actualizado a '{$estadoNuevo}'.");
         } catch (\Exception $e) {

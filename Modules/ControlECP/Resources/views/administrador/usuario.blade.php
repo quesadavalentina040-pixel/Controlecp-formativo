@@ -131,7 +131,7 @@
             <h2 class="h3 fw-bold mb-0" style="color: var(--ecp-navy); font-family: 'Outfit', sans-serif;">
                 <i class="fas fa-users-gear me-2" style="color: var(--ecp-green);"></i>Gestión de Usuarios
             </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; Sincronización e integración con la API REST Central del ERP SENA Empresa / SICEFA</p>
+            <p class="text-muted small mb-0">Control ECP &bull; Usuarios registrados en la base de datos del sistema</p>
         </div>
 
         <div class="d-flex flex-wrap gap-2">
@@ -140,18 +140,6 @@
                style="background-color: var(--ecp-green); border-color: var(--ecp-green);">
                 <i class="fas fa-user-plus me-1"></i> Nuevo Usuario
             </a>
-            <button type="button" class="btn btn-outline-secondary rounded-pill px-3 btn-sm" data-bs-toggle="modal" data-bs-target="#modalConfigApi">
-                <i class="fas fa-sliders me-1"></i> Configurar API
-            </button>
-            <button type="button" class="btn btn-outline-primary rounded-pill px-3 btn-sm" data-bs-toggle="modal" data-bs-target="#modalBuscarCentral">
-                <i class="fas fa-magnifying-glass me-1"></i> Buscar en SICEFA
-            </button>
-            <button type="button" class="btn btn-outline-success rounded-pill px-3 btn-sm" onclick="probarConexionApi()">
-                <i class="fas fa-arrows-rotate me-1" id="btnSyncSpinIcon"></i> Comprobar Conexión
-            </button>
-            <button type="button" class="btn text-white rounded-pill px-3 btn-sm shadow-sm" style="background-color: var(--ecp-navy); border-color: var(--ecp-navy);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
-                <i class="fas fa-cloud-arrow-down me-1"></i> Sincronizar y Registrar Usuarios
-            </button>
         </div>
     </div>
 
@@ -164,43 +152,6 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
-
-    <!-- Tarjeta Principal: Estado del Servicio API SICEFA -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px; background: linear-gradient(135deg, #f0fbf4 0%, #d8f3dc 100%); border-left: 6px solid var(--ecp-green) !important;">
-        <div class="card-body p-4">
-            <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
-                         style="width: 58px; height: 58px; background: #FFFFFF; color: var(--ecp-green); font-size: 1.6rem;">
-                        <i class="fas fa-network-wired"></i>
-                    </div>
-                    <div>
-                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                            <h4 class="h5 fw-bold mb-0" style="color: var(--ecp-navy);">
-                                Integración Directa con la API REST Central SICEFA
-                            </h4>
-                            <span class="badge rounded-pill d-inline-flex align-items-center gap-1" style="background-color: var(--ecp-green); font-size: 0.75rem;">
-                                <span class="pulse-indicator bg-white" style="width: 6px; height: 6px;"></span>
-                                Conexión Activa
-                            </span>
-                        </div>
-                        <p class="mb-0 text-dark" style="font-size: 0.9rem; line-height: 1.45;">
-                            Este módulo está preparado para consumir y registrar en tiempo real a los <strong>aprendices, instructores y directivos</strong> directamente desde el ERP SENA Empresa / SICEFA, vinculando automáticamente sus roles y credenciales para Control ECP.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-wrap align-items-center gap-2 flex-shrink-0">
-                    <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: var(--ecp-navy);" data-bs-toggle="modal" data-bs-target="#modalConfigApi">
-                        <i class="fas fa-gear me-1"></i> Ver Endpoint
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-success bg-white rounded-pill px-3 shadow-sm" onclick="probarConexionApi()">
-                        <i class="fas fa-plug me-1"></i> Test Ping API
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Tarjetas de Estadísticas (KPIs) -->
     <div class="row g-3 mb-4">
@@ -217,7 +168,7 @@
                     </div>
                     <h3 class="fw-bold mb-0" style="color: var(--ecp-navy);" id="kpiTotalUsers">{{ $stats['total'] }}</h3>
                     <small class="text-success d-flex align-items-center gap-1 mt-1">
-                        <i class="fas fa-circle-check" style="font-size: 0.7rem;"></i> Sincronizados
+                        <i class="fas fa-circle-check" style="font-size: 0.7rem;"></i> Registrados
                     </small>
                 </div>
             </div>
@@ -242,9 +193,7 @@
 
         <!-- KPI 3: Instructores -->
         <div class="col-6 col-md-3">
-            <a href="{{ route('controlecp.administrador.pqr.instructores') }}"
-               class="card stat-card shadow-sm h-100 bg-white text-decoration-none"
-               title="Ver PQRS de instructores">
+            <div class="card stat-card shadow-sm h-100 bg-white">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Instructores</span>
@@ -256,7 +205,7 @@
                     <h3 class="fw-bold mb-0 text-dark" id="kpiInstructorUsers">{{ $stats['instructors'] }}</h3>
                     <small class="text-muted mt-1 d-block">Formadores & Mediadores</small>
                 </div>
-            </a>
+            </div>
         </div>
 
         <!-- KPI 4: Aprendices -->
@@ -311,74 +260,31 @@
         </div>
     </div>
 
-    <!-- Panel de Detalles Técnicos del Endpoint y Última Sincronización -->
+    <!-- Panel de origen de datos -->
     <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
         <div class="card-header bg-white border-0 pt-3 pb-2 px-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h5 class="fw-bold mb-0" style="color: var(--ecp-navy); font-size: 1.05rem;">
-                    <i class="fas fa-server me-2 text-success"></i>Parámetros de Integración API REST
+                    <i class="fas fa-table me-2 text-success"></i>Origen de los registros
                 </h5>
                 <div class="d-flex align-items-center gap-2">
                     <span id="apiConnectionBadge" class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">
-                        <i class="fas fa-circle-check me-1"></i> Servicio Listo
+                        <i class="fas fa-circle-check me-1"></i> Base de datos disponible
                     </span>
-                    <span class="small text-muted" id="apiLatencyText">Latencia: -- ms</span>
                 </div>
             </div>
         </div>
         <div class="card-body px-4 pb-3 pt-1">
             <div class="row g-3">
-                <div class="col-md-7">
-                    <div class="table-responsive">
-                        <table class="table table-sm table-bordered align-middle mb-0" style="font-size: 0.85rem;">
-                            <tbody>
-                                <tr>
-                                    <th class="bg-light text-muted" style="width: 35%;">Endpoint API Central:</th>
-                                    <td>
-                                        <code class="text-primary fw-bold text-break" id="lblEndpointUrl">{{ $apiConfig['url'] ?? route('controlecp.api.usuarios.mock') }}</code>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="bg-light text-muted">Protocolo y Formato:</th>
-                                    <td>RESTful JSON &bull; HTTP GET &bull; Estandarizado SICEFA</td>
-                                </tr>
-                                <tr>
-                                    <th class="bg-light text-muted">Última Sincronización:</th>
-                                    <td id="lblLastSyncText">
-                                        @if(!empty($lastSync['date']))
-                                            <span class="text-dark fw-semibold">{{ $lastSync['date'] }}</span> &bull;
-                                            <span class="badge bg-light text-success border border-success-subtle">
-                                                {{ $lastSync['total_synced'] }} usuarios sincronizados
-                                            </span>
-                                        @else
-                                            <span class="text-muted fst-italic">Pendiente de sincronizar</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="col-md-5">
-                    <div class="p-3 rounded-3 h-100 d-flex flex-column justify-content-between" style="background-color: #f8fbf9; border: 1px dashed #bce5c6;">
-                        <div>
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="fas fa-bolt text-warning"></i>
-                                <strong class="small text-dark">Sincronización Automatizada</strong>
-                            </div>
-                            <p class="text-muted mb-2" style="font-size: 0.78rem; line-height: 1.35;">
-                                Al ejecutar la sincronización, se actualizan las tablas maestras de personas, usuarios y roles de Control ECP sin duplicar información.
-                            </p>
+                <div class="col-12">
+                    <div class="p-3 rounded-3" style="background-color: #f8fbf9; border: 1px dashed #bce5c6;">
+                        <div class="d-flex align-items-center gap-2 mb-1">
+                            <i class="fas fa-database text-success"></i>
+                            <strong class="small text-dark">Fuente de información</strong>
                         </div>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 flex-grow-1" onclick="probarConexionApi()">
-                                <i class="fas fa-arrows-rotate me-1"></i> Probar Enlace
-                            </button>
-                            <button type="button" class="btn btn-sm text-white rounded-pill px-3 flex-grow-1" style="background-color: var(--ecp-green);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
-                                <i class="fas fa-download me-1"></i> Sincronizar
-                            </button>
-                        </div>
+                        <p class="text-muted mb-0" style="font-size: 0.78rem; line-height: 1.35;">
+                            La información se consulta directamente desde las tablas normales de personas, usuarios y roles. Los cambios realizados aquí se guardan en la base de datos del sistema.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -461,11 +367,11 @@
         </div>
     </div>
 
-    <!-- Tabla Principal de Usuarios Sincronizados -->
+    <!-- Tabla principal de usuarios -->
     <div class="card border-0 shadow-sm" style="border-radius: 18px;">
         <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0" style="color: var(--ecp-navy);">
-                <i class="fas fa-id-card-clip me-2" style="color: var(--ecp-green);"></i>Nómina de Usuarios SICEFA en Control ECP
+                <i class="fas fa-id-card-clip me-2" style="color: var(--ecp-green);"></i>Usuarios registrados en Control ECP
             </h5>
             <span class="small text-muted">
                 Mostrando {{ $usuarios->count() }} de {{ $usuarios->total() }} registros
@@ -483,7 +389,7 @@
                                 <th style="width: 22%;">Usuario & Contacto</th>
                                 <th style="width: 17%;">Rol Asignado en Control ECP</th>
                                 <th style="width: 10%;">Estado</th>
-                                <th style="width: 10%;">Sincronización</th>
+                                <th style="width: 10%;">Origen</th>
                                 <th class="text-end pe-4" style="width: 8%;">Acciones</th>
                             </tr>
                         </thead>
@@ -580,10 +486,10 @@
                                         @endif
                                     </td>
 
-                                    <!-- Sincronización -->
+                                    <!-- Origen -->
                                     <td>
                                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;">
-                                            <i class="fas fa-link me-1"></i> API SICEFA
+                                            <i class="fas fa-database me-1"></i> Base de datos
                                         </span>
                                         <div class="small text-muted mt-1" style="font-size: 0.72rem;">
                                             {{ $u->updated_at ? $u->updated_at->format('d/m/Y H:i') : 'Activo' }}
@@ -612,7 +518,7 @@
                                                                 'role' => $hasAdmin ? 'Administrador' : ($hasInstructor ? 'Instructor' : ($hasApprentice ? 'Aprendiz' : 'Usuario')),
                                                                 'updated_at' => $u->updated_at ? $u->updated_at->format('d/m/Y H:i') : 'Activo'
                                                             ]) }})">
-                                                        <i class="fas fa-id-card me-2 text-primary"></i> Ver Ficha SICEFA
+                                                        <i class="fas fa-id-card me-2 text-primary"></i> Ver ficha
                                                     </button>
                                                 </li>
                                                 {{-- HU5: Editar usuario --}}
@@ -683,12 +589,12 @@
                     </div>
                     <h5 class="fw-bold text-dark mb-2">No se encontraron usuarios registrados con los filtros aplicados</h5>
                     <p class="text-muted small mb-4" style="max-width: 480px; margin: 0 auto;">
-                        El módulo está listo para recibir y registrar toda la nómina institucional al conectarse a la API REST Central de SICEFA.
+                        Registra un usuario nuevo o limpia los filtros para consultar los registros disponibles en la base de datos.
                     </p>
                     <div class="d-flex justify-content-center gap-2">
-                        <button type="button" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color: var(--ecp-green);" data-bs-toggle="modal" data-bs-target="#modalSyncConfirm">
-                            <i class="fas fa-cloud-arrow-down me-1"></i> Sincronizar Usuarios Ahora
-                        </button>
+                        <a href="{{ route('controlecp.administrador.usuarios.create') }}" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color: var(--ecp-green);">
+                            <i class="fas fa-user-plus me-1"></i> Registrar Usuario
+                        </a>
                         <a href="{{ route('controlecp.administrador.usuarios') }}" class="btn btn-outline-secondary rounded-pill px-4">
                             Limpiar Filtros
                         </a>
@@ -1459,7 +1365,7 @@
         const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + encodeURIComponent(csv.join('\n'));
         const link = document.createElement('a');
         link.setAttribute('href', csvContent);
-        link.setAttribute('download', 'usuarios_controlecp_sicefa_' + new Date().toISOString().slice(0, 10) + '.csv');
+        link.setAttribute('download', 'usuarios_controlecp_' + new Date().toISOString().slice(0, 10) + '.csv');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

@@ -10,7 +10,17 @@
         'certificacion' => ['fa-certificate', '#00838F'],
         'inventario' => ['fa-boxes-stacked', '#C0392B'],
         'poe' => ['fa-file-contract', '#2C3E50'],
+        'acompanamientos' => ['fa-hand-holding-heart', '#C2185B'],
     ];
+    @endphp
+    @php
+    $reportRoute = Auth::user()?->hasRole('controlecp.instructor')
+        ? 'controlecp.instructor.reportes'
+        : 'controlecp.administrador.reportes';
+    $exportRoute = $reportRoute . '.exportar';
+    if (Auth::user()?->hasRole('controlecp.instructor')) {
+        $tipos = array_intersect_key($tipos, array_flip(['asistencias', 'asesorias', 'acompanamientos', 'certificacion', 'encuestas', 'inventario', 'pqrs']));
+    }
     $chartLabels = $resultado['filas']->take(8)->map(fn($fila, $i) => data_get($fila, 'estado') ?: 'Registro ' . ($i + 1))->values();
     $chartValues = $resultado['filas']->take(8)->map(fn() => 1)->values();
 @endphp
@@ -22,14 +32,14 @@
             <h1>Reportes y analítica</h1>
             <p>Consulta el comportamiento de la Escuela Cultura de Paz desde un solo lugar.</p>
         </div>
-        <button type="button" class="btn btn-light rounded-pill px-4 shadow-sm" onclick="window.print()">
+        <a href="{{ route($exportRoute, request()->query()) }}" class="btn btn-light rounded-pill px-4 shadow-sm">
             <i class="fas fa-file-pdf me-2"></i>Exportar PDF
-        </button>
+        </a>
     </header>
 
     <div class="report-type-grid no-print">
         @foreach($tipos as $clave => $nombre)
-            <a href="{{ route('controlecp.administrador.reportes', ['tipo' => $clave]) }}"
+            <a href="{{ route($reportRoute, ['tipo' => $clave]) }}"
                class="report-type {{ $tipo === $clave ? 'selected' : '' }}"
                style="--report-color: {{ $icons[$clave][1] }}">
                 <span class="report-type-icon"><i class="fas {{ $icons[$clave][0] }}"></i></span>
@@ -45,9 +55,9 @@
             <input type="hidden" name="tipo" value="{{ $tipo }}">
             <div class="col-sm-6 col-lg-2"><label>Fecha inicial</label><input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}"></div>
             <div class="col-sm-6 col-lg-2"><label>Fecha final</label><input type="date" name="fecha_hasta" value="{{ request('fecha_hasta') }}"></div>
-            <div class="col-sm-6 col-lg-3"><label>Responsable</label><select name="usuario_id"><option value="">Todos los responsables</option>@foreach($usuarios as $usuario)<option value="{{ $usuario->id }}" @selected(request('usuario_id') == $usuario->id)>{{ $usuario->nickname ?: $usuario->email }}</option>@endforeach</select></div>
+            @if(Auth::user()?->hasRole('controlecp.admin'))<div class="col-sm-6 col-lg-3"><label>Responsable</label><select name="usuario_id"><option value="">Todos los responsables</option>@foreach($usuarios as $usuario)<option value="{{ $usuario->id }}" @selected(request('usuario_id') == $usuario->id)>{{ $usuario->nickname ?: $usuario->email }}</option>@endforeach</select></div>@endif
             <div class="col-sm-6 col-lg-2"><label>Estado</label><input name="estado" value="{{ request('estado') }}" placeholder="Todos"></div>
-            <div class="col-lg-3 d-flex gap-2"><button class="btn btn-generate flex-grow-1"><i class="fas fa-magnifying-glass me-2"></i>Generar reporte</button><a class="btn btn-reset" href="{{ route('controlecp.administrador.reportes', ['tipo' => $tipo]) }}"><i class="fas fa-rotate-left"></i></a></div>
+            <div class="col-lg-3 d-flex gap-2"><button class="btn btn-generate flex-grow-1"><i class="fas fa-magnifying-glass me-2"></i>Generar reporte</button><a class="btn btn-reset" href="{{ route($reportRoute, ['tipo' => $tipo]) }}"><i class="fas fa-rotate-left"></i></a></div>
         </form>
     </section>
 

@@ -74,6 +74,11 @@ class Cronograma extends Model
                     ->orderBy('created_at', 'desc');
     }
 
+    public function asistenciaEcp()
+    {
+        return $this->hasOne(AsistenciaEcp::class, 'id_cronograma', 'id_cronograma');
+    }
+
     // ── ACCESORES / LÓGICA DE NEGOCIO (HU-006) ───────────────────
 
     /**

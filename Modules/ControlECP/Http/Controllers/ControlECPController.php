@@ -5,14 +5,29 @@ namespace Modules\ControlECP\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Modules\ControlECP\Entities\Momento;
+use Modules\ControlECP\Entities\ActividadEcp;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Modules\SICA\Entities\Course;
 use Modules\SICA\Entities\Role;
 use Modules\SICA\Entities\Apprentice;
 use Modules\ControlECP\Entities\Material;
 use Modules\ControlECP\Entities\Pqr;
+use Modules\ControlECP\Entities\BloqueHistoria;
+use Modules\ControlECP\Entities\Cronograma;
+use Modules\ControlECP\Entities\EncuestaRespuesta;
+use Modules\ControlECP\Entities\EncuestaRespuestaDetalle;
+use Modules\ControlECP\Entities\OpcionPregunta;
+use Modules\ControlECP\Entities\Pregunta;
+use Modules\ControlECP\Entities\CalificacionEcp;
+use Modules\ControlECP\Entities\Asesoria;
+use Modules\ControlECP\Entities\CalificacionAsesoria;
+use Modules\ControlECP\Entities\CategoriaAsesoria;
+use Modules\ControlECP\Entities\AsesoriaHistorial;
+use Modules\ControlECP\Services\NotificacionService;
 
 class ControlECPController extends Controller
 {
@@ -746,6 +761,18 @@ class ControlECPController extends Controller
 
         return view('controlecp::administrador.repositorio.poe');
     }
+
+    public function historiaInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+
+        $bloques = BloqueHistoria::where('activo', true)
+            ->orderBy('orden')
+            ->orderBy('id')
+            ->get();
+
+        return view('controlecp::instructor.historia', compact('bloques'));
+    }
     /**
      * Muestra el inicio del rol Instructor.
      */
@@ -779,37 +806,101 @@ class ControlECPController extends Controller
     public function cronogramaInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
-        return view('controlecp::instructor.cronograma');
+        return app(\Modules\ControlECP\Http\Controllers\CronogramaController::class)->instructor(request());
     }
 
     public function momentosInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
-        return view('controlecp::instructor.momentos');
+
+        $momentos = Momento::with([
+            'actividades' => fn ($query) => $query
+                ->where('estado', 'Activo')
+                ->orderBy('numero'),
+        ])
+            ->withCount(['actividades' => fn ($query) => $query->where('estado', 'Activo')])
+            ->orderBy('orden')
+            ->get();
+
+        return view('controlecp::instructor.momentos', compact('momentos'));
     }
 
     public function actividadesInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
-        return view('controlecp::instructor.actividades');
+
+        $momentos = Momento::with([
+            'actividades' => fn ($query) => $query
+                ->with('encuesta')
+                ->where('estado', 'Activo')
+                ->orderBy('numero'),
+        ])
+            ->withCount(['actividades' => fn ($query) => $query->where('estado', 'Activo')])
+            ->orderBy('orden')
+            ->get();
+
+        return view('controlecp::instructor.actividades', compact('momentos'));
+    }
+
+    /**
+     * Consulta únicamente las fichas que tienen actividades asignadas al instructor.
+     */
+    public function fichasInstructor()
+    {
+        if ($res = $this->verificarAccesoInstructor()) return $res;
+
+        $usuario = Auth::user();
+        $asignaciones = DB::table('cronograma')
+            ->where('id_instructor', $usuario->id)
+            ->select('id_ficha', 'id_actividad', 'estado')
+            ->get()
+            ->groupBy('id_ficha');
+
+        $fichas = Course::with(['program', 'apprentices.person'])
+            ->whereIn('id', $asignaciones->keys()->all())
+            ->orderBy('code')
+            ->get();
+
+        $actividadIds = $asignaciones->flatten()->pluck('id_actividad')->unique();
+        $actividades = ActividadEcp::with('momento')->whereIn('id', $actividadIds)->get()->keyBy('id');
+
+        $fichas->each(function ($ficha) use ($asignaciones, $actividades) {
+            $registros = $asignaciones->get($ficha->id, collect());
+            $ficha->actividades_asignadas = $registros->pluck('id_actividad')->unique()->count();
+            $ficha->actividades_finalizadas = $registros->where('estado', 'Finalizada')->pluck('id_actividad')->unique()->count();
+            $ficha->momentos_certificados = $actividades
+                ->only($registros->pluck('id_actividad')->unique()->all())
+                ->filter(fn ($actividad) => $actividad->momento)
+                ->groupBy(fn ($actividad) => $actividad->momento->id)
+                ->filter(function ($momentoActividades) use ($registros) {
+                    return $momentoActividades->every(function ($actividad) use ($registros) {
+                        return $registros->where('id_actividad', $actividad->id)
+                            ->contains('estado', 'Finalizada');
+                    });
+                })
+                ->count();
+            $ficha->porcentaje_asistencia = 0;
+        });
+
+        return view('controlecp::instructor.fichas', compact('usuario', 'fichas'));
     }
 
     public function asistenciaInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
-        return view('controlecp::instructor.asistencia');
+        return app(\Modules\ControlECP\Http\Controllers\AsistenciaEcpController::class)->index(request());
     }
 
     public function asesoriasInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
-        return view('controlecp::instructor.asesorias');
+        return app(\Modules\ControlECP\Http\Controllers\InstructorAsesoriaController::class)->index(request());
     }
 
     public function certificadosInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
-        return view('controlecp::instructor.certificados');
+        return app(\Modules\ControlECP\Http\Controllers\InstructorCertificacionController::class)->index();
     }
 
     public function poeInstructor()
@@ -821,7 +912,7 @@ class ControlECPController extends Controller
     public function acompaniamientoInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
-        return view('controlecp::instructor.acompaniamiento');
+        return app(\Modules\ControlECP\Http\Controllers\AcompanamientoController::class)->index();
     }
 
     /**
@@ -857,19 +948,566 @@ class ControlECPController extends Controller
     public function cronogramaAprendiz()
     {
         if ($res = $this->verificarAccesoAprendiz()) return $res;
-        return view('controlecp::aprendiz.cronograma');
+
+        $usuario = Auth::user()->load('person.apprentices.course');
+        $fichaIds = $usuario->person?->apprentices
+            ->pluck('course_id')
+            ->filter()
+            ->unique()
+            ->values() ?? collect();
+
+        $sesiones = Cronograma::with([
+            'actividad.momento',
+            'instructor.person',
+            'ficha.program',
+        ])
+            ->whereIn('id_ficha', $fichaIds)
+            ->get()
+            ->sortBy(function (Cronograma $sesion) {
+                $prioridad = $sesion->estado === 'Pendiente' ? 0 : 1;
+                return [$prioridad, $sesion->fecha?->timestamp ?? PHP_INT_MAX, $sesion->hora_inicio ?? ''];
+            })
+            ->values();
+
+        $fichas = $sesiones->pluck('ficha')->filter()->unique('id')->values();
+
+        return view('controlecp::aprendiz.cronograma', compact('sesiones', 'fichas'));
+    }
+
+    public function historiaAprendiz()
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $bloques = BloqueHistoria::where('activo', true)
+            ->orderBy('orden')
+            ->orderBy('id')
+            ->get();
+
+        return view('controlecp::aprendiz.historia', compact('bloques'));
     }
 
     public function encuestaAprendiz()
     {
         if ($res = $this->verificarAccesoAprendiz()) return $res;
-        return view('controlecp::aprendiz.encuesta');
+
+        $usuario = Auth::user()->load('person.apprentices');
+        $aprendizIds = $usuario->person?->apprentices->pluck('id')->filter()->values() ?? collect();
+        $fichaIds = $usuario->person?->apprentices->pluck('course_id')->filter()->unique()->values() ?? collect();
+
+        $cronogramasPresentes = DB::table('controlecp_asistencia_detalles as detalle')
+            ->join('controlecp_asistencias as asistencia', 'asistencia.id_asistencia', '=', 'detalle.id_asistencia')
+            ->whereIn('detalle.id_aprendiz', $aprendizIds)
+            ->where('detalle.presente', true)
+            ->pluck('asistencia.id_cronograma');
+
+        $sesiones = \Modules\ControlECP\Entities\Cronograma::with([
+            'actividad.encuesta.preguntas.opciones',
+            'actividad.momento',
+            'instructor.person',
+        ])
+            ->whereIn('id_ficha', $fichaIds)
+            ->whereIn('id_cronograma', $cronogramasPresentes)
+            ->where(function ($q) {
+                $q->where('cronograma.estado', 'Finalizada')
+                    ->orWhereHas('actividad', fn($actividad) => $actividad->where('estado', 'Finalizado'));
+            })
+            ->whereHas('actividad.encuesta', fn($q) => $q->where('estado', 'Activa'))
+            ->orderByDesc('fecha')
+            ->get();
+
+        $respuestas = EncuestaRespuesta::where('id_usuario', $usuario->id)
+            ->whereIn('id_cronograma', $sesiones->pluck('id_cronograma'))
+            ->pluck('id_cronograma')
+            ->flip();
+
+        return view('controlecp::aprendiz.encuesta', compact('sesiones', 'respuestas'));
+    }
+
+    public function responderEncuestaAprendiz(int $id)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $sesion = $this->sesionEncuestaAprendiz($id);
+        $respuesta = EncuestaRespuesta::where('id_cronograma', $sesion->id_cronograma)
+            ->where('id_usuario', Auth::id())
+            ->exists();
+
+        if ($respuesta) {
+            return redirect()->route('controlecp.aprendiz.encuesta')
+                ->with('error', 'Esta encuesta ya fue respondida.');
+        }
+
+        return view('controlecp::aprendiz.encuesta_responder', compact('sesion'));
+    }
+
+    public function guardarEncuestaAprendiz(Request $request, int $id)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $sesion = $this->sesionEncuestaAprendiz($id);
+        $encuesta = $sesion->actividad->encuesta;
+        $preguntas = $encuesta->preguntas;
+        $datos = $request->validate([
+            'respuestas' => ['required', 'array'],
+            'respuestas.*' => ['nullable', 'string', 'max:5000'],
+        ]);
+
+        if (EncuestaRespuesta::where('id_cronograma', $sesion->id_cronograma)
+            ->where('id_usuario', Auth::id())->exists()) {
+            return redirect()->route('controlecp.aprendiz.encuesta')
+                ->with('error', 'Esta encuesta ya fue respondida.');
+        }
+
+        $respuestas = $datos['respuestas'];
+        foreach ($preguntas as $pregunta) {
+            $valor = trim((string) ($respuestas[$pregunta->id_pregunta] ?? ''));
+            if ($pregunta->obligatoria && $valor === '') {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'respuestas.' . $pregunta->id_pregunta => 'Debes responder todas las preguntas obligatorias.',
+                ]);
+            }
+
+            if ($valor !== '' && $pregunta->isOpcionMultiple()) {
+                if (!OpcionPregunta::where('id_pregunta', $pregunta->id_pregunta)
+                    ->where('id_opcion_pregunta', $valor)->exists()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'respuestas.' . $pregunta->id_pregunta => 'La opción seleccionada no es válida.',
+                    ]);
+                }
+            }
+
+            if ($valor !== '' && $pregunta->isEscala()
+                && (!ctype_digit($valor) || (int) $valor < 1 || (int) $valor > 5)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'respuestas.' . $pregunta->id_pregunta => 'La calificación debe estar entre 1 y 5.',
+                ]);
+            }
+        }
+
+        DB::transaction(function () use ($sesion, $preguntas, $respuestas) {
+            $cabecera = EncuestaRespuesta::create([
+                'id_cronograma' => $sesion->id_cronograma,
+                'id_usuario' => Auth::id(),
+                'fecha' => now(),
+            ]);
+
+            foreach ($preguntas as $pregunta) {
+                $valor = trim((string) ($respuestas[$pregunta->id_pregunta] ?? ''));
+                if ($valor === '') continue;
+                EncuestaRespuestaDetalle::create([
+                    'id_encuesta_respuesta' => $cabecera->id_encuesta_respuesta,
+                    'id_pregunta' => $pregunta->id_pregunta,
+                    'id_opcion_pregunta' => $pregunta->isOpcionMultiple() ? $valor : null,
+                    'valor' => $pregunta->isOpcionMultiple()
+                        ? OpcionPregunta::find($valor)?->texto
+                        : $valor,
+                ]);
+            }
+        });
+
+        return redirect()->route('controlecp.aprendiz.encuesta')
+            ->with('success', 'Tu encuesta fue enviada correctamente.');
+    }
+
+    public function calificacionesAprendiz()
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $usuario = Auth::user()->load('person.apprentices');
+        $aprendizIds = $usuario->person?->apprentices->pluck('id')->filter()->values() ?? collect();
+        $fichaIds = $usuario->person?->apprentices->pluck('course_id')->filter()->unique()->values() ?? collect();
+
+        $sesiones = $this->sesionesCalificablesAprendiz($aprendizIds, $fichaIds)
+            ->orderByDesc('fecha')
+            ->orderByDesc('hora_inicio')
+            ->get();
+
+        $calificaciones = CalificacionEcp::where('user_id', $usuario->id)
+            ->whereIn('actividad_id', $sesiones->pluck('id_actividad'))
+            ->whereIn('course_id', $sesiones->pluck('id_ficha'))
+            ->get()
+            ->keyBy(fn (CalificacionEcp $calificacion) => "{$calificacion->actividad_id}:{$calificacion->course_id}");
+
+        $sesiones->each(function (Cronograma $sesion) use ($calificaciones): void {
+            $sesion->calificacion_aprendiz = $calificaciones->get("{$sesion->id_actividad}:{$sesion->id_ficha}");
+        });
+
+        $asesorias = Asesoria::with(['categoria', 'instructor.person'])
+            ->where('id_usuario_aprendiz', $usuario->id)
+            ->where('estado', 'Realizada')
+            ->orderByDesc('fecha')
+            ->orderByDesc('hora_inicio')
+            ->get();
+
+        $calificacionesAsesoria = CalificacionAsesoria::where('user_id', $usuario->id)
+            ->whereIn('id_asesoria', $asesorias->pluck('id_asesoria'))
+            ->get()
+            ->keyBy('id_asesoria');
+
+        $asesorias->each(function (Asesoria $asesoria) use ($calificacionesAsesoria): void {
+            $asesoria->calificacion_aprendiz = $calificacionesAsesoria->get($asesoria->id_asesoria);
+        });
+
+        return view('controlecp::aprendiz.calificaciones', compact('sesiones', 'asesorias'));
+    }
+
+    public function calificarActividadAprendiz(int $id)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $sesion = $this->sesionCalificableAprendiz($id);
+        $calificacion = CalificacionEcp::where('actividad_id', $sesion->id_actividad)
+            ->where('course_id', $sesion->id_ficha)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($calificacion) {
+            return redirect()->route('controlecp.aprendiz.calificaciones')
+                ->with('error', 'Esta actividad ya fue calificada.');
+        }
+
+        return view('controlecp::aprendiz.calificar_actividad', compact('sesion'));
+    }
+
+    public function guardarCalificacionAprendiz(Request $request, int $id)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $sesion = $this->sesionCalificableAprendiz($id);
+        $datos = $request->validate([
+            'estrellas' => ['required', 'integer', 'between:1,5'],
+            'comentario' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $yaCalificada = CalificacionEcp::where('actividad_id', $sesion->id_actividad)
+            ->where('course_id', $sesion->id_ficha)
+            ->where('user_id', Auth::id())
+            ->exists();
+
+        if ($yaCalificada) {
+            return redirect()->route('controlecp.aprendiz.calificaciones')
+                ->with('error', 'Esta actividad ya fue calificada.');
+        }
+
+        CalificacionEcp::create([
+            'actividad_id' => $sesion->id_actividad,
+            'course_id' => $sesion->id_ficha,
+            'user_id' => Auth::id(),
+            'estrellas' => $datos['estrellas'],
+            'comentario' => $datos['comentario'] ?? null,
+        ]);
+
+        return redirect()->route('controlecp.aprendiz.calificaciones')
+            ->with('success', 'Tu calificación fue guardada correctamente.');
+    }
+
+    public function calificarAsesoriaAprendiz(int $id)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $asesoria = $this->asesoriaCalificableAprendiz($id);
+        if (CalificacionAsesoria::where('id_asesoria', $asesoria->id_asesoria)
+            ->where('user_id', Auth::id())
+            ->exists()) {
+            return redirect()->route('controlecp.aprendiz.calificaciones')
+                ->with('error', 'Esta asesoría ya fue calificada.');
+        }
+
+        return view('controlecp::aprendiz.calificar_asesoria', compact('asesoria'));
+    }
+
+    public function guardarCalificacionAsesoriaAprendiz(Request $request, int $id)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $asesoria = $this->asesoriaCalificableAprendiz($id);
+        $datos = $request->validate([
+            'estrellas' => ['required', 'integer', 'between:1,5'],
+            'comentario' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        if (CalificacionAsesoria::where('id_asesoria', $asesoria->id_asesoria)
+            ->where('user_id', Auth::id())
+            ->exists()) {
+            return redirect()->route('controlecp.aprendiz.calificaciones')
+                ->with('error', 'Esta asesoría ya fue calificada.');
+        }
+
+        CalificacionAsesoria::create([
+            'id_asesoria' => $asesoria->id_asesoria,
+            'user_id' => Auth::id(),
+            'estrellas' => $datos['estrellas'],
+            'comentario' => $datos['comentario'] ?? null,
+        ]);
+
+        return redirect()->route('controlecp.aprendiz.calificaciones')
+            ->with('success', 'Tu calificación de la asesoría fue guardada correctamente.');
+    }
+
+    private function sesionEncuestaAprendiz(int $id): Cronograma
+    {
+        $usuario = Auth::user()->load('person.apprentices');
+        $aprendizIds = $usuario->person?->apprentices->pluck('id')->filter()->values() ?? collect();
+        $fichaIds = $usuario->person?->apprentices->pluck('course_id')->filter()->unique()->values() ?? collect();
+
+        $presente = DB::table('controlecp_asistencia_detalles as detalle')
+            ->join('controlecp_asistencias as asistencia', 'asistencia.id_asistencia', '=', 'detalle.id_asistencia')
+            ->whereIn('detalle.id_aprendiz', $aprendizIds)
+            ->where('detalle.presente', true)
+            ->where('asistencia.id_cronograma', $id)
+            ->exists();
+
+        abort_unless($presente, 403, 'Solo puedes responder encuestas de actividades a las que asististe.');
+
+        return Cronograma::with(['actividad.encuesta.preguntas.opciones', 'actividad.momento', 'instructor.person'])
+            ->whereIn('id_ficha', $fichaIds)
+            ->where(function ($q) {
+                $q->where('cronograma.estado', 'Finalizada')
+                    ->orWhereHas('actividad', fn($actividad) => $actividad->where('estado', 'Finalizado'));
+            })
+            ->whereKey($id)
+            ->whereHas('actividad.encuesta', fn($q) => $q->where('estado', 'Activa'))
+            ->firstOrFail();
+    }
+
+    private function sesionesCalificablesAprendiz($aprendizIds, $fichaIds)
+    {
+        return Cronograma::with(['actividad.momento', 'ficha.program'])
+            ->whereIn('id_ficha', $fichaIds)
+            ->whereHas('asistenciaEcp', function ($asistencia) use ($aprendizIds): void {
+                $asistencia->where('estado', 'Registrada')
+                    ->whereHas('detalles', function ($detalle) use ($aprendizIds): void {
+                        $detalle->whereIn('id_aprendiz', $aprendizIds)
+                            ->where('presente', true);
+                    });
+            })
+            ->where(function ($query): void {
+                $query->where('cronograma.estado', 'Finalizada')
+                    ->orWhereHas('actividad', fn ($actividad) => $actividad->where('estado', 'Finalizado'));
+            });
+    }
+
+    private function sesionCalificableAprendiz(int $id): Cronograma
+    {
+        $usuario = Auth::user()->load('person.apprentices');
+        $aprendizIds = $usuario->person?->apprentices->pluck('id')->filter()->values() ?? collect();
+        $fichaIds = $usuario->person?->apprentices->pluck('course_id')->filter()->unique()->values() ?? collect();
+
+        return $this->sesionesCalificablesAprendiz($aprendizIds, $fichaIds)
+            ->whereKey($id)
+            ->firstOrFail();
+    }
+
+    private function asesoriaCalificableAprendiz(int $id): Asesoria
+    {
+        return Asesoria::with(['categoria', 'instructor.person'])
+            ->where('id_asesoria', $id)
+            ->where('id_usuario_aprendiz', Auth::id())
+            ->where('estado', 'Realizada')
+            ->firstOrFail();
     }
 
     public function asesoriasAprendiz()
     {
         if ($res = $this->verificarAccesoAprendiz()) return $res;
-        return view('controlecp::aprendiz.asesorias');
+
+        $categorias = CategoriaAsesoria::where('estado', 'Activo')->orderBy('nombre')->get();
+        $asesorias = Asesoria::with(['categoria', 'instructor.person', 'historial'])
+            ->where('id_usuario_aprendiz', Auth::id())
+            ->orderByDesc('fecha')
+            ->orderByDesc('hora_inicio')
+            ->get();
+
+        return view('controlecp::aprendiz.asesorias', compact('categorias', 'asesorias'));
+    }
+
+    public function instructoresDisponiblesAprendiz(Request $request)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $datos = $request->validate([
+            'id_categoria_asesoria' => ['required', 'integer', 'exists:categorias_asesoria,id_categoria_asesoria'],
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
+            'hora_inicio' => ['required', 'date_format:H:i'],
+            'hora_fin' => ['required', 'date_format:H:i', 'after:hora_inicio'],
+        ]);
+
+        $instructores = $this->instructoresDisponiblesParaAsesoria($datos);
+
+        return response()->json([
+            'instructores' => $instructores->map(fn (User $instructor) => [
+                'id' => $instructor->id,
+                'nombre' => $instructor->full_name,
+            ])->values(),
+            'mensaje' => $instructores->isEmpty() ? 'No hay instructores disponibles' : null,
+        ]);
+    }
+
+    public function storeAsesoriaAprendiz(Request $request)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $datos = $request->validate([
+            'id_categoria_asesoria' => ['required', 'integer', 'exists:categorias_asesoria,id_categoria_asesoria'],
+            'id_usuario_instructor' => ['required', 'integer', 'exists:users,id'],
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
+            'hora_inicio' => ['required', 'date_format:H:i'],
+            'hora_fin' => ['required', 'date_format:H:i', 'after:hora_inicio'],
+            'motivo' => ['required', 'string', 'min:5', 'max:5000'],
+        ]);
+
+        $categoria = CategoriaAsesoria::where('id_categoria_asesoria', $datos['id_categoria_asesoria'])
+            ->where('estado', 'Activo')
+            ->firstOrFail();
+        $instructores = $this->instructoresDisponiblesParaAsesoria($datos);
+        abort_unless($instructores->contains('id', (int) $datos['id_usuario_instructor']), 422, 'El instructor no está disponible en ese horario.');
+
+        $duplicada = Asesoria::where('id_usuario_aprendiz', Auth::id())
+            ->where('id_categoria_asesoria', $categoria->id_categoria_asesoria)
+            ->whereIn('estado', ['Solicitada', 'Programada'])
+            ->exists();
+        if ($duplicada) {
+            return back()->withInput()->with('error', 'Ya tienes una solicitud pendiente para esta categoría.');
+        }
+
+        $asesoria = DB::transaction(function () use ($datos) {
+            $ocupada = Asesoria::where('id_usuario_instructor', $datos['id_usuario_instructor'])
+                ->whereDate('fecha', $datos['fecha'])
+                ->whereIn('estado', ['Solicitada', 'Programada'])
+                ->where('hora_inicio', '<', $datos['hora_fin'])
+                ->where('hora_fin', '>', $datos['hora_inicio'])
+                ->lockForUpdate()
+                ->exists();
+            $actividadOcupada = DB::table('cronograma')
+                ->where('id_instructor', $datos['id_usuario_instructor'])
+                ->whereDate('fecha', $datos['fecha'])
+                ->where('estado', '!=', 'Cancelada')
+                ->where('hora_inicio', '<', $datos['hora_fin'])
+                ->where('hora_fin', '>', $datos['hora_inicio'])
+                ->lockForUpdate()
+                ->exists();
+            if ($ocupada || $actividadOcupada) {
+                abort(422, 'El horario seleccionado ya está ocupado.');
+            }
+
+            return Asesoria::create([
+                'id_categoria_asesoria' => $datos['id_categoria_asesoria'],
+                'id_usuario_aprendiz' => Auth::id(),
+                'id_usuario_instructor' => $datos['id_usuario_instructor'],
+                'id_usuario_registro' => Auth::id(),
+                'motivo' => $datos['motivo'],
+                'fecha' => $datos['fecha'],
+                'hora_inicio' => $datos['hora_inicio'],
+                'hora_fin' => $datos['hora_fin'],
+                'estado' => 'Programada',
+                'fecha_solicitud' => now(),
+            ]);
+        });
+
+        app(NotificacionService::class)->crear([
+            'id_usuario_receptor' => $asesoria->id_usuario_instructor,
+            'id_usuario_causante' => Auth::id(),
+            'modulo' => 'Asesorías',
+            'titulo' => 'Nueva asesoría asignada',
+            'mensaje' => 'Tienes una nueva asesoría programada.',
+            'referencia_tipo' => 'asesoria',
+            'referencia_id' => $asesoria->id_asesoria,
+            'clave_evento' => 'asesoria-aprendiz-'.$asesoria->id_asesoria,
+        ]);
+
+        return redirect()->route('controlecp.aprendiz.asesorias')
+            ->with('success', 'La asesoría fue reservada correctamente.');
+    }
+
+    public function cancelarAsesoriaAprendiz(Request $request, int $id)
+    {
+        if ($res = $this->verificarAccesoAprendiz()) return $res;
+
+        $datos = $request->validate([
+            'motivo' => ['required', 'string', 'min:5', 'max:2000'],
+        ]);
+        $asesoria = Asesoria::where('id_asesoria', $id)
+            ->where('id_usuario_aprendiz', Auth::id())
+            ->whereIn('estado', ['Solicitada', 'Programada'])
+            ->firstOrFail();
+
+        DB::transaction(function () use ($asesoria, $datos): void {
+            $asesoria->update([
+                'estado' => 'Cancelada',
+                'motivo_cancelacion' => $datos['motivo'],
+                'id_usuario_cancelador' => Auth::id(),
+            ]);
+            AsesoriaHistorial::create([
+                'id_asesoria' => $asesoria->id_asesoria,
+                'id_usuario' => Auth::id(),
+                'accion' => 'cancelar',
+                'motivo' => $datos['motivo'],
+                'fecha' => now(),
+            ]);
+        });
+
+        if ($asesoria->id_usuario_instructor) {
+            app(NotificacionService::class)->crear([
+                'id_usuario_receptor' => $asesoria->id_usuario_instructor,
+                'id_usuario_causante' => Auth::id(),
+                'modulo' => 'Asesorías',
+                'titulo' => 'Asesoría cancelada',
+                'mensaje' => 'Una asesoría programada fue cancelada por el aprendiz.',
+                'referencia_tipo' => 'asesoria',
+                'referencia_id' => $asesoria->id_asesoria,
+                'clave_evento' => 'asesoria-aprendiz-cancelada-'.$asesoria->id_asesoria,
+            ]);
+        }
+
+        return back()->with('success', 'La asesoría fue cancelada y el horario quedó disponible.');
+    }
+
+    private function instructoresDisponiblesParaAsesoria(array $datos)
+    {
+        $fecha = \Carbon\Carbon::parse($datos['fecha']);
+        $dia = $fecha->dayOfWeekIso;
+        $trimestre = (int) ceil($fecha->month / 3);
+
+        return User::whereHas('roles', fn ($query) => $query->where('slug', 'controlecp.instructor'))
+            ->whereExists(function ($query) use ($datos): void {
+                $query->select(DB::raw(1))
+                    ->from('instructor_categoria')
+                    ->whereColumn('instructor_categoria.id_usuario', 'users.id')
+                    ->where('id_categoria_asesoria', $datos['id_categoria_asesoria']);
+            })
+            ->whereExists(function ($query) use ($fecha, $dia, $trimestre, $datos): void {
+                $query->select(DB::raw(1))
+                    ->from('disponibilidades_instructor')
+                    ->whereColumn('disponibilidades_instructor.id_usuario', 'users.id')
+                    ->where('anio', $fecha->year)
+                    ->where('trimestre', $trimestre)
+                    ->where('dia_semana', $dia)
+                    ->where('vigente', true)
+                    ->where('habilitada', true)
+                    ->where('hora_inicio', '<=', $datos['hora_inicio'])
+                    ->where('hora_fin', '>=', $datos['hora_fin']);
+            })
+            ->whereNotExists(function ($query) use ($datos): void {
+                $query->select(DB::raw(1))
+                    ->from('asesorias')
+                    ->whereColumn('asesorias.id_usuario_instructor', 'users.id')
+                    ->whereDate('fecha', $datos['fecha'])
+                    ->whereIn('estado', ['Solicitada', 'Programada'])
+                    ->where('hora_inicio', '<', $datos['hora_fin'])
+                    ->where('hora_fin', '>', $datos['hora_inicio']);
+            })
+            ->whereNotExists(function ($query) use ($datos): void {
+                $query->select(DB::raw(1))
+                    ->from('cronograma')
+                    ->whereColumn('cronograma.id_instructor', 'users.id')
+                    ->whereDate('fecha', $datos['fecha'])
+                    ->where('estado', '!=', 'Cancelada')
+                    ->where('hora_inicio', '<', $datos['hora_fin'])
+                    ->where('hora_fin', '>', $datos['hora_inicio']);
+            })
+            ->with('person')
+            ->orderBy('id')
+            ->get();
     }
 
     public function pqrAprendiz()

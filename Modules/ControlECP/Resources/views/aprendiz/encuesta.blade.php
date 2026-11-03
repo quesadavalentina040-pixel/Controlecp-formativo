@@ -1,53 +1,62 @@
-{{-- Vista: Vista del aprendiz para responder las encuestas asignadas. --}}
 @extends('controlecp::components.layouts.dashboard')
 
-{{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 <div class="container-fluid px-2 px-md-3 py-2">
-
-    <!-- Breadcrumb & Cabecera -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
         <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.aprendiz.inicio') }}" class="text-decoration-none" style="color: #39A900;">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: #001A29; font-weight: 600;">
-                        Encuesta
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: #001A29; font-family: 'Outfit', sans-serif;">
-                <i class="fas fa-square-poll-vertical me-2" style="color: #39A900;"></i>Encuestas y Evaluaciones ECP
+            <h2 class="h3 fw-bold mb-1" style="color:#001A29;">
+                <i class="fas fa-square-poll-vertical me-2" style="color:#39A900;"></i>Mis encuestas
             </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; Evaluación de satisfacción y retroalimentación de talleres</p>
+            <p class="text-muted small mb-0">Responde únicamente las encuestas de actividades a las que asististe.</p>
         </div>
-
-        <div class="d-flex gap-2">
-            <a href="{{ route('controlecp.aprendiz.inicio') }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm">
-                <i class="fas fa-arrow-left me-1"></i> Volver al Inicio
-            </a>
-        </div>
+        <a href="{{ route('controlecp.aprendiz.inicio') }}" class="btn btn-outline-secondary rounded-pill btn-sm">
+            <i class="fas fa-arrow-left me-1"></i>Volver
+        </a>
     </div>
 
-    <!-- Contenido Encuestas -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px;">
-        <div class="card-body p-4">
-            <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-4 mb-3 border">
-                <div class="rounded-circle d-flex align-items-center justify-content-center text-warning flex-shrink-0" style="width: 50px; height: 50px; background-color: #FFF8E1; font-size: 1.4rem;">
+    @if(session('success') || session('error'))
+        <div class="alert alert-{{ session('success') ? 'success' : 'danger' }} border-0 shadow-sm">
+            {{ session('success') ?: session('error') }}
+        </div>
+    @endif
+
+    @forelse($sesiones as $sesion)
+        @php
+            $respondida = $respuestas->has($sesion->id_cronograma);
+            $encuesta = $sesion->actividad->encuesta;
+        @endphp
+        <div class="card border-0 shadow-sm mb-3" style="border-radius:16px;">
+            <div class="card-body p-4 d-flex flex-wrap align-items-center gap-3">
+                <div class="rounded-circle d-flex align-items-center justify-content-center"
+                     style="width:48px;height:48px;background:#f0fbf4;color:#39A900;">
                     <i class="fas fa-star"></i>
                 </div>
                 <div class="flex-grow-1">
-                    <h6 class="fw-bold mb-1 text-dark">Encuesta Momento 1: Autoconciencia</h6>
-                    <p class="small text-muted mb-0">Por favor responde esta breve encuesta de 5 preguntas sobre tu experiencia en el Momento 1.</p>
+                    <h5 class="fw-bold mb-1" style="color:#001A29;">{{ $encuesta->nombre }}</h5>
+                    <div class="small text-muted">
+                        {{ $sesion->actividad->nombre }} · {{ $sesion->fecha?->format('d/m/Y') }}
+                    </div>
+                    @if($encuesta->descripcion)
+                        <div class="small text-muted mt-1">{{ $encuesta->descripcion }}</div>
+                    @endif
                 </div>
-                <button class="btn text-white rounded-pill px-4" style="background-color: #39A900;">Responder Encuesta</button>
+                @if($respondida)
+                    <span class="badge bg-success-subtle text-success border rounded-pill px-3 py-2">
+                        <i class="fas fa-check me-1"></i>Respondida
+                    </span>
+                @else
+                    <a href="{{ route('controlecp.aprendiz.encuesta.responder', $sesion->id_cronograma) }}"
+                       class="btn text-white rounded-pill px-4" style="background:#39A900;">
+                        Responder
+                    </a>
+                @endif
             </div>
         </div>
-    </div>
-
+    @empty
+        <div class="card border-0 shadow-sm text-center py-5">
+            <i class="fas fa-clipboard-check fa-2x text-muted mb-3"></i>
+            <p class="text-muted mb-0">No tienes encuestas disponibles por ahora.</p>
+        </div>
+    @endforelse
 </div>
 @endsection

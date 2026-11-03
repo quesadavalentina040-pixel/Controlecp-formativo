@@ -159,17 +159,24 @@ class UsuarioSyncController extends Controller
         }
 
         $request->validate([
-            'document_number' => 'required|string|max:20',
-            'first_name'      => 'required|string|max:80',
-            'first_last_name' => 'required|string|max:80',
+            'document_number' => 'required|digits_between:5,20',
+            'first_name'      => ['required', 'string', 'max:80', "regex:/^[\p{L}\s'-]+$/u"],
+            'first_last_name' => ['required', 'string', 'max:80', "regex:/^[\p{L}\s'-]+$/u"],
+            'second_last_name'=> ['nullable', 'string', 'max:80', "regex:/^[\p{L}\s'-]+$/u"],
+            'telephone'       => 'nullable|digits_between:7,15',
             'email'           => 'required|email|max:150',
             'nickname'        => 'required|string|max:80',
             'role_slug'       => 'required|string',
             'password'        => 'required|string|min:6',
         ], [
             'document_number.required' => 'El número de documento es obligatorio.',
+            'document_number.digits_between' => 'El documento solo debe contener números.',
             'first_name.required'      => 'El nombre es obligatorio.',
+            'first_name.regex'        => 'El nombre solo debe contener letras, espacios, apóstrofes o guiones.',
             'first_last_name.required' => 'El primer apellido es obligatorio.',
+            'first_last_name.regex'   => 'El apellido solo debe contener letras, espacios, apóstrofes o guiones.',
+            'second_last_name.regex'  => 'El apellido solo debe contener letras, espacios, apóstrofes o guiones.',
+            'telephone.digits_between'=> 'El teléfono solo debe contener números.',
             'email.required'           => 'El correo electrónico es obligatorio.',
             'email.email'              => 'El correo no tiene un formato válido.',
             'nickname.required'        => 'El nombre de usuario es obligatorio.',
@@ -282,14 +289,20 @@ class UsuarioSyncController extends Controller
         $editUser = User::with('person')->findOrFail($id);
 
         $request->validate([
-            'first_name'     => 'required|string|max:80',
-            'first_last_name'=> 'required|string|max:80',
+            'first_name'     => ['required', 'string', 'max:80', "regex:/^[\p{L}\s'-]+$/u"],
+            'first_last_name'=> ['required', 'string', 'max:80', "regex:/^[\p{L}\s'-]+$/u"],
+            'second_last_name'=> ['nullable', 'string', 'max:80', "regex:/^[\p{L}\s'-]+$/u"],
+            'telephone'      => 'nullable|digits_between:7,15',
             'email'          => 'required|email|max:150',
             'nickname'       => 'required|string|max:80',
             'role_slug'      => 'required|string',
         ], [
             'first_name.required'      => 'El nombre es obligatorio.',
+            'first_name.regex'         => 'El nombre solo debe contener letras, espacios, apóstrofes o guiones.',
             'first_last_name.required' => 'El primer apellido es obligatorio.',
+            'first_last_name.regex'   => 'El apellido solo debe contener letras, espacios, apóstrofes o guiones.',
+            'second_last_name.regex'  => 'El apellido solo debe contener letras, espacios, apóstrofes o guiones.',
+            'telephone.digits_between'=> 'El teléfono solo debe contener números.',
             'email.required'           => 'El correo es obligatorio.',
             'email.email'              => 'El correo no tiene un formato válido.',
             'nickname.required'        => 'El nombre de usuario es obligatorio.',

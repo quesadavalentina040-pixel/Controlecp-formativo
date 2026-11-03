@@ -33,19 +33,20 @@
         </div>
     </div>
 
-    <!-- Contenido Certificados -->
-    <div class="card border-0 shadow-sm" style="border-radius: 18px;">
-        <div class="card-body p-4 text-center py-5">
-            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 70px; height: 70px; background-color: #d8f3dc; color: #39A900;">
-                <i class="fas fa-certificate fa-2x"></i>
-            </div>
-            <h5 class="fw-bold" style="color: #001A29;">Estado de Certificaciones</h5>
-            <p class="text-muted mx-auto small" style="max-width: 500px;">Verifica la asistencia completa de los aprendices de tus fichas para la emisión de sus certificados ECP.</p>
-            <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3 py-2">
-                <i class="fas fa-circle-check me-1"></i> Módulo habilitado correctamente
-            </span>
-        </div>
+    @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+    @if(session('error'))<div class="alert alert-danger">{{ session('error') }}</div>@endif
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 18px;">
+        <div class="card-header bg-white fw-bold">Fichas y momentos disponibles para certificar</div>
+        <div class="table-responsive"><table class="table align-middle mb-0">
+            <thead><tr><th>Ficha</th><th>Momento</th><th>Progreso</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+            @forelse($disponibles as $item)
+                <tr><td class="fw-semibold">{{ $item->ficha?->code ?? $item->ficha?->id }}</td><td>{{ $item->momento?->nombre }}</td><td>{{ $item->finalizadas }}/{{ $item->total }} actividades finalizadas @if($item->pendientes)<small class="d-block text-danger">Pendientes: {{ $item->pendientes }}</small>@endif</td><td>@if($item->certificacion)<span class="badge text-bg-success">Certificada</span>@elseif($item->cumplido)<span class="badge text-bg-warning">Lista</span>@else<span class="badge text-bg-secondary">En progreso</span>@endif</td><td>@if($item->certificacion)<small class="text-muted">{{ $item->certificacion->fecha_certificacion?->format('d/m/Y') }}</small>@elseif($item->cumplido)<form method="POST" action="{{ route('controlecp.instructor.certificados.certificar', $item->clave) }}">@csrf<button class="btn btn-success btn-sm" onclick="return confirm('¿Confirmar certificación de este momento?')"><i class="fas fa-certificate me-1"></i>Certificar</button></form>@else<span class="text-muted small">Faltan actividades</span>@endif</td></tr>
+            @empty<tr><td colspan="5" class="text-center text-muted py-5">No hay fichas con actividades asignadas para certificar.</td></tr>@endforelse
+            </tbody>
+        </table></div>
     </div>
+    <div class="card border-0 shadow-sm" style="border-radius: 18px;"><div class="card-header bg-white fw-bold">Mis certificaciones</div><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Ficha</th><th>Momento</th><th>Fecha</th><th>Estado</th></tr></thead><tbody>@forelse($historial as $certificacion)<tr><td>{{ $certificacion->ficha?->code }}</td><td>{{ $certificacion->momento?->nombre }}</td><td>{{ $certificacion->fecha_certificacion?->format('d/m/Y H:i') }}</td><td><span class="badge text-bg-success">{{ $certificacion->estado }}</span></td></tr>@empty<tr><td colspan="4" class="text-center text-muted py-4">Aún no has certificado momentos.</td></tr>@endforelse</tbody></table></div></div>
 
 </div>
 @endsection

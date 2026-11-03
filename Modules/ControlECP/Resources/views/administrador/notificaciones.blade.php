@@ -193,6 +193,10 @@
                                             {{ $item->mensaje }}
                                         </p>
                                     @endif
+                                    <small class="text-muted d-block mt-1">
+                                        <i class="fas fa-user me-1"></i>
+                                        {{ $item->causante?->nickname ?? 'Sistema' }}
+                                    </small>
                                 </div>
                             </td>
 

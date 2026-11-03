@@ -71,10 +71,28 @@ class Notification extends Model
     // Genera la URL de destino según el tipo de referencia
     public function getUrlReferenciaAttribute(): string
     {
-        return match (strtolower((string)$this->referencia_tipo)) {
-            'asesoria' => route('controlecp.administrador.asesorias.index'),
-            'pqr', 'pqrs' => route('controlecp.administrador.inicio'),
+        $esInstructor = auth()->check() && auth()->user()->hasRole('controlecp.instructor');
+        $esAprendiz = auth()->check() && auth()->user()->hasRole('controlecp.apprentice');
+        $tipo = strtolower((string) $this->referencia_tipo);
+        if ($esAprendiz) {
+            return match ($tipo) {
+                'asesoria' => route('controlecp.aprendiz.asesorias'),
+                'pqr', 'pqrs' => route('controlecp.aprendiz.pqr'),
+                'cronograma', 'actividad' => route('controlecp.aprendiz.cronograma'),
+                'encuesta' => route('controlecp.aprendiz.encuesta'),
+                default => route('controlecp.notificaciones.index'),
+            };
+        }
+        $prefijo = $esInstructor ? 'controlecp.instructor.' : 'controlecp.administrador.';
+
+        return match ($tipo) {
+            'asesoria' => route($esInstructor ? 'controlecp.instructor.asesorias' : 'controlecp.administrador.asesorias.index'),
+            'pqr', 'pqrs' => route($prefijo . 'pqr'),
             'poe' => route('controlecp.administrador.repositorio.poe.index'),
+            'cronograma', 'actividad' => route($prefijo . 'cronograma'),
+            'asistencia' => route($prefijo . 'asistencia'),
+            'inventario' => route($prefijo . 'inventario'),
+            'encuesta' => route($prefijo . 'repositorio.encuestas'),
             default => route('controlecp.notificaciones.index'),
         };
     }

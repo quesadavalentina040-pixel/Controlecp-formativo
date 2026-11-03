@@ -152,12 +152,20 @@
 
 @section('dashboard-content')
 <div class="container-fluid px-3 py-3">
+    @php
+        $tabulacionRoute = auth()->user()?->hasRole('controlecp.instructor')
+            ? 'controlecp.instructor.repositorio.tabulacion'
+            : 'controlecp.administrador.repositorio.tabulacion';
+        $inicioRoute = auth()->user()?->hasRole('controlecp.instructor')
+            ? 'controlecp.instructor.inicio'
+            : 'controlecp.administrador.inicio';
+    @endphp
 
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
         <div>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-1 text-muted" style="font-size: 0.85rem;">
-                    <li class="breadcrumb-item"><a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none text-muted">Control ECP</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route($inicioRoute) }}" class="text-decoration-none text-muted">Control ECP</a></li>
                     <li class="breadcrumb-item">Repositorio</li>
                     <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Tabulación</li>
                 </ol>
@@ -176,7 +184,7 @@
             @endphp
             @if($hayRespuestas)
 
-                <form action="{{ route('controlecp.administrador.repositorio.tabulacion.exportar') }}" method="GET" target="_blank" class="d-inline">
+                <form action="{{ route($tabulacionRoute . '.exportar') }}" method="GET" target="_blank" class="d-inline">
                     <input type="hidden" name="id_encuesta" value="{{ $encuestaActual?->id_encuesta }}">
                     <input type="hidden" name="id_actividad" value="{{ request('id_actividad') }}">
                     <input type="hidden" name="id_ficha" value="{{ request('id_ficha') }}">
@@ -198,7 +206,7 @@
 
     <div class="tabulacion-card p-3 mb-4">
 
-        <form method="GET" action="{{ route('controlecp.administrador.repositorio.tabulacion.index') }}" id="formFiltrosTabulacion">
+        <form method="GET" action="{{ route($tabulacionRoute . '.index') }}" id="formFiltrosTabulacion">
             <div class="row g-3 align-items-end">
 
                 <div class="col-12 col-md-4 col-lg-3">
@@ -273,7 +281,7 @@
                     <button type="submit" class="btn btn-ecp-primary flex-grow-1 px-2 py-2" title="Aplicar filtros">
                         <i class="fa-solid fa-filter me-1"></i> Aplicar
                     </button>
-                    <a href="{{ route('controlecp.administrador.repositorio.tabulacion.index', ['id_encuesta' => $encuestaActual?->id_encuesta]) }}"
+                    <a href="{{ route($tabulacionRoute . '.index', ['id_encuesta' => $encuestaActual?->id_encuesta]) }}"
                        class="btn btn-outline-secondary px-2 py-2 text-decoration-none"
                        title="Limpiar filtros">
                         <i class="fa-solid fa-rotate-left me-1"></i> Limpiar
@@ -323,7 +331,7 @@
                     La encuesta <strong>"{{ $encuestaActual->nombre }}"</strong> no tiene respuestas almacenadas en el sistema para los filtros seleccionados.
                 </p>
                 @if(request('id_actividad') || request('id_ficha') || request('fecha_desde') || request('fecha_hasta'))
-                    <a href="{{ route('controlecp.administrador.repositorio.tabulacion.index', ['id_encuesta' => $encuestaActual->id_encuesta]) }}" class="btn btn-ecp-primary btn-sm mt-2">
+                    <a href="{{ route($tabulacionRoute . '.index', ['id_encuesta' => $encuestaActual->id_encuesta]) }}" class="btn btn-ecp-primary btn-sm mt-2">
                         <i class="fa-solid fa-rotate-left me-1"></i> Restablecer Filtros
                     </a>
                 @endif

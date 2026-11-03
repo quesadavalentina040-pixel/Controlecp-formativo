@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Modules\ControlECP\Entities\Momento;
 use Modules\ControlECP\Entities\ActividadEcp;
+use Modules\ControlECP\Entities\Encuesta;
 use Modules\SICA\Entities\Course;
 use Modules\SICA\Entities\Apprentice;
 
@@ -27,7 +29,7 @@ class MomentoController extends Controller
                 ->with('error', 'No tienes permisos para acceder a Momentos de Control ECP.');
         }
 
-        $momentos = Momento::withCount([
+        $momentos = Momento::with('encuesta')->withCount([
             'actividades',
             'actividades as actividades_activas_count' => fn($q) => $q->where('estado', 'Activo'),
         ])
@@ -47,7 +49,11 @@ class MomentoController extends Controller
             'total_aprendices'=> Apprentice::count(),
         ];
 
-        return view('controlecp::administrador.momentos', compact('momentos', 'stats'));
+        $encuestasActivas = Encuesta::where('estado', 'Activa')
+            ->orderBy('nombre')
+            ->get();
+
+        return view('controlecp::administrador.momentos', compact('momentos', 'stats', 'encuestasActivas'));
     }
 
     /**
@@ -68,12 +74,18 @@ class MomentoController extends Controller
             'icono'       => ['nullable', 'string', 'max:80', 'regex:/^fa-[a-z0-9-]+$/'],
             'color'       => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'orden'       => 'nullable|integer|min:0|max:99',
+            'encuesta_id' => 'nullable|exists:controlecp_encuestas,id',
         ], [
             'nombre.required' => 'El nombre del momento es obligatorio.',
             'nombre.max'      => 'El nombre no puede superar los 120 caracteres.',
             'descripcion.required' => 'La descripción del momento es obligatoria.',
             'orden.max'      => 'El orden no puede ser superior a 99.',
         ]);
+
+        $encuesta = $this->encuestaActiva($request->encuesta_id);
+        if ($request->filled('encuesta_id') && !$encuesta) {
+            return response()->json(['success' => false, 'message' => 'La encuesta seleccionada debe estar activa.'], 422);
+        }
 
         $momento = Momento::create([
             'nombre'      => trim($request->nombre),
@@ -82,6 +94,7 @@ class MomentoController extends Controller
             'color'       => $request->color   ?? '#39A900',
             'orden'       => $request->orden   ?? (Momento::max('orden') + 1),
             'estado'      => 'Activo',
+            'encuesta_id' => $encuesta?->id,
         ]);
 
         return response()->json([
@@ -120,11 +133,17 @@ class MomentoController extends Controller
             'icono'       => ['nullable', 'string', 'max:80', 'regex:/^fa-[a-z0-9-]+$/'],
             'color'       => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'orden'       => 'nullable|integer|min:0|max:99',
+            'encuesta_id' => 'nullable|exists:controlecp_encuestas,id',
         ], [
             'nombre.required' => 'El nombre del momento es obligatorio.',
             'descripcion.required' => 'La descripción del momento es obligatoria.',
             'orden.max'      => 'El orden no puede ser superior a 99.',
         ]);
+
+        $encuesta = $this->encuestaActiva($request->encuesta_id);
+        if ($request->filled('encuesta_id') && !$encuesta) {
+            return response()->json(['success' => false, 'message' => 'La encuesta seleccionada debe estar activa.'], 422);
+        }
 
         $momento->update([
             'nombre'      => trim($request->nombre),
@@ -132,6 +151,7 @@ class MomentoController extends Controller
             'icono'       => $request->icono  ?? $momento->icono,
             'color'       => $request->color  ?? $momento->color,
             'orden'       => $request->orden  ?? $momento->orden,
+            'encuesta_id' => $encuesta?->id,
         ]);
 
         return response()->json([
@@ -147,6 +167,17 @@ class MomentoController extends Controller
                 'estado'      => $momento->estado,
             ],
         ]);
+    }
+
+    private function encuestaActiva($id): ?Encuesta
+    {
+        if (!$id) {
+            return null;
+        }
+
+        return Encuesta::whereKey($id)
+            ->where('estado', 'Activa')
+            ->first();
     }
 
     /**
