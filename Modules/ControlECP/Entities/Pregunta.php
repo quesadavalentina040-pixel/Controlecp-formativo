@@ -37,7 +37,7 @@ class Pregunta extends Model
     {
         return $this->hasMany(OpcionPregunta::class, 'id_pregunta', 'id_pregunta')
             ->orderBy('orden', 'asc')
-            ->orderBy('id_opcion_pregunta', 'asc');
+            ->orderBy('id', 'asc');
     }
 
     public function detalles()

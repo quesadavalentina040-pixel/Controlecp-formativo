@@ -47,8 +47,20 @@
     .stat-card-ficha {
         border-radius: 16px;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: 1px solid rgba(0, 0, 0, 0.04);
+        border: 2px solid transparent;
         background: #ffffff;
+    }
+    .stat-card-ficha-total {
+        border-color: rgba(57, 169, 0, .35);
+    }
+    .stat-card-ficha-active {
+        border-color: rgba(41, 128, 185, .35);
+    }
+    .stat-card-ficha-apprentices {
+        border-color: rgba(214, 137, 16, .35);
+    }
+    .stat-card-ficha-programs {
+        border-color: rgba(142, 68, 173, .35);
     }
     .stat-card-ficha:hover {
         transform: translateY(-3px);
@@ -158,7 +170,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-2 px-md-3 py-2">
+<div class="container-fluid px-3 py-3">
 
     <!-- Breadcrumb & Cabecera -->
     <div class="fichas-hero d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -198,7 +210,7 @@
     <div class="row g-3 mb-4">
         <!-- KPI 1: Total Fichas -->
         <div class="col-6 col-md-3">
-            <div class="card stat-card-ficha shadow-sm h-100">
+            <div class="card stat-card-ficha stat-card-ficha-total shadow-sm h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Total Fichas</span>
@@ -217,7 +229,7 @@
 
         <!-- KPI 2: Fichas Activas -->
         <div class="col-6 col-md-3">
-            <div class="card stat-card-ficha shadow-sm h-100">
+            <div class="card stat-card-ficha stat-card-ficha-active shadow-sm h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Fichas Activas</span>
@@ -234,7 +246,7 @@
 
         <!-- KPI 3: Aprendices Vinculados -->
         <div class="col-6 col-md-3">
-            <div class="card stat-card-ficha shadow-sm h-100">
+            <div class="card stat-card-ficha stat-card-ficha-apprentices shadow-sm h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Total Aprendices</span>
@@ -251,7 +263,7 @@
 
         <!-- KPI 4: Programas de Formación -->
         <div class="col-6 col-md-3">
-            <div class="card stat-card-ficha shadow-sm h-100">
+            <div class="card stat-card-ficha stat-card-ficha-programs shadow-sm h-100">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Programas Académicos</span>

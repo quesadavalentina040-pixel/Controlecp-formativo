@@ -26,7 +26,7 @@ class UsuarioSyncController extends Controller
         $user = Auth::user();
 
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a la gestión de usuarios de Control ECP.');
         }
@@ -110,7 +110,7 @@ class UsuarioSyncController extends Controller
             'status' => 'Pendiente',
         ]);
 
-        return view('controlecp::administrador.usuario', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.usuario', compact(
             'usuarios',
             'stats',
             'apiConfig',
@@ -133,12 +133,12 @@ class UsuarioSyncController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return redirect()->route('controlecp.administrador.usuarios')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.usuarios')
                 ->with('error', 'No tienes permisos para registrar usuarios.');
         }
 
         $rolesEcp = Role::where('slug', 'like', 'controlecp%')->get();
-        return view('controlecp::administrador.usuario_form', compact('rolesEcp'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.usuario_form', compact('rolesEcp'));
     }
 
     /**
@@ -149,39 +149,48 @@ class UsuarioSyncController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return redirect()->route('controlecp.administrador.usuarios')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.usuarios')
                 ->with('error', 'No tienes permisos para registrar usuarios.');
         }
 
         $request->validate([
-            'document_number' => 'required|string|max:20',
-            'first_name'      => 'required|string|max:80',
-            'first_last_name' => 'required|string|max:80',
+            'document_number' => ['required', 'digits:10'],
+            'first_name'      => ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'first_last_name' => ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'second_last_name'=> ['nullable', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'telephone'       => ['nullable', 'digits:10'],
             'email'           => 'required|email|max:150',
-            'nickname'        => 'required|string|max:80',
+            'nickname'        => ['required', 'string', 'max:80', 'regex:/^[A-Za-z0-9]+$/'],
             'role_slug'       => 'required|string',
-            'password'        => 'required|string|min:6',
+            'password'        => ['required', 'string', 'min:6', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/'],
         ], [
             'document_number.required' => 'El número de documento es obligatorio.',
+            'document_number.digits'   => 'El número de documento debe tener exactamente 10 dígitos.',
             'first_name.required'      => 'El nombre es obligatorio.',
+            'first_name.regex'         => 'El nombre solo puede contener letras y espacios.',
             'first_last_name.required' => 'El primer apellido es obligatorio.',
+            'first_last_name.regex'    => 'El primer apellido solo puede contener letras y espacios.',
+            'second_last_name.regex'   => 'El segundo apellido solo puede contener letras y espacios.',
+            'telephone.digits'        => 'El teléfono debe tener exactamente 10 dígitos.',
             'email.required'           => 'El correo electrónico es obligatorio.',
             'email.email'              => 'El correo no tiene un formato válido.',
             'nickname.required'        => 'El nombre de usuario es obligatorio.',
+            'nickname.regex'           => 'El nombre de usuario solo puede contener letras y números.',
             'role_slug.required'       => 'Debes seleccionar un rol.',
             'password.required'        => 'La contraseña es obligatoria.',
             'password.min'             => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.regex'           => 'La contraseña debe contener letras y números, sin caracteres especiales.',
         ]);
 
         // HU4 — Verificar correo duplicado
         if (User::where('email', $request->email)->exists()) {
-            return back()->withInput()
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()
                 ->withErrors(['email' => 'El correo electrónico ya está registrado para otro usuario.']);
         }
 
         // HU4 — Verificar nickname duplicado
         if (User::where('nickname', $request->nickname)->exists()) {
-            return back()->withInput()
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()
                 ->withErrors(['nickname' => 'El nombre de usuario ya existe. Elige uno diferente.']);
         }
 
@@ -189,7 +198,7 @@ class UsuarioSyncController extends Controller
         if (Person::where('document_number', $request->document_number)->exists()) {
             $personExist = Person::where('document_number', $request->document_number)->first();
             if (User::where('person_id', $personExist->id)->exists()) {
-                return back()->withInput()
+                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()
                     ->withErrors(['document_number' => 'El documento ya está asociado a un usuario existente.']);
             }
         }
@@ -237,17 +246,17 @@ class UsuarioSyncController extends Controller
             DB::commit();
 
             if ($request->boolean('modal')) {
-                return redirect()
+                return /* Devuelve el resultado de este m�todo. */ redirect()
                     ->route('controlecp.administrador.usuarios.create', ['modal' => 1])
                     ->with('success', "Usuario {$newUser->nickname} registrado exitosamente en estado Activo.");
             }
 
-            return redirect()->route('controlecp.administrador.usuarios')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.usuarios')
                 ->with('success', "Usuario {$newUser->nickname} registrado exitosamente en estado Activo.");
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()
                 ->with('error', 'No se pudo registrar el usuario: ' . $e->getMessage());
         }
     }
@@ -259,14 +268,14 @@ class UsuarioSyncController extends Controller
     {
         $authUser = Auth::user();
         if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
-            return redirect()->route('controlecp.administrador.usuarios')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.usuarios')
                 ->with('error', 'No tienes permisos para editar usuarios.');
         }
 
         $editUser = User::with(['person', 'roles'])->findOrFail($id);
         $rolesEcp = Role::where('slug', 'like', 'controlecp%')->get();
 
-        return view('controlecp::administrador.usuario_form', compact('editUser', 'rolesEcp'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.usuario_form', compact('editUser', 'rolesEcp'));
     }
 
     /**
@@ -277,36 +286,46 @@ class UsuarioSyncController extends Controller
     {
         $authUser = Auth::user();
         if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
-            return redirect()->route('controlecp.administrador.usuarios')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.usuarios')
                 ->with('error', 'No tienes permisos para actualizar usuarios.');
         }
 
         $editUser = User::with('person')->findOrFail($id);
 
         $request->validate([
-            'first_name'     => 'required|string|max:80',
-            'first_last_name'=> 'required|string|max:80',
+            'first_name'     => ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'first_last_name'=> ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'second_last_name'=> ['nullable', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'telephone'      => ['nullable', 'digits:10'],
             'email'          => 'required|email|max:150',
-            'nickname'       => 'required|string|max:80',
+            'nickname'       => ['required', 'string', 'max:80', 'regex:/^[A-Za-z0-9]+$/'],
             'role_slug'      => 'required|string',
+            'password'       => ['nullable', 'string', 'min:6', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/'],
         ], [
             'first_name.required'      => 'El nombre es obligatorio.',
+            'first_name.regex'        => 'El nombre solo puede contener letras y espacios.',
             'first_last_name.required' => 'El primer apellido es obligatorio.',
+            'first_last_name.regex'   => 'El primer apellido solo puede contener letras y espacios.',
+            'second_last_name.regex'  => 'El segundo apellido solo puede contener letras y espacios.',
+            'telephone.digits'       => 'El teléfono debe tener exactamente 10 dígitos.',
             'email.required'           => 'El correo es obligatorio.',
             'email.email'              => 'El correo no tiene un formato válido.',
             'nickname.required'        => 'El nombre de usuario es obligatorio.',
+            'nickname.regex'           => 'El nombre de usuario solo puede contener letras y números.',
             'role_slug.required'       => 'Debes seleccionar un rol.',
+            'password.min'             => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.regex'           => 'La contraseña debe contener letras y números, sin caracteres especiales.',
         ]);
 
         // HU4 — Verificar correo duplicado (excluir al mismo usuario)
         if (User::where('email', $request->email)->where('id', '!=', $id)->exists()) {
-            return back()->withInput()
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()
                 ->withErrors(['email' => 'El correo electrónico ya está registrado para otro usuario.']);
         }
 
         // HU4 — Verificar nickname duplicado (excluir al mismo usuario)
         if (User::where('nickname', $request->nickname)->where('id', '!=', $id)->exists()) {
-            return back()->withInput()
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()
                 ->withErrors(['nickname' => 'El nombre de usuario ya existe.']);
         }
 
@@ -346,17 +365,17 @@ class UsuarioSyncController extends Controller
             DB::commit();
 
             if ($request->boolean('modal')) {
-                return redirect()
+                return /* Devuelve el resultado de este m�todo. */ redirect()
                     ->route('controlecp.administrador.usuarios.edit', ['id' => $editUser->id, 'modal' => 1])
                     ->with('success', "Usuario {$editUser->nickname} actualizado exitosamente.");
             }
 
-            return redirect()->route('controlecp.administrador.usuarios')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.usuarios')
                 ->with('success', "Usuario {$editUser->nickname} actualizado exitosamente.");
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()
                 ->with('error', 'No se pudo actualizar el usuario: ' . $e->getMessage());
         }
     }
@@ -373,19 +392,19 @@ class UsuarioSyncController extends Controller
     {
         $authUser = Auth::user();
         if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $targetUser = User::findOrFail($id);
 
         if ($targetUser->estado === 'Inactivo') {
-            return response()->json(['success' => false, 'message' => 'El usuario ya está inactivo.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'El usuario ya está inactivo.']);
         }
 
         $targetUser->estado = 'Inactivo';
         $targetUser->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "El usuario {$targetUser->full_name} fue desactivado. Ya no podrá iniciar sesión.",
         ]);
@@ -399,19 +418,19 @@ class UsuarioSyncController extends Controller
     {
         $authUser = Auth::user();
         if (!$authUser || !$authUser->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $targetUser = User::findOrFail($id);
 
         if ($targetUser->estado === 'Activo') {
-            return response()->json(['success' => false, 'message' => 'El usuario ya está activo.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'El usuario ya está activo.']);
         }
 
         $targetUser->estado = 'Activo';
         $targetUser->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "El usuario {$targetUser->full_name} fue reactivado. Ya puede iniciar sesión.",
         ]);
@@ -436,7 +455,7 @@ class UsuarioSyncController extends Controller
         if (str_contains($url, 'controlecp/sicefa-usuarios') || str_contains($url, '127.0.0.1') || str_contains($url, 'localhost')) {
             $mockData = $this->generateMockSicefaUsers();
             $latency = round((microtime(true) - $startTime) * 1000);
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'status' => 'connected',
                 'http_code' => 200,
@@ -467,7 +486,7 @@ class UsuarioSyncController extends Controller
                     }
                 }
 
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => true,
                     'status' => 'connected',
                     'http_code' => $response->status(),
@@ -477,7 +496,7 @@ class UsuarioSyncController extends Controller
                     'sample' => is_array($data) ? array_slice($data['data'] ?? $data, 0, 3) : [],
                 ]);
             } else {
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => false,
                     'status' => 'http_error',
                     'http_code' => $response->status(),
@@ -487,7 +506,7 @@ class UsuarioSyncController extends Controller
             }
         } catch (\Exception $e) {
             $latency = round((microtime(true) - $startTime) * 1000);
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'status' => 'connection_failed',
                 'latency_ms' => $latency,
@@ -538,7 +557,7 @@ class UsuarioSyncController extends Controller
         }
 
         if (!is_array($usersData) || empty($usersData)) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No se encontraron registros de usuarios en la respuesta de la API Central.',
             ], 422);
@@ -557,7 +576,7 @@ class UsuarioSyncController extends Controller
 
         DB::beginTransaction();
         try {
-            foreach ($usersData as $idx => $item) {
+            foreach ($usersData as $idx => $item) { /* Recorre uno por uno los elementos de esta lista. */
                 if (empty($item['document_number'])) {
                     continue;
                 }
@@ -682,7 +701,7 @@ class UsuarioSyncController extends Controller
             ];
             Cache::store('file')->forever('controlecp_last_sync', $syncReport);
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => "¡Sincronización completada! {$processed} usuarios procesados ({$created} nuevos registrados, {$updated} actualizados).",
                 'stats' => $syncReport,
@@ -691,7 +710,7 @@ class UsuarioSyncController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Ocurrió un error al registrar usuarios en la base de datos: ' . $e->getMessage(),
             ], 500);
@@ -705,7 +724,7 @@ class UsuarioSyncController extends Controller
     {
         $term = trim($request->input('term', ''));
         if (empty($term)) {
-            return response()->json(['success' => false, 'message' => 'Debe ingresar un documento o nombre']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Debe ingresar un documento o nombre']);
         }
 
         $people = Person::where('document_number', 'like', "%{$term}%")
@@ -718,7 +737,7 @@ class UsuarioSyncController extends Controller
         $results = [];
         $rolesEcp = Role::where('slug', 'like', 'controlecp%')->get()->keyBy('slug');
 
-        foreach ($people as $p) {
+        foreach ($people as $p) { /* Recorre uno por uno los elementos de esta lista. */
             $user = User::where('person_id', $p->id)->first();
             $assignedRoles = [];
             if ($user) {
@@ -743,7 +762,7 @@ class UsuarioSyncController extends Controller
             ];
         }
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'count' => count($results),
             'results' => $results,
@@ -784,7 +803,7 @@ class UsuarioSyncController extends Controller
         // Asignar rol
         $user->roles()->syncWithoutDetaching([$role->id]);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "El usuario {$person->first_name} {$person->first_last_name} fue vinculado con éxito al rol {$role->name}.",
         ]);
@@ -807,7 +826,7 @@ class UsuarioSyncController extends Controller
         // Asignar el nuevo rol
         $user->roles()->attach($newRole->id);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "Rol actualizado a {$newRole->name} para {$user->full_name}.",
         ]);
@@ -835,7 +854,7 @@ class UsuarioSyncController extends Controller
 
         Cache::store('file')->forever('controlecp_api_config', $config);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => 'Configuración de la API REST guardada correctamente.',
             'config' => $config,
@@ -849,7 +868,7 @@ class UsuarioSyncController extends Controller
     public function mockSicefaApi(Request $request)
     {
         $response = $this->generateMockSicefaUsers();
-        return response()->json($response);
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json($response);
     }
 
     /**
@@ -937,7 +956,7 @@ class UsuarioSyncController extends Controller
 
         // 3. Aprendices de la BD o muestra institucional
         if ($dbApprentices->count() > 0) {
-            foreach ($dbApprentices as $appr) {
+            foreach ($dbApprentices as $appr) { /* Recorre uno por uno los elementos de esta lista. */
                 $p = $appr->person;
                 if (!$p) continue;
                 $courseCode = $appr->course ? $appr->course->code : '598369';
@@ -1012,7 +1031,7 @@ class UsuarioSyncController extends Controller
             ];
         }
 
-        return [
+        return /* Devuelve el resultado de este m�todo. */ [
             'status' => 'success',
             'api_version' => 'v1',
             'source' => 'API REST Central SICEFA / ERP SENA Empresa La Angostura',

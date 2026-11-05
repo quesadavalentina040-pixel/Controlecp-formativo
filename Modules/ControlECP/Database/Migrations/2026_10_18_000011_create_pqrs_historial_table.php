@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Llaves foráneas
             $table->foreign('id_pqrs')
-                ->references('id_pqrs')
+                ->references('id')
                 ->on('controlecp_pqrs')
                 ->onDelete('cascade');
 

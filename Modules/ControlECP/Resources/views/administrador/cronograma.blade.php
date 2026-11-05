@@ -3,15 +3,15 @@
 @push('styles')
 <style>
     .cronograma-header-card {
-        background-color: #001A29;
+        background-color: #ffffff;
         border-radius: 24px;
         padding: 1.25rem 1.5rem;
     }
     .cronograma-header-card h2 {
-        color: #fff !important;
+        color: #001A29 !important;
     }
     .cronograma-header-card .text-muted {
-        color: #c7d4da !important;
+        color: #64748b !important;
     }
 
     /* ── Estilos del Semáforo ── */
@@ -200,7 +200,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-2 px-md-3 py-2">
+<div class="container-fluid px-3 py-3">
 
     <!-- ── Breadcrumb & Cabecera Principal ── -->
     <div class="cronograma-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">

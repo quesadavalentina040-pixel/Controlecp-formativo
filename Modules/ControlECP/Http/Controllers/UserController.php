@@ -30,11 +30,11 @@ class UserController extends Controller // Controlador administrativo para gesti
     {
         $usuario = Auth::user(); // Recupera la cuenta autenticada para revisar su rol.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Rechaza tanto a usuarios sin sesión como a quienes no son administradores.
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index') // Envía al inicio del módulo cuando no se permite el acceso.
                 ->with('error', 'No tienes permisos para acceder a la gestión de usuarios de Control ECP.'); // Prepara un aviso para mostrarlo después de redirigir.
         }
-        return null; // Indica que la acción puede continuar.
+        return /* Indica que no hay informaci�n para devolver. */ null; // Indica que la acción puede continuar.
     }
 
 
@@ -44,7 +44,7 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function index(Request $request) // ───────────────────────────────────────────────────────────────────────── | 1. LISTADO GENERAL | ───────────────────────────────────────────────────────────────────────── | index(): Consulta usuarios con filtros e indicadores; se usa al abrir el listado administrativo.
     {
         if ($redirect = $this->verificarAdmin()) { // Comprueba permisos antes de consultar cuentas.
-            return $redirect; // Detiene el listado si la comprobación produjo una redirección.
+            return /* Devuelve el resultado de este m�todo. */ $redirect; // Detiene el listado si la comprobación produjo una redirección.
         }
 
         $rolesEcp = Role::whereIn('slug', self::ROLES_ECP)->get(); // Obtiene los roles del módulo para mostrarlos en el filtro. | Roles ECP disponibles para filtros
@@ -93,7 +93,7 @@ class UserController extends Controller // Controlador administrativo para gesti
             ->whereHas('roles', fn($q) => $q->whereIn('slug', self::ROLES_ECP))
             ->count(); // Cuenta por separado las cuentas ECP desactivadas.
 
-        return view('controlecp::administrador.usuarios.index', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.usuarios.index', compact(
             'usuarios',
             'rolesEcp',
             'totalActivos',
@@ -108,12 +108,12 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function create() // ───────────────────────────────────────────────────────────────────────── | 2. CREACIÓN MANUAL | ───────────────────────────────────────────────────────────────────────── | create(): Muestra el formulario de registro de usuario; se usa al solicitar una nueva alta.
     {
         if ($redirect = $this->verificarAdmin()) { // Protege el formulario de alta con la misma comprobación administrativa.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $rolesEcp = Role::whereIn('slug', self::ROLES_ECP)->get(); // Carga las opciones de rol permitidas para el formulario.
 
-        return view('controlecp::administrador.usuarios.create', compact('rolesEcp')); // Renderiza el formulario y le entrega sus roles.
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.usuarios.create', compact('rolesEcp')); // Renderiza el formulario y le entrega sus roles.
     }
 
     /**
@@ -122,7 +122,7 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function store(Request $request) // store(): Valida y crea una cuenta de usuario; se usa al enviar el formulario de registro.
     {
         if ($redirect = $this->verificarAdmin()) { // Impide que alguien sin rol admin cree cuentas.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $request->validate([ // Comprueba datos obligatorios, formatos, longitudes y valores únicos antes de persistir.
@@ -167,10 +167,10 @@ class UserController extends Controller // Controlador administrativo para gesti
         }); // Confirma la transacción si se crearon persona, cuenta y rol sin errores.
 
         if ($request->ajax() || $request->wantsJson()) { // Detecta si el cliente espera una respuesta asíncrona.
-            return response()->json(['success' => true, 'message' => '¡Usuario creado correctamente en Control ECP!']); // Devuelve confirmación estructurada para JavaScript.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => true, 'message' => '¡Usuario creado correctamente en Control ECP!']); // Devuelve confirmación estructurada para JavaScript.
         }
 
-        return redirect()
+        return /* Devuelve el resultado de este m�todo. */ redirect()
             ->route('controlecp.usuarios.index') // Regresa al listado para una navegación normal.
             ->with('success', '¡Usuario creado correctamente en Control ECP!'); // Comparte un mensaje temporal de éxito.
     }
@@ -182,13 +182,13 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function editData($id) // ───────────────────────────────────────────────────────────────────────── | 3. EDICIÓN | ───────────────────────────────────────────────────────────────────────── | editData(): Carga los datos editables del usuario en el formato solicitado; se usa al abrir su edición.
     {
         if (Auth::user() && !Auth::user()->hasRole('controlecp.admin')) { // Comprueba el rol si hay una cuenta autenticada.
-            return response()->json(['error' => 'Sin permisos'], 403); // Devuelve JSON con estado HTTP 403 para el acceso no autorizado.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['error' => 'Sin permisos'], 403); // Devuelve JSON con estado HTTP 403 para el acceso no autorizado.
         }
 
         $usuario   = User::withTrashed()->with(['person', 'roles'])->findOrFail($id); // Busca incluso cuentas inactivas y carga persona/roles para evitar consultas adicionales.
         $rolActual = $usuario->roles->whereIn('slug', self::ROLES_ECP)->first(); // Obtiene el primer rol del módulo asociado a la cuenta.
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'id'               => $usuario->id,
             'email'            => $usuario->email,
             'nickname'         => $usuario->nickname,
@@ -210,7 +210,7 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function update(Request $request, $id) // update(): Valida y guarda los cambios del usuario; se usa al enviar su formulario de edición.
     {
         if ($redirect = $this->verificarAdmin()) { // Valida permisos antes de modificar datos.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $usuario = User::withTrashed()->with(['person', 'roles'])->findOrFail($id); // Recupera al usuario activo o inactivo junto con sus relaciones.
@@ -253,10 +253,10 @@ class UserController extends Controller // Controlador administrativo para gesti
         }); // Confirma los cambios juntos cuando todas las operaciones terminan bien.
 
         if ($request->ajax() || $request->wantsJson()) { // Responde según el formato solicitado por el cliente.
-            return response()->json(['success' => true, 'message' => '¡Usuario actualizado correctamente!']); // Devuelve el resultado para la interfaz AJAX.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => true, 'message' => '¡Usuario actualizado correctamente!']); // Devuelve el resultado para la interfaz AJAX.
         }
 
-        return redirect()
+        return /* Devuelve el resultado de este m�todo. */ redirect()
             ->route('controlecp.usuarios.index') // Vuelve al listado para solicitudes de navegador.
             ->with('success', '¡Usuario actualizado correctamente!'); // Muestra un aviso temporal de confirmación.
     }
@@ -269,7 +269,7 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function desactivar(Request $request, $id) // ───────────────────────────────────────────────────────────────────────── | 4. ACTIVAR / DESACTIVAR (SoftDelete como mecanismo de estado) | ───────────────────────────────────────────────────────────────────────── | desactivar(): Desactiva la cuenta indicada; se usa al suspender el acceso de un usuario.
     {
         if ($redirect = $this->verificarAdmin()) { // Comprueba permisos antes de suspender la cuenta.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $usuario = User::with('roles')->findOrFail($id); // Busca solo cuentas activas y carga sus roles para comprobar si es admin.
@@ -281,9 +281,9 @@ class UserController extends Controller // Controlador administrativo para gesti
 
             if ($adminsActivos <= 1) { // Evita dejar el módulo sin ningún administrador habilitado.
                 if ($request->ajax() || $request->wantsJson()) { // Distingue la respuesta para llamadas asíncronas.
-                    return response()->json(['success' => false, 'message' => 'No se puede desactivar al único Administrador activo de Control ECP.'], 422); // Informa el conflicto con estado HTTP 422.
+                    return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No se puede desactivar al único Administrador activo de Control ECP.'], 422); // Informa el conflicto con estado HTTP 422.
                 }
-                return redirect()
+                return /* Devuelve el resultado de este m�todo. */ redirect()
                     ->route('controlecp.usuarios.index')
                     ->with('error', 'No se puede desactivar al único Administrador activo de Control ECP.'); // Muestra el motivo en el listado.
             }
@@ -291,9 +291,9 @@ class UserController extends Controller // Controlador administrativo para gesti
 
         if ($usuario->id === Auth::id()) { // Impide que la cuenta actual se quite su propio acceso. | No eliminar al admin que está logueado
             if ($request->ajax() || $request->wantsJson()) { // Conserva una respuesta compatible con AJAX.
-                return response()->json(['success' => false, 'message' => 'No puedes desactivar tu propia cuenta.'], 422); // Informa la regla de negocio con estado 422.
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No puedes desactivar tu propia cuenta.'], 422); // Informa la regla de negocio con estado 422.
             }
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.usuarios.index')
                 ->with('error', 'No puedes desactivar tu propia cuenta.'); // Regresa al listado con el motivo del rechazo.
         }
@@ -301,10 +301,10 @@ class UserController extends Controller // Controlador administrativo para gesti
         $usuario->delete(); // Soft delete: marca deleted_at sin borrar físicamente la cuenta ni su historial.
 
         if ($request->ajax() || $request->wantsJson()) { // Devuelve JSON cuando la operación se inició desde la interfaz dinámica.
-            return response()->json(['success' => true, 'message' => "Usuario «{$usuario->full_name}» desactivado."]); // Confirma la desactivación al cliente.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => true, 'message' => "Usuario «{$usuario->full_name}» desactivado."]); // Confirma la desactivación al cliente.
         }
 
-        return redirect()
+        return /* Devuelve el resultado de este m�todo. */ redirect()
             ->route('controlecp.usuarios.index')
             ->with('success', "Usuario «{$usuario->full_name}» desactivado. Su historial se conserva íntegro."); // Confirma la acción y avisa que el historial sigue guardado.
     }
@@ -315,25 +315,25 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function activar(Request $request, $id) // activar(): Activa la cuenta indicada; se usa al restablecer su acceso.
     {
         if ($redirect = $this->verificarAdmin()) { // Restringe la reactivación a administradores.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $usuario = User::withTrashed()->findOrFail($id); // Busca también cuentas inactivas para poder restaurarlas.
 
         if (!$usuario->trashed()) { // Evita restaurar una cuenta que ya se encuentra activa.
             if ($request->ajax() || $request->wantsJson()) { // Responde en el formato solicitado por el cliente.
-                return response()->json(['success' => false, 'message' => 'El usuario ya está activo.']); // Devuelve el estado actual en JSON.
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'El usuario ya está activo.']); // Devuelve el estado actual en JSON.
             }
-            return redirect()->route('controlecp.usuarios.index')->with('info', 'El usuario ya está activo.'); // Regresa al listado con un aviso informativo.
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.usuarios.index')->with('info', 'El usuario ya está activo.'); // Regresa al listado con un aviso informativo.
         }
 
         $usuario->restore(); // Quita la marca de baja para volver a habilitar la cuenta.
 
         if ($request->ajax() || $request->wantsJson()) { // Usa JSON si la petición espera una respuesta dinámica.
-            return response()->json(['success' => true, 'message' => "Usuario «{$usuario->full_name}» reactivado correctamente."]); // Informa que la cuenta quedó activa.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => true, 'message' => "Usuario «{$usuario->full_name}» reactivado correctamente."]); // Informa que la cuenta quedó activa.
         }
 
-        return redirect()
+        return /* Devuelve el resultado de este m�todo. */ redirect()
             ->route('controlecp.usuarios.index')
             ->with('success', "Usuario «{$usuario->full_name}» reactivado correctamente."); // Muestra la confirmación al volver al listado.
     }
@@ -345,7 +345,7 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function historial(Request $request) // ───────────────────────────────────────────────────────────────────────── | 5. HISTORIAL DE USUARIOS DESACTIVADOS | ───────────────────────────────────────────────────────────────────────── | historial(): Consulta el historial de movimientos de usuarios; se usa al revisar cambios registrados.
     {
         if ($redirect = $this->verificarAdmin()) { // Protege el historial de usuarios inactivos.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $inactivos = User::onlyTrashed()
@@ -355,7 +355,7 @@ class UserController extends Controller // Controlador administrativo para gesti
             ->get(); // Recupera todas las cuentas dadas de baja con sus relaciones, de la más reciente a la más antigua.
 
         if ($request->ajax() || $request->wantsJson()) { // Entrega datos serializados si la interfaz los solicita dinámicamente.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'inactivos' => $inactivos->map(fn($u) => [
                     'id'           => $u->id,
                     'full_name'    => $u->full_name,
@@ -370,7 +370,7 @@ class UserController extends Controller // Controlador administrativo para gesti
             ]); // Devuelve la lista de inactivos como JSON.
         }
 
-        return redirect()->route('controlecp.usuarios.index', ['modal' => 'historial']); // Abre el listado normal con indicación para mostrar el modal de historial. | Acceso directo (sin modal): redirige al index con el modal abierto vía hash
+        return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.usuarios.index', ['modal' => 'historial']); // Abre el listado normal con indicación para mostrar el modal de historial. | Acceso directo (sin modal): redirige al index con el modal abierto vía hash
     }
 
 
@@ -381,7 +381,7 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function sincronizarPreview(Request $request) // ───────────────────────────────────────────────────────────────────────── | 6. SINCRONIZACIÓN CON SICEFA | ───────────────────────────────────────────────────────────────────────── | sincronizarPreview(): Prepara una vista previa de la sincronización con SICEFA; se usa antes de aplicar cambios.
     {
         if ($redirect = $this->verificarAdmin()) { // Solo un administrador puede consultar la vista previa.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $tipo = $request->input('tipo', 'instructores'); // Lee el tipo pedido y usa instructores si no se envió ninguno.
@@ -389,13 +389,13 @@ class UserController extends Controller // Controlador administrativo para gesti
         [$registros, $error] = $this->consultarSicefa($tipo); // Consulta la fuente externa y separa los registros del mensaje de error.
 
         if ($error) { // No prepara una vista previa si la consulta externa informó un problema.
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.usuarios.index')
                 ->with('error', "Error al conectar con SICEFA: {$error}"); // Regresa con el detalle del error para mostrarlo.
         }
 
         $preview = []; // Clasificar cada registro como nuevo o existente (para mostrar vista previa)
-        foreach ($registros as $reg) { // Revisa cada fila recibida para preparar lo que verá el administrador.
+        foreach ($registros as $reg) { /* Recorre uno por uno los elementos de esta lista. */ // Revisa cada fila recibida para preparar lo que verá el administrador.
             $docNum  = $reg['document_number'] ?? null;
             $emailEx = $reg['email'] ?? null;
 
@@ -411,7 +411,7 @@ class UserController extends Controller // Controlador administrativo para gesti
                     'second_last_name' => mb_strtoupper($reg['second_last_name'] ?? ''),
                     'misena_email'     => $reg['email'] ?? null,
                 ];
-                foreach ($mapeoCampos as $campo => $valorApi) { // Revisa cada campo mapeado y detecta diferencias.
+                foreach ($mapeoCampos as $campo => $valorApi) { /* Recorre uno por uno los elementos de esta lista. */ // Revisa cada campo mapeado y detecta diferencias.
                     if ((string)($personaExistente->{$campo} ?? '') !== (string)($valorApi ?? '')) { // Compara ambos valores como texto, tratando valores ausentes como vacíos.
                         $cambios[$campo] = [
                             'actual' => $personaExistente->{$campo},
@@ -435,14 +435,14 @@ class UserController extends Controller // Controlador administrativo para gesti
         $rolesEcp = Role::whereIn('slug', ['controlecp.instructor', 'controlecp.apprentice'])->get(); // Carga los roles seleccionables para instructores y aprendices.
 
         if ($request->ajax() || $request->wantsJson()) { // La interfaz de sincronización puede solicitar directamente el JSON.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'preview'  => $preview,
                 'tipo'     => $tipo,
                 'rolesEcp' => $rolesEcp->map(fn($r) => ['id' => $r->id, 'name' => $r->name, 'slug' => $r->slug]), // Reduce cada rol a los datos que necesita el selector.
             ]); // Entrega la vista previa y opciones de rol como JSON.
         }
 
-        return redirect()->route('controlecp.usuarios.index', ['modal' => 'sincronizar']); // Abre el listado indicando que debe mostrarse el modal de sincronización. | Acceso directo: redirige al index con parámetro para abrir el modal
+        return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.usuarios.index', ['modal' => 'sincronizar']); // Abre el listado indicando que debe mostrarse el modal de sincronización. | Acceso directo: redirige al index con parámetro para abrir el modal
     }
 
     /**
@@ -452,7 +452,7 @@ class UserController extends Controller // Controlador administrativo para gesti
     public function sincronizarAplicar(Request $request) // sincronizarAplicar(): Aplica la sincronización confirmada de usuarios con SICEFA; se usa tras revisar la vista previa.
     {
         if ($redirect = $this->verificarAdmin()) { // Exige permisos administrativos antes de aplicar cambios externos.
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $request->validate([ // Valida la lista y los datos mínimos de cada fila antes de recorrerla.
@@ -466,7 +466,7 @@ class UserController extends Controller // Controlador administrativo para gesti
         $actualizados = 0;
         $sinRol     = 0;
 
-        foreach ($request->input('registros') as $reg) { // Procesa una por una las filas confirmadas por el administrador.
+        foreach ($request->input('registros') as $reg) { /* Recorre uno por uno los elementos de esta lista. */ // Procesa una por una las filas confirmadas por el administrador.
             if (empty($reg['aplicar'])) { // Omite las filas que no fueron seleccionadas. | Solo procesar los que el admin marcó para aplicar
                 continue; // Pasa directamente al siguiente registro.
             }
@@ -535,10 +535,10 @@ class UserController extends Controller // Controlador administrativo para gesti
         }
 
         if ($request->ajax() || $request->wantsJson()) { // Comprueba si el cliente espera respuesta asíncrona.
-            return response()->json(['success' => true, 'message' => $msg]); // Envía el resumen al cliente en JSON.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => true, 'message' => $msg]); // Envía el resumen al cliente en JSON.
         }
 
-        return redirect()
+        return /* Devuelve el resultado de este m�todo. */ redirect()
             ->route('controlecp.usuarios.index')
             ->with('success', $msg); // Regresa al listado y muestra el mismo resumen como mensaje temporal.
     }
@@ -577,7 +577,7 @@ class UserController extends Controller // Controlador administrativo para gesti
         $baseUrl = config('controlecp.sicefa_api_url', ''); // Lee la URL de SICEFA desde la configuración del módulo.
 
         if (empty($baseUrl)) { // Evita intentar conectar si no se configuró la dirección del servicio.
-            return [[], 'La URL de la API SICEFA no está configurada en config/controlecp.php (clave sicefa_api_url).']; // URL no configurada: devolver array vacío con aviso
+            return /* Devuelve el resultado de este m�todo. */ [[], 'La URL de la API SICEFA no está configurada en config/controlecp.php (clave sicefa_api_url).']; // URL no configurada: devolver array vacío con aviso
         }
 
         $endpoint = $tipo === 'aprendices'
@@ -594,20 +594,20 @@ class UserController extends Controller // Controlador administrativo para gesti
             $raw = @file_get_contents($endpoint, false, $ctx); // Solicita el endpoint con ese contexto; @ evita imprimir avisos de conexión.
 
             if ($raw === false) { // La lectura falla, por ejemplo, si el servicio no responde.
-                return [[], "No se pudo conectar con {$endpoint}"];
+                return /* Devuelve el resultado de este m�todo. */ [[], "No se pudo conectar con {$endpoint}"];
             }
 
             $data = json_decode($raw, true); // Convierte el JSON recibido en arreglos asociativos de PHP.
 
             if (!is_array($data)) { // Rechaza respuestas inválidas o con una estructura distinta a un arreglo.
-                return [[], 'Respuesta inesperada de la API SICEFA (no es JSON válido).'];
+                return /* Devuelve el resultado de este m�todo. */ [[], 'Respuesta inesperada de la API SICEFA (no es JSON válido).'];
             }
 
             $registros = isset($data['data']) ? $data['data'] : $data; // Usa la colección anidada cuando la respuesta incluye la clave data. | Normalizar: si la API envuelve en una clave (ej: 'data')
 
-            return [$registros, null]; // Devuelve filas y null para indicar que la consulta no tuvo error.
+            return /* Devuelve el resultado de este m�todo. */ [$registros, null]; // Devuelve filas y null para indicar que la consulta no tuvo error.
         } catch (\Throwable $e) {
-            return [[], $e->getMessage()]; // Convierte cualquier excepción en el formato de error esperado por quien llama.
+            return /* Devuelve el resultado de este m�todo. */ [[], $e->getMessage()]; // Convierte cualquier excepción en el formato de error esperado por quien llama.
         }
     }
 }

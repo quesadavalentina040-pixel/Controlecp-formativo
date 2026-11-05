@@ -15,7 +15,7 @@
     $chartValues = $resultado['filas']->take(8)->map(fn() => 1)->values();
 @endphp
 
-<div class="reports-dashboard">
+<div class="reports-dashboard px-3 py-3">
     <header class="reports-hero no-print">
         <div>
             <div class="reports-eyebrow"><i class="fas fa-chart-line me-2"></i>Control ECP · Centro de reportes</div>

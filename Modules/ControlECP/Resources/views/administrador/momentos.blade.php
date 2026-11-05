@@ -97,7 +97,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-2 px-md-3 py-2">
+<div class="container-fluid px-3 py-3">
 
     {{-- Breadcrumb & Cabecera --}}
     <div class="momentos-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -138,7 +138,7 @@
     {{-- KPIs --}}
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
-            <div class="kpi-m">
+            <div class="kpi-m" style="border: 2px solid rgba(57,169,0,.35);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <span class="small text-muted fw-semibold">Total Momentos</span>
                     <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -151,7 +151,7 @@
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="kpi-m">
+            <div class="kpi-m" style="border: 2px solid rgba(30,112,0,.35);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <span class="small text-muted fw-semibold">Activos</span>
                     <div class="rounded-circle d-flex align-items-center justify-content-center"
@@ -164,29 +164,29 @@
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="kpi-m">
+            <div class="kpi-m" style="border: 2px solid rgba(192,57,43,.35);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="small text-muted fw-semibold">Total Fichas</span>
+                    <span class="small text-muted fw-semibold">Inactivos</span>
                     <div class="rounded-circle d-flex align-items-center justify-content-center"
-                         style="width: 34px; height: 34px; background: #ebf5fb; color: #2980b9;">
-                        <i class="fas fa-id-card"></i>
+                         style="width: 34px; height: 34px; background: #fdecea; color: #c0392b;">
+                        <i class="fas fa-ban"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 text-primary">{{ $stats['total_fichas'] }}</h3>
-                <small class="text-muted">Fichas activas</small>
+                <h3 class="fw-bold mb-0 text-danger">{{ $stats['inactivos'] }}</h3>
+                <small class="text-muted">Momentos inactivos</small>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="kpi-m">
+            <div class="kpi-m" style="border: 2px solid rgba(106,27,154,.35);">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="small text-muted fw-semibold">Aprendices</span>
+                    <span class="small text-muted fw-semibold">Actividades totales</span>
                     <div class="rounded-circle d-flex align-items-center justify-content-center"
-                         style="width: 34px; height: 34px; background: #fef9e7; color: #d68910;">
-                        <i class="fas fa-users"></i>
+                         style="width: 34px; height: 34px; background: #f4ecf7; color: #6a1b9a;">
+                        <i class="fas fa-list-ol"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 text-dark">{{ number_format($stats['total_aprendices']) }}</h3>
-                <small class="text-muted">En el centro</small>
+                <h3 class="fw-bold mb-0" style="color: #6a1b9a;">{{ $stats['total_actividades'] }}</h3>
+                <small class="text-muted">En todos los momentos</small>
             </div>
         </div>
     </div>
@@ -382,8 +382,8 @@
                             <div class="d-flex flex-wrap gap-2">
                                 @php
                                     $iconos = [
-                                        'fa-star','fa-brain','fa-people-holding-hands','fa-scale-balanced',
-                                        'fa-dove','fa-heart','fa-leaf','fa-sun','fa-hands-holding-heart',
+                                        'fa-star','fa-brain','fa-users','fa-scale-balanced',
+                                        'fa-dove','fa-heart','fa-leaf','fa-sun','fa-handshake',
                                         'fa-shield-halved','fa-lightbulb','fa-seedling',
                                     ];
                                 @endphp
@@ -397,15 +397,8 @@
                             </div>
                         </div>
 
-                        {{-- Orden --}}
-                        <div class="col-md-4">
-                            <label class="form-label fw-semibold small" style="color: var(--ecp-navy);">Orden de presentación</label>
-                            <input type="number" id="formOrden" class="form-control" min="0" max="99" value="0"
-                                   placeholder="0">
-                        </div>
-
                         {{-- Preview en vivo --}}
-                        <div class="col-md-8">
+                        <div class="col-12">
                             <label class="form-label fw-semibold small" style="color: var(--ecp-navy);">Vista previa</label>
                             <div id="previewMomento" class="rounded-3 p-3 text-white d-flex align-items-center gap-3"
                                  style="background: linear-gradient(135deg, var(--ecp-navy) 0%, #39A900 100%); min-height: 64px;">
@@ -513,8 +506,6 @@
         document.getElementById('formMomentoId').value    = '';
         document.getElementById('formNombre').value       = '';
         document.getElementById('formDescripcion').value  = '';
-        document.getElementById('formOrden').value        = {{ $stats['total_momentos'] + 1 }};
-
         seleccionarColor('#39A900');
         seleccionarIcono('fa-star');
         actualizarPreview();
@@ -531,8 +522,6 @@
         document.getElementById('formMomentoId').value    = data.id;
         document.getElementById('formNombre').value       = data.nombre;
         document.getElementById('formDescripcion').value  = data.descripcion ?? '';
-        document.getElementById('formOrden').value        = data.orden ?? 0;
-
         seleccionarColor(data.color ?? '#39A900');
         seleccionarIcono(data.icono ?? 'fa-star');
         actualizarPreview();
@@ -551,7 +540,6 @@
         const desc   = document.getElementById('formDescripcion').value.trim();
         const icono  = document.getElementById('formIcono').value;
         const color  = document.getElementById('formColor').value;
-        const orden  = parseInt(document.getElementById('formOrden').value) || 0;
 
         // HU7 — Validar campos obligatorios en el front
         if (!nombre) {
@@ -586,7 +574,7 @@
             const resp = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': momentosCsrfToken, 'Accept': 'application/json' },
-                body: JSON.stringify({ nombre, descripcion: desc, icono, color, orden }),
+                body: JSON.stringify({ nombre, descripcion: desc, icono, color }),
             });
 
             const data = await resp.json().catch(() => ({}));

@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\ControlECP\Entities\Momento;
 use Modules\ControlECP\Entities\ActividadEcp;
-use Modules\SICA\Entities\Course;
-use Modules\SICA\Entities\Apprentice;
 
 class MomentoController extends Controller
 {
@@ -22,7 +20,7 @@ class MomentoController extends Controller
         $usuario = Auth::user();
 
         if (!$usuario->hasRole('controlecp.admin')) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a Momentos de Control ECP.');
         }
@@ -34,20 +32,14 @@ class MomentoController extends Controller
         ->orderBy('orden')
         ->get();
 
-        // KPIs contextuales (fichas y aprendices reales)
-        $fichasActivas = Course::where(fn($q) => $q->where('status', 'Activo')->orWhereNull('status'))
-            ->withCount('apprentices')
-            ->get();
-
         $stats = [
             'total_momentos'  => $momentos->count(),
             'activos'         => $momentos->where('estado', 'Activo')->count(),
             'inactivos'       => $momentos->where('estado', 'Inactivo')->count(),
-            'total_fichas'    => $fichasActivas->count(),
-            'total_aprendices'=> Apprentice::count(),
+            'total_actividades' => $momentos->sum('actividades_count'),
         ];
 
-        return view('controlecp::administrador.momentos', compact('momentos', 'stats'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.momentos', compact('momentos', 'stats'));
     }
 
     /**
@@ -58,7 +50,7 @@ class MomentoController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         // HU7 — Validar campos obligatorios
@@ -84,7 +76,7 @@ class MomentoController extends Controller
             'estado'      => 'Activo',
         ]);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "El momento \"{$momento->nombre}\" fue creado exitosamente.",
             'momento' => [
@@ -108,7 +100,7 @@ class MomentoController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $momento = Momento::findOrFail($id);
@@ -134,7 +126,7 @@ class MomentoController extends Controller
             'orden'       => $request->orden  ?? $momento->orden,
         ]);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "El momento \"{$momento->nombre}\" fue actualizado correctamente.",
             'momento' => [
@@ -158,19 +150,19 @@ class MomentoController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $momento = Momento::findOrFail($id);
 
         if ($momento->estado === 'Inactivo') {
-            return response()->json(['success' => false, 'message' => 'El momento ya está inactivo.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'El momento ya está inactivo.']);
         }
 
         $momento->estado = 'Inactivo';
         $momento->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "El momento \"{$momento->nombre}\" fue desactivado. Se conserva su información y registros históricos.",
         ]);
@@ -183,19 +175,19 @@ class MomentoController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $momento = Momento::findOrFail($id);
 
         if ($momento->estado === 'Activo') {
-            return response()->json(['success' => false, 'message' => 'El momento ya está activo.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'El momento ya está activo.']);
         }
 
         $momento->estado = 'Activo';
         $momento->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "El momento \"{$momento->nombre}\" fue reactivado y está disponible nuevamente.",
         ]);
@@ -208,7 +200,7 @@ class MomentoController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $momento = Momento::with('actividades')->findOrFail($id);
@@ -225,7 +217,7 @@ class MomentoController extends Controller
             'estado'      => $a->estado,
         ]);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success'           => true,
             'momento_id'        => $momento->id,
             'momento_nombre'    => $momento->nombre,

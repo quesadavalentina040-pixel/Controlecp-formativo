@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class OpcionPregunta extends Model
 {
     protected $table = 'opciones_pregunta';
-    protected $primaryKey = 'id_opcion_pregunta';
+    protected $primaryKey = 'id';
     public $timestamps = false;
+    protected $appends = ['id_opcion_pregunta'];
 
     protected $fillable = [
         'id_pregunta',
@@ -20,9 +21,9 @@ class OpcionPregunta extends Model
         'orden' => 'integer',
     ];
 
-    public function getIdAttribute()
+    public function getIdOpcionPreguntaAttribute(): ?int
     {
-        return $this->attributes['id_opcion_pregunta'] ?? null;
+        return isset($this->attributes['id']) ? (int) $this->attributes['id'] : null;
     }
 
     public function pregunta()

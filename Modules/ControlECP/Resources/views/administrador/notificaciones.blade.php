@@ -6,7 +6,7 @@
 <style>
     .notif-card {
         background: #ffffff;
-        border: 1px solid #e0ece4;
+        border: 2px solid transparent;
         border-radius: 14px;
         transition: transform .2s ease, box-shadow .2s ease;
     }
@@ -15,6 +15,10 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 18px rgba(0, 26, 41, 0.08);
     }
+
+    .notif-kpi-label { font-size: .95rem; color: #475569; font-weight: 500; }
+    .notif-kpi-value { font-size: 1.7rem; font-weight: 800; line-height: 1; margin-top: .15rem; }
+    .notif-kpi-subtitle { font-size: .9rem; color: #64748b; }
 
     .btn-notif-action {
         width: 34px;
@@ -105,41 +109,41 @@
 
     <div class="row g-3 mb-4">
         <div class="col-12 col-md-4">
-            <div class="notif-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">Total Notificaciones</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: #e0f2fe; color: #0284c7;">
+            <div class="notif-card p-3 h-100" style="border-color:rgba(2,132,199,.35);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="notif-kpi-label">Total notificaciones</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #e0f2fe; color: #0284c7;">
                         <i class="fas fa-bell"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" id="stat-total" style="color: #001A29;">{{ $totales['total'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Registradas en tu cuenta</small>
+                <div class="notif-kpi-value" id="stat-total" style="color:#0284c7;">{{ $totales['total'] }}</div>
+                <div class="notif-kpi-subtitle">Registradas en tu cuenta</div>
             </div>
         </div>
 
         <div class="col-12 col-md-4">
-            <div class="notif-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">No Leídas</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: #fee2e2; color: #dc2626;">
+            <div class="notif-card p-3 h-100" style="border-color:rgba(220,38,38,.35);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="notif-kpi-label">No leídas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #fee2e2; color: #dc2626;">
                         <i class="fas fa-envelope"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" id="stat-no-leidas" style="color: #dc2626;">{{ $totales['no_leidas'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Pendientes por revisar</small>
+                <div class="notif-kpi-value" id="stat-no-leidas" style="color:#dc2626;">{{ $totales['no_leidas'] }}</div>
+                <div class="notif-kpi-subtitle">Pendientes por revisar</div>
             </div>
         </div>
 
         <div class="col-12 col-md-4">
-            <div class="notif-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">Leídas</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: #dcfce7; color: #16a34a;">
+            <div class="notif-card p-3 h-100" style="border-color:rgba(22,163,74,.35);">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="notif-kpi-label">Leídas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #dcfce7; color: #16a34a;">
                         <i class="fas fa-envelope-open"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" id="stat-leidas" style="color: #16a34a;">{{ $totales['leidas'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Atendidas en el sistema</small>
+                <div class="notif-kpi-value" id="stat-leidas" style="color:#16a34a;">{{ $totales['leidas'] }}</div>
+                <div class="notif-kpi-subtitle">Atendidas en el sistema</div>
             </div>
         </div>
     </div>

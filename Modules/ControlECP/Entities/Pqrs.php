@@ -13,7 +13,7 @@ class Pqrs extends Model
     use SoftDeletes;
 
     protected $table = 'controlecp_pqrs';
-    protected $primaryKey = 'id_pqrs';
+    protected $primaryKey = 'id';
 
     protected $fillable = [
         'radicado',
@@ -31,6 +31,29 @@ class Pqrs extends Model
     ];
 
     public const ESTADOS = ['Pendiente', 'En trámite', 'Resuelto', 'Cerrado'];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Pqrs $pqrs): void {
+            $aprendiz = User::find($pqrs->id_usuario_aprendiz);
+
+            if ($aprendiz) {
+                $pqrs->nombre_solicitante ??= $aprendiz->nickname ?: $aprendiz->email;
+                $pqrs->email ??= $aprendiz->email;
+            }
+
+            $pqrs->mensaje ??= $pqrs->descripcion;
+
+            if ($pqrs->id_tipo_pqrs) {
+                $pqrs->tipo ??= TipoPqrs::find($pqrs->id_tipo_pqrs)?->nombre;
+            }
+        });
+    }
+
+    public function getIdPqrsAttribute(): int
+    {
+        return (int) $this->attributes['id'];
+    }
 
     /**
      * Relación: Tipo de PQR.
@@ -61,7 +84,7 @@ class Pqrs extends Model
      */
     public function respuestas(): HasMany
     {
-        return $this->hasMany(PqrsRespuesta::class, 'id_pqrs', 'id_pqrs');
+        return $this->hasMany(PqrsRespuesta::class, 'id_pqrs', 'id');
     }
 
     /**
@@ -69,7 +92,7 @@ class Pqrs extends Model
      */
     public function historial(): HasMany
     {
-        return $this->hasMany(PqrsHistorial::class, 'id_pqrs', 'id_pqrs');
+        return $this->hasMany(PqrsHistorial::class, 'id_pqrs', 'id');
     }
 
     /**
@@ -81,7 +104,7 @@ class Pqrs extends Model
         $prefijo = "ECP-PQR-{$anio}-";
         $ultimo  = static::withTrashed()
             ->where('radicado', 'like', $prefijo . '%')
-            ->orderBy('id_pqrs', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
 
         if ($ultimo) {

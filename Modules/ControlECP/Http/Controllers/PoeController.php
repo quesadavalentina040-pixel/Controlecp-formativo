@@ -29,11 +29,11 @@ class PoeController extends Controller // Controlador de consulta y gestión del
     {
         $usuario = Auth::user(); // Auth::user() devuelve el usuario autenticado o null si no hay sesión.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Comprueba sesión y rol; si alguno falta, devuelve una redirección de acceso denegado.
-            return redirect() // route() crea la URL nombrada y with() guarda un mensaje temporal para la siguiente página.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // route() crea la URL nombrada y with() guarda un mensaje temporal para la siguiente página.
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a la gestión del POE.');
         }
-        return null; // null indica que la comprobación pasó y se puede continuar.
+        return /* Indica que no hay informaci�n para devolver. */ null; // null indica que la comprobación pasó y se puede continuar.
     }
 
     /**
@@ -42,7 +42,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
     public function index(Request $request) // index(): Consulta y presenta POE y sus datos relacionados; se usa al abrir el repositorio administrativo.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Detiene la acción y devuelve la redirección si el usuario no es administrador.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $buscar = $request->input('buscar'); // input() lee el término opcional de búsqueda enviado por el formulario.
@@ -61,7 +61,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
             ->orderBy('id_poe_programacion', 'desc') // orderBy() ordena por identificador descendente, mostrando primero las más recientes.
             ->get(); // get() ejecuta la consulta y obtiene todos los resultados.
 
-        return view('controlecp::administrador.repositorio.poe', compact( // Renderiza la vista; compact() empaqueta las variables anteriores usando sus nombres.
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.repositorio.poe', compact( // Renderiza la vista; compact() empaqueta las variables anteriores usando sus nombres.
             'poes',
             'lideres',
             'buscar',
@@ -78,18 +78,18 @@ class PoeController extends Controller // Controlador de consulta y gestión del
     public function store(PoeRequest $request) // store(): Valida y crea un POE; se usa al enviar el formulario de registro.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Si el usuario no tiene permisos, devuelve inmediatamente la respuesta de acceso.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         try {
             $archivo = $request->file('archivo'); // file() extrae el archivo subido desde la solicitud validada.
             $poe = $this->poeService->crearPoe($request->validated(), $archivo, Auth::user()); // validated() entrega solo campos aprobados; el servicio crea el POE con archivo y usuario actual.
 
-            return redirect() // Si el registro terminó bien, vuelve al listado y muestra un mensaje temporal.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Si el registro terminó bien, vuelve al listado y muestra un mensaje temporal.
                 ->route('controlecp.administrador.repositorio.poe.index')
                 ->with('success', "¡POE {$poe->codigo} subido exitosamente con versión inicial 1.0!");
         } catch (\Throwable $e) {
-            return redirect() // Captura cualquier error, conserva lo enviado y muestra la causa en el formulario anterior.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Captura cualquier error, conserva lo enviado y muestra la causa en el formulario anterior.
                 ->back()
                 ->withInput()
                 ->with('error', 'Error al guardar el POE: ' . $e->getMessage());
@@ -105,7 +105,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
         $usuario = Auth::user(); // Recupera la cuenta autenticada para verificar permisos y registrar quién hace el cambio.
 
         if (!$usuario->hasRole('controlecp.admin') && $poe->id_usuario != $usuario->id) { // Permitir si es Admin o si es el líder asignado al POE | Solo permite continuar al administrador o al usuario asignado como responsable del POE.
-            return redirect() // Redirige a la página principal con un aviso si no cumple ninguna de las dos condiciones.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Redirige a la página principal con un aviso si no cumple ninguna de las dos condiciones.
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para subir una versión de este POE.');
         }
@@ -114,11 +114,11 @@ class PoeController extends Controller // Controlador de consulta y gestión del
             $archivo = $request->file('archivo'); // Obtiene el documento nuevo que llegó en la solicitud.
             $nuevaVersion = $this->poeService->subirNuevaVersion($poe, $request->validated(), $archivo, $usuario); // El servicio valida y registra la versión vinculada al POE y al usuario actual.
 
-            return redirect() // Regresa al repositorio y confirma qué versión se creó.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Regresa al repositorio y confirma qué versión se creó.
                 ->route('controlecp.administrador.repositorio.poe.index')
                 ->with('success', "¡Nueva versión {$nuevaVersion->numero_version} del POE {$poe->codigo} registrada exitosamente!");
         } catch (\Throwable $e) {
-            return redirect() // En caso de error, vuelve al formulario conservando los campos enviados y muestra el motivo.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // En caso de error, vuelve al formulario conservando los campos enviados y muestra el motivo.
                 ->back()
                 ->withInput()
                 ->with('error', 'Error al subir la nueva versión: ' . $e->getMessage());
@@ -133,7 +133,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
         $version = PoeVersion::with('poe')->findOrFail($idVersion); // Carga la versión y su POE relacionado; findOrFail devuelve 404 si el identificador no existe.
 
         if ($version->formato === 'Word' || str_ends_with(strtolower($version->archivo), '.docx') || str_ends_with(strtolower($version->archivo), '.doc')) { // Detecta documentos Word por formato o extensión, pues el navegador no puede previsualizarlos aquí.
-            return redirect() // Dirige al listado y explica que el archivo debe descargarse.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Dirige al listado y explica que el archivo debe descargarse.
                 ->route('controlecp.administrador.repositorio.poe.index')
                 ->with('warning', 'Los archivos de Word no pueden previsualizarse en el navegador. Por favor utiliza el botón de descarga.');
         }
@@ -143,7 +143,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
         }
 
         $path = Storage::disk('public')->path($version->archivo); // Convierte la ruta relativa del almacenamiento público en una ruta local del servidor.
-        return response()->file($path, [ // Envía el archivo como respuesta HTTP e indica al navegador que presente el PDF en línea.
+        return /* Devuelve una respuesta HTTP con su contenido y estado. */ response()->file($path, [ // Envía el archivo como respuesta HTTP e indica al navegador que presente el PDF en línea.
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="' . $version->poe->codigo . '_v' . $version->numero_version . '.pdf"',
         ]);
@@ -163,7 +163,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
         $ext = pathinfo($version->archivo, PATHINFO_EXTENSION) ?: ($version->formato === 'Word' ? 'docx' : 'pdf'); // Extrae la extensión original o elige una predeterminada según el formato registrado.
         $nombreDescarga = "{$version->poe->codigo}_v{$version->numero_version}.{$ext}"; // Construye un nombre reconocible con el código del POE y el número de versión.
 
-        return Storage::disk('public')->download($version->archivo, $nombreDescarga); // download() responde con el archivo y el nombre sugerido al navegador.
+        return /* Devuelve el resultado de este m�todo. */ Storage::disk('public')->download($version->archivo, $nombreDescarga); // download() responde con el archivo y el nombre sugerido al navegador.
     }
 
     /**
@@ -177,7 +177,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
             ->orderBy('id_poe_version', 'desc')
             ->get() // get() ejecuta la consulta; map() transforma cada resultado en los campos que necesita la interfaz.
             ->map(function ($v) {
-                return [ // Entrega datos de versión y rutas nombradas para consultar o descargar cada archivo.
+                return /* Devuelve el resultado de este m�todo. */ [ // Entrega datos de versión y rutas nombradas para consultar o descargar cada archivo.
                     'id_poe_version' => $v->id_poe_version,
                     'numero_version' => $v->numero_version,
                     'fecha'          => $v->fecha ? $v->fecha->format('d/m/Y H:i') : '',
@@ -190,7 +190,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
                 ];
             });
 
-        return response()->json([ // Serializa el POE y la colección transformada como respuesta JSON.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Serializa el POE y la colección transformada como respuesta JSON.
             'poe'       => $poe,
             'versiones' => $versiones,
         ]);
@@ -205,7 +205,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
         $datos = $this->poeService->obtenerHistorialLideres($poe); // El servicio reúne los períodos de liderazgo y las versiones vinculadas.
 
         $periodos = $datos['historial']->map(function ($h) { // map() convierte cada período a datos legibles; las fechas nulas indican vigencia actual.
-            return [ // Prepara un arreglo con responsable, fechas y marca de asignación vigente.
+            return /* Devuelve el resultado de este m�todo. */ [ // Prepara un arreglo con responsable, fechas y marca de asignación vigente.
                 'id_usuario'   => $h->id_usuario,
                 'nombre_lider' => $h->usuario ? $this->poeService->nombreCompletoUsuario($h->usuario) : 'N/A',
                 'fecha_inicio' => $h->fecha_inicio ? $h->fecha_inicio->format('d/m/Y') : '',
@@ -215,7 +215,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
         });
 
         $versiones = $datos['versiones']->map(function ($v) { // Convierte el historial de versiones a la estructura que consume la interfaz.
-            return [ // Conserva los datos relevantes y presenta valores alternos si falta usuario o fecha.
+            return /* Devuelve el resultado de este m�todo. */ [ // Conserva los datos relevantes y presenta valores alternos si falta usuario o fecha.
                 'id_usuario'     => $v->id_usuario,
                 'numero_version' => $v->numero_version,
                 'fecha'          => $v->fecha ? $v->fecha->format('d/m/Y H:i') : '',
@@ -225,7 +225,7 @@ class PoeController extends Controller // Controlador de consulta y gestión del
             ];
         });
 
-        return response()->json([ // Devuelve en JSON el POE, sus períodos de liderazgo y las versiones relacionadas.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve en JSON el POE, sus períodos de liderazgo y las versiones relacionadas.
             'poe'       => $poe,
             'lideres'   => $periodos,
             'versiones' => $versiones,

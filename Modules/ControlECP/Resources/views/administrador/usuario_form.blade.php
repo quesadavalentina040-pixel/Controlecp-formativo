@@ -53,7 +53,7 @@
     }
 @endphp
 
-<div class="container-fluid px-2 px-md-3 py-2">
+<div class="container-fluid px-3 py-3">
 
     {{-- Breadcrumb --}}
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
@@ -144,7 +144,8 @@
                             </label>
                             <input type="text" class="form-control @error('document_number') is-invalid @enderror"
                                    name="document_number" value="{{ old('document_number') }}"
-                                   placeholder="Ej: 1012345678" required>
+                                   placeholder="Ej: 1012345678" inputmode="numeric" pattern="[0-9]{10}"
+                                   minlength="10" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)" required>
                             @error('document_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -165,7 +166,8 @@
                             <input type="text" class="form-control @error('first_name') is-invalid @enderror"
                                    name="first_name"
                                    value="{{ old('first_name', $person ? $person->first_name : '') }}"
-                                   placeholder="Ej: JUAN" required>
+                                   placeholder="Ej: JUAN" pattern="[\p{L} ]+" title="Solo se permiten letras y espacios"
+                                   required>
                             @error('first_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -177,7 +179,8 @@
                             <input type="text" class="form-control @error('first_last_name') is-invalid @enderror"
                                    name="first_last_name"
                                    value="{{ old('first_last_name', $person ? $person->first_last_name : '') }}"
-                                   placeholder="Ej: PÉREZ" required>
+                                   placeholder="Ej: PÉREZ" pattern="[\p{L} ]+" title="Solo se permiten letras y espacios"
+                                   required>
                             @error('first_last_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -187,7 +190,7 @@
                             <input type="text" class="form-control"
                                    name="second_last_name"
                                    value="{{ old('second_last_name', $person ? $person->second_last_name : '') }}"
-                                   placeholder="Ej: GÓMEZ">
+                                   placeholder="Ej: GÓMEZ" pattern="[\p{L} ]+" title="Solo se permiten letras y espacios">
                         </div>
 
                         {{-- Teléfono --}}
@@ -196,7 +199,10 @@
                             <input type="text" class="form-control"
                                    name="telephone"
                                    value="{{ old('telephone', $person ? $person->telephone1 : '') }}"
-                                   placeholder="Ej: 3001234567">
+                                   placeholder="Ej: 3001234567" inputmode="numeric" pattern="[0-9]{10}"
+                                   minlength="10" maxlength="10"
+                                   oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)"
+                                   title="El teléfono debe tener exactamente 10 números">
                         </div>
 
                         {{-- Correo --}}
@@ -207,7 +213,7 @@
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                    name="email"
                                    value="{{ old('email', $isEdit ? $editUser->email : '') }}"
-                                   placeholder="usuario@misena.edu.co" required>
+                                   placeholder="usuario@misena.edu.co" maxlength="150" required>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -233,7 +239,8 @@
                                 <input type="text" class="form-control @error('nickname') is-invalid @enderror"
                                        name="nickname"
                                        value="{{ old('nickname', $isEdit ? $editUser->nickname : '') }}"
-                                       placeholder="Ej: juan.perez" required>
+                                       placeholder="Ej: juanperez" pattern="[A-Za-z0-9]+" title="Solo se permiten letras y números"
+                                       required>
                                 @error('nickname')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -254,6 +261,8 @@
                                 <input type="password" class="form-control @error('password') is-invalid @enderror"
                                        id="inputPassword" name="password"
                                        placeholder="{{ $isEdit ? 'Nueva contraseña (opcional)' : 'Mínimo 6 caracteres' }}"
+                                       minlength="6" pattern="(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]+"
+                                       title="Debe contener letras y números, sin caracteres especiales"
                                        {{ !$isEdit ? 'required' : '' }}>
                                 <button type="button" class="btn btn-outline-secondary" onclick="togglePass()">
                                     <i class="fas fa-eye" id="iconEye"></i>

@@ -16,12 +16,6 @@
         --gris-ecp-borde: #e2e8f0;
     }
 
-    /* Contenedor general */
-    .historia-container {
-        max-width: 1320px;
-        margin: 0 auto;
-    }
-
     .historia-header {
         background: var(--petroleo-ecp);
         border: none;
@@ -356,7 +350,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-3 py-3 historia-container">
+<div class="container-fluid px-3 py-3">
 
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090;">
         @if(session('success'))

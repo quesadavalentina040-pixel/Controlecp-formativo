@@ -28,12 +28,12 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
     {
         $usuario = Auth::user(); // Obtiene la cuenta autenticada para revisar su rol.
         if (! $usuario || ! $usuario->hasRole('controlecp.admin')) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index') // Envía al inicio del módulo si no hay permiso.
                 ->with('error', 'No tienes permisos para acceder a la tabulación de encuestas.'); // Prepara un aviso para la siguiente página.
         }
 
-        return null; // Indica que el acceso está autorizado.
+        return /* Indica que no hay informaci�n para devolver. */ null; // Indica que el acceso está autorizado.
     }
 
     /**
@@ -42,7 +42,7 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
     public function index(Request $request) // index(): Valida filtros y muestra resultados de la encuesta seleccionada; se usa al abrir la tabulación.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Comprueba permisos antes de consultar resultados.
-            return $res; // Devuelve la redirección de acceso denegado si corresponde.
+            return /* Devuelve el resultado de este m�todo. */ $res; // Devuelve la redirección de acceso denegado si corresponde.
         }
 
         $encuestas = $this->tabulacionService->obtenerEncuestasDisponibles(); // Pide al servicio las encuestas que pueden tabularse.
@@ -70,7 +70,7 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
             $resultados = $this->tabulacionService->calcularResultados($encuestaActual->id_encuesta, $filtros); // Calcula los totales y detalles aplicando los filtros.
         }
 
-        return view('controlecp::administrador.repositorio.tabulacion', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.repositorio.tabulacion', compact(
             'encuestas',
             'encuestaActual',
             'filtrosDisponibles',
@@ -84,7 +84,7 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
     public function datos(Request $request) // datos(): Calcula y devuelve resultados y filtros en JSON; se usa en las actualizaciones AJAX de la tabulación.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Revisa el permiso antes de entregar información por AJAX.
-            return response()->json(['error' => 'No autorizado'], 403); // Devuelve JSON con estado HTTP 403 cuando no está autorizado.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['error' => 'No autorizado'], 403); // Devuelve JSON con estado HTTP 403 cuando no está autorizado.
         }
 
         $encuestas = $this->tabulacionService->obtenerEncuestasDisponibles(); // Obtiene la lista que servirá para validar el identificador.
@@ -96,7 +96,7 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
         $filtros = $this->validarFiltros($request, $filtrosDisponibles); // Acepta únicamente fechas, actividades y fichas permitidas.
         $resultados = $this->tabulacionService->calcularResultados($idEncuesta, $filtros); // Calcula la información para la encuesta seleccionada.
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'resultados' => $resultados,
             'filtros_disponibles' => $filtrosDisponibles,
         ]); // Entrega los datos en JSON para que la interfaz actualice la página.
@@ -108,7 +108,7 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
     public function exportarPdf(Request $request) // exportarPdf(): Genera el informe PDF con filtros activos; se usa al solicitar la descarga del reporte.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Bloquea la exportación si el usuario no es administrador.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $encuestas = $this->tabulacionService->obtenerEncuestasDisponibles(); // Recupera encuestas válidas para comprobar el filtro.
@@ -124,7 +124,7 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
         $encuesta = $resultados['encuesta']; // Separa la encuesta para pasarla a la plantilla PDF.
 
         if ($resultados['consolidado']['total_respuestas'] === 0) { // Evita descargar un informe sin respuestas. | Si no hay respuestas registradas
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->back()
                 ->with('warning', 'No es posible exportar el informe porque la encuesta no tiene respuestas registradas con los filtros seleccionados.'); // Regresa con una advertencia visible.
         }
@@ -157,12 +157,12 @@ class TabulacionController extends Controller // Controlador de consulta, filtra
 
         $pdf->setPaper('a4', 'portrait'); // Configura tamaño A4 y orientación vertical. | Configuración de página A4 con márgenes adecuados
 
-        return $pdf->download($nombreDescarga); // Envía el PDF como descarga con el nombre construido.
+        return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $pdf->download($nombreDescarga); // Envía el PDF como descarga con el nombre construido.
     }
 
     private function validarFiltros(Request $request, array $filtrosDisponibles): array // validarFiltros(): Valida fechas, actividad y ficha contra opciones disponibles; se usa antes de calcular o exportar resultados.
     {
-        return $request->validate([ // Valida los filtros y devuelve solo los campos que cumplen las reglas.
+        return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $request->validate([ // Valida los filtros y devuelve solo los campos que cumplen las reglas.
             'fecha_desde' => ['nullable', 'date'],
             'fecha_hasta' => ['nullable', 'date', 'after_or_equal:fecha_desde'],
             'id_actividad' => [

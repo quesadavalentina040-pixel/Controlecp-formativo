@@ -29,7 +29,7 @@ class PqrsHistorial extends Model
      */
     public function pqrs(): BelongsTo
     {
-        return $this->belongsTo(Pqrs::class, 'id_pqrs', 'id_pqrs');
+        return $this->belongsTo(Pqrs::class, 'id_pqrs', 'id');
     }
 
     /**

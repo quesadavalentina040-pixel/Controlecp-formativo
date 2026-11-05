@@ -24,12 +24,12 @@ class InventarioController extends Controller
         $usuario = Auth::user();
 
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos de Administrador para gestionar el inventario de Control ECP.');
         }
 
-        return null;
+        return /* Indica que no hay informaci�n para devolver. */ null;
     }
 
     /**
@@ -38,7 +38,7 @@ class InventarioController extends Controller
     public function index(Request $request)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $query = Inventario::with(['categoria', 'fotos']);
@@ -113,7 +113,7 @@ class InventarioController extends Controller
         $amarilloCount = 0;
         $rojoCount = 0;
 
-        foreach ($todosActivos as $item) {
+        foreach ($todosActivos as $item) { /* Recorre uno por uno los elementos de esta lista. */
             $sem = $item->semaforo;
             if ($sem === 'verde') $verdeCount++;
             elseif ($sem === 'amarillo') { $amarilloCount++; $stockBajoCount++; }
@@ -126,15 +126,15 @@ class InventarioController extends Controller
             ->get()
             ->filter(function ($entrega) {
                 if (!$entrega->inventario || $entrega->inventario->estado === 'Inactivo') {
-                    return false;
+                    return /* Indica si la operaci�n fue exitosa o no. */ false;
                 }
                 $devueltas = $entrega->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad');
-                return $devueltas > 0 && $devueltas < $entrega->cantidad;
+                return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $devueltas > 0 && $devueltas < $entrega->cantidad;
             })
             ->map(function ($entrega) {
                 $devueltas = $entrega->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad');
                 $faltante = $entrega->cantidad - $devueltas;
-                return (object) [
+                return /* Devuelve el resultado de este m�todo. */ (object) [
                     'id_movimiento_inventario' => $entrega->id_movimiento_inventario,
                     'id_inventario'            => $entrega->id_inventario,
                     'inventario'               => $entrega->inventario,
@@ -168,7 +168,7 @@ class InventarioController extends Controller
         $usuariosIds = MovimientoInventario::select('id_usuario')->distinct()->pluck('id_usuario');
         $reporteUsuarios = \App\Models\User::whereIn('id', $usuariosIds)->get();
 
-        return view('controlecp::administrador.inventario', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario', compact(
             'recursos',
             'categorias',
             'todasCategorias',
@@ -213,11 +213,11 @@ class InventarioController extends Controller
         // HU 11-12: 1. Préstamos / Entregas Pendientes (Lo que NO está / Falta por entregar o devolver)
         $movimientosPendientes = $movs->where('tipo', 'Entrega')->filter(function ($m) {
             $devueltas = $m->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad');
-            return $devueltas < $m->cantidad;
+            return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $devueltas < $m->cantidad;
         })->map(function ($ep) {
             $devueltas = $ep->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad');
             $saldo = $ep->cantidad - $devueltas;
-            return [
+            return /* Devuelve el resultado de este m�todo. */ [
                 'id'                 => $ep->id_movimiento_inventario,
                 'fecha'              => $ep->fecha ? $ep->fecha->format('d/m/Y H:i') : '',
                 'cantidad_prestada'  => $ep->cantidad,
@@ -232,9 +232,9 @@ class InventarioController extends Controller
 
         // HU 11-12: 2. Entradas y Devoluciones (Lo que SÍ está en inventario o ya se devolvió)
         $movimientosDevueltos = $movs->filter(function ($m) {
-            return $m->tipo !== 'Entrega' || ($m->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') >= $m->cantidad);
+            return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $m->tipo !== 'Entrega' || ($m->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') >= $m->cantidad);
         })->map(function ($m) {
-            return [
+            return /* Devuelve el resultado de este m�todo. */ [
                 'id'          => $m->id_movimiento_inventario,
                 'fecha'       => $m->fecha ? $m->fecha->format('d/m/Y H:i') : '',
                 'tipo'        => $m->tipo,
@@ -251,7 +251,7 @@ class InventarioController extends Controller
             ->limit(20)
             ->get()
             ->map(function ($n) {
-                return [
+                return /* Devuelve el resultado de este m�todo. */ [
                     'id'          => $n->id_recurso_novedad,
                     'fecha'       => $n->fecha ? $n->fecha->format('d/m/Y H:i') : '',
                     'descripcion' => $n->descripcion,
@@ -259,7 +259,7 @@ class InventarioController extends Controller
                 ];
             });
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'id_inventario'          => $recurso->id_inventario,
             'nombre'                 => $recurso->nombre,
             'categoria'              => $recurso->categoria ? $recurso->categoria->nombre : 'Sin categoría',
@@ -297,12 +297,12 @@ class InventarioController extends Controller
     public function create()
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $categorias = CategoriaInventario::activas()->orderBy('nombre')->get();
 
-        return view('controlecp::administrador.inventario_create', compact('categorias'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario_create', compact('categorias'));
     }
 
     /**
@@ -312,7 +312,7 @@ class InventarioController extends Controller
     public function store(Request $request)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $categoriaId = $request->input('id_categoria_inventario');
@@ -326,7 +326,7 @@ class InventarioController extends Controller
                 ->exists();
 
             if ($repetido) {
-                return back()
+                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()
                     ->withInput()
                     ->with('error', "¡ALERTA!: Ya existe un recurso con el nombre '{$nombreRecurso}' en la categoría seleccionada. No se permiten recursos duplicados en la misma categoría.");
             }
@@ -383,7 +383,7 @@ class InventarioController extends Controller
 
             // Guardar fotos en storage
             if ($request->hasFile('fotos')) {
-                foreach ($request->file('fotos') as $fotoFile) {
+                foreach ($request->file('fotos') as $fotoFile) { /* Recorre uno por uno los elementos de esta lista. */
                     $nombreArchivo = 'rec_' . $recurso->id_inventario . '_' . uniqid() . '.' . $fotoFile->getClientOriginalExtension();
                     $ruta = $fotoFile->storeAs('inventario/recursos', $nombreArchivo, 'public');
 
@@ -409,12 +409,12 @@ class InventarioController extends Controller
             DB::commit();
 
             // HU 1: Notificación de guardado exitoso y redirección al listado principal de inventario
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.inventario')
                 ->with('success', "¡Recurso '{$recurso->nombre}' guardado exitosamente!");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Error al guardar el recurso: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()->with('error', 'Error al guardar el recurso: ' . $e->getMessage());
         }
     }
 
@@ -425,7 +425,7 @@ class InventarioController extends Controller
     public function show($id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $recurso = Inventario::with([
@@ -442,17 +442,17 @@ class InventarioController extends Controller
         // 1. Entregas pendientes (lo que NO está o falta por devolver)
         $movimientosPendientes = $recurso->movimientos->where('tipo', 'Entrega')->filter(function ($m) {
             $devueltas = $m->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad');
-            return $devueltas < $m->cantidad;
+            return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $devueltas < $m->cantidad;
         });
 
         // 2. Entradas y Devoluciones (lo que SÍ está o ya se devolvió)
         $movimientosDevueltos = $recurso->movimientos->filter(function ($m) {
-            return $m->tipo !== 'Entrega' || ($m->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') >= $m->cantidad);
+            return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $m->tipo !== 'Entrega' || ($m->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') >= $m->cantidad);
         });
 
         $entregasPendientes = $movimientosPendientes;
 
-        return view('controlecp::administrador.inventario_show', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario_show', compact(
             'recurso',
             'movimientosPendientes',
             'movimientosDevueltos',
@@ -466,13 +466,13 @@ class InventarioController extends Controller
     public function edit($id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $recurso = Inventario::with(['fotos', 'categoria'])->findOrFail($id);
         $categorias = CategoriaInventario::activas()->orderBy('nombre')->get();
 
-        return view('controlecp::administrador.inventario_edit', compact('recurso', 'categorias'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario_edit', compact('recurso', 'categorias'));
     }
 
     /**
@@ -482,7 +482,7 @@ class InventarioController extends Controller
     public function update(Request $request, $id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $recurso = Inventario::findOrFail($id);
@@ -498,7 +498,7 @@ class InventarioController extends Controller
                 ->exists();
 
             if ($repetido) {
-                return back()
+                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()
                     ->withInput()
                     ->with('error', "¡ALERTA!: Ya existe otro recurso con el nombre '{$nombreRecurso}' en la categoría seleccionada. No se permiten nombres repetidos.");
             }
@@ -554,14 +554,14 @@ class InventarioController extends Controller
             $fotosSubidas = $request->file('fotos') ?? $request->file('fotos_nuevas');
             if (!empty($fotosSubidas) && count($fotosSubidas) > 0) {
                 // Eliminar fotos previas del storage y de la base de datos
-                foreach ($recurso->fotos as $fotoVieja) {
+                foreach ($recurso->fotos as $fotoVieja) { /* Recorre uno por uno los elementos de esta lista. */
                     $rutaRelativa = str_replace('storage/', '', $fotoVieja->ruta);
                     Storage::disk('public')->delete($rutaRelativa);
                     $fotoVieja->delete();
                 }
 
                 // Guardar las nuevas fotos cargadas
-                foreach ($fotosSubidas as $fotoFile) {
+                foreach ($fotosSubidas as $fotoFile) { /* Recorre uno por uno los elementos de esta lista. */
                     $nombreArchivo = 'rec_' . $recurso->id_inventario . '_' . uniqid() . '.' . $fotoFile->getClientOriginalExtension();
                     $ruta = $fotoFile->storeAs('inventario/recursos', $nombreArchivo, 'public');
 
@@ -589,12 +589,12 @@ class InventarioController extends Controller
             DB::commit();
 
             // HU 7: Quedarse en la vista principal donde están todos los recursos con confirmación exitosa
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.inventario')
                 ->with('success', "Recurso '{$recurso->nombre}' editado exitosamente.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Error al actualizar el recurso: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()->with('error', 'Error al actualizar el recurso: ' . $e->getMessage());
         }
     }
 
@@ -604,7 +604,7 @@ class InventarioController extends Controller
     public function storeNovedad(Request $request, $id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $request->validate([
@@ -620,7 +620,7 @@ class InventarioController extends Controller
             'fecha'         => now(),
         ]);
 
-        return back()->with('success', 'Novedad registrada con fecha y autor.');
+        return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', 'Novedad registrada con fecha y autor.');
     }
 
     /**
@@ -630,7 +630,7 @@ class InventarioController extends Controller
     public function registrarEntrega(Request $request, $id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $recurso = Inventario::findOrFail($id);
@@ -676,10 +676,10 @@ class InventarioController extends Controller
 
             DB::commit();
 
-            return back()->with('success', "Entrega de {$validated['cantidad']} unidad(es) registrada correctamente.");
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "Entrega de {$validated['cantidad']} unidad(es) registrada correctamente.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al registrar entrega: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'Error al registrar entrega: ' . $e->getMessage());
         }
     }
 
@@ -691,7 +691,7 @@ class InventarioController extends Controller
     public function registrarDevolucion(Request $request, $id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $recurso = Inventario::findOrFail($id);
@@ -727,7 +727,7 @@ class InventarioController extends Controller
                     ->orderBy('fecha', 'asc')
                     ->get()
                     ->first(function ($e) {
-                        return $e->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') < $e->cantidad;
+                        return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $e->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') < $e->cantidad;
                     });
                 if ($entregaMasAntigua) {
                     $entregaId = $entregaMasAntigua->id_movimiento_inventario;
@@ -777,17 +777,17 @@ class InventarioController extends Controller
             DB::commit();
 
             if ($alertaIncompleta) {
-                return back()->with('error', '¡ALERTA AUTOMÁTICA!: La devolución está incompleta. Se ha registrado la novedad y la alerta para el Administrador.');
+                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', '¡ALERTA AUTOMÁTICA!: La devolución está incompleta. Se ha registrado la novedad y la alerta para el Administrador.');
             }
 
             if ($entregaSaldada) {
-                return back()->with('success', "¡Devolución completada exitosamente! Se saldaron todas las unidades prestadas y la alerta ha sido retirada automáticamente.");
+                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "¡Devolución completada exitosamente! Se saldaron todas las unidades prestadas y la alerta ha sido retirada automáticamente.");
             }
 
-            return back()->with('success', "Devolución de {$cantidadDevuelta} unidad(es) registrada exitosamente.");
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "Devolución de {$cantidadDevuelta} unidad(es) registrada exitosamente.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al registrar devolución: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'Error al registrar devolución: ' . $e->getMessage());
         }
     }
 
@@ -799,7 +799,7 @@ class InventarioController extends Controller
     public function darDeBaja(Request $request, $id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $validated = $request->validate([
@@ -812,7 +812,7 @@ class InventarioController extends Controller
         // Validar si tiene asignaciones pendientes en cronograma o asesorías activas
         $asignacionesFuturas = $recurso->cronogramaRecursos()->count() + $recurso->asesoriaRecursos()->count();
         if ($asignacionesFuturas > 0 && $recurso->cantidad_disponible < $recurso->cantidad_total) {
-            return back()->with('error', 'No es posible dar de baja este recurso porque tiene unidades asignadas o pendientes de devolución en actividades/asesorías.');
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'No es posible dar de baja este recurso porque tiene unidades asignadas o pendientes de devolución en actividades/asesorías.');
         }
 
         DB::beginTransaction();
@@ -839,12 +839,12 @@ class InventarioController extends Controller
 
             DB::commit();
 
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.inventario')
                 ->with('success', "El recurso '{$recurso->nombre}' ha sido dado de baja correctamente.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al dar de baja el recurso: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'Error al dar de baja el recurso: ' . $e->getMessage());
         }
     }
 
@@ -855,7 +855,7 @@ class InventarioController extends Controller
     public function movimientos(Request $request)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $query = MovimientoInventario::with(['inventario.categoria', 'usuario', 'movimientosHijos', 'movimientoOrigen'])->orderBy('fecha', 'desc');
@@ -910,11 +910,11 @@ class InventarioController extends Controller
 
         $prestamosPendientes = $entregasQuery->get()->filter(function ($entrega) {
             $devueltas = $entrega->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad');
-            return $devueltas < $entrega->cantidad;
+            return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $devueltas < $entrega->cantidad;
         })->map(function ($entrega) {
             $devueltas = $entrega->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad');
             $saldo = $entrega->cantidad - $devueltas;
-            return (object) [
+            return /* Devuelve el resultado de este m�todo. */ (object) [
                 'id'                 => $entrega->id_movimiento_inventario,
                 'id_inventario'      => $entrega->id_inventario,
                 'inventario'         => $entrega->inventario,
@@ -952,7 +952,7 @@ class InventarioController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        return view('controlecp::administrador.inventario_movimientos', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario_movimientos', compact(
             'movimientos',
             'prestamosPendientes',
             'devolucionesIncompletasCount',
@@ -973,18 +973,18 @@ class InventarioController extends Controller
     public function categorias()
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $categorias = CategoriaInventario::withCount('inventarios')->orderBy('nombre')->get();
 
-        return view('controlecp::administrador.inventario_categorias', compact('categorias'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario_categorias', compact('categorias'));
     }
 
     public function categoriaStore(Request $request)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $request->validate([
@@ -998,13 +998,13 @@ class InventarioController extends Controller
             'estado' => 'Activo',
         ]);
 
-        return back()->with('success', 'Categoría creada exitosamente.');
+        return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', 'Categoría creada exitosamente.');
     }
 
     public function categoriaUpdate(Request $request, $id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $categoria = CategoriaInventario::findOrFail($id);
@@ -1019,20 +1019,20 @@ class InventarioController extends Controller
             'estado' => $request->input('estado'),
         ]);
 
-        return back()->with('success', 'Categoría actualizada correctamente.');
+        return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', 'Categoría actualizada correctamente.');
     }
 
     public function categoriaToggle($id)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $categoria = CategoriaInventario::findOrFail($id);
         $categoria->estado = $categoria->estado === 'Activo' ? 'Inactivo' : 'Activo';
         $categoria->save();
 
-        return back()->with('success', "Categoría {$categoria->nombre} actualizada a estado {$categoria->estado}.");
+        return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "Categoría {$categoria->nombre} actualizada a estado {$categoria->estado}.");
     }
 
     /**
@@ -1041,7 +1041,7 @@ class InventarioController extends Controller
     public function reporte(Request $request)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $query = Inventario::with('categoria');
@@ -1069,7 +1069,7 @@ class InventarioController extends Controller
 
         // Semáforo
         $verdeCount = 0; $amarilloCount = 0; $rojoCount = 0;
-        foreach ($recursos as $r) {
+        foreach ($recursos as $r) { /* Recorre uno por uno los elementos de esta lista. */
             $sem = $r->semaforo;
             if ($sem === 'verde') $verdeCount++;
             elseif ($sem === 'amarillo') $amarilloCount++;
@@ -1119,7 +1119,7 @@ class InventarioController extends Controller
         $usuariosIds = MovimientoInventario::select('id_usuario')->distinct()->pluck('id_usuario');
         $usuarios = \App\Models\User::whereIn('id', $usuariosIds)->get();
 
-        return view('controlecp::administrador.inventario_reporte', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario_reporte', compact(
             'recursos',
             'categorias',
             'categoriasLabels',
@@ -1151,7 +1151,7 @@ class InventarioController extends Controller
     public function eliminarFoto($idFoto)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $foto = RecursoFoto::findOrFail($idFoto);
@@ -1159,7 +1159,7 @@ class InventarioController extends Controller
 
         // Validar que no se quede sin al menos 1 foto si el recurso sigue activo (Criterio 1 y 2)
         if ($recurso->fotos()->count() <= 1) {
-            return back()->with('error', 'El recurso debe conservar al menos una fotografía.');
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'El recurso debe conservar al menos una fotografía.');
         }
 
         // Eliminar del almacenamiento físico si existe
@@ -1168,7 +1168,7 @@ class InventarioController extends Controller
 
         $foto->delete();
 
-        return back()->with('success', 'Fotografía eliminada correctamente.');
+        return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', 'Fotografía eliminada correctamente.');
     }
 
     /**
@@ -1186,7 +1186,7 @@ class InventarioController extends Controller
         $recurso = Inventario::with('categoria')->findOrFail($request->id_inventario);
 
         if ($recurso->estado === 'Inactivo') {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'disponible'          => false,
                 'mensaje'             => "El recurso '{$recurso->nombre}' está dado de baja (Inactivo).",
                 'cantidad_disponible' => 0,
@@ -1194,14 +1194,14 @@ class InventarioController extends Controller
         }
 
         if ($recurso->cantidad_disponible <= 0) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'disponible'          => false,
                 'mensaje'             => "El recurso '{$recurso->nombre}' se encuentra agotado (0 unidades disponibles).",
                 'cantidad_disponible' => 0,
             ]);
         }
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'disponible'          => true,
             'mensaje'             => "El recurso '{$recurso->nombre}' está disponible en la fecha y hora seleccionadas. ({$recurso->cantidad_disponible} unidad(es) libres). No hay cruces en el horario seleccionado.",
             'cantidad_disponible' => $recurso->cantidad_disponible,
@@ -1216,7 +1216,7 @@ class InventarioController extends Controller
     public function registrarMovimientoRapido(Request $request)
     {
         if ($redirect = $this->verificarAccesoAdmin()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $validated = $request->validate([
@@ -1245,7 +1245,7 @@ class InventarioController extends Controller
 
             if ($tipoNormalizado === 'Entrega') {
                 if ($recurso->cantidad_disponible < $validated['cantidad']) {
-                    return back()->with('error', "No puedes entregar más de la cantidad disponible ({$recurso->cantidad_disponible}). El stock no puede quedar en negativo.");
+                    return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', "No puedes entregar más de la cantidad disponible ({$recurso->cantidad_disponible}). El stock no puede quedar en negativo.");
                 }
 
                 $recurso->cantidad_disponible -= $validated['cantidad'];
@@ -1269,7 +1269,7 @@ class InventarioController extends Controller
                 ]);
 
                 DB::commit();
-                return back()->with('success', "Movimiento registrado: La entrega de {$validated['cantidad']} unidad(es) se ha guardado correctamente.");
+                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "Movimiento registrado: La entrega de {$validated['cantidad']} unidad(es) se ha guardado correctamente.");
             } else {
                 // Devolución
                 $entregaOrigenId = $request->input('id_movimiento_entrega');
@@ -1279,7 +1279,7 @@ class InventarioController extends Controller
                         ->orderBy('fecha', 'asc')
                         ->get()
                         ->first(function ($e) {
-                            return $e->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') < $e->cantidad;
+                            return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $e->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') < $e->cantidad;
                         });
                     if ($entregaPend) {
                         $entregaOrigenId = $entregaPend->id_movimiento_inventario;
@@ -1328,18 +1328,18 @@ class InventarioController extends Controller
                 DB::commit();
 
                 if ($alertaIncompleta) {
-                    return back()->with('error', '¡ALERTA AUTOMÁTICA!: La devolución está incompleta. Se ha registrado la novedad y la alerta para el Administrador.');
+                    return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', '¡ALERTA AUTOMÁTICA!: La devolución está incompleta. Se ha registrado la novedad y la alerta para el Administrador.');
                 }
 
                 if ($entregaSaldada) {
-                    return back()->with('success', "¡Devolución completada! Se saldaron las unidades prestadas y la alerta se ha retirado automáticamente.");
+                    return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "¡Devolución completada! Se saldaron las unidades prestadas y la alerta se ha retirado automáticamente.");
                 }
 
-                return back()->with('success', "Movimiento registrado: La devolución de {$validated['cantidad']} unidad(es) se ha guardado correctamente.");
+                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "Movimiento registrado: La devolución de {$validated['cantidad']} unidad(es) se ha guardado correctamente.");
             }
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al procesar el movimiento: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'Error al procesar el movimiento: ' . $e->getMessage());
         }
     }
 }

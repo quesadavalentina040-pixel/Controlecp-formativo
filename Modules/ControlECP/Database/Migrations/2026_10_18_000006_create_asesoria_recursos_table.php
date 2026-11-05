@@ -12,14 +12,39 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('asesoria_recursos', function (Blueprint $table) {
-            $table->id('id_asesoria_recurso');
-            $table->unsignedBigInteger('id_asesoria')->nullable(); // Nullable según requerimiento
-            $table->unsignedBigInteger('id_inventario');
-            $table->integer('cantidad')->default(1);
-            $table->timestamps();
+        if (!Schema::hasTable('asesoria_recursos')) {
+            Schema::create('asesoria_recursos', function (Blueprint $table) {
+                $table->id('id_asesoria_recurso');
+                $table->unsignedBigInteger('id_asesoria')->nullable();
+                $table->unsignedBigInteger('id_inventario');
+                $table->integer('cantidad')->default(1);
+                $table->timestamps();
 
-            // Llave foránea hacia inventario
+                $table->foreign('id_inventario')
+                    ->references('id_inventario')
+                    ->on('inventario')
+                    ->onDelete('cascade');
+            });
+
+            return;
+        }
+
+        Schema::table('asesoria_recursos', function (Blueprint $table) {
+            if (!Schema::hasColumn('asesoria_recursos', 'created_at')) {
+                $table->timestamp('created_at')->nullable();
+            }
+            if (!Schema::hasColumn('asesoria_recursos', 'updated_at')) {
+                $table->timestamp('updated_at')->nullable();
+            }
+
+            $table->dropForeign('asesoria_recursos_id_asesoria_foreign');
+            $table->unsignedBigInteger('id_asesoria')->nullable()->change();
+            $table->foreign('id_asesoria')
+                ->references('id_asesoria')
+                ->on('asesorias')
+                ->onDelete('cascade');
+
+            $table->dropForeign('asesoria_recursos_id_inventario_foreign');
             $table->foreign('id_inventario')
                 ->references('id_inventario')
                 ->on('inventario')

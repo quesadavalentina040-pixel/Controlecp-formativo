@@ -22,11 +22,11 @@ class EncuestaController extends Controller // Controlador de administración de
     {
         $usuario = Auth::user(); // Auth::user() obtiene el usuario que inició sesión; si no hay sesión, devuelve null.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Comprueba que exista usuario y tenga el rol de administrador de Control ECP.
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index') // route() crea la redirección usando el nombre de ruta, no una URL escrita manualmente.
                 ->with('error', 'No tienes permisos para acceder a la gestión de Encuestas.'); // with() guarda un mensaje temporal para mostrarlo tras redirigir.
         }
-        return null; // null indica que el usuario sí tiene acceso y la acción puede continuar.
+        return /* Indica que no hay informaci�n para devolver. */ null; // null indica que el usuario sí tiene acceso y la acción puede continuar.
     }
 
     /**
@@ -35,7 +35,7 @@ class EncuestaController extends Controller // Controlador de administración de
     public function index(Request $request) // index(): Consulta encuestas, filtros, indicadores y actividades; se usa al abrir el repositorio administrativo. | Request $request es la petición HTTP inyectada por Laravel; permite leer filtros enviados en la URL o el formulario.
     {
         if ($res = $this->verificarAccesoAdmin()) {
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $query = Encuesta::with(['actividades', 'preguntas.opciones']) // $query es el constructor de consulta Eloquent; with() carga relaciones junto con cada encuesta.
@@ -66,7 +66,7 @@ class EncuestaController extends Controller // Controlador de administración de
 
         $actividadesDisponibles = Actividad::orderBy('numero', 'asc')->get(); // Ordena actividades por número ascendente y get() obtiene todos los resultados. | Catálogo de actividades formativas para asociar en modal
 
-        return view('controlecp::administrador.repositorio.encuesta', compact('encuestas', 'indicadores', 'actividadesDisponibles')); // view() renderiza Blade; compact() prepara variables con esos nombres para la vista.
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.repositorio.encuesta', compact('encuestas', 'indicadores', 'actividadesDisponibles')); // view() renderiza Blade; compact() prepara variables con esos nombres para la vista.
     }
 
     /**
@@ -75,7 +75,7 @@ class EncuestaController extends Controller // Controlador de administración de
     public function store(EncuestaRequest $request) // store(): Valida y crea una encuesta junto con sus asociaciones; se usa al enviar el formulario de alta. | EncuestaRequest extiende Request y aplica sus reglas de validación antes de entrar a este método.
     {
         if ($res = $this->verificarAccesoAdmin()) {
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         DB::beginTransaction(); // Inicia una transacción: los cambios se confirman juntos o se deshacen juntos.
@@ -97,13 +97,13 @@ class EncuestaController extends Controller // Controlador de administración de
 
             DB::commit(); // Confirma y persiste todos los cambios de la transacción.
 
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.repositorio.encuesta.index', ['abrir' => $encuesta->id_encuesta]) // Redirige al listado y envía el ID para abrir el detalle de la nueva encuesta.
                 ->with('success', 'La encuesta "' . $encuesta->nombre . '" fue creada en estado Borrador. Ahora puedes agregar sus preguntas.'); // with() adjunta un aviso temporal de éxito.
 
         } catch (\Exception $e) {
             DB::rollBack(); // Si algo falla, revierte todos los cambios hechos desde beginTransaction().
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->back()
                 ->withInput() // Conserva los valores del formulario para que no haya que escribirlos de nuevo.
                 ->with('error', 'Ocurrió un error al crear la encuesta: ' . $e->getMessage()); // Muestra el mensaje de error devuelto por la excepción.
@@ -116,14 +116,14 @@ class EncuestaController extends Controller // Controlador de administración de
     public function show($id) // show(): Carga el detalle y capacidades de una encuesta en JSON; se usa para la consulta modal o AJAX. | $id es el identificador de encuesta recibido desde el parámetro de la ruta.
     {
         if ($res = $this->verificarAccesoAdmin()) {
-            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado'], 403);
         }
 
         $encuesta = Encuesta::with(['actividades', 'preguntas.opciones']) // with() carga actividades, preguntas y opciones relacionadas.
             ->withCount(['preguntas', 'actividades']) // Añade los conteos de relaciones al modelo consultado.
             ->findOrFail($id); // Busca por clave primaria; si no existe, Laravel responde con error 404.
 
-        return response()->json([ // Convierte el arreglo en respuesta JSON para el navegador o una llamada AJAX.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Convierte el arreglo en respuesta JSON para el navegador o una llamada AJAX.
             'success'                   => true,
             'encuesta'                  => $encuesta,
             'tiene_respuestas'          => $encuesta->tieneRespuestas(),
@@ -139,7 +139,7 @@ class EncuestaController extends Controller // Controlador de administración de
     public function update(EncuestaRequest $request, $id) // update(): Actualiza los datos y actividades vinculadas; se usa al guardar la edición de una encuesta. | Request $request contiene los datos nuevos; $id indica la encuesta que se va a editar.
     {
         if ($res = $this->verificarAccesoAdmin()) {
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $encuesta = Encuesta::findOrFail($id); // Recupera la encuesta por ID o detiene la solicitud con error 404.
@@ -175,13 +175,13 @@ class EncuestaController extends Controller // Controlador de administración de
                 $mensaje .= ' (Nota: las preguntas y opciones no pueden ser modificadas porque ya existen respuestas de aprendices).';
             }
 
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.repositorio.encuesta.index') // Vuelve a la página del listado de encuestas.
                 ->with('success', $mensaje); // Entrega el mensaje temporal para mostrarlo en la siguiente página.
 
         } catch (\Exception $e) {
             DB::rollBack(); // Revierte toda la transacción si ocurrió una excepción durante la actualización.
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->back()
                 ->withInput() // Devuelve al formulario conservando los valores ingresados.
                 ->with('error', 'Error al actualizar la encuesta: ' . $e->getMessage()); // Muestra el motivo de la excepción.
@@ -196,9 +196,9 @@ class EncuestaController extends Controller // Controlador de administración de
     {
         if ($res = $this->verificarAccesoAdmin()) {
             if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado'], 403);
             }
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $encuesta = Encuesta::withCount('preguntas')->findOrFail($id); // Cuenta preguntas sin cargarlas y busca la encuesta; falla con 404 si no existe.
@@ -206,19 +206,19 @@ class EncuestaController extends Controller // Controlador de administración de
         if ($encuesta->preguntas_count === 0) { // Bloquea la activación cuando withCount encontró cero preguntas. | Validación HU-009: al menos 1 pregunta
             $mensaje = 'No es posible activar la encuesta "' . $encuesta->nombre . '" porque no contiene ninguna pregunta registrada. Agrega al menos una pregunta antes de activarla.';
             if ($request->wantsJson()) { // wantsJson() detecta si quien llama espera respuesta JSON, por ejemplo una solicitud AJAX.
-                return response()->json(['success' => false, 'message' => $mensaje], 422);
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => $mensaje], 422);
             }
-            return redirect()->back()->with('error', $mensaje); // Para formularios normales, regresa a la página anterior con el error.
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ redirect()->back()->with('error', $mensaje); // Para formularios normales, regresa a la página anterior con el error.
         }
 
         $encuesta->update(['estado' => 'Activa']); // update() cambia el estado en la base de datos.
 
         $mensaje = '¡La encuesta "' . $encuesta->nombre . '" ha sido activada exitosamente y ya puede ser vinculada a actividades!';
         if ($request->wantsJson()) { // Devuelve JSON si el cliente lo solicitó.
-            return response()->json(['success' => true, 'message' => $mensaje]);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => true, 'message' => $mensaje]);
         }
 
-        return redirect()->route('controlecp.administrador.repositorio.encuesta.index')->with('success', $mensaje); // Si es formulario, redirige al listado y envía el aviso de éxito.
+        return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.repositorio.encuesta.index')->with('success', $mensaje); // Si es formulario, redirige al listado y envía el aviso de éxito.
     }
 
     /**
@@ -229,9 +229,9 @@ class EncuestaController extends Controller // Controlador de administración de
     {
         if ($res = $this->verificarAccesoAdmin()) {
             if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado'], 403);
             }
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $encuesta = Encuesta::findOrFail($id); // Busca la encuesta indicada y devuelve 404 si el ID no corresponde a una.
@@ -241,19 +241,19 @@ class EncuestaController extends Controller // Controlador de administración de
             $mensaje = "No es posible desactivar la encuesta '{$encuesta->nombre}' porque está vinculada a la(s) actividad(es): [{$actividades}], la(s) cual(es) tienen sesiones pendientes o en proceso en el cronograma.";
 
             if ($request->wantsJson()) { // Elige respuesta JSON cuando la petición proviene de AJAX/API.
-                return response()->json(['success' => false, 'message' => $mensaje], 422);
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => $mensaje], 422);
             }
-            return redirect()->back()->with('error', $mensaje); // En navegación normal, vuelve al formulario con el mensaje.
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ redirect()->back()->with('error', $mensaje); // En navegación normal, vuelve al formulario con el mensaje.
         }
 
         $encuesta->update(['estado' => 'Inactiva']); // Guarda el cambio de estado sin borrar preguntas ni respuestas.
 
         $mensaje = 'La encuesta "' . $encuesta->nombre . '" fue desactivada (Inactiva). Sus preguntas y respuestas históricas se conservan intactas.';
         if ($request->wantsJson()) { // Responde en JSON para llamadas asíncronas.
-            return response()->json(['success' => true, 'message' => $mensaje]);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => true, 'message' => $mensaje]);
         }
 
-        return redirect()->route('controlecp.administrador.repositorio.encuesta.index')->with('success', $mensaje); // Para formulario, regresa al listado con confirmación.
+        return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.repositorio.encuesta.index')->with('success', $mensaje); // Para formulario, regresa al listado con confirmación.
     }
 
     /**
@@ -264,13 +264,13 @@ class EncuestaController extends Controller // Controlador de administración de
     {
         $usuario = Auth::user(); // Lee quién está conectado para validar permisos de esta solicitud.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Rechaza la operación si no hay sesión o no tiene rol administrativo.
-            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado'], 403);
         }
 
         $encuesta = Encuesta::findOrFail($id); // Busca el registro de encuesta; findOrFail detiene con 404 si no existe.
 
         if ($encuesta->tieneRespuestas()) { // Revisa mediante el modelo si cambiar preguntas alteraría una encuesta ya respondida. | Regla HU-009: Bloquear si ya tiene respuestas
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Esta encuesta ya tiene respuestas registradas de aprendices. Por integridad metodológica, no se pueden agregar nuevas preguntas.',
             ], 422);
@@ -288,7 +288,7 @@ class EncuestaController extends Controller // Controlador de administración de
         ]);
 
         if ($validator->fails()) { // fails() devuelve true si uno o más valores no cumplen las reglas.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(), // errors() obtiene errores de validación y first() selecciona el primero.
             ], 422);
@@ -302,7 +302,7 @@ class EncuestaController extends Controller // Controlador de administración de
         };
 
         if (!$tipoNormalizado) { // null significa que el texto recibido no coincidió con ningún tipo permitido.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'El tipo de pregunta no es válido. Debe ser Opcion_multiple, Escala o Texto.',
             ], 422);
@@ -311,7 +311,7 @@ class EncuestaController extends Controller // Controlador de administración de
         if ($tipoNormalizado === 'Opcion_multiple') { // Las preguntas de opción múltiple requieren opciones para que se puedan responder. | Validación específica para Opcion_multiple: mínimo 2 opciones
             $opcionesLimpias = array_values(array_filter(array_map('trim', $request->input('opciones', [])))); // input() lee opciones; trim limpia; array_map aplica a cada una; array_filter quita vacías; array_values reindexa.
             if (count($opcionesLimpias) < 2) { // count() cuenta las opciones útiles y exige como mínimo dos.
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => false,
                     'message' => 'Las preguntas de opción múltiple deben incluir al menos 2 opciones de respuesta.',
                 ], 422);
@@ -333,7 +333,7 @@ class EncuestaController extends Controller // Controlador de administración de
 
             if ($tipoNormalizado === 'Opcion_multiple') { // Solo guarda opciones cuando la pregunta es de selección múltiple.
                 $opcionesLimpias = array_values(array_filter(array_map('trim', $request->input('opciones', [])))); // Lee, limpia, elimina vacías y reindexa las opciones recibidas.
-                foreach ($opcionesLimpias as $index => $textoOpcion) { // Recorre las opciones; index indica la posición actual.
+                foreach ($opcionesLimpias as $index => $textoOpcion) { /* Recorre uno por uno los elementos de esta lista. */ // Recorre las opciones; index indica la posición actual.
                     OpcionPregunta::create([ // Inserta una fila de opción asociada a la pregunta nueva.
                         'id_pregunta' => $pregunta->id_pregunta,
                         'texto'       => $textoOpcion,
@@ -346,7 +346,7 @@ class EncuestaController extends Controller // Controlador de administración de
 
             $pregunta->load('opciones'); // load() consulta y adjunta la relación opciones para incluirla en la respuesta.
 
-            return response()->json([ // Devuelve al navegador los datos de la pregunta que acaba de crearse.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve al navegador los datos de la pregunta que acaba de crearse.
                 'success'         => true,
                 'message'         => 'Pregunta agregada exitosamente.',
                 'pregunta'        => $pregunta,
@@ -355,7 +355,7 @@ class EncuestaController extends Controller // Controlador de administración de
 
         } catch (\Exception $e) {
             DB::rollBack(); // Deshace la pregunta y las opciones si alguna instrucción produjo una excepción.
-            return response()->json([ // Informa del fallo al cliente en formato JSON.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Informa del fallo al cliente en formato JSON.
                 'success' => false,
                 'message' => 'Error al guardar la pregunta: ' . $e->getMessage(),
             ], 500);
@@ -369,13 +369,13 @@ class EncuestaController extends Controller // Controlador de administración de
     {
         $usuario = Auth::user(); // Obtiene el usuario autenticado para autorizar la edición.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Comprueba sesión y rol; sin ambos, no permite editar.
-            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado'], 403);
         }
 
         $encuesta = Encuesta::findOrFail($encuestaId); // Busca la encuesta dueña de la pregunta; devuelve 404 si no existe.
 
         if ($encuesta->tieneRespuestas()) { // Impide editar preguntas cuando ya hay respuestas que dependen de su contenido. | Bloquear si la encuesta ya tiene respuestas
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No se puede editar la pregunta porque la encuesta ya tiene respuestas registradas de aprendices.',
             ], 422);
@@ -393,7 +393,7 @@ class EncuestaController extends Controller // Controlador de administración de
         ]);
 
         if ($validator->fails()) { // Comprueba si hay errores antes de procesar los datos.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => $validator->errors()->first(), // Devuelve el primer mensaje de validación que falló.
             ], 422);
@@ -407,7 +407,7 @@ class EncuestaController extends Controller // Controlador de administración de
         };
 
         if (!$tipoNormalizado) { // Rechaza tipos distintos de Opcion_multiple, Escala o Texto.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'El tipo de pregunta no es válido.',
             ], 422);
@@ -416,7 +416,7 @@ class EncuestaController extends Controller // Controlador de administración de
         if ($tipoNormalizado === 'Opcion_multiple') { // Aplica la regla de opciones solo para preguntas de selección.
             $opcionesLimpias = array_values(array_filter(array_map('trim', $request->input('opciones', [])))); // Obtiene la lista; limpia sus elementos y elimina valores vacíos.
             if (count($opcionesLimpias) < 2) { // count() comprueba que hayan quedado al menos dos opciones válidas.
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => false,
                     'message' => 'Las preguntas de opción múltiple deben tener al menos 2 opciones.',
                 ], 422);
@@ -436,7 +436,7 @@ class EncuestaController extends Controller // Controlador de administración de
             OpcionPregunta::where('id_pregunta', $pregunta->id_pregunta)->delete(); // where() selecciona las opciones de esta pregunta y delete() las elimina antes de recrearlas. | Re-sincronizar opciones
             if ($tipoNormalizado === 'Opcion_multiple') { // Las opciones solo existen para preguntas de selección múltiple.
                 $opcionesLimpias = array_values(array_filter(array_map('trim', $request->input('opciones', [])))); // Lee, limpia y descarta opciones vacías enviadas.
-                foreach ($opcionesLimpias as $index => $textoOpcion) { // Recorre las opciones para guardarlas en su orden actual.
+                foreach ($opcionesLimpias as $index => $textoOpcion) { /* Recorre uno por uno los elementos de esta lista. */ // Recorre las opciones para guardarlas en su orden actual.
                     OpcionPregunta::create([ // Inserta cada opción con vínculo a la pregunta.
                         'id_pregunta' => $pregunta->id_pregunta,
                         'texto'       => $textoOpcion,
@@ -448,7 +448,7 @@ class EncuestaController extends Controller // Controlador de administración de
             DB::commit(); // Hace permanentes los cambios de pregunta y opciones.
             $pregunta->load('opciones'); // Carga la relación recién guardada para devolverla en el JSON.
 
-            return response()->json([ // Responde al navegador con éxito y los datos actualizados.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Responde al navegador con éxito y los datos actualizados.
                 'success'  => true,
                 'message'  => 'Pregunta actualizada correctamente.',
                 'pregunta' => $pregunta,
@@ -456,7 +456,7 @@ class EncuestaController extends Controller // Controlador de administración de
 
         } catch (\Exception $e) {
             DB::rollBack(); // Deshace los cambios si falló cualquier paso de la actualización.
-            return response()->json([ // Devuelve un error JSON al cliente.
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve un error JSON al cliente.
                 'success' => false,
                 'message' => 'Error al actualizar la pregunta: ' . $e->getMessage(),
             ], 500);
@@ -470,13 +470,13 @@ class EncuestaController extends Controller // Controlador de administración de
     {
         $usuario = Auth::user(); // Obtiene la identidad de la sesión actual.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Solo continúa si la sesión pertenece a un administrador.
-            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado'], 403);
         }
 
         $encuesta = Encuesta::findOrFail($encuestaId); // Localiza la encuesta solicitada o genera respuesta 404.
 
         if ($encuesta->tieneRespuestas()) { // Conserva la integridad de resultados evitando borrar una pregunta ya respondida.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No se puede eliminar la pregunta porque la encuesta ya tiene respuestas asociadas de aprendices.',
             ], 422);
@@ -489,12 +489,12 @@ class EncuestaController extends Controller // Controlador de administración de
             $pregunta->delete(); // Elimina la pregunta; las opciones relacionadas dependen de la regla de borrado de la base de datos.
 
             $restantes = $encuesta->preguntas()->orderBy('orden', 'asc')->get(); // preguntas() obtiene solo preguntas de esta encuesta; orderBy() ordena ascendente; get() ejecuta la consulta. | Reindexar el orden de las preguntas restantes
-            foreach ($restantes as $pos => $preg) { // Recorre el resultado; pos es la posición empezando en cero.
+            foreach ($restantes as $pos => $preg) { /* Recorre uno por uno los elementos de esta lista. */ // Recorre el resultado; pos es la posición empezando en cero.
                 $preg->update(['orden' => $pos + 1]); // Guarda una posición consecutiva que empieza en uno.
             }
         });
 
-        return response()->json([ // Devuelve confirmación y el nuevo total de preguntas.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve confirmación y el nuevo total de preguntas.
             'success'         => true,
             'message'         => 'Pregunta eliminada correctamente.',
             'total_preguntas' => $encuesta->preguntas()->count(), // count() cuenta en la base de datos las preguntas que quedan.
@@ -508,13 +508,13 @@ class EncuestaController extends Controller // Controlador de administración de
     {
         $usuario = Auth::user(); // Obtiene quién envió la solicitud de reordenamiento.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Verifica que tenga una sesión válida y rol administrador.
-            return response()->json(['success' => false, 'message' => 'No autorizado'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado'], 403);
         }
 
         $encuesta = Encuesta::findOrFail($id); // Recupera la encuesta que contiene las preguntas que se moverán.
 
         if ($encuesta->tieneRespuestas()) { // No permite cambiar orden después de responder para mantener el contexto de resultados.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No se pueden reordenar las preguntas porque la encuesta ya tiene respuestas registradas de aprendices.',
             ], 422);
@@ -522,18 +522,18 @@ class EncuestaController extends Controller // Controlador de administración de
 
         $ids = $request->input('ids', []); // input() lee la lista ordenada de IDs; [] se usa si el cliente no envió el campo.
         if (empty($ids)) { // Detecta una lista ausente o vacía y evita ejecutar actualizaciones sin elementos.
-            return response()->json(['success' => false, 'message' => 'No se enviaron identificadores de preguntas.'], 422);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No se enviaron identificadores de preguntas.'], 422);
         }
 
         DB::transaction(function () use ($ids, $encuesta) { // Agrupa cambios de orden; si uno falla, Laravel revierte todos.
-            foreach ($ids as $posicion => $preguntaId) { // Recorre los IDs en el orden que envió la interfaz.
+            foreach ($ids as $posicion => $preguntaId) { /* Recorre uno por uno los elementos de esta lista. */ // Recorre los IDs en el orden que envió la interfaz.
                 Pregunta::where('id_encuesta', $encuesta->id_encuesta) // where() limita la consulta a la encuesta actual.
                     ->where('id_pregunta', $preguntaId) // Agrega una segunda condición AND para seleccionar una pregunta específica.
                     ->update(['orden' => $posicion + 1]); // update() asigna a esa pregunta la posición consecutiva empezando en uno.
             }
         });
 
-        return response()->json([ // Confirma en JSON que el orden nuevo quedó guardado.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Confirma en JSON que el orden nuevo quedó guardado.
             'success' => true,
             'message' => 'Orden de preguntas actualizado correctamente.',
         ]);

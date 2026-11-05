@@ -26,7 +26,7 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return redirect()->route('controlecp.index')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a Actividades de Control ECP.');
         }
 
@@ -47,10 +47,11 @@ class ActividadController extends Controller
             'inactivas'   => ActividadEcp::where('estado', 'Inactivo')->count(),
             'finalizadas' => ActividadEcp::where('estado', 'Finalizado')->count(),
             'momentos'    => $momentos->count(),
+            'actividades_momentos' => $momentos->sum('actividades_count'),
             'fichas'      => Course::where('status', 'Activo')->count(),
         ];
 
-        return view('controlecp::administrador.actividades', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.actividades', compact(
             'momentos', 'encuestasActivas', 'stats'
         ));
     }
@@ -63,7 +64,7 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         // HU2 — Validar campos obligatorios
@@ -73,18 +74,16 @@ class ActividadController extends Controller
             'objetivo'    => 'required|string',
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
-            'id_encuesta'  => 'required|exists:encuestas,id_encuesta',
         ], [
             'momento_id.required'  => 'Debes seleccionar un momento.',
             'nombre.required'      => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'    => 'El objetivo pedagógico es obligatorio.',
             'duracion.required'    => 'La duración es obligatoria.',
             'duracion_min.required'=> 'La duración en minutos es obligatoria.',
-            'id_encuesta.required' => 'Debes seleccionar una encuesta activa.',
         ]);
 
         if (!Momento::whereKey($request->momento_id)->where('estado', 'Activo')->exists()) {
-            return response()->json(['success' => false, 'message' => 'Debes seleccionar un momento activo.'], 422);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Debes seleccionar un momento activo.'], 422);
         }
 
         // HU2 — Nombre no repetido en el mismo momento
@@ -92,22 +91,10 @@ class ActividadController extends Controller
             ->whereRaw('LOWER(TRIM(nombre)) = ?', [mb_strtolower(trim($request->nombre))])
             ->exists();
         if ($existe) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Ya existe una actividad con ese nombre en el momento seleccionado.',
                 'field'   => 'nombre',
-            ], 422);
-        }
-
-        // HU7/HU8 — La encuesta es un componente obligatorio.
-        $encuesta = Encuesta::where('id_encuesta', $request->id_encuesta)
-            ->where('estado', 'Activa')
-            ->first();
-        if (!$encuesta) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Primero cree y active una encuesta en el repositorio antes de asociarla a esta actividad.',
-                'field'   => 'id_encuesta',
             ], 422);
         }
 
@@ -127,11 +114,11 @@ class ActividadController extends Controller
             'metodologia'      => trim($request->metodologia ?? ''),
             'estado'           => 'Activo',
             'tiene_asistencia' => true,
-            'id_encuesta'      => $encuesta->id_encuesta,
+            'id_encuesta'      => null,
             'tiene_evidencia'  => true,
         ]);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success'   => true,
             'message'   => "La actividad \"{$actividad->nombre}\" fue registrada exitosamente con estado Activo.",
             'actividad' => $this->formatActividad($actividad->load('momento', 'encuesta')),
@@ -146,7 +133,7 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $actividad = ActividadEcp::findOrFail($id);
@@ -157,16 +144,14 @@ class ActividadController extends Controller
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
             'momento_id'  => 'required|exists:controlecp_momentos,id',
-            'id_encuesta'  => 'required|exists:encuestas,id_encuesta',
         ], [
             'nombre.required'  => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'=> 'El objetivo pedagógico es obligatorio.',
-            'id_encuesta.required' => 'Debes seleccionar una encuesta activa.',
         ]);
 
         $momentoId = (int) $request->momento_id;
         if (!Momento::whereKey($momentoId)->where('estado', 'Activo')->exists()) {
-            return response()->json(['success' => false, 'message' => 'Debes seleccionar un momento activo.'], 422);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Debes seleccionar un momento activo.'], 422);
         }
 
         // HU2 — Nombre no repetido en el mismo momento (excluye la propia actividad)
@@ -175,46 +160,61 @@ class ActividadController extends Controller
             ->where('id', '!=', $id)
             ->exists();
         if ($existe) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Ya existe otra actividad con ese nombre en el mismo momento.',
                 'field'   => 'nombre',
             ], 422);
         }
 
+        $actividad->update([
+            'momento_id'       => $momentoId,
+            'nombre'           => trim($request->nombre),
+            'descripcion'      => $request->has('descripcion')
+                ? trim($request->descripcion)
+                : $actividad->descripcion,
+            'objetivo'         => trim($request->objetivo),
+            'duracion'         => $request->duracion,
+            'duracion_min'     => (int) $request->duracion_min,
+            'metodologia'      => $request->has('metodologia')
+                ? trim($request->metodologia)
+                : $actividad->metodologia,
+            'tiene_asistencia' => true,
+            'id_encuesta'      => $actividad->id_encuesta,
+            'tiene_evidencia'  => true,
+        ]);
+
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
+            'success'   => true,
+            'message'   => "La actividad \"{$actividad->nombre}\" fue actualizada correctamente.",
+            'actividad' => $this->formatActividad($actividad->fresh()->load('momento', 'encuesta')),
+        ]);
+    }
+
+    public function asignarEncuesta(Request $request, $id)
+    {
+        $usuario = Auth::user();
+        if (!$usuario->hasRole('controlecp.admin')) {
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+        }
+
+        $request->validate([
+            'id_encuesta' => 'required|exists:encuestas,id_encuesta',
+        ]);
+
         $encuesta = Encuesta::where('id_encuesta', $request->id_encuesta)
             ->where('estado', 'Activa')
             ->first();
         if (!$encuesta) {
-            return response()->json(['success' => false, 'message' => 'La encuesta seleccionada debe estar activa.'], 422);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'La encuesta seleccionada no está activa.'], 422);
         }
 
-        if ((int) $encuesta->id_encuesta !== (int) $actividad->id_encuesta
-            && Schema::hasTable('respuestas_encuesta')
-            && DB::table('respuestas_encuesta')->where('actividad_id', $actividad->id)->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No puedes cambiar la encuesta porque la actividad ya tiene respuestas registradas.',
-            ], 422);
-        }
+        $actividad = ActividadEcp::findOrFail($id);
+        $actividad->update(['id_encuesta' => $encuesta->id_encuesta]);
 
-        $actividad->update([
-            'momento_id'       => $momentoId,
-            'nombre'           => trim($request->nombre),
-            'descripcion'      => trim($request->descripcion ?? ''),
-            'objetivo'         => trim($request->objetivo),
-            'duracion'         => $request->duracion,
-            'duracion_min'     => (int) $request->duracion_min,
-            'metodologia'      => trim($request->metodologia ?? ''),
-            'tiene_asistencia' => true,
-            'id_encuesta'      => $encuesta->id_encuesta,
-            'tiene_evidencia'  => true,
-        ]);
-
-        return response()->json([
-            'success'   => true,
-            'message'   => "La actividad \"{$actividad->nombre}\" fue actualizada correctamente.",
-            'actividad' => $this->formatActividad($actividad->fresh()->load('momento', 'encuesta')),
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
+            'success' => true,
+            'message' => 'Encuesta asociada correctamente a la actividad.',
         ]);
     }
 
@@ -226,7 +226,7 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $actividad = ActividadEcp::with('momento')->findOrFail($id);
@@ -237,7 +237,7 @@ class ActividadController extends Controller
             ->firstOrFail();
 
         if ($actividad->momento_id == $nuevoMomentoId) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'La actividad ya pertenece a ese momento.',
             ], 422);
@@ -253,7 +253,7 @@ class ActividadController extends Controller
             'numero'     => $numero,
         ]);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "La actividad fue movida de \"{$momentoAnterior}\" a \"{$nuevoMomento->nombre}\" y los contadores fueron actualizados.",
         ]);
@@ -267,7 +267,7 @@ class ActividadController extends Controller
     {
         $actividad = ActividadEcp::with(['momento', 'encuesta'])->findOrFail($id);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success'          => true,
             'actividad_id'     => $actividad->id,
             'actividad_nombre' => $actividad->nombre,
@@ -306,16 +306,16 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $actividad = ActividadEcp::findOrFail($id);
 
         if ($actividad->estado === 'Inactivo') {
-            return response()->json(['success' => false, 'message' => 'La actividad ya está inactiva.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'La actividad ya está inactiva.']);
         }
         if ($actividad->estado === 'Finalizado') {
-            return response()->json(['success' => false, 'message' => 'Una actividad finalizada no se puede desactivar directamente.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Una actividad finalizada no se puede desactivar directamente.']);
         }
 
         // HU11 — No desactivar si tiene sesiones pendientes o en proceso.
@@ -324,7 +324,7 @@ class ActividadController extends Controller
             ->whereIn('estado', ['Pendiente', 'En proceso'])
             ->count();
         if ($programacionesPendientes > 0) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => "No se puede desactivar \"{$actividad->nombre}\": tiene {$programacionesPendientes} programación(es) pendiente(s) o en proceso.",
             ]);
@@ -333,7 +333,7 @@ class ActividadController extends Controller
         $actividad->estado = 'Inactivo';
         $actividad->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "La actividad \"{$actividad->nombre}\" fue desactivada y retirada de las opciones activas. Su información y registros históricos se conservan.",
         ]);
@@ -347,19 +347,19 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $actividad = ActividadEcp::findOrFail($id);
 
         if ($actividad->estado === 'Activo') {
-            return response()->json(['success' => false, 'message' => 'La actividad ya está activa.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'La actividad ya está activa.']);
         }
 
         $actividad->estado = 'Activo';
         $actividad->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "La actividad \"{$actividad->nombre}\" fue reactivada y está disponible para programar.",
         ]);
@@ -373,16 +373,16 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $actividad = ActividadEcp::findOrFail($id);
 
         if ($actividad->estado === 'Finalizado') {
-            return response()->json(['success' => false, 'message' => 'La actividad ya está finalizada.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'La actividad ya está finalizada.']);
         }
         if ($actividad->estado === 'Inactivo') {
-            return response()->json(['success' => false, 'message' => 'No puedes finalizar una actividad inactiva. Actívala primero.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No puedes finalizar una actividad inactiva. Actívala primero.']);
         }
 
         // HU14 — Verificar asistencia registrada (si el componente asistencia está activo)
@@ -394,7 +394,7 @@ class ActividadController extends Controller
                     ->where('cronograma.id_actividad', $id)
                     ->exists();
             if (!$tieneAsistencia) {
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => false,
                     'message' => "No se puede finalizar \"{$actividad->nombre}\": primero debe tener asistencia registrada.",
                     'tipo'    => 'sin_asistencia',
@@ -419,7 +419,7 @@ class ActividadController extends Controller
             $mensaje .= " La encuesta asociada está disponible para los aprendices.";
         }
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success'              => true,
             'message'              => $mensaje,
             'encuesta_habilitada'  => $encuestaHabilitada,
@@ -434,13 +434,13 @@ class ActividadController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $actividad = ActividadEcp::findOrFail($id);
 
         if (!$actividad->tiene_evidencia) {
-            return response()->json(['success' => false, 'message' => 'Esta actividad no tiene habilitado el componente de evidencia.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Esta actividad no tiene habilitado el componente de evidencia.']);
         }
 
         $tipo = $request->input('tipo'); // 'foto' o 'video'
@@ -469,6 +469,7 @@ class ActividadController extends Controller
                 'tipo'           => 'foto',
                 'archivo'        => $path,
                 'descripcion'    => $request->input('descripcion', ''),
+                'fecha_registro' => now(),
             ]);
 
         } elseif ($tipo === 'video') {
@@ -487,17 +488,18 @@ class ActividadController extends Controller
                 'tipo'           => 'video',
                 'enlace'         => $request->enlace,
                 'descripcion'    => $request->input('descripcion', ''),
+                'fecha_registro' => now(),
             ]);
 
         } else {
             // HU16 — Tipo no válido
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Tipo de evidencia no válido. Solo se aceptan fotos (JPG/PNG) o enlaces de video.',
             ], 422);
         }
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success'   => true,
             'message'   => 'Evidencia registrada exitosamente.',
             'evidencia' => [
@@ -505,7 +507,9 @@ class ActividadController extends Controller
                 'tipo'           => $evidencia->tipo,
                 'url'            => $evidencia->url,
                 'descripcion'    => $evidencia->descripcion,
-                'fecha_registro' => $evidencia->fecha_registro->format('d/m/Y H:i'),
+                'fecha_registro' => $evidencia->fecha_registro
+                    ? $evidencia->fecha_registro->format('d/m/Y H:i')
+                    : now()->format('d/m/Y H:i'),
                 'usuario'        => $usuario->full_name,
             ],
         ]);
@@ -533,7 +537,7 @@ class ActividadController extends Controller
                 'ficha'          => $e->ficha ? "{$e->ficha->code} — " . ($e->ficha->program?->name ?? '') : 'Sin ficha',
             ]);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success'            => true,
             'actividad_id'       => $actividad->id,
             'actividad_nombre'   => $actividad->nombre,
@@ -568,7 +572,7 @@ class ActividadController extends Controller
             ];
         }
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success'          => true,
             'actividad_id'     => $actividad->id,
             'actividad_nombre' => $actividad->nombre,
@@ -592,7 +596,7 @@ class ActividadController extends Controller
 
     private function formatActividad(ActividadEcp $a): array
     {
-        return [
+        return /* Devuelve el resultado de este m�todo. */ [
             'id'               => $a->id,
             'numero'           => $a->numero,
             'nombre'           => $a->nombre,

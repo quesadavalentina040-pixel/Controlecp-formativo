@@ -32,7 +32,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
             'leidas'    => Notification::where('id_usuario_receptor', $idUsuario)->where('leida', true)->count(), // La segunda condición limita el conteo a las notificaciones ya leídas.
         ];
 
-        return view('controlecp::administrador.notificaciones', compact('notificaciones', 'modulos', 'totales', 'filtros')); // Renderiza la vista y compact() entrega variables con esos mismos nombres.
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.notificaciones', compact('notificaciones', 'modulos', 'totales', 'filtros')); // Renderiza la vista y compact() entrega variables con esos mismos nombres.
     }
 
     public function resumen(Request $request): JsonResponse // Retorna datos en formato JSON para la campana y sondeo en tiempo real | resumen(): Devuelve en JSON el resumen y las notificaciones recientes; se usa desde la campana y su sondeo periódico.
@@ -42,7 +42,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
 
         $datos = $this->servicio->obtenerResumen($idUsuario, $ultimoId); // El servicio calcula contadores y selecciona notificaciones nuevas y recientes.
 
-        return response()->json([ // json() serializa este arreglo para que lo consuma la campana de notificaciones.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // json() serializa este arreglo para que lo consuma la campana de notificaciones.
             'success'         => true,
             'total_no_leidas' => $datos['total_no_leidas'],
             'ultimo_id'       => $datos['ultimo_id'],
@@ -77,7 +77,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
 
         $this->servicio->marcarLeida($notif->id_notificacion, $idUsuario); // Registra el aviso como leído antes de dirigirse a su recurso asociado.
 
-        return redirect()->to($notif->url_referencia); // Envía el navegador a la URL guardada en la notificación.
+        return /* Devuelve el resultado de este m�todo. */ redirect()->to($notif->url_referencia); // Envía el navegador a la URL guardada en la notificación.
     }
 
     public function toggleLeida($id): JsonResponse // Alterna el estado de una notificación entre leída y no leída | toggleLeida(): Alterna el estado de lectura y devuelve los contadores; se usa desde la acción AJAX de lectura.
@@ -86,12 +86,12 @@ class NotificacionController extends Controller // Controlador de historial, lec
         $notif = $this->servicio->toggleLeida((int)$id, $idUsuario); // Convierte el identificador recibido a entero y pide al servicio alternar su estado.
 
         if (!$notif) { // Si el servicio no encontró un aviso propio, devuelve JSON y estado HTTP 404.
-            return response()->json(['success' => false, 'message' => 'Notificación no encontrada.'], 404);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Notificación no encontrada.'], 404);
         }
 
         $noLeidas = Notification::where('id_usuario_receptor', $idUsuario)->where('leida', false)->count(); // Consulta cuántos avisos siguen sin leerse después del cambio.
 
-        return response()->json([ // Devuelve el nuevo estado, la fecha formateada y el contador para actualizar la interfaz.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve el nuevo estado, la fecha formateada y el contador para actualizar la interfaz.
             'success'         => true,
             'leida'           => $notif->leida,
             'fecha_lectura'   => $notif->fecha_lectura ? $notif->fecha_lectura->format('d/m/Y H:i') : null,
@@ -104,7 +104,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
         $idUsuario = Auth::id(); // Identifica de quién son los avisos que se actualizarán.
         $afectadas = $this->servicio->marcarTodasLeidas($idUsuario); // El servicio marca los avisos propios y devuelve cuántos registros modificó.
 
-        return response()->json([ // Responde en JSON; el contador queda en cero tras marcar todos como leídos.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Responde en JSON; el contador queda en cero tras marcar todos como leídos.
             'success'         => true,
             'afectadas'       => $afectadas,
             'total_no_leidas' => 0,
@@ -120,7 +120,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
 
         $noLeidas = Notification::where('id_usuario_receptor', $idUsuario)->where('leida', false)->count(); // Vuelve a contar los avisos no leídos para mantener actualizado el indicador.
 
-        return response()->json([ // Indica si se eliminó algún registro y comunica el total pendiente.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Indica si se eliminó algún registro y comunica el total pendiente.
             'success'         => (bool)$eliminado,
             'total_no_leidas' => $noLeidas,
         ]);

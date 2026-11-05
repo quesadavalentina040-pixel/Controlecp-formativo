@@ -21,12 +21,12 @@ class PqrController extends Controller
     {
         $usuario = Auth::user();
         if (!$usuario || !$usuario->hasAnyRole(['controlecp.admin', 'controlecp.instructor'])) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a la gestión de PQRS de Control ECP.');
         }
 
-        return null;
+        return /* Indica que no hay informaci�n para devolver. */ null;
     }
 
     /**
@@ -38,7 +38,7 @@ class PqrController extends Controller
     public function index(Request $request)
     {
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $soloInstructores = $request->routeIs('controlecp.administrador.pqr.instructores');
@@ -105,12 +105,12 @@ class PqrController extends Controller
 
         $reporteInstructoresLabels = ['Administración General'];
         $reporteInstructoresCounts = [Pqrs::whereNull('id_usuario_instructor_destino')->count()];
-        foreach ($instructores as $inst) {
+        foreach ($instructores as $inst) { /* Recorre uno por uno los elementos de esta lista. */
             $reporteInstructoresLabels[] = $inst->nickname;
             $reporteInstructoresCounts[] = Pqrs::where('id_usuario_instructor_destino', $inst->id)->count();
         }
 
-        return view('controlecp::administrador.pqr', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.pqr', compact(
             'pqrsAdmin',
             'pqrsInstructor',
             'total', 'pendientes', 'enTramite', 'resueltas',
@@ -130,7 +130,7 @@ class PqrController extends Controller
         $pqr = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
 
         $respuestas = $pqr->respuestas->map(function ($r) {
-            return [
+            return /* Devuelve el resultado de este m�todo. */ [
                 'id'        => $r->id_pqrs_respuesta,
                 'fecha'     => $r->fecha ? $r->fecha->format('d/m/Y H:i') : '',
                 'autor'     => $r->usuario ? $r->usuario->nickname : 'Sistema',
@@ -139,7 +139,7 @@ class PqrController extends Controller
         });
 
         $historial = $pqr->historial->map(function ($h) {
-            return [
+            return /* Devuelve el resultado de este m�todo. */ [
                 'id'              => $h->id_pqrs_historial,
                 'fecha'           => $h->fecha ? $h->fecha->format('d/m/Y H:i') : '',
                 'autor'           => $h->usuario ? $h->usuario->nickname : 'Sistema',
@@ -149,7 +149,7 @@ class PqrController extends Controller
             ];
         });
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'id_pqrs'            => $pqr->id_pqrs,
             'radicado'           => $pqr->radicado,
             'asunto'             => $pqr->asunto,
@@ -180,7 +180,7 @@ class PqrController extends Controller
     public function cambiarEstado(Request $request, $id)
     {
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $validated = $request->validate([
@@ -207,10 +207,10 @@ class PqrController extends Controller
 
             DB::commit();
 
-            return back()->with('success', "El estado de la solicitud {$pqr->radicado} ha cambiado a '{$estadoNuevo}'. Se notificó al aprendiz.");
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "El estado de la solicitud {$pqr->radicado} ha cambiado a '{$estadoNuevo}'. Se notificó al aprendiz.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al cambiar estado: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'Error al cambiar estado: ' . $e->getMessage());
         }
     }
 
@@ -223,13 +223,13 @@ class PqrController extends Controller
         // HU 3: Bloquear acceso al administrador
         $usuario = Auth::user();
         if ($usuario && $usuario->hasRole('controlecp.admin')) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.pqr')
                 ->with('error', 'El administrador no puede radicar una PQRS. Las solicitudes son radicadas únicamente por los aprendices.');
         }
 
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $radicado = Pqrs::generarRadicado();
@@ -240,7 +240,7 @@ class PqrController extends Controller
             $aprendices = User::limit(25)->get();
         }
 
-        return view('controlecp::administrador.pqr_create', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.pqr_create', compact(
             'radicado',
             'tipos',
             'instructores',
@@ -254,7 +254,7 @@ class PqrController extends Controller
     public function show($id)
     {
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $pqr = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
@@ -262,7 +262,7 @@ class PqrController extends Controller
         $instructores = User::whereHas('roles', fn($q) => $q->where('slug', 'controlecp.instructor'))->get();
         $estados = ['Pendiente', 'En trámite', 'Resuelto', 'Cerrado'];
 
-        return view('controlecp::administrador.pqr_show', compact('pqr', 'tipos', 'instructores', 'estados'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.pqr_show', compact('pqr', 'tipos', 'instructores', 'estados'));
     }
 
     /**
@@ -290,7 +290,7 @@ class PqrController extends Controller
         ]);
 
         // 2. Eventos de Cambios de Estado (Auditoría)
-        foreach ($pqr->historial as $h) {
+        foreach ($pqr->historial as $h) { /* Recorre uno por uno los elementos de esta lista. */
             $badgeClass = match ($h->estado_nuevo) {
                 'Resuelta', 'Resuelto' => 'bg-success text-white',
                 'En trámite', 'En tramite' => 'bg-primary text-white',
@@ -313,7 +313,7 @@ class PqrController extends Controller
         }
 
         // 3. Eventos de Respuestas Oficiales Emitidas (HU 7)
-        foreach ($pqr->respuestas as $r) {
+        foreach ($pqr->respuestas as $r) { /* Recorre uno por uno los elementos de esta lista. */
             $esAdmin = $r->usuario && $r->usuario->hasRole('controlecp.admin');
             $esInstructor = $r->usuario && $r->usuario->hasRole('controlecp.instructor');
             $rolLabel = $esAdmin ? 'Administrador' : ($esInstructor ? 'Instructor' : 'Funcionario');
@@ -334,7 +334,7 @@ class PqrController extends Controller
 
         $eventosOrdenados = $eventos->sortByDesc('timestamp')->values();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'id_pqrs'          => $pqr->id_pqrs,
             'radicado'         => $pqr->radicado,
             'asunto'           => $pqr->asunto,
@@ -354,7 +354,7 @@ class PqrController extends Controller
     public function responder(Request $request, $id)
     {
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $validated = $request->validate([
@@ -416,10 +416,10 @@ class PqrController extends Controller
 
             DB::commit();
 
-            return back()->with('success', "Respuesta registrada para {$pqr->radicado}. Estado actualizado a '{$estadoNuevo}'.");
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "Respuesta registrada para {$pqr->radicado}. Estado actualizado a '{$estadoNuevo}'.");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Error al registrar respuesta: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'Error al registrar respuesta: ' . $e->getMessage());
         }
     }
 
@@ -430,13 +430,13 @@ class PqrController extends Controller
     public function store(Request $request)
     {
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         // HU 3: Bloquear radicación por parte del administrador
         $usuario = Auth::user();
         if ($usuario && $usuario->hasRole('controlecp.admin')) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.pqr')
                 ->with('error', 'El administrador no puede radicar una PQRS. Las solicitudes deben ser radicadas por los aprendices desde su panel.');
         }
@@ -485,12 +485,12 @@ class PqrController extends Controller
 
             DB::commit();
 
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.pqr')
                 ->with('success', "¡PQRS radicada exitosamente! Radicado: {$radicado}");
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Error al radicar la PQRS: ' . $e->getMessage());
+            return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()->with('error', 'Error al radicar la PQRS: ' . $e->getMessage());
         }
     }
 
@@ -500,7 +500,7 @@ class PqrController extends Controller
     public function reporte(Request $request)
     {
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $query = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas']);
@@ -538,7 +538,7 @@ class PqrController extends Controller
         // Datos para gráficas en la vista de reporte
         $reporteTiposLabels = [];
         $reporteTiposCounts = [];
-        foreach ($tipos as $t) {
+        foreach ($tipos as $t) { /* Recorre uno por uno los elementos de esta lista. */
             $reporteTiposLabels[] = $t->nombre;
             $reporteTiposCounts[] = $pqrs->where('id_tipo_pqrs', $t->id_tipo_pqrs)->count();
         }
@@ -548,14 +548,14 @@ class PqrController extends Controller
 
         $reporteInstructoresLabels = ['Administración General'];
         $reporteInstructoresCounts = [$pqrs->whereNull('id_usuario_instructor_destino')->count()];
-        foreach ($instructores as $inst) {
+        foreach ($instructores as $inst) { /* Recorre uno por uno los elementos de esta lista. */
             $reporteInstructoresLabels[] = $inst->nickname;
             $reporteInstructoresCounts[] = $pqrs->where('id_usuario_instructor_destino', $inst->id)->count();
         }
 
         $tasaResolucion = $total > 0 ? round(($resueltas / $total) * 100, 1) : 0;
 
-        return view('controlecp::administrador.pqr_reporte', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.pqr_reporte', compact(
             'pqrs',
             'total',
             'pendientes',
@@ -579,12 +579,12 @@ class PqrController extends Controller
     public function destroy($id)
     {
         if ($redirect = $this->verificarAcceso()) {
-            return $redirect;
+            return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
         $pqr = Pqrs::findOrFail($id);
         $pqr->delete();
 
-        return back()->with('success', "La solicitud {$pqr->radicado} ha sido eliminada.");
+        return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "La solicitud {$pqr->radicado} ha sido eliminada.");
     }
 }

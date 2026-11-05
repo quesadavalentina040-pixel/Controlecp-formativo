@@ -24,6 +24,35 @@
         transition: transform .2s ease, box-shadow .2s ease;
     }
 
+    .poe-kpi {
+        padding: 1rem 1.25rem;
+        border: 2px solid transparent;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .poe-kpi:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 26, 41, .1);
+    }
+
+    .poe-kpi-label {
+        font-size: .95rem;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .poe-kpi-value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-top: .15rem;
+    }
+
+    .poe-kpi-subtitle {
+        font-size: .9rem;
+        color: #64748b;
+    }
+
     /* Botones primarios y secundarios */
     .btn-ecp-primary {
         background-color: var(--verde-ecp);
@@ -284,38 +313,41 @@
 
     <div class="row g-3 mb-4">
         <div class="col-12 col-md-4">
-            <div class="poe-card p-3 d-flex align-items-center gap-3">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: var(--verde-ecp-claro); color: var(--verde-ecp);">
-                    <i class="fa-solid fa-file-contract fs-4"></i>
+            <div class="poe-card poe-kpi" style="border-color:rgba(57,169,0,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="poe-kpi-label">POE registrados</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background-color: var(--verde-ecp-claro); color: var(--verde-ecp);">
+                        <i class="fa-solid fa-file-contract"></i>
+                    </div>
                 </div>
-                <div>
-                    <span class="text-muted d-block" style="font-size: 0.82rem; font-weight: 600;">POE REGISTRADOS</span>
-                    <span class="h4 fw-bold mb-0" style="color: var(--petroleo-ecp);">{{ $totalPoes }}</span>
-                </div>
+                <div class="poe-kpi-value" style="color:var(--verde-ecp);">{{ $totalPoes }}</div>
+                <div class="poe-kpi-subtitle">Documentos registrados</div>
             </div>
         </div>
 
         <div class="col-12 col-md-4">
-            <div class="poe-card p-3 d-flex align-items-center gap-3">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #fef3c7; color: #d97706;">
-                    <i class="fa-solid fa-clock-rotate-left fs-4"></i>
+            <div class="poe-card poe-kpi" style="border-color:rgba(217,119,6,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="poe-kpi-label">Entregas vigentes</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background-color: #fef3c7; color: #d97706;">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
                 </div>
-                <div>
-                    <span class="text-muted d-block" style="font-size: 0.82rem; font-weight: 600;">ENTREGAS VIGENTES</span>
-                    <span class="h4 fw-bold mb-0" style="color: var(--petroleo-ecp);">{{ $programacionesVigentes }}</span>
-                </div>
+                <div class="poe-kpi-value" style="color:#d97706;">{{ $programacionesVigentes }}</div>
+                <div class="poe-kpi-subtitle">Pendientes dentro del plazo</div>
             </div>
         </div>
 
         <div class="col-12 col-md-4">
-            <div class="poe-card p-3 d-flex align-items-center gap-3">
-                <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background-color: #fee2e2; color: #dc2626;">
-                    <i class="fa-solid fa-triangle-exclamation fs-4"></i>
+            <div class="poe-card poe-kpi" style="border-color:rgba(220,38,38,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="poe-kpi-label">Entregas atrasadas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background-color: #fee2e2; color: #dc2626;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
                 </div>
-                <div>
-                    <span class="text-muted d-block" style="font-size: 0.82rem; font-weight: 600;">ENTREGAS ATRASADAS</span>
-                    <span class="h4 fw-bold mb-0" style="color: #dc2626;">{{ $programacionesAtrasadas }}</span>
-                </div>
+                <div class="poe-kpi-value" style="color:#dc2626;">{{ $programacionesAtrasadas }}</div>
+                <div class="poe-kpi-subtitle">Fuera del plazo</div>
             </div>
         </div>
     </div>

@@ -50,6 +50,35 @@
         transition: transform .2s ease, box-shadow .2s ease;
     }
 
+    .asesoria-kpi {
+        padding: 1rem 1.25rem;
+        border: 2px solid transparent;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .asesoria-kpi:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 26, 41, .1);
+    }
+
+    .asesoria-kpi-label {
+        font-size: .95rem;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .asesoria-kpi-value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-top: .15rem;
+    }
+
+    .asesoria-kpi-subtitle {
+        font-size: .9rem;
+        color: #64748b;
+    }
+
     .ecp-card:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 18px rgba(0, 26, 41, 0.08);
@@ -236,67 +265,67 @@
     <div class="row g-3 mb-4">
 
         <div class="col-6 col-md-4 col-lg">
-            <div class="ecp-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">Solicitadas</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: #fef3c7; color: #b45309;">
+            <div class="ecp-card asesoria-kpi h-100" style="border-color:rgba(180,83,9,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="asesoria-kpi-label">Solicitadas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #fef3c7; color: #b45309;">
                         <i class="fas fa-clock"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" style="color: var(--petroleo);">{{ $indicadores['solicitadas'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Pendientes por programar</small>
+                <div class="asesoria-kpi-value" style="color:#b45309;">{{ $indicadores['solicitadas'] }}</div>
+                <div class="asesoria-kpi-subtitle">Pendientes por programar</div>
             </div>
         </div>
 
         <div class="col-6 col-md-4 col-lg">
-            <div class="ecp-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">Programadas</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: var(--azul-claro); color: #0284c7;">
+            <div class="ecp-card asesoria-kpi h-100" style="border-color:rgba(2,132,199,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="asesoria-kpi-label">Programadas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: var(--azul-claro); color: #0284c7;">
                         <i class="fas fa-calendar-check"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" style="color: var(--petroleo);">{{ $indicadores['programadas'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Con fecha e instructor</small>
+                <div class="asesoria-kpi-value" style="color:#0284c7;">{{ $indicadores['programadas'] }}</div>
+                <div class="asesoria-kpi-subtitle">Con fecha e instructor</div>
             </div>
         </div>
 
         <div class="col-6 col-md-4 col-lg">
-            <div class="ecp-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">Realizadas</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: var(--verde-claro); color: #15803d;">
+            <div class="ecp-card asesoria-kpi h-100" style="border-color:rgba(21,128,61,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="asesoria-kpi-label">Realizadas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: var(--verde-claro); color: #15803d;">
                         <i class="fas fa-circle-check"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" style="color: var(--petroleo);">{{ $indicadores['realizadas'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Con seguimiento final</small>
+                <div class="asesoria-kpi-value" style="color:#15803d;">{{ $indicadores['realizadas'] }}</div>
+                <div class="asesoria-kpi-subtitle">Con seguimiento final</div>
             </div>
         </div>
 
         <div class="col-6 col-md-4 col-lg">
-            <div class="ecp-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">Sin Asignar</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: #ffedd5; color: #c2410c;">
+            <div class="ecp-card asesoria-kpi h-100" style="border-color:rgba(194,65,12,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="asesoria-kpi-label">Sin asignar</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #ffedd5; color: #c2410c;">
                         <i class="fas fa-user-xmark"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" style="color: var(--petroleo);">{{ $indicadores['sin_asignar'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Requieren instructor</small>
+                <div class="asesoria-kpi-value" style="color:#c2410c;">{{ $indicadores['sin_asignar'] }}</div>
+                <div class="asesoria-kpi-subtitle">Requieren instructor</div>
             </div>
         </div>
 
         <div class="col-6 col-md-4 col-lg">
-            <div class="ecp-card p-3 h-100">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="small fw-semibold text-muted">Canceladas</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 34px; height: 34px; background: #fee2e2; color: #b91c1c;">
+            <div class="ecp-card asesoria-kpi h-100" style="border-color:rgba(185,28,28,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="asesoria-kpi-label">Canceladas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #fee2e2; color: #b91c1c;">
                         <i class="fas fa-ban"></i>
                     </div>
                 </div>
-                <h3 class="fw-bold mb-0 font-outfit" style="color: var(--petroleo);">{{ $indicadores['canceladas'] }}</h3>
-                <small class="text-muted" style="font-size: 0.75rem;">Anuladas con motivo</small>
+                <div class="asesoria-kpi-value" style="color:#b91c1c;">{{ $indicadores['canceladas'] }}</div>
+                <div class="asesoria-kpi-subtitle">Anuladas con motivo</div>
             </div>
         </div>
     </div>

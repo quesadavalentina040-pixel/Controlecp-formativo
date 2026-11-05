@@ -19,11 +19,11 @@ class HistoriaController extends Controller // Controlador para administrar los 
     {
         $usuario = Auth::user(); // Auth::user identifica la sesión actual; puede devolver null si no hay una cuenta autenticada.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Comprueba existencia y rol antes de continuar con la administración.
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a la gestión de la Historia.');
         }
-        return null;
+        return /* Indica que no hay informaci�n para devolver. */ null;
     }
 
     /**
@@ -32,7 +32,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
     public function index(Request $request) // index(): Consulta y presenta los bloques de historia; se usa al abrir su panel de administración.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Si el control de acceso devuelve una redirección, no se ejecuta ninguna consulta.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $bloques = BloqueHistoria::orderBy('orden', 'asc')
@@ -45,7 +45,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
             'inactivos' => BloqueHistoria::where('activo', false)->count(),
         ];
 
-        return view('controlecp::administrador.repositorio.historia', compact('bloques', 'indicadores')); // Renderiza el panel y entrega tanto los bloques como sus indicadores.
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.repositorio.historia', compact('bloques', 'indicadores')); // Renderiza el panel y entrega tanto los bloques como sus indicadores.
     }
 
     /**
@@ -54,7 +54,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
     public function store(HistoriaBloqueRequest $request) // store(): Valida y guarda un nuevo bloque de historia; se usa al enviar el formulario de creación.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Reutiliza el control de acceso y termina pronto si el usuario no es administrador.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $rutaArchivo = null; // Inicializa ambos destinos para que el tipo de contenido determine cuál se completa.
@@ -80,7 +80,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
             'activo'         => true,
         ]);
 
-        return redirect() // Regresa al panel y guarda un mensaje temporal para mostrar la confirmación.
+        return /* Devuelve el resultado de este m�todo. */ redirect() // Regresa al panel y guarda un mensaje temporal para mostrar la confirmación.
             ->route('controlecp.administrador.repositorio.historia.index')
             ->with('success', 'El bloque de historia fue creado y publicado exitosamente.');
     }
@@ -91,7 +91,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
     public function update(HistoriaBloqueRequest $request, $id) // update(): Valida y guarda cambios en un bloque existente; se usa al guardar su edición.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Comprueba permisos antes de modificar contenido.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $bloque = BloqueHistoria::findOrFail($id); // Busca el bloque por su clave y responde con 404 si no se encuentra.
@@ -129,7 +129,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
             'url_video'      => $urlVideo,
         ]);
 
-        return redirect() // Vuelve al listado de historia con un mensaje de confirmación.
+        return /* Devuelve el resultado de este m�todo. */ redirect() // Vuelve al listado de historia con un mensaje de confirmación.
             ->route('controlecp.administrador.repositorio.historia.index')
             ->with('success', 'El bloque de historia fue actualizado exitosamente.');
     }
@@ -141,7 +141,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
     {
         $usuario = Auth::user(); // Obtiene la cuenta que envía el orden para aplicar la autorización también en esta ruta AJAX.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Sin sesión o rol administrador, responde JSON con HTTP 403 (prohibido).
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No autorizado.',
             ], 403);
@@ -155,21 +155,21 @@ class HistoriaController extends Controller // Controlador para administrar los 
         $ids = $request->input('ids', []); // input lee el parámetro y usa una lista vacía como valor predeterminado si no fue enviado.
 
         if (empty($ids)) { // Si la lista quedó vacía, responde JSON con HTTP 422 para indicar datos insuficientes.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No se enviaron bloques para reordenar.',
             ], 422);
         }
 
         DB::transaction(function () use ($ids) { // La transacción hace que todos los cambios de orden se confirmen juntos o se reviertan ante un error.
-            foreach ($ids as $posicion => $id) { // Recorre cada id con su posición y actualiza su orden a partir de 1.
+            foreach ($ids as $posicion => $id) { /* Recorre uno por uno los elementos de esta lista. */ // Recorre cada id con su posición y actualiza su orden a partir de 1.
                 BloqueHistoria::where('id', $id)->update([ // where limita la fila afectada y update escribe el nuevo número de orden.
                     'orden' => $posicion + 1,
                 ]);
             }
         });
 
-        return response()->json([ // Devuelve resultado JSON exitoso para que la interfaz confirme el reordenamiento.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve resultado JSON exitoso para que la interfaz confirme el reordenamiento.
             'success' => true,
             'message' => '¡El nuevo orden de los bloques fue guardado exitosamente!',
         ]);
@@ -182,22 +182,22 @@ class HistoriaController extends Controller // Controlador para administrar los 
     {
         if ($res = $this->verificarAccesoAdmin()) { // Un usuario no autorizado recibe JSON 403 si la petición lo solicita; de lo contrario, se conserva la redirección.
             if ($request->wantsJson()) { // wantsJson detecta si el cliente espera una respuesta JSON.
-                return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
             }
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $bloque = BloqueHistoria::findOrFail($id); // Busca el bloque o devuelve 404, y actualiza su bandera sin borrar el registro ni sus archivos.
         $bloque->update(['activo' => false]);
 
         if ($request->wantsJson()) { // Responde en el formato solicitado: JSON para AJAX o redirección con mensaje para navegación normal.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => 'El bloque "' . $bloque->titulo . '" ha sido desactivado. Ya no será visible para los aprendices.',
             ]);
         }
 
-        return redirect() // Regresa al panel administrativo y conserva el aviso en la sesión.
+        return /* Devuelve el resultado de este m�todo. */ redirect() // Regresa al panel administrativo y conserva el aviso en la sesión.
             ->route('controlecp.administrador.repositorio.historia.index')
             ->with('success', 'El bloque "' . $bloque->titulo . '" ha sido desactivado exitosamente.');
     }
@@ -209,22 +209,22 @@ class HistoriaController extends Controller // Controlador para administrar los 
     {
         if ($res = $this->verificarAccesoAdmin()) { // Aplica la misma autorización; el formato de la petición determina la respuesta de error.
             if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'No autorizado.'], 403);
             }
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $bloque = BloqueHistoria::findOrFail($id); // Recupera el bloque y marca activo=true para volver a publicarlo.
         $bloque->update(['activo' => true]);
 
         if ($request->wantsJson()) { // El cliente puede recibir JSON para actualizar la pantalla sin recargarla.
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => 'El bloque "' . $bloque->titulo . '" ha sido activado y publicado para los aprendices.',
             ]);
         }
 
-        return redirect() // Para una navegación tradicional, vuelve a la lista con un mensaje temporal.
+        return /* Devuelve el resultado de este m�todo. */ redirect() // Para una navegación tradicional, vuelve a la lista con un mensaje temporal.
             ->route('controlecp.administrador.repositorio.historia.index')
             ->with('success', 'El bloque "' . $bloque->titulo . '" ha sido activado exitosamente.');
     }

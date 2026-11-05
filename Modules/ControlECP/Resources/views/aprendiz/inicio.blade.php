@@ -117,6 +117,8 @@
 {{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 
+<div class="container-fluid px-3 py-3">
+
 <div class="page-title-bar">
     <h5>
         <i class="fas fa-house me-2 text-success"></i>
@@ -245,5 +247,6 @@
         </div>
     </div>
 
+</div>
 </div>
 @endsection

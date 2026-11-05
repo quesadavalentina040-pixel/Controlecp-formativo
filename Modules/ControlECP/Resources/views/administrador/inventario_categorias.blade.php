@@ -20,7 +20,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-2 px-md-3 py-2">
+<div class="container-fluid px-3 py-3">
 
     <!-- Breadcrumb & Cabecera (Mockup Image 1 Row 1 Right) -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">

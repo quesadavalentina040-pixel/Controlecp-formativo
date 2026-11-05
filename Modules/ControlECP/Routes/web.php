@@ -18,6 +18,7 @@ use Modules\ControlECP\Http\Controllers\MomentoController;
 use Modules\ControlECP\Http\Controllers\ActividadController;
 use Modules\ControlECP\Http\Controllers\CronogramaController;
 use Modules\ControlECP\Http\Controllers\ReporteController;
+use Modules\ControlECP\Http\Controllers\AsistenciaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,6 +135,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.administrador.actividades.store');
     Route::put('/control-ecp/administrador/actividades/{id}', [ActividadController::class, 'update'])
         ->name('controlecp.administrador.actividades.update');
+    Route::post('/control-ecp/administrador/actividades/{id}/encuesta', [ActividadController::class, 'asignarEncuesta'])
+        ->name('controlecp.administrador.actividades.encuesta');
     Route::post('/control-ecp/administrador/actividades/{id}/cambiar-momento', [ActividadController::class, 'cambiarMomento'])
         ->name('controlecp.administrador.actividades.cambiar_momento');
     Route::get('/control-ecp/administrador/actividades/{id}/componentes', [ActividadController::class, 'componentes'])
@@ -170,8 +173,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.administrador.cronograma.reasignar');
     Route::post('/control-ecp/administrador/cronograma/{id}/posponer', [CronogramaController::class, 'posponer'])
         ->name('controlecp.administrador.cronograma.posponer');
-    Route::get('/control-ecp/administrador/asistencia', [ControlECPController::class, 'asistenciaAdmin'])
+    Route::get('/control-ecp/administrador/asistencia', [AsistenciaController::class, 'index'])
         ->name('controlecp.administrador.asistencia');
+    Route::post('/control-ecp/administrador/asistencia/{id}', [AsistenciaController::class, 'store'])
+        ->name('controlecp.administrador.asistencia.store');
+    Route::put('/control-ecp/administrador/asistencia/registro/{id}', [AsistenciaController::class, 'update'])
+        ->name('controlecp.administrador.asistencia.update');
+    Route::post('/control-ecp/administrador/asistencia/registro/{id}/anular', [AsistenciaController::class, 'annul'])
+        ->name('controlecp.administrador.asistencia.annul');
     Route::get('/control-ecp/administrador/certificados', [ControlECPController::class, 'certificadosAdmin'])
         ->name('controlecp.administrador.certificados');
 

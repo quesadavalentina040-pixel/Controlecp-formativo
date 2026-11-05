@@ -137,7 +137,7 @@ return new class extends Migration
                 $table->unique(['id_encuesta_respuesta', 'id_pregunta'], 'uk_erd_resp_preg');
                 $table->foreign('id_encuesta_respuesta', 'fk_erd_resp')->references('id_encuesta_respuesta')->on('encuesta_respuestas')->onDelete('cascade');
                 $table->foreign('id_pregunta', 'fk_erd_preg')->references('id_pregunta')->on('preguntas')->onDelete('cascade');
-                $table->foreign('id_opcion_pregunta', 'fk_erd_opc')->references('id_opcion_pregunta')->on('opciones_pregunta')->onDelete('set null');
+                $table->foreign('id_opcion_pregunta', 'fk_erd_opc')->references('id')->on('opciones_pregunta')->onDelete('set null');
             });
         }
 

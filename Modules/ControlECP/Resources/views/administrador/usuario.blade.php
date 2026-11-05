@@ -14,7 +14,16 @@
     .stat-card {
         border-radius: 18px;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: 1px solid rgba(0, 0, 0, 0.04);
+        border: 2px solid transparent;
+    }
+    .stat-card-total {
+        border-color: rgba(57, 169, 0, .35);
+    }
+    .stat-card-active {
+        border-color: rgba(30, 112, 0, .35);
+    }
+    .stat-card-inactive {
+        border-color: rgba(192, 57, 43, .35);
     }
     .stat-card:hover {
         transform: translateY(-3px);
@@ -217,7 +226,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-2 px-md-3 py-2">
+<div class="container-fluid px-3 py-3">
 
     <div class="usuarios-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
@@ -255,7 +264,7 @@
     <div class="row g-3 mb-4">
         <!-- KPI 1: Total Usuarios Control ECP -->
         <div class="col-12 col-md-4">
-            <div class="card stat-card shadow-sm h-100 bg-white">
+            <div class="card stat-card stat-card-total shadow-sm h-100 bg-white">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Total Usuarios ECP</span>
@@ -274,7 +283,7 @@
 
         {{-- KPI Estado: Activos / Inactivos (HU1) --}}
         <div class="col-12 col-md-4">
-            <div class="card stat-card shadow-sm h-100 bg-white">
+            <div class="card stat-card stat-card-active shadow-sm h-100 bg-white">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Activos</span>
@@ -289,7 +298,7 @@
             </div>
         </div>
         <div class="col-12 col-md-4">
-            <div class="card stat-card shadow-sm h-100 bg-white">
+            <div class="card stat-card stat-card-inactive shadow-sm h-100 bg-white">
                 <div class="card-body p-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <span class="text-muted small fw-semibold">Inactivos</span>

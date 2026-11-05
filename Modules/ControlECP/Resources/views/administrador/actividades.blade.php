@@ -29,9 +29,9 @@
     /* KPI cards */
     .kpi-card {
         background: #fff; border-radius: 18px;
-        padding: 1.1rem 1rem;
+        padding: 1rem 1.25rem;
         box-shadow: 0 4px 18px rgba(0,26,41,.07);
-        border: 1px solid rgba(0,0,0,.04);
+        border: 2px solid transparent;
         display: flex; flex-direction: column; gap: .3rem;
         transition: transform .2s, box-shadow .2s;
     }
@@ -39,10 +39,11 @@
     .kpi-icon-wrap {
         width: 38px; height: 38px; border-radius: 11px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1rem; margin-bottom: .2rem;
+        font-size: 1rem;
     }
-    .kpi-value { font-size: 1.7rem; font-weight: 800; line-height: 1; color: var(--ecp-navy); }
-    .kpi-label { font-size: .77rem; color: #7a8394; font-weight: 500; }
+    .kpi-value { font-size: 1.7rem; font-weight: 800; line-height: 1; color: var(--ecp-navy); margin-top: .15rem; }
+    .kpi-label { font-size: .95rem; color: #475569; font-weight: 500; }
+    .kpi-subtitle { font-size: .9rem; color: #64748b; }
 
     /* Tarjetas de actividad */
     .act-card {
@@ -53,7 +54,7 @@
         overflow: hidden;
     }
     .act-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,26,41,.11); }
-    .act-card.estado-inactivo { opacity: .65; filter: grayscale(.4); }
+    .act-card.estado-inactivo { border-style: dashed; }
     .act-card.estado-finalizado { border-top: 3px solid #6c757d; }
 
     /* Badge estado */
@@ -66,7 +67,7 @@
         border: 1.5px solid; display: inline-flex; align-items: center; gap: .3rem;
     }
     .comp-on  { background: #f0fbf4; }
-    .comp-off { background: #f5f5f5; opacity: .6; }
+    .comp-off { background: #ffffff; }
     button.comp-badge { cursor: pointer; }
 
     /* Sección de momento */
@@ -127,7 +128,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="act-page container-fluid px-2 px-md-3 py-2">
+<div class="act-page container-fluid px-3 py-3">
 
     {{-- Breadcrumb & Cabecera --}}
     <div class="actividades-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -169,59 +170,53 @@
     @endif
 
     {{-- KPIs --}}
-    <div class="row g-3 mb-4">
-        <div class="col-6 col-md-2">
-            <div class="kpi-card">
-                <div class="kpi-icon-wrap" style="background:rgba(57,169,0,.12);">
-                    <i class="fas fa-list-check" style="color:var(--ecp-green);"></i>
+    <div class="row g-3 mb-4 justify-content-center">
+        <div class="col-6 col-md-3">
+            <div class="kpi-card" style="border-color:rgba(57,169,0,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="kpi-label">Total Actividades</span>
+                    <div class="kpi-icon-wrap" style="background:rgba(57,169,0,.12);">
+                        <i class="fas fa-list-check" style="color:var(--ecp-green);"></i>
+                    </div>
                 </div>
                 <div class="kpi-value" style="color:var(--ecp-green);">{{ $stats['total'] }}</div>
-                <div class="kpi-label">Total</div>
+                <div class="kpi-subtitle">Registradas en ECP</div>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="kpi-card">
-                <div class="kpi-icon-wrap" style="background:#e8f8e8;">
-                    <i class="fas fa-circle-check" style="color:#1e7000;"></i>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card" style="border-color:rgba(30,112,0,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="kpi-label">Activas</span>
+                    <div class="kpi-icon-wrap" style="background:#e8f8e8;">
+                        <i class="fas fa-circle-check" style="color:#1e7000;"></i>
+                    </div>
                 </div>
                 <div class="kpi-value text-success">{{ $stats['activas'] }}</div>
-                <div class="kpi-label">Activas</div>
+                <div class="kpi-subtitle">Disponibles</div>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="kpi-card">
-                <div class="kpi-icon-wrap" style="background:#fdecea;">
-                    <i class="fas fa-ban" style="color:#c0392b;"></i>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card" style="border-color:rgba(192,57,43,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="kpi-label">Inactivas</span>
+                    <div class="kpi-icon-wrap" style="background:#fdecea;">
+                        <i class="fas fa-ban" style="color:#c0392b;"></i>
+                    </div>
                 </div>
                 <div class="kpi-value text-danger">{{ $stats['inactivas'] }}</div>
-                <div class="kpi-label">Inactivas</div>
+                <div class="kpi-subtitle">No disponibles</div>
             </div>
         </div>
-        <div class="col-6 col-md-2">
-            <div class="kpi-card">
-                <div class="kpi-icon-wrap" style="background:#e8f0fe;">
-                    <i class="fas fa-flag-checkered" style="color:#3949ab;"></i>
-                </div>
-                <div class="kpi-value" style="color:#3949ab;">{{ $stats['finalizadas'] }}</div>
-                <div class="kpi-label">Finalizadas</div>
-            </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <div class="kpi-card">
-                <div class="kpi-icon-wrap" style="background:#ebf5fb;">
-                    <i class="fas fa-id-card" style="color:var(--ecp-blue);"></i>
-                </div>
-                <div class="kpi-value" style="color:var(--ecp-blue);">{{ $stats['fichas'] }}</div>
-                <div class="kpi-label">Fichas activas</div>
-            </div>
-        </div>
-        <div class="col-6 col-md-2">
-            <div class="kpi-card">
-                <div class="kpi-icon-wrap" style="background:#f4ecf7;">
-                    <i class="fas fa-star" style="color:var(--ecp-purple);"></i>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card" style="border-color:rgba(106,27,154,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="kpi-label">Momentos</span>
+                    <div class="kpi-icon-wrap" style="background:#f4ecf7;">
+                        <i class="fas fa-star" style="color:var(--ecp-purple);"></i>
+                    </div>
                 </div>
                 <div class="kpi-value" style="color:var(--ecp-purple);">{{ $stats['momentos'] }}</div>
-                <div class="kpi-label">Momentos</div>
+                <div class="kpi-subtitle">Pedagógicos ECP</div>
             </div>
         </div>
     </div>
@@ -315,17 +310,17 @@
                                     <div class="d-flex flex-wrap gap-1 mb-3">
                                         <button type="button" class="comp-badge comp-{{ $a->tiene_asistencia ? 'on' : 'off' }}"
                                               onclick="abrirModalComponente('asistencia', {{ $a->id }}, @js($a->nombre))"
-                                              style="color:{{ $a->tiene_asistencia ? '#39A900' : '#999' }}; border-color:{{ $a->tiene_asistencia ? '#c2eec2' : '#ddd' }};">
+                                              style="color:#6A1B9A; border-color:#e1bee7;">
                                             <i class="fas fa-clipboard-list"></i> Asistencia
                                         </button>
                                         <button type="button" class="comp-badge comp-{{ $a->encuesta_id ? 'on' : 'off' }}"
-                                              onclick="abrirModalComponente('encuesta', {{ $a->id }}, @js($a->nombre))"
+                                              onclick="abrirModalComponente('encuesta', {{ $a->id }}, @js($a->nombre), @js($a->id_encuesta))"
                                               style="color:{{ $a->encuesta_id ? '#0070B8' : '#999' }}; border-color:{{ $a->encuesta_id ? '#bce1f7' : '#ddd' }};">
                                             <i class="fas fa-clipboard-question"></i> Encuesta
                                         </button>
                                         <button type="button" class="comp-badge comp-{{ $a->tiene_evidencia ? 'on' : 'off' }}"
                                               onclick="abrirModalComponente('evidencia', {{ $a->id }}, @js($a->nombre))"
-                                              style="color:{{ $a->tiene_evidencia ? '#6A1B9A' : '#999' }}; border-color:{{ $a->tiene_evidencia ? '#e1bee7' : '#ddd' }};">
+                                              style="color:#39A900; border-color:#c2eec2;">
                                             <i class="fas fa-photo-film"></i> Evidencia
                                         </button>
                                     </div>
@@ -437,70 +432,6 @@
                                   placeholder="¿Qué logrará el aprendiz con esta actividad?"></textarea>
                     </div>
 
-                    {{-- Descripción --}}
-                    <div class="col-12">
-                        <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">Descripción</label>
-                        <textarea id="formActDescripcion" class="form-control" rows="2" maxlength="1000"
-                                  placeholder="Descripción general de la actividad..."></textarea>
-                    </div>
-
-                    {{-- Metodología --}}
-                    <div class="col-12">
-                        <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">Metodología</label>
-                        <textarea id="formActMetodologia" class="form-control" rows="2" maxlength="1000"
-                                  placeholder="Dinámicas, técnicas y recursos pedagógicos..."></textarea>
-                    </div>
-
-                    {{-- Componentes --}}
-                    <div class="col-12">
-                        <label class="form-label fw-semibold small" style="color:var(--ecp-navy);">Componentes activos</label>
-                        <div class="d-flex flex-column gap-2 mt-1">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="formActAsistencia" checked disabled>
-                                <label class="form-check-label small" for="formActAsistencia">
-                                    <i class="fas fa-clipboard-list text-success me-1"></i> Asistencia
-                                </label>
-                            </div>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="formActEvidencia" checked disabled>
-                                <label class="form-check-label small" for="formActEvidencia">
-                                    <i class="fas fa-photo-film me-1" style="color:var(--ecp-purple);"></i> Evidencia
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Encuesta (HU7/HU8) --}}
-                    <div class="col-12">
-                        <div class="p-3 rounded-3 border" style="background:#f8faf9;">
-                            <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" id="formActTieneEncuesta"
-                                       checked disabled>
-                                <label class="form-check-label fw-semibold small" for="formActTieneEncuesta"
-                                       style="color:var(--ecp-blue);">
-                                    <i class="fas fa-clipboard-question me-1"></i> Encuesta del repositorio (obligatoria)
-                                </label>
-                            </div>
-                            <div id="encuestaSelectorWrap">
-                                @if($encuestasActivas->count() > 0)
-                                    <select id="formActEncuesta" class="form-select form-select-sm">
-                                        <option value="">— Seleccionar encuesta activa —</option>
-                                        @foreach($encuestasActivas as $enc)
-                                            <option value="{{ $enc->id_encuesta }}">{{ $enc->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                @else
-                                    {{-- HU8: Sin encuestas disponibles --}}
-                                    <div class="alert alert-warning border-0 small py-2 mb-0" style="border-radius:10px;">
-                                        <i class="fas fa-triangle-exclamation me-1"></i>
-                                        <strong>No hay encuestas activas disponibles.</strong>
-                                        Primero cree y active una encuesta en el repositorio antes de asociarla.
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 pt-3 mt-2 border-top">
@@ -590,11 +521,25 @@
             </div>
             <div class="modal-body p-4">
                 <p class="text-muted small mb-4" id="accionComponenteDescription"></p>
+                <div id="encuestaComponenteSelector" class="d-none mb-4">
+                    <label class="form-label fw-semibold small">Encuesta activa</label>
+                    <select id="accionEncuestaSelect" class="form-select">
+                        <option value="">— Seleccionar encuesta —</option>
+                        @foreach($encuestasActivas as $encuesta)
+                            <option value="{{ $encuesta->id_encuesta }}">{{ $encuesta->nombre }}</option>
+                        @endforeach
+                    </select>
+                    <div id="accionEncuestaAlert" class="text-danger small mt-2 d-none"></div>
+                </div>
                 <div class="d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
                     <a id="accionComponenteLink" href="#" class="btn text-white rounded-pill px-4">
                         <i class="fas fa-arrow-up-right-from-square me-1"></i>Ir al módulo
                     </a>
+                    <button id="accionEncuestaGuardar" type="button" class="btn text-white rounded-pill px-4 d-none"
+                            onclick="guardarEncuestaActividad()">
+                        <i class="fas fa-save me-1"></i>Guardar
+                    </button>
                 </div>
             </div>
         </div>
@@ -754,18 +699,13 @@
 <script>
 const actividadesCsrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 const BASE_URL  = "{{ url('/control-ecp/administrador/actividades') }}";
+const ENCUESTA_URL = `${BASE_URL}/__ID__/encuesta`;
 
 // ── HU1: Abrir modal crear ────────────────────────────────────────────────────
 function abrirModalCrear(momentoId = null, momentoNombre = null) {
     document.getElementById('formActId').value = '';
     document.getElementById('formActNombre').value = '';
-    document.getElementById('formActDescripcion').value = '';
     document.getElementById('formActObjetivo').value = '';
-    document.getElementById('formActMetodologia').value = '';
-    document.getElementById('formActAsistencia').checked = true;
-    document.getElementById('formActEvidencia').checked  = true;
-    document.getElementById('formActTieneEncuesta').checked = true;
-    toggleEncuestaSelector();
     document.getElementById('formActAlert').classList.add('d-none');
     document.getElementById('formActModalTitle').textContent = 'Registrar Actividad';
 
@@ -780,20 +720,8 @@ function abrirModalCrear(momentoId = null, momentoNombre = null) {
 function abrirModalEditar(data) {
     document.getElementById('formActId').value              = data.id;
     document.getElementById('formActNombre').value          = data.nombre;
-    document.getElementById('formActDescripcion').value     = data.descripcion ?? '';
     document.getElementById('formActObjetivo').value        = data.objetivo ?? '';
-    document.getElementById('formActMetodologia').value     = data.metodologia ?? '';
     document.getElementById('formActMomento').value         = data.momento_id;
-    document.getElementById('formActAsistencia').checked = true;
-    document.getElementById('formActEvidencia').checked  = true;
-    document.getElementById('formActTieneEncuesta').checked = true;
-
-    if (data.encuesta_id) {
-        const sel = document.getElementById('formActEncuesta');
-        if (sel) sel.value = data.encuesta_id;
-    }
-    toggleEncuestaSelector();
-
     document.getElementById('formActAlert').classList.add('d-none');
     document.getElementById('formActModalTitle').textContent = 'Editar Actividad';
     new bootstrap.Modal(document.getElementById('modalFormActividad')).show();
@@ -805,22 +733,10 @@ async function guardarActividad() {
     const nombre       = document.getElementById('formActNombre').value.trim();
     const momentoId    = document.getElementById('formActMomento').value;
     const objetivo     = document.getElementById('formActObjetivo').value.trim();
-    const desc         = document.getElementById('formActDescripcion').value.trim();
-    const metodologia  = document.getElementById('formActMetodologia').value.trim();
-    const tieneAsist   = document.getElementById('formActAsistencia').checked;
-    const tieneEvid    = document.getElementById('formActEvidencia').checked;
-    const tieneEnc     = document.getElementById('formActTieneEncuesta').checked;
-    const encuestaId   = document.getElementById('formActEncuesta')?.value ?? '';
-
     // HU2 — Validar campos obligatorios
     if (!nombre) { mostrarAlertaForm('El nombre de la actividad es obligatorio.'); return; }
     if (!momentoId) { mostrarAlertaForm('Debes seleccionar un momento.'); return; }
     if (!objetivo) { mostrarAlertaForm('El objetivo pedagógico es obligatorio.'); return; }
-    if (!tieneEnc || !encuestaId) {
-        mostrarAlertaForm('Debes seleccionar una encuesta activa del repositorio.');
-        return;
-    }
-
     const btn = document.getElementById('btnGuardarActividad');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Guardando...';
@@ -834,10 +750,10 @@ async function guardarActividad() {
             method,
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': actividadesCsrfToken, 'Accept': 'application/json' },
             body: JSON.stringify({
-                nombre, momento_id: momentoId, objetivo, descripcion: desc,
-                duracion: '2 Horas', duracion_min: 120, metodologia,
-                tiene_evidencia: tieneEvid,
-                id_encuesta: tieneEnc ? encuestaId : null,
+                nombre, momento_id: momentoId, objetivo,
+                duracion: '2 Horas', duracion_min: 120,
+                tiene_evidencia: true,
+                id_encuesta: null,
             }),
         });
 
@@ -896,7 +812,9 @@ async function ejecutarCambiarMomento() {
 }
 
 // ── HU10: Ver componentes ─────────────────────────────────────────────────────
-function abrirModalComponente(tipo, actId, nombre) {
+let encuestaActividadId = null;
+
+function abrirModalComponente(tipo, actId, nombre, encuestaId = null) {
     if (tipo === 'evidencia') {
         abrirModalEvidencia(actId, nombre);
         return;
@@ -910,10 +828,10 @@ function abrirModalComponente(tipo, actId, nombre) {
             url: "{{ route('controlecp.administrador.asistencia') }}",
         }
         : {
-            title: 'Gestionar encuesta',
-            description: 'Abre el repositorio de encuestas para crear o administrar la encuesta asociada a esta actividad.',
+            title: 'Seleccionar encuesta',
+            description: 'Elige la encuesta activa que deseas asociar a esta actividad.',
             color: 'var(--ecp-blue)',
-            url: "{{ route('controlecp.administrador.repositorio.encuesta.index') }}",
+            url: '#',
         };
 
     document.getElementById('accionComponenteTitle').textContent = config.title;
@@ -922,7 +840,51 @@ function abrirModalComponente(tipo, actId, nombre) {
     const link = document.getElementById('accionComponenteLink');
     link.href = config.url;
     link.style.backgroundColor = config.color;
+    const selector = document.getElementById('encuestaComponenteSelector');
+    const guardar = document.getElementById('accionEncuestaGuardar');
+    encuestaActividadId = tipo === 'encuesta' ? actId : null;
+    selector.classList.toggle('d-none', tipo !== 'encuesta');
+    guardar.classList.toggle('d-none', tipo !== 'encuesta');
+    link.classList.toggle('d-none', tipo === 'encuesta');
+    if (tipo === 'encuesta') {
+        document.getElementById('accionEncuestaSelect').value = encuestaId ?? '';
+        document.getElementById('accionEncuestaAlert').classList.add('d-none');
+    }
     new bootstrap.Modal(document.getElementById('modalAccionComponente')).show();
+}
+
+async function guardarEncuestaActividad() {
+    const encuestaId = document.getElementById('accionEncuestaSelect').value;
+    const alertEl = document.getElementById('accionEncuestaAlert');
+    if (!encuestaId) {
+        alertEl.textContent = 'Selecciona una encuesta.';
+        alertEl.classList.remove('d-none');
+        return;
+    }
+
+    try {
+        const resp = await fetch(ENCUESTA_URL.replace('__ID__', encuestaActividadId), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': actividadesCsrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ id_encuesta: encuestaId }),
+        });
+        const data = await resp.json();
+        if (!resp.ok || !data.success) {
+            alertEl.textContent = data.message ?? 'No se pudo asociar la encuesta.';
+            alertEl.classList.remove('d-none');
+            return;
+        }
+        bootstrap.Modal.getInstance(document.getElementById('modalAccionComponente')).hide();
+        mostrarAlerta(data.message, 'success');
+        setTimeout(() => window.location.reload(), 800);
+    } catch (e) {
+        alertEl.textContent = 'Error de conexión: ' + e.message;
+        alertEl.classList.remove('d-none');
+    }
 }
 
 async function verComponentes(actId) {
@@ -1239,11 +1201,6 @@ async function verCalificaciones(actId, nombre) {
 }
 
 // ── Utilidades ────────────────────────────────────────────────────────────────
-function toggleEncuestaSelector() {
-    const wrap = document.getElementById('encuestaSelectorWrap');
-    if (wrap) wrap.classList.remove('d-none');
-}
-
 function mostrarAlertaForm(msg) {
     const el = document.getElementById('formActAlert');
     document.getElementById('formActAlertMsg').textContent = msg;

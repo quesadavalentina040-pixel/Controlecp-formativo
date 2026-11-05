@@ -5,9 +5,9 @@
     /* Estilos visuales acordes a la identidad SENA Control ECP */
     .stat-card-clean {
         background: #FFFFFF;
-        border: 1px solid #E2E8F0;
+        border: 2px solid transparent;
         border-radius: 16px;
-        padding: 1.25rem 1.4rem;
+        padding: 1rem 1.25rem;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         box-shadow: 0 2px 12px rgba(0, 26, 41, 0.03);
     }
@@ -16,13 +16,28 @@
         box-shadow: 0 6px 20px rgba(0, 26, 41, 0.08);
     }
     .stat-icon-box {
-        width: 48px;
-        height: 48px;
+        width: 38px;
+        height: 38px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.25rem;
+        font-size: 1rem;
+    }
+    .stat-label {
+        font-size: .95rem;
+        color: #475569;
+        font-weight: 500;
+    }
+    .stat-value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-top: .15rem;
+    }
+    .stat-subtitle {
+        font-size: .9rem;
+        color: #64748b;
     }
     .badge-semaforo-dot {
         width: 9px;
@@ -122,7 +137,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-2 px-md-3 py-2">
+<div class="container-fluid px-3 py-3">
 
     <div class="inventario-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
@@ -187,65 +202,57 @@
     <div class="row g-3 mb-4">
         <!-- Tarjeta 1: Recursos Totales -->
         <div class="col-6 col-md-3">
-            <div class="stat-card-clean h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="stat-card-clean h-100" style="border-color:rgba(2,136,209,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="stat-label">Recursos totales</span>
                     <div class="stat-icon-box" style="background-color: #E0F2FE; color: #0288D1;">
                         <i class="fas fa-cubes"></i>
                     </div>
-                    <div>
-                        <div class="text-muted small fw-semibold" style="font-size: 0.8rem;">Recursos totales</div>
-                        <div class="h3 fw-bold mb-0" style="color: #001A29;">{{ $totalRecursos }}</div>
-                        <small class="text-muted" style="font-size: 0.72rem;">{{ $totalUnidades ?? 0 }} unidades en catálogo</small>
-                    </div>
                 </div>
+                <div class="stat-value" style="color:#0288D1;">{{ $totalRecursos }}</div>
+                <div class="stat-subtitle">{{ $totalUnidades ?? 0 }} unidades en catálogo</div>
             </div>
         </div>
 
         <!-- Tarjeta 2: Unidades Disponibles (HU 15) -->
         <div class="col-6 col-md-3">
-            <div class="stat-card-clean h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="stat-card-clean h-100" style="border-color:rgba(22,163,74,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="stat-label">Recursos disponibles</span>
                     <div class="stat-icon-box" style="background-color: #DCFCE7; color: #16A34A;">
                         <i class="fas fa-circle-check"></i>
                     </div>
-                    <div>
-                        <div class="text-muted small fw-semibold" style="font-size: 0.8rem;">Recursos disponibles</div>
-                        <div class="h3 fw-bold mb-0 text-success">{{ $totalDisponibles ?? $activosCount }}</div>
-                        <small class="text-muted" style="font-size: 0.72rem;">Libres para actividades / asesorías</small>
-                    </div>
                 </div>
+                <div class="stat-value" style="color:#16A34A;">{{ $totalDisponibles ?? $activosCount }}</div>
+                <div class="stat-subtitle">Libres para actividades / asesorías</div>
             </div>
         </div>
 
         <!-- Tarjeta 3: Unidades Prestadas (HU 15) -->
         <div class="col-6 col-md-3">
-            <div class="stat-card-clean h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="stat-card-clean h-100" style="border-color:rgba(2,136,209,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="stat-label">Recursos prestados</span>
                     <div class="stat-icon-box" style="background-color: #E0F2FE; color: #0288D1;">
-                        <i class="fas fa-hand-holding-box"></i>
-                    </div>
-                    <div>
-                        <div class="text-muted small fw-semibold" style="font-size: 0.8rem;">Recursos prestados</div>
-                        <div class="h3 fw-bold mb-0" style="color: #0288D1;">{{ $totalPrestados ?? $asignadosHoyCount }}</div>
-                        <small class="text-muted" style="font-size: 0.72rem;">En uso / pendientes de devolución</small>
+                        <i class="fas fa-hand-holding"></i>
                     </div>
                 </div>
+                <div class="stat-value" style="color:#0288D1;">{{ $totalPrestados ?? $asignadosHoyCount }}</div>
+                <div class="stat-subtitle">En uso / pendientes de devolución</div>
             </div>
         </div>
 
         <!-- Tarjeta 4: Stock bajo / crítico -->
         <div class="col-6 col-md-3">
-            <div class="stat-card-clean h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="stat-card-clean h-100" style="border-color:rgba(234,88,12,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="stat-label">Stock bajo / crítico</span>
                     <div class="stat-icon-box" style="background-color: #FFEDD5; color: #EA580C;">
                         <i class="fas fa-triangle-exclamation"></i>
                     </div>
-                    <div>
-                        <div class="text-muted small fw-semibold" style="font-size: 0.8rem;">Stock bajo / crítico</div>
-                        <div class="h3 fw-bold mb-0 text-warning-emphasis">{{ $stockBajoCount }}</div>
-                        <small class="text-muted" style="font-size: 0.72rem;">{{ $bajasCount ?? 0 }} dado(s) de baja</small>
-                    </div>
                 </div>
+                <div class="stat-value" style="color:#EA580C;">{{ $stockBajoCount }}</div>
+                <div class="stat-subtitle">{{ $bajasCount ?? 0 }} dado(s) de baja</div>
             </div>
         </div>
     </div>

@@ -23,7 +23,7 @@ class FichaSyncController extends Controller
         $user = Auth::user();
 
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return redirect()
+            return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a la gestión de fichas de Control ECP.');
         }
@@ -83,7 +83,7 @@ class FichaSyncController extends Controller
             'status' => 'Conectado',
         ]);
 
-        return view('controlecp::administrador.fichas', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.fichas', compact(
             'fichas',
             'stats',
             'apiConfig',
@@ -113,7 +113,7 @@ class FichaSyncController extends Controller
         if (str_contains($url, 'controlecp/sicefa-fichas') || str_contains($url, '127.0.0.1') || str_contains($url, 'localhost')) {
             $mockData = $this->generateMockSicefaFichas();
             $latency = round((microtime(true) - $startTime) * 1000);
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'status' => 'connected',
                 'http_code' => 200,
@@ -143,7 +143,7 @@ class FichaSyncController extends Controller
                     }
                 }
 
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => true,
                     'status' => 'connected',
                     'http_code' => $response->status(),
@@ -153,7 +153,7 @@ class FichaSyncController extends Controller
                     'sample' => is_array($data) ? array_slice($data['data'] ?? $data, 0, 3) : [],
                 ]);
             } else {
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => false,
                     'status' => 'http_error',
                     'http_code' => $response->status(),
@@ -163,7 +163,7 @@ class FichaSyncController extends Controller
             }
         } catch (\Exception $e) {
             $latency = round((microtime(true) - $startTime) * 1000);
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'status' => 'connection_failed',
                 'latency_ms' => $latency,
@@ -213,7 +213,7 @@ class FichaSyncController extends Controller
                     $fichasData = $mockResponse['data'];
                 } catch (\Exception $e2) {
                     // HU9 — Si el mock también falla, conservar información existente e informar
-                    return response()->json([
+                    return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                         'success' => false,
                         'message' => 'No fue posible consultar SICEFA ni el servicio local: ' . $e->getMessage() . '. La información existente se conserva sin cambios.',
                         'error_type' => 'connection_failed',
@@ -223,7 +223,7 @@ class FichaSyncController extends Controller
         }
 
         if (!is_array($fichasData) || empty($fichasData)) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No se encontraron registros de fichas en la respuesta de la API Central.',
             ], 422);
@@ -235,7 +235,7 @@ class FichaSyncController extends Controller
 
         DB::beginTransaction();
         try {
-            foreach ($fichasData as $item) {
+            foreach ($fichasData as $item) { /* Recorre uno por uno los elementos de esta lista. */
                 if (empty($item['code'])) {
                     continue;
                 }
@@ -292,7 +292,7 @@ class FichaSyncController extends Controller
             ];
             Cache::store('file')->forever('controlecp_fichas_last_sync', $syncReport);
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => "¡Sincronización de fichas exitosa! {$processed} fichas procesadas ({$created} registradas, {$updated} actualizadas).",
                 'stats' => $syncReport,
@@ -300,7 +300,7 @@ class FichaSyncController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Error al registrar fichas en la base de datos: ' . $e->getMessage() . '. La información existente se conserva sin cambios.',
                 'error_type' => 'database_error',
@@ -315,7 +315,7 @@ class FichaSyncController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return redirect()->route('controlecp.administrador.fichas')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.administrador.fichas')
                 ->with('error', 'No tienes permisos para ver el detalle de fichas.');
         }
 
@@ -332,7 +332,7 @@ class FichaSyncController extends Controller
             'retirados'   => $ficha->apprentices->whereIn('apprentice_status', ['RETIRO VOLUNTARIO', 'CANCELADO'])->count(),
         ];
 
-        return view('controlecp::administrador.fichas_show', compact('ficha', 'statsAprendices'));
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.fichas_show', compact('ficha', 'statsAprendices'));
     }
 
     // ══════════════════════════════════════════════════════════
@@ -347,7 +347,7 @@ class FichaSyncController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $ficha = Course::withCount([
@@ -357,12 +357,12 @@ class FichaSyncController extends Controller
         ])->findOrFail($id);
 
         if ($ficha->status === 'Inactivo') {
-            return response()->json(['success' => false, 'message' => 'La ficha ya está inactiva.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'La ficha ya está inactiva.']);
         }
 
         // HU6 — No se puede desactivar si tiene aprendices en formación
         if ($ficha->aprendices_activos_count > 0) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => "No se puede desactivar la ficha {$ficha->code}: tiene {$ficha->aprendices_activos_count} aprendice(s) EN FORMACIÓN. Primero cambia su estado en SICEFA.",
             ]);
@@ -371,7 +371,7 @@ class FichaSyncController extends Controller
         $ficha->status = 'Inactivo';
         $ficha->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "La ficha {$ficha->code} fue desactivada exitosamente y retirada de las fichas activas.",
         ]);
@@ -384,19 +384,19 @@ class FichaSyncController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $ficha = Course::findOrFail($id);
 
         if ($ficha->status === 'Activo') {
-            return response()->json(['success' => false, 'message' => 'La ficha ya está activa.']);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'La ficha ya está activa.']);
         }
 
         $ficha->status = 'Activo';
         $ficha->save();
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => "La ficha {$ficha->code} fue reactivada y ya aparece entre las fichas activas.",
         ]);
@@ -410,7 +410,7 @@ class FichaSyncController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $ficha = Course::findOrFail($id);
@@ -462,7 +462,7 @@ class FichaSyncController extends Controller
             }
         } catch (\Exception $e) {
             // HU9 — Error de conexión: informar sin alterar datos existentes
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => "No se pudo consultar los aprendices en SICEFA: {$e->getMessage()}. La información existente se conserva sin cambios.",
                 'ficha_code' => $ficha->code,
@@ -470,7 +470,7 @@ class FichaSyncController extends Controller
         }
 
         if (!is_array($aprendicesData) || empty($aprendicesData)) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => "La API no retornó aprendices para la ficha {$ficha->code}.",
             ], 422);
@@ -485,7 +485,7 @@ class FichaSyncController extends Controller
             $defaultPopGroupId  = \Modules\SICA\Entities\PopulationGroup::first()?->id ?? 1;
             $defaultPensionId   = \Modules\SICA\Entities\PensionEntity::first()?->id ?? 1;
 
-            foreach ($aprendicesData as $item) {
+            foreach ($aprendicesData as $item) { /* Recorre uno por uno los elementos de esta lista. */
                 $docNum = trim($item['document_number'] ?? '');
                 if (empty($docNum)) {
                     continue;
@@ -538,7 +538,7 @@ class FichaSyncController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => "Aprendices de la ficha {$ficha->code} sincronizados desde {$sourceLabel}: {$created} nuevos agregados, {$updated} actualizados.",
                 'created' => $created,
@@ -548,7 +548,7 @@ class FichaSyncController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Error al guardar los aprendices: ' . $e->getMessage() . '. La información existente se conserva sin cambios.',
             ], 500);
@@ -563,7 +563,7 @@ class FichaSyncController extends Controller
         $course = Course::with(['program', 'apprentices.person'])->findOrFail($id);
 
         $aprendicesList = [];
-        foreach ($course->apprentices as $appr) {
+        foreach ($course->apprentices as $appr) { /* Recorre uno por uno los elementos de esta lista. */
             $p = $appr->person;
             if ($p) {
                 $aprendicesList[] = [
@@ -578,7 +578,7 @@ class FichaSyncController extends Controller
             }
         }
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'ficha_code' => $course->code,
             'program_name' => $course->program ? $course->program->name : 'Sin programa',
@@ -612,7 +612,7 @@ class FichaSyncController extends Controller
 
         Cache::store('file')->forever('controlecp_fichas_api_config', $config);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'message' => 'Configuración de la API de Fichas guardada correctamente.',
             'config' => $config,
@@ -625,7 +625,7 @@ class FichaSyncController extends Controller
     public function mockSicefaFichasApi(Request $request)
     {
         $response = $this->generateMockSicefaFichas();
-        return response()->json($response);
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json($response);
     }
 
     /**
@@ -636,7 +636,7 @@ class FichaSyncController extends Controller
         $dbCourses = Course::with(['program'])->withCount('apprentices')->take(20)->get();
 
         $data = [];
-        foreach ($dbCourses as $c) {
+        foreach ($dbCourses as $c) { /* Recorre uno por uno los elementos de esta lista. */
             $data[] = [
                 'code' => (string) $c->code,
                 'program_name' => $c->program ? $c->program->name : 'GESTIÓN DE EMPRESAS AGROPECUARIAS',
@@ -649,7 +649,7 @@ class FichaSyncController extends Controller
             ];
         }
 
-        return [
+        return /* Devuelve el resultado de este m�todo. */ [
             'status' => 'success',
             'api_version' => 'v1',
             'source' => 'API Académica Central SICEFA / SOFIA Plus (Centro La Angostura)',

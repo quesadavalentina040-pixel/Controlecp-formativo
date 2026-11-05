@@ -29,6 +29,6 @@ class EncuestaRespuestaDetalle extends Model
 
     public function opcion()
     {
-        return $this->belongsTo(OpcionPregunta::class, 'id_opcion_pregunta', 'id_opcion_pregunta');
+        return $this->belongsTo(OpcionPregunta::class, 'id_opcion_pregunta', 'id');
     }
 }

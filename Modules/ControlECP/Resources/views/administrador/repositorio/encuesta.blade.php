@@ -24,6 +24,38 @@
         transition: transform .2s ease, box-shadow .2s ease;
     }
 
+    .encuesta-kpi {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 4px 16px rgba(0, 26, 41, .06);
+        border: 2px solid transparent;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .encuesta-kpi:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 26, 41, .1);
+    }
+
+    .encuesta-kpi-value {
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1;
+        margin-top: .15rem;
+    }
+
+    .encuesta-kpi-label {
+        font-size: .95rem;
+        color: #475569;
+        font-weight: 500;
+    }
+
+    .encuesta-kpi-subtitle {
+        font-size: .9rem;
+        color: #64748b;
+    }
+
     /* Botones primarios SENA */
     .btn-ecp-primary {
         background-color: var(--verde-ecp);
@@ -254,7 +286,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-3 py-3" style="max-width: 1300px; margin: 0 auto;">
+<div class="container-fluid px-3 py-3">
 
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1090;">
         @if(session('success'))
@@ -326,54 +358,55 @@
         </div>
     </div>
 
-    <div class="encuesta-card p-4 mb-4">
-        <hr class="my-3" style="border-color: var(--gris-ecp-borde);">
-        <div class="row g-3 text-center text-md-start">
+    <div class="row g-3 mb-4">
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: #e0f2fe; color: #0284c7;">
-                        <i class="fas fa-square-poll-vertical fs-5"></i>
+                <div class="encuesta-kpi" style="border-color:rgba(2,132,199,.35);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="encuesta-kpi-label">Total encuestas</span>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #e0f2fe; color: #0284c7;">
+                            <i class="fas fa-square-poll-vertical"></i>
+                        </div>
                     </div>
-                    <div>
-                        <div class="fw-bold fs-5 text-dark">{{ $indicadores['total'] ?? 0 }}</div>
-                        <small class="text-muted">Total encuestas</small>
-                    </div>
+                    <div class="encuesta-kpi-value" style="color:#0284c7;">{{ $indicadores['total'] ?? 0 }}</div>
+                    <div class="encuesta-kpi-subtitle">Registradas</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: var(--verde-ecp-claro); color: #15803d;">
-                        <i class="fas fa-circle-check fs-5"></i>
+                <div class="encuesta-kpi" style="border-color:rgba(21,128,61,.35);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="encuesta-kpi-label">Activas</span>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: var(--verde-ecp-claro); color: #15803d;">
+                            <i class="fas fa-circle-check"></i>
+                        </div>
                     </div>
-                    <div>
-                        <div class="fw-bold fs-5 text-dark">{{ $indicadores['activas'] ?? 0 }}</div>
-                        <small class="text-muted">Activas (disponibles)</small>
-                    </div>
+                    <div class="encuesta-kpi-value" style="color:#15803d;">{{ $indicadores['activas'] ?? 0 }}</div>
+                    <div class="encuesta-kpi-subtitle">Disponibles</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: #fef3c7; color: #b45309;">
-                        <i class="fas fa-pen-ruler fs-5"></i>
+                <div class="encuesta-kpi" style="border-color:rgba(180,83,9,.35);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="encuesta-kpi-label">Borradores</span>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #fef3c7; color: #b45309;">
+                            <i class="fas fa-pen-ruler"></i>
+                        </div>
                     </div>
-                    <div>
-                        <div class="fw-bold fs-5 text-dark">{{ $indicadores['borradores'] ?? 0 }}</div>
-                        <small class="text-muted">Borradores en diseño</small>
-                    </div>
+                    <div class="encuesta-kpi-value" style="color:#b45309;">{{ $indicadores['borradores'] ?? 0 }}</div>
+                    <div class="encuesta-kpi-subtitle">En diseño</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px; background: #fee2e2; color: #b91c1c;">
-                        <i class="fas fa-ban fs-5"></i>
+                <div class="encuesta-kpi" style="border-color:rgba(185,28,28,.35);">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="encuesta-kpi-label">Inactivas</span>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #fee2e2; color: #b91c1c;">
+                            <i class="fas fa-ban"></i>
+                        </div>
                     </div>
-                    <div>
-                        <div class="fw-bold fs-5 text-dark">{{ $indicadores['inactivas'] ?? 0 }}</div>
-                        <small class="text-muted">Inactivas</small>
-                    </div>
+                    <div class="encuesta-kpi-value" style="color:#b91c1c;">{{ $indicadores['inactivas'] ?? 0 }}</div>
+                    <div class="encuesta-kpi-subtitle">No disponibles</div>
                 </div>
             </div>
-        </div>
     </div>
 
     <div class="encuesta-card p-3 mb-4">

@@ -74,6 +74,11 @@ class Cronograma extends Model
                     ->orderBy('created_at', 'desc');
     }
 
+    public function asistencia()
+    {
+        return $this->hasOne(Asistencia::class, 'cronograma_id', 'id_cronograma');
+    }
+
     // ── ACCESORES / LÓGICA DE NEGOCIO (HU-006) ───────────────────
 
     /**

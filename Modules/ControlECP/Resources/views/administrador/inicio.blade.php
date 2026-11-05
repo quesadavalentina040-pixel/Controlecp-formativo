@@ -62,12 +62,9 @@
 /* ── Tarjetas de resumen ── */
 .stat-card {
     background: #fff;
-    border: 1px solid #e0ece4;
+    border: 2px solid transparent;
     border-radius: 14px;
-    padding: 1.35rem 1.4rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
+    padding: 1rem 1.25rem;
     height: 100%;
     transition: transform .18s, box-shadow .18s;
 }
@@ -76,13 +73,13 @@
     box-shadow: 0 8px 24px rgba(0,50,77,.09);
 }
 .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 13px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1rem;
     flex-shrink: 0;
 }
 .si-green  { background: #d8f3dc; color: #39A900; }
@@ -96,19 +93,17 @@
     font-weight: 800;
     color: #001A29;
     line-height: 1;
+    margin-top: .15rem;
 }
 .stat-body .stat-label {
-    font-size: .76rem;
-    color: #52796f;
-    font-weight: 700;
-    margin-top: .25rem;
-    text-transform: uppercase;
-    letter-spacing: .5px;
+    font-size: .95rem;
+    color: #475569;
+    font-weight: 500;
 }
 .stat-body .stat-hint {
-    font-size: .72rem;
-    color: #94a3b8;
-    margin-top: .2rem;
+    font-size: .9rem;
+    color: #64748b;
+    margin-top: .35rem;
 }
 
 /* ── Tarjetas de alerta ── */
@@ -195,6 +190,8 @@
 
 @section('dashboard-content')
 
+<div class="container-fluid px-3 py-3">
+
 {{-- ════════════════════════════════════════════════
      BIENVENIDA Y CABECERA
 ════════════════════════════════════════════════ --}}
@@ -223,13 +220,13 @@
     {{-- Total usuarios activos --}}
     <div class="col-12 col-sm-6">
         <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? route('controlecp.administrador.usuarios') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.usuarios') ? 'false' : 'true' }}">
-            <div class="stat-card">
-                <div class="stat-icon si-green">
-                    <i class="fas fa-users"></i>
-                </div>
+            <div class="stat-card" style="border-color:rgba(57,169,0,.35);">
                 <div class="stat-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-label">Total usuarios en Control ECP</div>
+                        <div class="stat-icon si-green"><i class="fas fa-users"></i></div>
+                    </div>
                     <div class="stat-value">{{ $totalUsuariosEcp ?? 18 }}</div>
-                    <div class="stat-label">Total Usuarios en Control ECP</div>
                     <div class="stat-hint">
                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0">
                             {{ $conteoAdmins ?? 2 }} Admin
@@ -254,13 +251,13 @@
     {{-- Total fichas activas --}}
     <div class="col-12 col-sm-6">
         <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? route('controlecp.administrador.fichas') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.fichas') ? 'false' : 'true' }}">
-            <div class="stat-card">
-                <div class="stat-icon si-blue">
-                    <i class="fas fa-id-card"></i>
-                </div>
+            <div class="stat-card" style="border-color:rgba(0,112,184,.35);">
                 <div class="stat-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-label">Total de fichas activas</div>
+                        <div class="stat-icon si-blue"><i class="fas fa-id-card"></i></div>
+                    </div>
                     <div class="stat-value">{{ $totalFichasActivas ?? 115 }}</div>
-                    <div class="stat-label">Total de Fichas Activas</div>
                     <div class="stat-hint">
                         Cursos activos de un total de <strong>{{ $totalFichas ?? 537 }}</strong> fichas en SICEFA
                     </div>
@@ -272,13 +269,13 @@
     {{-- Actividades programadas para hoy --}}
     <div class="col-12 col-sm-6">
         <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.cronograma') ? route('controlecp.administrador.cronograma') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.cronograma') ? 'false' : 'true' }}">
-            <div class="stat-card">
-                <div class="stat-icon si-amber">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
+            <div class="stat-card" style="border-color:rgba(217,119,6,.35);">
                 <div class="stat-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-label">Actividades programadas para hoy</div>
+                        <div class="stat-icon si-amber"><i class="fas fa-calendar-check"></i></div>
+                    </div>
                     <div class="stat-value">{{ $actividadesHoy ?? 3 }}</div>
-                    <div class="stat-label">Actividades Programadas para Hoy</div>
                     <div class="stat-hint">Sesiones y talleres de convivencia del día</div>
                 </div>
             </div>
@@ -288,13 +285,13 @@
     {{-- Solicitudes pendientes --}}
     <div class="col-12 col-sm-6">
         <a href="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.pqr') ? route('controlecp.administrador.pqr') : '#' }}" class="text-decoration-none" aria-disabled="{{ \Illuminate\Support\Facades\Route::has('controlecp.administrador.pqr') ? 'false' : 'true' }}">
-            <div class="stat-card">
-                <div class="stat-icon si-purple">
-                    <i class="fas fa-clock"></i>
-                </div>
+            <div class="stat-card" style="border-color:rgba(124,58,237,.35);">
                 <div class="stat-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="stat-label">Solicitudes pendientes</div>
+                        <div class="stat-icon si-purple"><i class="fas fa-clock"></i></div>
+                    </div>
                     <div class="stat-value">{{ $solicitudesPendientes ?? 0 }}</div>
-                    <div class="stat-label">Solicitudes Pendientes</div>
                     <div class="stat-hint">
                         @if(($solicitudesPendientes ?? 0) > 0)
                             <span class="text-danger fw-semibold">Requieren atención inmediata</span>
@@ -398,6 +395,8 @@
             </div>
         </div>
     </div>
+
+</div>
 
 </div>
 

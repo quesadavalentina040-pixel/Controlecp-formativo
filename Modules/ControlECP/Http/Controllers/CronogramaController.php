@@ -29,7 +29,7 @@ class CronogramaController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return redirect()->route('controlecp.index')
+            return /* Env�a al usuario a la ruta indicada despu�s de terminar la acci�n. */ redirect()->route('controlecp.index')
                 ->with('error', 'No tienes permisos para acceder a la gestión de cronograma.');
         }
 
@@ -100,9 +100,9 @@ class CronogramaController extends Controller
             $filtroSem = $request->semaforo;
             $todasSesiones = $todasSesiones->filter(function ($item) use ($filtroSem) {
                 if ($filtroSem === 'sin_color') {
-                    return is_null($item->semaforo);
+                    return /* Devuelve el resultado de este m�todo. */ is_null($item->semaforo);
                 }
-                return $item->semaforo === $filtroSem;
+                return /* Devuelve el resultado obtenido de la consulta o acci�n. */ $item->semaforo === $filtroSem;
             });
         }
 
@@ -114,7 +114,7 @@ class CronogramaController extends Controller
         $conteoPospuestas = 0;
         $conteoFinalizadas = 0;
 
-        foreach ($todasParaEstadisticas as $sesion) {
+        foreach ($todasParaEstadisticas as $sesion) { /* Recorre uno por uno los elementos de esta lista. */
             if ($sesion->estado === 'Pospuesta') {
                 $conteoPospuestas++;
             } elseif ($sesion->estado === 'Finalizada') {
@@ -173,7 +173,7 @@ class CronogramaController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        return view('controlecp::administrador.cronograma', compact(
+        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.cronograma', compact(
             'todasSesiones',
             'stats',
             'fichas',
@@ -224,7 +224,7 @@ class CronogramaController extends Controller
             $p = $sesion->instructor?->person;
             $nomInstructor = $p ? "{$p->first_name} {$p->first_last_name}" : ($sesion->instructor?->nickname ?? 'Sin asignar');
 
-            return [
+            return /* Devuelve el resultado de este m�todo. */ [
                 'id'                 => $sesion->id_cronograma,
                 'titulo'             => $sesion->titulo_calendario, // Criterio 1: Actividad X – Momento Y
                 'actividad_nombre'   => $sesion->actividad?->nombre ?? 'Actividad',
@@ -256,7 +256,7 @@ class CronogramaController extends Controller
             ];
         });
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'data'    => $eventos,
         ]);
@@ -280,7 +280,7 @@ class CronogramaController extends Controller
         ])->find($id);
 
         if (!$sesion) {
-            return response()->json(['success' => false, 'message' => 'Sesión no encontrada.'], 404);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sesión no encontrada.'], 404);
         }
 
         $p = $sesion->instructor?->person;
@@ -289,7 +289,7 @@ class CronogramaController extends Controller
         $c = $sesion->creador?->person;
         $nomCreador = $c ? "{$c->first_name} {$c->first_last_name}" : ($sesion->creador?->nickname ?? 'Administrador');
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
             'data'    => [
                 'id_cronograma'      => $sesion->id_cronograma,
@@ -331,7 +331,7 @@ class CronogramaController extends Controller
                     $nue = $h->instructorNuevo?->person;
                     $nomNue = $nue ? "{$nue->first_name} {$nue->first_last_name}" : null;
 
-                    return [
+                    return /* Devuelve el resultado de este m�todo. */ [
                         'accion'              => $h->accion,
                         'motivo'              => $h->motivo,
                         'fecha_anterior'      => $h->fecha_anterior ? Carbon::parse($h->fecha_anterior)->toDateString() : null,
@@ -356,7 +356,7 @@ class CronogramaController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         // Criterio 2: Validar campos obligatorios
@@ -395,7 +395,7 @@ class CronogramaController extends Controller
         );
 
         if ($conflicto) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => $conflicto,
                 'field'   => 'id_instructor',
@@ -406,7 +406,7 @@ class CronogramaController extends Controller
         $recursosAAsociar = $request->input('recursos', []);
         $validacionRecursos = $this->validarRecursosDisponibles($recursosAAsociar);
         if ($validacionRecursos !== true) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => $validacionRecursos,
                 'field'   => 'recursos',
@@ -429,7 +429,7 @@ class CronogramaController extends Controller
             ]);
 
             // Criterio 4: Asociar recursos y reservar
-            foreach ($recursosAAsociar as $itemRecurso) {
+            foreach ($recursosAAsociar as $itemRecurso) { /* Recorre uno por uno los elementos de esta lista. */
                 CronogramaRecurso::create([
                     'id_cronograma' => $cronograma->id_cronograma,
                     'id_inventario' => $itemRecurso['id_inventario'],
@@ -470,7 +470,7 @@ class CronogramaController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => '¡Actividad programada exitosamente con estado Pendiente!',
                 'data'    => [
@@ -480,7 +480,7 @@ class CronogramaController extends Controller
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'Error al guardar la programación: ' . $e->getMessage(),
             ], 500);
@@ -495,12 +495,12 @@ class CronogramaController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $cronograma = Cronograma::with('recursos')->find($id);
         if (!$cronograma) {
-            return response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
 
         $request->validate([
@@ -525,7 +525,7 @@ class CronogramaController extends Controller
         );
 
         if ($conflicto) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => $conflicto,
                 'field'   => 'hora_inicio',
@@ -537,7 +537,7 @@ class CronogramaController extends Controller
             $fechaAnterior = $cronograma->fecha;
 
             // Devolver cantidades anteriores de recursos a inventario
-            foreach ($cronograma->recursos as $recursoViejo) {
+            foreach ($cronograma->recursos as $recursoViejo) { /* Recorre uno por uno los elementos de esta lista. */
                 $inv = Inventario::find($recursoViejo->id_inventario);
                 if ($inv) {
                     $inv->increment('cantidad_disponible', $recursoViejo->cantidad);
@@ -551,10 +551,10 @@ class CronogramaController extends Controller
             $valRecursos = $this->validarRecursosDisponibles($nuevosRecursos);
             if ($valRecursos !== true) {
                 DB::rollBack();
-                return response()->json(['success' => false, 'message' => $valRecursos], 422);
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => $valRecursos], 422);
             }
 
-            foreach ($nuevosRecursos as $item) {
+            foreach ($nuevosRecursos as $item) { /* Recorre uno por uno los elementos de esta lista. */
                 CronogramaRecurso::create([
                     'id_cronograma' => $cronograma->id_cronograma,
                     'id_inventario' => $item['id_inventario'],
@@ -601,13 +601,13 @@ class CronogramaController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => '¡Programación actualizada correctamente!',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error al actualizar: ' . $e->getMessage()], 500);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Error al actualizar: ' . $e->getMessage()], 500);
         }
     }
 
@@ -619,12 +619,12 @@ class CronogramaController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $cronograma = Cronograma::with(['actividad', 'ficha'])->find($id);
         if (!$cronograma) {
-            return response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
 
         $request->validate([
@@ -640,7 +640,7 @@ class CronogramaController extends Controller
         $instructorAnteriorId = (int) $cronograma->id_instructor;
 
         if ($nuevoInstructorId === $instructorAnteriorId) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'El instructor seleccionado ya es el responsable actual.',
             ], 422);
@@ -656,7 +656,7 @@ class CronogramaController extends Controller
         );
 
         if ($conflicto) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => "Conflicto: {$conflicto}",
                 'field'   => 'nuevo_instructor_id',
@@ -708,13 +708,13 @@ class CronogramaController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => '¡Instructor reasignado con éxito y notificaciones enviadas a ambos instructores!',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error al reasignar: ' . $e->getMessage()], 500);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Error al reasignar: ' . $e->getMessage()], 500);
         }
     }
 
@@ -726,12 +726,12 @@ class CronogramaController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $cronograma = Cronograma::with('actividad')->find($id);
         if (!$cronograma) {
-            return response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
 
         $request->validate([
@@ -759,7 +759,7 @@ class CronogramaController extends Controller
         );
 
         if ($conflicto) {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => "No se puede posponer a esa fecha/hora: {$conflicto}",
                 'field'   => 'nueva_fecha',
@@ -806,13 +806,13 @@ class CronogramaController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => '¡Actividad pospuesta con éxito! Estado actualizado a "Pospuesta" y reubicada en la nueva fecha.',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error al posponer: ' . $e->getMessage()], 500);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Error al posponer: ' . $e->getMessage()], 500);
         }
     }
 
@@ -824,17 +824,17 @@ class CronogramaController extends Controller
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
-            return response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
         $cronograma = Cronograma::with('recursos')->find($id);
         if (!$cronograma) {
-            return response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
 
         // Criterio 9: NO permitir eliminar si ya tiene asistencia registrada o si fue finalizada
         if ($cronograma->estado === 'Finalizada') {
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
                 'message' => 'No es posible eliminar una programación que ya ha sido Finalizada.',
             ], 422);
@@ -844,7 +844,7 @@ class CronogramaController extends Controller
         if (Schema::hasTable('asistencias') && Schema::hasColumn('asistencias', 'id_cronograma')) {
             $tieneAsistencia = DB::table('asistencias')->where('id_cronograma', $cronograma->id_cronograma)->exists();
             if ($tieneAsistencia) {
-                return response()->json([
+                return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => false,
                     'message' => 'No se puede eliminar la programación porque ya cuenta con asistencia registrada.',
                 ], 422);
@@ -854,7 +854,7 @@ class CronogramaController extends Controller
         DB::beginTransaction();
         try {
             // Devolver cantidades reservadas de inventario
-            foreach ($cronograma->recursos as $recurso) {
+            foreach ($cronograma->recursos as $recurso) { /* Recorre uno por uno los elementos de esta lista. */
                 $inv = Inventario::find($recurso->id_inventario);
                 if ($inv) {
                     $inv->increment('cantidad_disponible', $recurso->cantidad);
@@ -881,13 +881,13 @@ class CronogramaController extends Controller
 
             DB::commit();
 
-            return response()->json([
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
                 'message' => '¡Programación eliminada con éxito y recursos liberados en el inventario!',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Error al eliminar: ' . $e->getMessage()], 500);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Error al eliminar: ' . $e->getMessage()], 500);
         }
     }
 
@@ -903,12 +903,12 @@ class CronogramaController extends Controller
         $excludeId = $request->filled('exclude_id') ? (int) $request->input('exclude_id') : null;
 
         if (!$instructorId || !$fecha || !$horaInicio || !$horaFin) {
-            return response()->json(['disponible' => true]);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['disponible' => true]);
         }
 
         $conflicto = $this->validarDisponibilidadInstructor($instructorId, $fecha, $horaInicio, $horaFin, $excludeId);
 
-        return response()->json([
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'disponible' => is_null($conflicto),
             'mensaje'    => $conflicto,
         ]);
@@ -947,7 +947,7 @@ class CronogramaController extends Controller
         if ($conflictoCronograma) {
             $nombreAct = $conflictoCronograma->actividad?->nombre ?? 'Actividad ECP';
             $horario = $conflictoCronograma->horario_formateado;
-            return "El instructor ya tiene la actividad '{$nombreAct}' programada en esa fecha ({$horario}).";
+            return /* Devuelve el resultado de este m�todo. */ "El instructor ya tiene la actividad '{$nombreAct}' programada en esa fecha ({$horario}).";
         }
 
         // 2. Validar en asesorias (si existe la tabla)
@@ -963,7 +963,7 @@ class CronogramaController extends Controller
                 ->first();
 
             if ($conflictoAsesoria) {
-                return "El instructor tiene una Asesoría programada en ese horario ({$conflictoAsesoria->hora_inicio} - {$conflictoAsesoria->hora_fin}).";
+                return /* Devuelve el resultado de este m�todo. */ "El instructor tiene una Asesoría programada en ese horario ({$conflictoAsesoria->hora_inicio} - {$conflictoAsesoria->hora_fin}).";
             }
         }
 
@@ -984,11 +984,11 @@ class CronogramaController extends Controller
                 ->first();
 
             if ($conflictoAcomp) {
-                return "El instructor tiene una sesión de Acompañamiento en ese horario.";
+                return /* Devuelve el resultado de este m�todo. */ "El instructor tiene una sesión de Acompañamiento en ese horario.";
             }
         }
 
-        return null;
+        return /* Indica que no hay informaci�n para devolver. */ null;
     }
 
     /**
@@ -996,28 +996,28 @@ class CronogramaController extends Controller
      */
     private function validarRecursosDisponibles(array $recursos): bool|string
     {
-        foreach ($recursos as $item) {
+        foreach ($recursos as $item) { /* Recorre uno por uno los elementos de esta lista. */
             $idInv = (int) ($item['id_inventario'] ?? 0);
             $cantRequerida = (int) ($item['cantidad'] ?? 0);
 
             if ($cantRequerida <= 0) {
-                return "La cantidad solicitada para cada recurso debe ser mayor a 0.";
+                return /* Devuelve el resultado de este m�todo. */ "La cantidad solicitada para cada recurso debe ser mayor a 0.";
             }
 
             $inventario = Inventario::find($idInv);
             if (!$inventario) {
-                return "Uno de los recursos seleccionados no existe en el inventario.";
+                return /* Devuelve el resultado de este m�todo. */ "Uno de los recursos seleccionados no existe en el inventario.";
             }
 
             if ($inventario->estado === 'Inactivo') {
-                return "El recurso '{$inventario->nombre}' está inactivo y no puede asignarse.";
+                return /* Devuelve el resultado de este m�todo. */ "El recurso '{$inventario->nombre}' está inactivo y no puede asignarse.";
             }
 
             if ($inventario->cantidad_disponible < $cantRequerida) {
-                return "El recurso '{$inventario->nombre}' no tiene suficiente disponibilidad. Disponible: {$inventario->cantidad_disponible}, solicitado: {$cantRequerida}.";
+                return /* Devuelve el resultado de este m�todo. */ "El recurso '{$inventario->nombre}' no tiene suficiente disponibilidad. Disponible: {$inventario->cantidad_disponible}, solicitado: {$cantRequerida}.";
             }
         }
 
-        return true;
+        return /* Indica si la operaci�n fue exitosa o no. */ true;
     }
 }

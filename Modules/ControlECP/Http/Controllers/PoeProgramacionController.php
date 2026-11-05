@@ -23,11 +23,11 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
     {
         $usuario = Auth::user(); // Auth::user() devuelve la cuenta autenticada o null si no hay sesión.
         if (!$usuario || !$usuario->hasRole('controlecp.admin')) { // Comprueba que exista sesión y tenga el rol administrador requerido.
-            return redirect() // route() prepara el destino y with() adjunta un aviso temporal para la página siguiente.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // route() prepara el destino y with() adjunta un aviso temporal para la página siguiente.
                 ->route('controlecp.index')
                 ->with('error', 'No tienes permisos para gestionar programaciones.');
         }
-        return null; // Devuelve null para señalar que el usuario sí puede continuar.
+        return /* Indica que no hay informaci�n para devolver. */ null; // Devuelve null para señalar que el usuario sí puede continuar.
     }
 
     /**
@@ -36,7 +36,7 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
     public function index(Request $request) // index(): Actualiza estados vencidos y consulta programaciones filtradas; se usa al cargar el listado o modal.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Detiene la acción cuando el control de acceso ya preparó una redirección.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $this->poeService->actualizarEstadosAtrasadas(); // Recalcular atrasadas al consultar | Actualiza el estado de las entregas vencidas antes de construir el resultado mostrado.
@@ -59,7 +59,7 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
 
         $programaciones = $query->get()->map(function ($p) { // get() ejecuta la consulta; map() transforma los modelos en datos apropiados para JSON.
             $estadoVisual = $p->cancelada ? 'Cancelada' : $p->estado; // Muestra «Cancelada» cuando la bandera está activa; en caso contrario usa el estado registrado.
-            return [ // Arma cada registro con valores relacionados y fechas preparadas para la interfaz.
+            return /* Devuelve el resultado de este m�todo. */ [ // Arma cada registro con valores relacionados y fechas preparadas para la interfaz.
                 'id_poe_programacion'     => $p->id_poe_programacion,
                 'id_poe'                  => $p->id_poe,
                 'poe_codigo'              => $p->poe?->codigo ?? 'N/A',
@@ -78,7 +78,7 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
             ];
         });
 
-        return response()->json([ // Devuelve la colección transformada en una respuesta JSON para la página o el modal.
+        return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve la colección transformada en una respuesta JSON para la página o el modal.
             'programaciones' => $programaciones,
         ]);
     }
@@ -89,7 +89,7 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
     public function store(PoeProgramacionRequest $request, $idPoe) // store(): Valida y programa la fecha de entrega de un POE; se usa al registrar una nueva programación.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Si falla la comprobación de administrador, termina con la redirección preparada.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $poe = Poe::findOrFail($idPoe); // Busca el POE solicitado o responde 404 cuando el identificador no corresponde a uno existente.
@@ -97,17 +97,17 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
         try {
             $this->poeService->programarSubida($poe, $request->validated(), Auth::user()); // validated() entrega solo campos aprobados por PoeProgramacionRequest; Auth::user() identifica al autor.
 
-            return redirect() // Al guardar correctamente, regresa al repositorio y muestra confirmación temporal.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Al guardar correctamente, regresa al repositorio y muestra confirmación temporal.
                 ->route('controlecp.administrador.repositorio.poe.index')
                 ->with('success', "¡Programación registrada exitosamente para el POE {$poe->codigo}!");
         } catch (\Illuminate\Validation\ValidationException $ve) {
             $msg = collect($ve->errors())->flatten()->first(); // Convierte los errores de validación en una lista y toma el primer mensaje para mostrarlo.
-            return redirect() // Vuelve al formulario, conserva los valores enviados y presenta el mensaje de validación.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Vuelve al formulario, conserva los valores enviados y presenta el mensaje de validación.
                 ->back()
                 ->withInput()
                 ->with('error', $msg);
         } catch (\Throwable $e) {
-            return redirect() // Captura otros fallos y vuelve al formulario mostrando su causa.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Captura otros fallos y vuelve al formulario mostrando su causa.
                 ->back()
                 ->withInput()
                 ->with('error', 'Error al programar: ' . $e->getMessage());
@@ -120,7 +120,7 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
     public function reprogramar(Request $request, $idProgramacion) // reprogramar(): Valida y cambia fecha o líder con su motivo; se usa al reprogramar una entrega existente.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Impide que usuarios sin rol administrador modifiquen programaciones.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $request->validate([ // validate() verifica campos obligatorios, formatos, fechas válidas y límites; falla si algo no cumple.
@@ -140,16 +140,16 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
         try {
             $this->poeService->reprogramar($prog, $request->only(['fecha_limite', 'id_usuario_nuevo_lider', 'motivo_cambio']), Auth::user()); // only() limita los campos entregados al servicio y Auth::user() identifica quién reprograma.
 
-            return redirect() // Confirma el cambio y regresa al listado.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Confirma el cambio y regresa al listado.
                 ->route('controlecp.administrador.repositorio.poe.index')
                 ->with('success', "¡Programación del POE {$prog->poe?->codigo} reprogramada exitosamente!");
         } catch (\Illuminate\Validation\ValidationException $ve) {
             $msg = collect($ve->errors())->flatten()->first(); // Extrae el primer mensaje de validación producido por las reglas del servicio.
-            return redirect() // Vuelve a la página anterior con el mensaje temporal de error.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Vuelve a la página anterior con el mensaje temporal de error.
                 ->back()
                 ->with('error', $msg);
         } catch (\Throwable $e) {
-            return redirect() // Maneja otros errores sin exponer una respuesta técnica directa al navegador.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Maneja otros errores sin exponer una respuesta técnica directa al navegador.
                 ->back()
                 ->with('error', 'Error al reprogramar: ' . $e->getMessage());
         }
@@ -161,7 +161,7 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
     public function cancelar(Request $request, $idProgramacion) // cancelar(): Valida el motivo y cancela una programación; se usa al retirar una entrega pendiente.
     {
         if ($res = $this->verificarAccesoAdmin()) { // Requiere el rol administrador para cambiar el estado de una programación.
-            return $res;
+            return /* Devuelve el resultado de este m�todo. */ $res;
         }
 
         $request->validate([ // validate() exige un motivo de texto con longitud permitida antes de efectuar la cancelación.
@@ -176,16 +176,16 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
         try {
             $this->poeService->cancelar($prog, $request->input('motivo_cambio'), Auth::user()); // Envía el motivo y el usuario que ejecuta la cancelación al servicio de negocio.
 
-            return redirect() // Regresa al repositorio con una confirmación para la interfaz.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Regresa al repositorio con una confirmación para la interfaz.
                 ->route('controlecp.administrador.repositorio.poe.index')
                 ->with('success', "¡Programación del POE {$prog->poe?->codigo} cancelada exitosamente!");
         } catch (\Illuminate\Validation\ValidationException $ve) {
             $msg = collect($ve->errors())->flatten()->first(); // Toma el primer error de validación para informar por qué no se realizó la acción.
-            return redirect() // Regresa a la página previa y comunica el error como dato temporal de sesión.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Regresa a la página previa y comunica el error como dato temporal de sesión.
                 ->back()
                 ->with('error', $msg);
         } catch (\Throwable $e) {
-            return redirect() // Captura fallos no previstos y muestra un mensaje en la página anterior.
+            return /* Devuelve el resultado de este m�todo. */ redirect() // Captura fallos no previstos y muestra un mensaje en la página anterior.
                 ->back()
                 ->with('error', 'Error al cancelar: ' . $e->getMessage());
         }

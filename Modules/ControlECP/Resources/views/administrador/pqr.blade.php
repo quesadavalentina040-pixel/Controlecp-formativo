@@ -5,28 +5,23 @@
     /* ── Tarjetas métricas ── */
     .pqr-stat-card {
         background: #fff;
-        border: 1px solid #E2E8F0;
+        border: 2px solid transparent;
         border-radius: 18px;
-        padding: 1.35rem 1.5rem;
+        padding: 1rem 1.25rem;
         transition: transform .2s, box-shadow .2s;
         box-shadow: 0 2px 10px rgba(0,26,41,.04);
         position: relative; overflow: hidden;
     }
-    .pqr-stat-card::before {
-        content: ''; position: absolute; top: 0; left: 0;
-        width: 4px; height: 100%; border-radius: 18px 0 0 18px;
-    }
-    .pqr-stat-card.accent-blue::before   { background: #0288D1; }
-    .pqr-stat-card.accent-amber::before  { background: #D97706; }
-    .pqr-stat-card.accent-indigo::before { background: #4F46E5; }
-    .pqr-stat-card.accent-green::before  { background: #16A34A; }
     .pqr-stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,26,41,.1); }
 
     .pqr-stat-icon {
-        width: 50px; height: 50px; border-radius: 14px;
+        width: 38px; height: 38px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
-        font-size: 1.3rem; flex-shrink: 0;
+        font-size: 1rem; flex-shrink: 0;
     }
+    .pqr-stat-label { font-size: .95rem; color: #475569; font-weight: 500; }
+    .pqr-stat-value { font-size: 1.7rem; font-weight: 800; line-height: 1; margin-top: .15rem; }
+    .pqr-stat-subtitle { font-size: .9rem; color: #64748b; }
 
     /* ── Botones de acción ── */
     .btn-tbl-action {
@@ -120,7 +115,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-2 px-md-4 py-3">
+<div class="container-fluid px-3 py-3">
 
     {{-- ══ CABECERA ══ --}}
     <div class="pqr-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -155,62 +150,51 @@
     {{-- ══ MÉTRICAS ══ --}}
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
-            <div class="pqr-stat-card accent-blue h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="pqr-stat-card accent-blue h-100" style="border-color:rgba(2,136,209,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="pqr-stat-label">Total recibidas</span>
                     <div class="pqr-stat-icon" style="background:#E0F2FE; color:#0288D1;">
                         <i class="fas fa-inbox"></i>
                     </div>
-                    <div>
-                        <div class="text-muted fw-semibold" style="font-size:.78rem;">Total recibidas</div>
-                        <div class="h3 fw-bold mb-0" style="color:#001A29;">{{ $total }}</div>
-                        <small class="text-muted" style="font-size:.7rem;">
-                            <span class="text-success fw-semibold">{{ $pqrsAdmin->total() }}</span> admin ·
-                            <span style="color:#4F46E5;" class="fw-semibold">{{ $pqrsInstructor->total() }}</span> instructores
-                        </small>
-                    </div>
                 </div>
+                <div class="pqr-stat-value" style="color:#0288D1;">{{ $total }}</div>
+                <div class="pqr-stat-subtitle"><span class="text-success fw-semibold">{{ $pqrsAdmin->total() }}</span> admin · <span style="color:#4F46E5;" class="fw-semibold">{{ $pqrsInstructor->total() }}</span> instructores</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="pqr-stat-card accent-amber h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="pqr-stat-card accent-amber h-100" style="border-color:rgba(217,119,6,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="pqr-stat-label">Pendientes</span>
                     <div class="pqr-stat-icon" style="background:#FEF3C7; color:#D97706;">
                         <i class="fas fa-clock"></i>
                     </div>
-                    <div>
-                        <div class="text-muted fw-semibold" style="font-size:.78rem;">Pendientes</div>
-                        <div class="h3 fw-bold mb-0 text-warning-emphasis">{{ $pendientes }}</div>
-                        <small class="text-muted" style="font-size:.7rem;">sin respuesta aún</small>
-                    </div>
                 </div>
+                <div class="pqr-stat-value" style="color:#D97706;">{{ $pendientes }}</div>
+                <div class="pqr-stat-subtitle">Sin respuesta aún</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="pqr-stat-card accent-indigo h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="pqr-stat-card accent-indigo h-100" style="border-color:rgba(79,70,229,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="pqr-stat-label">En trámite</span>
                     <div class="pqr-stat-icon" style="background:#EEF2FF; color:#4F46E5;">
                         <i class="fas fa-spinner"></i>
                     </div>
-                    <div>
-                        <div class="text-muted fw-semibold" style="font-size:.78rem;">En trámite</div>
-                        <div class="h3 fw-bold mb-0" style="color:#4F46E5;">{{ $enTramite }}</div>
-                        <small class="text-muted" style="font-size:.7rem;">en revisión activa</small>
-                    </div>
                 </div>
+                <div class="pqr-stat-value" style="color:#4F46E5;">{{ $enTramite }}</div>
+                <div class="pqr-stat-subtitle">En revisión activa</div>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="pqr-stat-card accent-green h-100">
-                <div class="d-flex align-items-center gap-3">
+            <div class="pqr-stat-card accent-green h-100" style="border-color:rgba(22,163,74,.35);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="pqr-stat-label">Resueltos</span>
                     <div class="pqr-stat-icon" style="background:#DCFCE7; color:#16A34A;">
                         <i class="fas fa-circle-check"></i>
                     </div>
-                    <div>
-                        <div class="text-muted fw-semibold" style="font-size:.78rem;">Resueltos</div>
-                        <div class="h3 fw-bold mb-0 text-success">{{ $resueltas }}</div>
-                        <small class="text-muted" style="font-size:.7rem;">casos finalizados</small>
-                    </div>
                 </div>
+                <div class="pqr-stat-value" style="color:#16A34A;">{{ $resueltas }}</div>
+                <div class="pqr-stat-subtitle">Casos finalizados</div>
             </div>
         </div>
     </div>
