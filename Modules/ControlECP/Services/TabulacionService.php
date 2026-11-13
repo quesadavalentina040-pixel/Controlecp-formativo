@@ -17,10 +17,23 @@ use Modules\ControlECP\Entities\Encuesta;
 class TabulacionService
 {
     // Busca las encuestas relacionadas con actividades o que ya tienen respuestas registradas.
-    public function obtenerEncuestasDisponibles(): Collection
+    public function obtenerEncuestasDisponibles(?int $instructorId = null): Collection
     {
+        $query = Encuesta::query();
+
+        if ($instructorId !== null) {
+            return $query->whereHas('actividades', fn ($activities) => $activities->whereExists(
+                    fn ($cronogramas) => $cronogramas->selectRaw('1')
+                        ->from('cronograma as c')
+                        ->whereColumn('c.id_actividad', 'controlecp_actividades.id')
+                        ->where('c.id_instructor', $instructorId)
+                ))
+                ->orderBy('nombre')
+                ->get();
+        }
+
         // Inicia una consulta Eloquent sobre las encuestas.
-        return Encuesta::query()
+        return $query
             // Agrupa dos maneras de considerar una encuesta disponible.
             ->where(function ($query) {
                 // Incluye encuestas que ya tienen al menos una actividad relacionada.
@@ -46,12 +59,18 @@ class TabulacionService
     }
 
     // Obtiene las actividades y fichas que se pueden usar como filtros para una encuesta.
-    public function obtenerFiltrosParaEncuesta(int $idEncuesta): array
+    public function obtenerFiltrosParaEncuesta(int $idEncuesta, ?int $instructorId = null): array
     {
         // Inicia la consulta de actividades pertenecientes a la encuesta indicada.
         $actividades = Actividad::query()
             // Filtra actividades por el id de la encuesta.
             ->where('id_encuesta', $idEncuesta)
+            ->when($instructorId, fn ($query) => $query->whereExists(
+                fn ($cronogramas) => $cronogramas->selectRaw('1')
+                    ->from('cronograma as c')
+                    ->whereColumn('c.id_actividad', 'controlecp_actividades.id')
+                    ->where('c.id_instructor', $instructorId)
+            ))
             // Limita las columnas obtenidas a id, número y nombre.
             ->select('id', 'numero', 'nombre')
             // Ordena las actividades por su número.
@@ -67,6 +86,7 @@ class TabulacionService
             ->join('courses as co', 'co.id', '=', 'c.id_ficha')
             // Limita las fichas a actividades de la encuesta elegida.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($instructorId, fn ($query) => $query->where('c.id_instructor', $instructorId))
             // Obtiene las columnas necesarias para mostrar el filtro de ficha.
             ->select('co.id', 'co.code', 'co.status')
             // Evita mostrar la misma ficha más de una vez.
@@ -86,7 +106,7 @@ class TabulacionService
     }
 
     // Calcula indicadores y resultados por pregunta para una encuesta y filtros opcionales.
-    public function calcularResultados(int $idEncuesta, array $filtros = []): array
+    public function calcularResultados(int $idEncuesta, array $filtros = [], ?int $instructorId = null): array
     {
         // Busca la encuesta y carga de antemano sus preguntas y opciones para evitar consultas adicionales.
         $encuesta = Encuesta::with(['preguntas.opciones'])->findOrFail($idEncuesta);
@@ -94,6 +114,12 @@ class TabulacionService
         $actividades = Actividad::query()
             // Limita las actividades a la encuesta elegida.
             ->where('id_encuesta', $idEncuesta)
+            ->when($instructorId, fn ($query) => $query->whereExists(
+                fn ($cronogramas) => $cronogramas->selectRaw('1')
+                    ->from('cronograma as c')
+                    ->whereColumn('c.id_actividad', 'controlecp_actividades.id')
+                    ->where('c.id_instructor', $instructorId)
+            ))
             // Ordena las actividades por número.
             ->orderBy('numero')
             // Ejecuta la consulta.
@@ -117,7 +143,7 @@ class TabulacionService
         // Inicializa el arreglo que guardará el total de respuestas por actividad.
         $respuestasPorActividad = [];
         // Consulta la cantidad de respuestas distintas agrupada por actividad.
-        foreach ($this->baseRespuestas($idEncuesta, $idActividad, $idFicha, $fechaDesde, $fechaHasta)
+        foreach ($this->baseRespuestas($idEncuesta, $idActividad, $idFicha, $fechaDesde, $fechaHasta, $instructorId)
             // Incluye el id de la actividad en cada resultado agrupado.
             ->select('a.id as id_actividad')
             // Cuenta respuestas únicas para no duplicarlas por los joins.
@@ -145,7 +171,7 @@ class TabulacionService
         // Inicializa el arreglo de convocados calculados por actividad.
         $convocadosPorActividad = [];
         // Consulta los cronogramas y suma la matrícula correspondiente a cada actividad.
-        foreach ($this->baseCronogramas($idEncuesta, $idActividad, $idFicha)
+        foreach ($this->baseCronogramas($idEncuesta, $idActividad, $idFicha, $instructorId)
             // Incluye el total agrupado de aprendices por ficha, si existe.
             ->leftJoinSub($aprendicesPorFicha, 'ap', 'ap.course_id', '=', 'c.id_ficha')
             // Selecciona el id de la actividad como índice del resultado.
@@ -161,7 +187,7 @@ class TabulacionService
         }
 
         // Prepara la consulta base de detalles de respuesta aplicando los filtros compartidos.
-        $detalles = $this->baseDetalles($idEncuesta, $idActividad, $idFicha, $fechaDesde, $fechaHasta);
+        $detalles = $this->baseDetalles($idEncuesta, $idActividad, $idFicha, $fechaDesde, $fechaHasta, $instructorId);
 
         // Inicializa el arreglo para contar respuestas de cada pregunta en cada actividad.
         $respuestasPorPregunta = [];
@@ -360,7 +386,8 @@ class TabulacionService
         // Recibe la fecha inicial o null cuando no se filtra por fecha.
         ?string $fechaDesde,
         // Recibe la fecha final o null cuando no se filtra por fecha.
-        ?string $fechaHasta
+        ?string $fechaHasta,
+        ?int $instructorId = null
     ) {
         // Inicia la consulta sobre las respuestas y asigna el alias er.
         return DB::table('encuesta_respuestas as er')
@@ -370,6 +397,7 @@ class TabulacionService
             ->join('controlecp_actividades as a', 'a.id', '=', 'c.id_actividad')
             // Limita la consulta a actividades asociadas con esta encuesta.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($instructorId, fn ($query) => $query->where('c.id_instructor', $instructorId))
             // Añade filtro de actividad solo si el id fue proporcionado.
             ->when($idActividad, fn ($query) => $query->where('a.id', $idActividad))
             // Añade filtro de ficha solo si el id fue proporcionado.
@@ -381,7 +409,7 @@ class TabulacionService
     }
 
     // Construye la consulta base de cronogramas con los filtros de encuesta, actividad y ficha.
-    private function baseCronogramas(int $idEncuesta, ?int $idActividad, ?int $idFicha)
+    private function baseCronogramas(int $idEncuesta, ?int $idActividad, ?int $idFicha, ?int $instructorId = null)
     {
         // Consulta la tabla de cronogramas usando el alias c.
         return DB::table('cronograma as c')
@@ -389,6 +417,7 @@ class TabulacionService
             ->join('controlecp_actividades as a', 'a.id', '=', 'c.id_actividad')
             // Deja solo actividades asociadas a la encuesta indicada.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($instructorId, fn ($query) => $query->where('c.id_instructor', $instructorId))
             // Aplica el filtro de actividad si se eligió una.
             ->when($idActividad, fn ($query) => $query->where('a.id', $idActividad))
             // Aplica el filtro de ficha si se eligió una.
@@ -406,7 +435,8 @@ class TabulacionService
         // Fecha inicial opcional para limitar respuestas.
         ?string $fechaDesde,
         // Fecha final opcional para limitar respuestas.
-        ?string $fechaHasta
+        ?string $fechaHasta,
+        ?int $instructorId = null
     ) {
         // Inicia la consulta de detalles asignando el alias erd.
         return DB::table('encuesta_respuesta_detalle as erd')
@@ -425,6 +455,7 @@ class TabulacionService
             })
             // Asegura que la actividad de la respuesta corresponda a la encuesta.
             ->where('a.id_encuesta', $idEncuesta)
+            ->when($instructorId, fn ($query) => $query->where('c.id_instructor', $instructorId))
             // Aplica el filtro de actividad cuando se proporcionó.
             ->when($idActividad, fn ($query) => $query->where('a.id', $idActividad))
             // Aplica el filtro de ficha cuando se proporcionó.

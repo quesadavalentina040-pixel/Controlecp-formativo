@@ -14,6 +14,7 @@ class DisponibilidadInstructor extends Model
 
     protected $fillable = [
         'id_usuario',
+        'id_categoria_asesoria',
         'anio',
         'trimestre',
         'dia_semana',
@@ -34,5 +35,10 @@ class DisponibilidadInstructor extends Model
     public function usuario()
     {
         return $this->belongsTo(User::class, 'id_usuario');
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(CategoriaAsesoria::class, 'id_categoria_asesoria', 'id_categoria_asesoria');
     }
 }

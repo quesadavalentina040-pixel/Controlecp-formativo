@@ -13,9 +13,15 @@ class CategoriaAsesoria extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id_administrador',
         'nombre',
         'estado',
     ];
+
+    public function administrador()
+    {
+        return $this->belongsTo(User::class, 'id_administrador');
+    }
 
     // Instructores vinculados a esta categoría
     public function instructores()

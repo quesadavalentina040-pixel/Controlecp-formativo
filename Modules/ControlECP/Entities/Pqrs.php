@@ -58,9 +58,16 @@ class Pqrs extends Model
     /**
      * Relación: Tipo de PQR.
      */
-    public function tipo(): BelongsTo
+    public function tipoPqrs(): BelongsTo
     {
         return $this->belongsTo(TipoPqrs::class, 'id_tipo_pqrs', 'id_tipo_pqrs');
+    }
+
+    public function getTipoNombreAttribute(): string
+    {
+        return $this->tipoPqrs?->nombre
+            ?? $this->attributes['tipo']
+            ?? 'Petición';
     }
 
     /**
@@ -161,7 +168,7 @@ class Pqrs extends Model
      */
     public function getTipoBadgeAttribute(): array
     {
-        $nombreTipo = trim(strtolower($this->tipo ? $this->tipo->nombre : 'petición'));
+        $nombreTipo = trim(strtolower($this->tipo_nombre));
 
         return match (true) {
             str_contains($nombreTipo, 'queja') => [

@@ -2,6 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 use Modules\ControlECP\Http\Controllers\AsesoriaController;
+use Modules\ControlECP\Http\Controllers\InstructorAsesoriaController;
+use Modules\ControlECP\Http\Controllers\InstructorCertificacionController;
+use Modules\ControlECP\Http\Controllers\InstructorEncuestaController;
+use Modules\ControlECP\Http\Controllers\InstructorPqrsController;
+use Modules\ControlECP\Http\Controllers\InstructorRepositorioController;
+use Modules\ControlECP\Http\Controllers\InstructorReporteController;
+use Modules\ControlECP\Http\Controllers\AprendizPqrsController;
+use Modules\ControlECP\Http\Controllers\AprendizEncuestaController;
+use Modules\ControlECP\Http\Controllers\AprendizCalificacionController;
+use Modules\ControlECP\Http\Controllers\AprendizCalificacionAsesoriaController;
+use Modules\ControlECP\Http\Controllers\AprendizCertificadoController;
+use Modules\ControlECP\Http\Controllers\InstructorInventarioController;
+use Modules\ControlECP\Http\Controllers\AcompanamientoInstructorController;
 use Modules\ControlECP\Http\Controllers\ControlECPController;
 use Modules\ControlECP\Http\Controllers\ElementoController;
 use Modules\ControlECP\Http\Controllers\EncuestaController;
@@ -19,6 +32,8 @@ use Modules\ControlECP\Http\Controllers\ActividadController;
 use Modules\ControlECP\Http\Controllers\CronogramaController;
 use Modules\ControlECP\Http\Controllers\ReporteController;
 use Modules\ControlECP\Http\Controllers\AsistenciaController;
+use Modules\ControlECP\Http\Controllers\CertificacionController;
+use Modules\ControlECP\Http\Controllers\RepositorioEvidenciaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -167,39 +182,60 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.administrador.cronograma.show');
     Route::put('/control-ecp/administrador/cronograma/{id}', [CronogramaController::class, 'update'])
         ->name('controlecp.administrador.cronograma.update');
-    Route::delete('/control-ecp/administrador/cronograma/{id}', [CronogramaController::class, 'destroy'])
-        ->name('controlecp.administrador.cronograma.destroy');
+    Route::post('/control-ecp/administrador/cronograma/{id}/desactivar', [CronogramaController::class, 'desactivar'])
+        ->name('controlecp.administrador.cronograma.desactivar');
     Route::post('/control-ecp/administrador/cronograma/{id}/reasignar', [CronogramaController::class, 'reasignar'])
         ->name('controlecp.administrador.cronograma.reasignar');
     Route::post('/control-ecp/administrador/cronograma/{id}/posponer', [CronogramaController::class, 'posponer'])
         ->name('controlecp.administrador.cronograma.posponer');
     Route::get('/control-ecp/administrador/asistencia', [AsistenciaController::class, 'index'])
         ->name('controlecp.administrador.asistencia');
+    Route::get('/control-ecp/administrador/asistencia/fichas/{fichaId}/aprendices', [AsistenciaController::class, 'aprendices'])
+        ->name('controlecp.administrador.asistencia.aprendices');
+    Route::get('/control-ecp/administrador/asistencia/fichas/{fichaId}/actividades', [AsistenciaController::class, 'actividadesProgramadas'])
+        ->name('controlecp.administrador.asistencia.actividades');
+    Route::post('/control-ecp/administrador/asistencia', [AsistenciaController::class, 'storeManual'])
+        ->name('controlecp.administrador.asistencia.store-manual');
     Route::post('/control-ecp/administrador/asistencia/{id}', [AsistenciaController::class, 'store'])
         ->name('controlecp.administrador.asistencia.store');
     Route::put('/control-ecp/administrador/asistencia/registro/{id}', [AsistenciaController::class, 'update'])
         ->name('controlecp.administrador.asistencia.update');
     Route::post('/control-ecp/administrador/asistencia/registro/{id}/anular', [AsistenciaController::class, 'annul'])
         ->name('controlecp.administrador.asistencia.annul');
-    Route::get('/control-ecp/administrador/certificados', [ControlECPController::class, 'certificadosAdmin'])
+    Route::post('/control-ecp/administrador/asistencia/{cronogramaId}/finalizar-actividad', [AsistenciaController::class, 'finalizarActividad'])
+        ->name('controlecp.administrador.asistencia.finalizar-actividad');
+    Route::get('/control-ecp/administrador/certificados', [CertificacionController::class, 'index'])
         ->name('controlecp.administrador.certificados');
+    Route::post('/control-ecp/administrador/certificados/{fichaId}/{momentoId}', [CertificacionController::class, 'certificar'])
+        ->name('controlecp.administrador.certificados.certificar');
+    Route::get('/control-ecp/administrador/certificados/{fichaId}/constancia', [CertificacionController::class, 'descargarConstancia'])
+        ->name('controlecp.administrador.certificados.constancia');
 
     // --- Reportes consolidados HU-016 ---
+    Route::get('/control-ecp/administrador/reportes/pdf', [ReporteController::class, 'exportarPdf'])
+        ->name('controlecp.administrador.reportes.pdf');
     Route::get('/control-ecp/administrador/reportes', [ReporteController::class, 'index'])
         ->name('controlecp.administrador.reportes');
 
     // --- Gestión de Asesorías (Administrador) ---
     Route::prefix('control-ecp/administrador/asesorias')->name('controlecp.administrador.asesorias.')->group(function () {
         Route::get('/',                              [AsesoriaController::class, 'index'])                ->name('index');
-        Route::post('/',                             [AsesoriaController::class, 'store'])                ->name('store');
         Route::get('/instructores-disponibles',      [AsesoriaController::class, 'instructoresDisponibles'])->name('instructores-disponibles');
         Route::get('/reporte',                       [AsesoriaController::class, 'reporte'])              ->name('reporte');
+        Route::post('/mi-disponibilidad',             [AsesoriaController::class, 'guardarDisponibilidad'])->name('mi-disponibilidad.guardar');
+        Route::post('/mi-disponibilidad/categoria',   [AsesoriaController::class, 'guardarCategoriaDisponibilidad'])->name('mi-disponibilidad.categoria');
         Route::get('/disponibilidad/{usuario}',      [AsesoriaController::class, 'consultarDisponibilidad'])->name('disponibilidad');
+        Route::put('/disponibilidad/{id}/estado',     [AsesoriaController::class, 'cambiarEstadoDisponibilidad'])->whereNumber('id')->name('disponibilidad.estado');
+        Route::put('/mi-disponibilidad/{id}',         [AsesoriaController::class, 'actualizarDisponibilidad'])->whereNumber('id')->name('mi-disponibilidad.actualizar');
         Route::post('/disponibilidad',               [AsesoriaController::class, 'guardarDisponibilidad'])->name('disponibilidad.guardar');
         Route::post('/categorias',                   [AsesoriaController::class, 'storeCategoria'])       ->name('categorias.store');
         Route::put('/categorias/{id}',               [AsesoriaController::class, 'updateCategoria'])      ->name('categorias.update');
         Route::put('/categorias/{id}/estado',        [AsesoriaController::class, 'toggleCategoriaEstado'])->name('categorias.estado');
         Route::put('/seguimiento/{id}',              [AsesoriaController::class, 'corregirSeguimiento'])  ->name('seguimiento.corregir');
+        Route::put('/solicitudes/{id}/aceptar', [InstructorAsesoriaController::class, 'aceptarSolicitudInstructor'])
+            ->whereNumber('id')->name('solicitudes.aceptar');
+        Route::put('/solicitudes/{id}/rechazar', [InstructorAsesoriaController::class, 'rechazarSolicitudInstructor'])
+            ->whereNumber('id')->name('solicitudes.rechazar');
         Route::get('/{id}',                          [AsesoriaController::class, 'show'])                 ->name('show');
         Route::put('/{id}',                          [AsesoriaController::class, 'update'])               ->name('update');
         Route::put('/{id}/programar',                [AsesoriaController::class, 'programar'])            ->name('programar');
@@ -289,6 +325,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // --- Repositorio > POE (Administrador - HU-011) ---
+    Route::get('/control-ecp/administrador/repositorio/evidencias', [RepositorioEvidenciaController::class, 'index'])
+        ->name('controlecp.administrador.repositorio.evidencias');
+
     Route::prefix('control-ecp/administrador/repositorio/poe')->name('controlecp.administrador.repositorio.poe.')->group(function () {
         Route::get('/',                                         [PoeController::class, 'index'])                  ->name('index');
         Route::post('/',                                        [PoeController::class, 'store'])                  ->name('store');
@@ -318,33 +357,204 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.instructor.inicio');
     Route::get('/control-ecp/instructor/cronograma', [ControlECPController::class, 'cronogramaInstructor'])
         ->name('controlecp.instructor.cronograma');
+    Route::post('/control-ecp/instructor/cronograma/{id}/posponer', [ControlECPController::class, 'posponerCronogramaInstructor'])
+        ->name('controlecp.instructor.cronograma.posponer');
     Route::get('/control-ecp/instructor/momentos', [ControlECPController::class, 'momentosInstructor'])
         ->name('controlecp.instructor.momentos');
     Route::get('/control-ecp/instructor/actividades', [ControlECPController::class, 'actividadesInstructor'])
         ->name('controlecp.instructor.actividades');
+    Route::post('/control-ecp/instructor/actividades/{actividadId}/encuesta', [ControlECPController::class, 'encuestaActividadInstructor'])
+        ->name('controlecp.instructor.actividades.encuesta');
+    Route::get('/control-ecp/instructor/actividades/{actividadId}/evidencias', [ControlECPController::class, 'evidenciasActividadInstructor'])
+        ->name('controlecp.instructor.actividades.evidencias');
+    Route::post('/control-ecp/instructor/actividades/{actividadId}/evidencias', [ControlECPController::class, 'subirEvidenciaActividadInstructor'])
+        ->name('controlecp.instructor.actividades.evidencias.store');
+    Route::get('/control-ecp/instructor/actividades/{actividadId}/calificaciones', [ControlECPController::class, 'calificacionesActividadInstructor'])
+        ->name('controlecp.instructor.actividades.calificaciones');
+    Route::post('/control-ecp/instructor/cronograma/{cronogramaId}/finalizar', [ControlECPController::class, 'finalizarActividadInstructor'])
+        ->name('controlecp.instructor.cronograma.finalizar');
     Route::get('/control-ecp/instructor/asistencia', [ControlECPController::class, 'asistenciaInstructor'])
         ->name('controlecp.instructor.asistencia');
-    Route::get('/control-ecp/instructor/asesorias', [ControlECPController::class, 'asesoriasInstructor'])
+    Route::get('/control-ecp/instructor/asesorias', [InstructorAsesoriaController::class, 'indexInstructor'])
         ->name('controlecp.instructor.asesorias');
-    Route::get('/control-ecp/instructor/certificados', [ControlECPController::class, 'certificadosInstructor'])
+    Route::post('/control-ecp/instructor/asesorias/disponibilidad', [InstructorAsesoriaController::class, 'guardarDisponibilidad'])
+        ->name('controlecp.instructor.asesorias.disponibilidad');
+    Route::post('/control-ecp/instructor/asesorias/disponibilidad/franjas', [InstructorAsesoriaController::class, 'guardarFranjaDisponibilidad'])
+        ->name('controlecp.instructor.asesorias.disponibilidad.franjas.store');
+    Route::post('/control-ecp/instructor/asesorias/disponibilidad/categoria', [InstructorAsesoriaController::class, 'guardarCategoriaDisponibilidad'])
+        ->name('controlecp.instructor.asesorias.disponibilidad.categoria');
+    Route::put('/control-ecp/instructor/asesorias/disponibilidad/franjas/{id}', [InstructorAsesoriaController::class, 'actualizarFranjaDisponibilidad'])
+        ->whereNumber('id')
+        ->name('controlecp.instructor.asesorias.disponibilidad.franjas.update');
+    Route::put('/control-ecp/instructor/asesorias/disponibilidad/franjas/{id}/estado', [InstructorAsesoriaController::class, 'cambiarEstadoFranjaDisponibilidad'])
+        ->whereNumber('id')
+        ->name('controlecp.instructor.asesorias.disponibilidad.franjas.estado');
+    Route::get('/control-ecp/instructor/asesorias/instructores-disponibles', [InstructorAsesoriaController::class, 'instructoresDisponibles'])
+        ->name('controlecp.instructor.asesorias.disponibles');
+    Route::post('/control-ecp/instructor/asesorias/solicitudes', [InstructorAsesoriaController::class, 'storeSolicitudInstructor'])
+        ->name('controlecp.instructor.asesorias.store');
+    Route::put('/control-ecp/instructor/asesorias/{id}/aceptar', [InstructorAsesoriaController::class, 'aceptarSolicitudInstructor'])
+        ->whereNumber('id')
+        ->name('controlecp.instructor.asesorias.aceptar');
+    Route::put('/control-ecp/instructor/asesorias/{id}/rechazar', [InstructorAsesoriaController::class, 'rechazarSolicitudInstructor'])
+        ->whereNumber('id')
+        ->name('controlecp.instructor.asesorias.rechazar');
+    Route::put('/control-ecp/instructor/asesorias/{id}/reprogramar', [InstructorAsesoriaController::class, 'reprogramar'])
+        ->name('controlecp.instructor.asesorias.reprogramar');
+    Route::put('/control-ecp/instructor/asesorias/{id}/cancelar', [InstructorAsesoriaController::class, 'cancelar'])
+        ->name('controlecp.instructor.asesorias.cancelar');
+    Route::post('/control-ecp/instructor/asesorias/{id}/seguimiento', [InstructorAsesoriaController::class, 'guardarSeguimiento'])
+        ->name('controlecp.instructor.asesorias.seguimiento');
+    Route::put('/control-ecp/instructor/asesorias/seguimientos/{seguimientoId}', [InstructorAsesoriaController::class, 'corregirSeguimiento'])
+        ->name('controlecp.instructor.asesorias.seguimiento.corregir');
+    Route::post('/control-ecp/instructor/asesorias/{id}/recursos', [InstructorAsesoriaController::class, 'agregarRecurso'])
+        ->name('controlecp.instructor.asesorias.recursos');
+    Route::get('/control-ecp/instructor/certificados', [InstructorCertificacionController::class, 'index'])
         ->name('controlecp.instructor.certificados');
+    Route::post('/control-ecp/instructor/certificados/{fichaId}/{momentoId}', [InstructorCertificacionController::class, 'certificar'])
+        ->name('controlecp.instructor.certificados.certificar');
+    Route::get('/control-ecp/instructor/certificados/{fichaId}/constancia', [InstructorCertificacionController::class, 'descargarConstancia'])
+        ->name('controlecp.instructor.certificados.constancia');
     Route::get('/control-ecp/instructor/poe', [ControlECPController::class, 'poeInstructor'])
         ->name('controlecp.instructor.poe');
-    Route::get('/control-ecp/instructor/acompaniamiento', [ControlECPController::class, 'acompaniamientoInstructor'])
+    Route::get('/control-ecp/instructor/reportes/pdf', [InstructorReporteController::class, 'exportarPdf'])
+        ->name('controlecp.instructor.reportes.pdf');
+    Route::get('/control-ecp/instructor/reportes', [InstructorReporteController::class, 'index'])
+        ->name('controlecp.instructor.reportes');
+    Route::get('/control-ecp/instructor/acompaniamiento', [AcompanamientoInstructorController::class, 'index'])
         ->name('controlecp.instructor.acompaniamiento');
+    Route::post('/control-ecp/instructor/acompaniamiento/categorias', [AcompanamientoInstructorController::class, 'crearCategoria'])
+        ->name('controlecp.instructor.acompaniamiento.categorias.store');
+    Route::post('/control-ecp/instructor/acompaniamiento', [AcompanamientoInstructorController::class, 'store'])
+        ->name('controlecp.instructor.acompaniamiento.store');
+    Route::put('/control-ecp/instructor/acompaniamiento/{accompanimentId}', [AcompanamientoInstructorController::class, 'actualizar'])
+        ->name('controlecp.instructor.acompaniamiento.update');
+    Route::post('/control-ecp/instructor/acompaniamiento/sesiones/{sessionId}/registrar', [AcompanamientoInstructorController::class, 'registrarSesion'])
+        ->name('controlecp.instructor.acompaniamiento.sesiones.registrar');
+    Route::post('/control-ecp/instructor/acompaniamiento/sesiones/{sessionId}/no-asistio', [AcompanamientoInstructorController::class, 'noAsistio'])
+        ->name('controlecp.instructor.acompaniamiento.sesiones.no-asistio');
+    Route::put('/control-ecp/instructor/acompaniamiento/sesiones/{sessionId}/reprogramar', [AcompanamientoInstructorController::class, 'reprogramarSesion'])
+        ->name('controlecp.instructor.acompaniamiento.sesiones.reprogramar');
+    Route::put('/control-ecp/instructor/acompaniamiento/sesiones/{sessionId}/cancelar', [AcompanamientoInstructorController::class, 'cancelarSesion'])
+        ->name('controlecp.instructor.acompaniamiento.sesiones.cancelar');
+    Route::put('/control-ecp/instructor/acompaniamiento/sesiones/{sessionId}/corregir', [AcompanamientoInstructorController::class, 'corregirSesion'])
+        ->name('controlecp.instructor.acompaniamiento.sesiones.corregir');
+    Route::post('/control-ecp/instructor/acompaniamiento/sesiones/{sessionId}/evidencias', [AcompanamientoInstructorController::class, 'guardarEvidencia'])
+        ->name('controlecp.instructor.acompaniamiento.sesiones.evidencias.store');
+    Route::post('/control-ecp/instructor/acompaniamiento/{accompanimentId}/sesiones', [AcompanamientoInstructorController::class, 'agregarSesiones'])
+        ->name('controlecp.instructor.acompaniamiento.sesiones.agregar');
+    Route::put('/control-ecp/instructor/acompaniamiento/{accompanimentId}/cerrar', [AcompanamientoInstructorController::class, 'cerrar'])
+        ->name('controlecp.instructor.acompaniamiento.cerrar');
+    Route::get('/control-ecp/instructor/asistencia/{cronogramaId}/checklist', [ControlECPController::class, 'asistenciaChecklistInstructor'])
+        ->name('controlecp.instructor.asistencia.checklist');
+    Route::post('/control-ecp/instructor/asistencia/{cronogramaId}/checklist', [ControlECPController::class, 'registrarAsistenciaInstructor'])
+        ->name('controlecp.instructor.asistencia.checklist.store');
+    Route::post('/control-ecp/instructor/asistencia/{asistenciaId}/anular', [ControlECPController::class, 'anularAsistenciaInstructor'])
+        ->name('controlecp.instructor.asistencia.anular');
+    Route::get('/control-ecp/instructor/asistencia/reporte/exportar', [ControlECPController::class, 'exportarAsistenciaInstructor'])
+        ->name('controlecp.instructor.asistencia.exportar');
+    Route::get('/control-ecp/instructor/encuestas', [InstructorEncuestaController::class, 'index'])
+        ->name('controlecp.instructor.encuestas');
+    Route::post('/control-ecp/instructor/encuestas', [InstructorEncuestaController::class, 'store'])
+        ->name('controlecp.instructor.encuestas.store');
+    Route::get('/control-ecp/instructor/encuestas/{id}', [InstructorEncuestaController::class, 'show'])
+        ->name('controlecp.instructor.encuestas.show');
+    Route::put('/control-ecp/instructor/encuestas/{id}', [InstructorEncuestaController::class, 'update'])
+        ->name('controlecp.instructor.encuestas.update');
+    Route::patch('/control-ecp/instructor/encuestas/{id}/activar', [InstructorEncuestaController::class, 'activar'])
+        ->name('controlecp.instructor.encuestas.activar');
+    Route::patch('/control-ecp/instructor/encuestas/{id}/desactivar', [InstructorEncuestaController::class, 'desactivar'])
+        ->name('controlecp.instructor.encuestas.desactivar');
+    Route::post('/control-ecp/instructor/encuestas/{id}/preguntas', [InstructorEncuestaController::class, 'agregarPregunta'])
+        ->name('controlecp.instructor.encuestas.preguntas.store');
+    Route::put('/control-ecp/instructor/encuestas/{id}/preguntas/{preguntaId}', [InstructorEncuestaController::class, 'actualizarPregunta'])
+        ->name('controlecp.instructor.encuestas.preguntas.update');
+    Route::delete('/control-ecp/instructor/encuestas/{id}/preguntas/{preguntaId}', [InstructorEncuestaController::class, 'eliminarPregunta'])
+        ->name('controlecp.instructor.encuestas.preguntas.destroy');
+    Route::prefix('control-ecp/instructor/repositorio')->name('controlecp.instructor.repositorio.')->group(function () {
+        Route::get('/evidencias', [InstructorRepositorioController::class, 'evidencias'])->name('evidencias');
+        Route::get('/historias', [InstructorRepositorioController::class, 'historias'])->name('historia');
+        Route::get('/encuestas', [InstructorRepositorioController::class, 'encuestas'])->name('encuestas');
+        Route::get('/tabulacion', [InstructorRepositorioController::class, 'tabulacion'])->name('tabulacion');
+        Route::get('/tabulacion/exportar', [InstructorRepositorioController::class, 'exportarTabulacionPdf'])->name('tabulacion.exportar');
+    });
+    Route::get('/control-ecp/instructor/fichas', [ControlECPController::class, 'fichasInstructor'])
+        ->name('controlecp.instructor.fichas');
+    Route::get('/control-ecp/instructor/fichas/{fichaId}/detalle', [ControlECPController::class, 'detalleFichaInstructor'])
+        ->name('controlecp.instructor.fichas.detalle');
+    Route::get('/control-ecp/instructor/fichas/{fichaId}/nomina', [ControlECPController::class, 'nominaFichaInstructor'])
+        ->name('controlecp.instructor.fichas.nomina');
+    Route::get('/control-ecp/instructor/historia', [ControlECPController::class, 'historiaInstructor'])
+        ->name('controlecp.instructor.historia');
+    Route::get('/control-ecp/instructor/inventario', [InstructorInventarioController::class, 'index'])
+        ->name('controlecp.instructor.inventario');
+    Route::get('/control-ecp/instructor/inventario/{id}', [InstructorInventarioController::class, 'show'])
+        ->name('controlecp.instructor.inventario.show');
+    Route::get('/control-ecp/instructor/inventario/{id}/disponibilidad', [InstructorInventarioController::class, 'disponibilidad'])
+        ->name('controlecp.instructor.inventario.disponibilidad');
+    Route::post('/control-ecp/instructor/inventario/{id}/entrega', [InstructorInventarioController::class, 'entregar'])
+        ->name('controlecp.instructor.inventario.entregar');
+    Route::post('/control-ecp/instructor/inventario/{id}/devolucion', [InstructorInventarioController::class, 'devolver'])
+        ->name('controlecp.instructor.inventario.devolver');
+    Route::post('/control-ecp/instructor/inventario/{id}/novedad', [InstructorInventarioController::class, 'novedad'])
+        ->name('controlecp.instructor.inventario.novedad');
+    Route::get('/control-ecp/instructor/pqr', [InstructorPqrsController::class, 'index'])
+        ->name('controlecp.instructor.pqr');
+    Route::get('/control-ecp/instructor/pqr/{id}', [InstructorPqrsController::class, 'show'])
+        ->name('controlecp.instructor.pqr.show');
+    Route::patch('/control-ecp/instructor/pqr/{id}/estado', [InstructorPqrsController::class, 'cambiarEstado'])
+        ->name('controlecp.instructor.pqr.estado');
+    Route::post('/control-ecp/instructor/pqr/{id}/responder', [InstructorPqrsController::class, 'responder'])
+        ->name('controlecp.instructor.pqr.responder');
 
     // --- Panel Aprendiz ---
     Route::get('/control-ecp/aprendiz', [ControlECPController::class, 'inicioAprendiz'])
         ->name('controlecp.aprendiz.inicio');
     Route::get('/control-ecp/aprendiz/cronograma', [ControlECPController::class, 'cronogramaAprendiz'])
         ->name('controlecp.aprendiz.cronograma');
-    Route::get('/control-ecp/aprendiz/encuesta', [ControlECPController::class, 'encuestaAprendiz'])
+    Route::get('/control-ecp/aprendiz/historia', [ControlECPController::class, 'historiaAprendiz'])
+        ->name('controlecp.aprendiz.historia');
+    Route::get('/control-ecp/aprendiz/mi-certificado', [AprendizCertificadoController::class, 'index'])
+        ->name('controlecp.aprendiz.certificado');
+    Route::get('/control-ecp/aprendiz/mi-certificado/{fichaId}/descargar', [AprendizCertificadoController::class, 'descargar'])
+        ->whereNumber('fichaId')
+        ->name('controlecp.aprendiz.certificado.descargar');
+    Route::get('/control-ecp/aprendiz/encuesta', [AprendizEncuestaController::class, 'index'])
         ->name('controlecp.aprendiz.encuesta');
-    Route::get('/control-ecp/aprendiz/asesorias', [ControlECPController::class, 'asesoriasAprendiz'])
+    Route::get('/control-ecp/aprendiz/encuesta/compartida/{encuestaId}', [AprendizEncuestaController::class, 'showCompartida'])
+        ->name('controlecp.aprendiz.encuesta.compartida');
+    Route::get('/control-ecp/aprendiz/encuesta/{cronogramaId}', [AprendizEncuestaController::class, 'show'])
+        ->name('controlecp.aprendiz.encuesta.responder');
+    Route::post('/control-ecp/aprendiz/encuesta/{cronogramaId}', [AprendizEncuestaController::class, 'store'])
+        ->name('controlecp.aprendiz.encuesta.store');
+    Route::get('/control-ecp/aprendiz/asesorias', [InstructorAsesoriaController::class, 'indexAprendiz'])
         ->name('controlecp.aprendiz.asesorias');
-    Route::post('/control-ecp/aprendiz/asesorias', [ControlECPController::class, 'storeAsesoriaAprendiz'])
+    Route::get('/control-ecp/aprendiz/asesorias/instructores-disponibles', [InstructorAsesoriaController::class, 'instructoresDisponibles'])
+        ->name('controlecp.aprendiz.asesorias.disponibles');
+    Route::get('/control-ecp/aprendiz/asesorias/responsables', [InstructorAsesoriaController::class, 'responsablesPorCategoria'])
+        ->name('controlecp.aprendiz.asesorias.responsables');
+    Route::get('/control-ecp/aprendiz/asesorias/calendario', [InstructorAsesoriaController::class, 'calendarioResponsable'])
+        ->name('controlecp.aprendiz.asesorias.calendario');
+    Route::post('/control-ecp/aprendiz/asesorias', [InstructorAsesoriaController::class, 'storeSolicitudAprendiz'])
         ->name('controlecp.aprendiz.asesorias.store');
+    Route::put('/control-ecp/aprendiz/asesorias/{id}/cancelar', [InstructorAsesoriaController::class, 'cancelarSolicitudAprendiz'])
+        ->whereNumber('id')
+        ->name('controlecp.aprendiz.asesorias.cancelar');
+    Route::get('/control-ecp/aprendiz/notificaciones', [NotificacionController::class, 'index'])
+        ->name('controlecp.aprendiz.notificaciones');
+    Route::get('/control-ecp/aprendiz/calificacion-actividad', [AprendizCalificacionController::class, 'index'])
+        ->name('controlecp.aprendiz.calificacion_actividad');
+    Route::post('/control-ecp/aprendiz/calificacion-actividad/{cronogramaId}', [AprendizCalificacionController::class, 'store'])
+        ->whereNumber('cronogramaId')
+        ->name('controlecp.aprendiz.calificacion_actividad.store');
+    Route::get('/control-ecp/aprendiz/calificacion-asesoria', [AprendizCalificacionAsesoriaController::class, 'index'])
+        ->name('controlecp.aprendiz.calificacion_asesoria');
+    Route::post('/control-ecp/aprendiz/calificacion-asesoria/{asesoriaId}', [AprendizCalificacionAsesoriaController::class, 'store'])
+        ->whereNumber('asesoriaId')
+        ->name('controlecp.aprendiz.calificacion_asesoria.store');
     Route::get('/control-ecp/aprendiz/pqr', [ControlECPController::class, 'pqrAprendiz'])
         ->name('controlecp.aprendiz.pqr');
+    Route::post('/control-ecp/aprendiz/pqr', [AprendizPqrsController::class, 'store'])
+        ->name('controlecp.aprendiz.pqr.store');
 
  });

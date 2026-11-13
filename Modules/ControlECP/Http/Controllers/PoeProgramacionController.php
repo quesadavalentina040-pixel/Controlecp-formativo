@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\ControlECP\Entities\Poe;
 use Modules\ControlECP\Entities\PoeProgramacion;
 use Modules\ControlECP\Http\Requests\PoeProgramacionRequest;
+use Modules\ControlECP\Rules\NotWeekendOrColombianHoliday;
 use Modules\ControlECP\Services\PoeService;
 
 class PoeProgramacionController extends Controller // Controlador de creación, consulta y cambios de programación de entregas POE.
@@ -124,15 +125,16 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
         }
 
         $request->validate([ // validate() verifica campos obligatorios, formatos, fechas válidas y límites; falla si algo no cumple.
-            'fecha_limite'           => ['required', 'date', 'after_or_equal:today'],
+            'fecha_limite'           => ['required', 'date', 'after_or_equal:today', new NotWeekendOrColombianHoliday()],
             'id_usuario_nuevo_lider' => ['required', 'integer', 'exists:users,id'],
-            'motivo_cambio'          => ['required', 'string', 'min:5', 'max:500'],
+            'motivo_cambio'          => ['required', 'string', 'min:10', 'max:200'],
         ], [ // Estos mensajes sustituyen textos genéricos para los errores configurados.
             'fecha_limite.required'           => 'La nueva fecha límite es obligatoria.',
             'fecha_limite.after_or_equal'     => 'La nueva fecha límite no puede ser anterior a hoy.',
             'id_usuario_nuevo_lider.required' => 'Debe seleccionar el nuevo líder.',
             'motivo_cambio.required'          => 'El motivo de reprogramación es obligatorio.',
-            'motivo_cambio.min'               => 'El motivo debe tener al menos 5 caracteres.',
+            'motivo_cambio.min'               => 'El motivo debe tener al menos 10 caracteres.',
+            'motivo_cambio.max'               => 'El motivo no puede superar los 200 caracteres.',
         ]);
 
         $prog = PoeProgramacion::with('poe')->findOrFail($idProgramacion); // Carga la programación y su POE relacionado; findOrFail responde 404 si no existe.
@@ -165,10 +167,11 @@ class PoeProgramacionController extends Controller // Controlador de creación, 
         }
 
         $request->validate([ // validate() exige un motivo de texto con longitud permitida antes de efectuar la cancelación.
-            'motivo_cambio' => ['required', 'string', 'min:5', 'max:500'],
+            'motivo_cambio' => ['required', 'string', 'min:10', 'max:200'],
         ], [ // Define mensajes más claros para los fallos de los campos indicados.
             'motivo_cambio.required' => 'El motivo de cancelación es obligatorio.',
-            'motivo_cambio.min'      => 'El motivo debe tener al menos 5 caracteres.',
+            'motivo_cambio.min'      => 'El motivo debe tener al menos 10 caracteres.',
+            'motivo_cambio.max'      => 'El motivo no puede superar los 200 caracteres.',
         ]);
 
         $prog = PoeProgramacion::with('poe')->findOrFail($idProgramacion); // Recupera la programación y su POE para informar su código en la respuesta.

@@ -37,7 +37,7 @@ class HistoriaController extends Controller // Controlador para administrar los 
 
         $bloques = BloqueHistoria::orderBy('orden', 'asc')
             ->orderBy('id', 'asc')
-            ->paginate(3);
+            ->paginate(4);
 
         $indicadores = [
             'total'     => BloqueHistoria::count(),

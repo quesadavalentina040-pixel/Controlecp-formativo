@@ -58,6 +58,64 @@
 </style>
 @endpush
 
+@push('styles')
+<style>
+    .inv-detail-action {
+        border: 1px solid transparent;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .inv-detail-action:hover,
+    .inv-detail-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+    }
+    .inv-detail-edit {
+        background: #f1f5f9;
+        border-color: #dbe3eb;
+        color: #475569;
+    }
+    .inv-detail-edit:hover {
+        background: #475569;
+        border-color: #475569;
+        color: #fff;
+    }
+    .inv-detail-loan {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
+    }
+    .inv-detail-loan:hover {
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
+    .inv-detail-return,
+    .inv-detail-note {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .inv-detail-return:hover,
+    .inv-detail-note:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .inv-detail-disable {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
+    }
+    .inv-detail-disable:hover {
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
+</style>
+@endpush
+
 @section('dashboard-content')
 <div class="container-fluid px-3 py-3">
 
@@ -80,24 +138,24 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2">
-            <a href="{{ route('controlecp.administrador.inventario.edit', $recurso->id_inventario) }}" class="btn btn-outline-secondary rounded-pill px-3 btn-sm shadow-sm">
-                <i class="fas fa-pen me-1 text-success"></i> Editar
+            <a href="{{ route('controlecp.administrador.inventario.edit', $recurso->id_inventario) }}" class="btn inv-detail-action inv-detail-edit px-3 btn-sm shadow-sm">
+                <i class="fas fa-pen me-1"></i> Editar
             </a>
 
             @if($recurso->estado !== 'Inactivo')
-                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEntrega" {{ $recurso->cantidad_disponible <= 0 ? 'disabled' : '' }}>
+                <button type="button" class="btn inv-detail-action inv-detail-loan btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEntrega" {{ $recurso->cantidad_disponible <= 0 ? 'disabled' : '' }}>
                     <i class="fas fa-hand-holding-box me-1"></i> Entrega
                 </button>
 
-                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDevolucion">
+                <button type="button" class="btn inv-detail-action inv-detail-return btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDevolucion">
                     <i class="fas fa-arrow-rotate-left me-1"></i> Devolución
                 </button>
 
-                <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #39A900;" data-bs-toggle="modal" data-bs-target="#modalNovedad">
+                <button type="button" class="btn inv-detail-action inv-detail-note btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNovedad">
                     <i class="fas fa-plus me-1"></i> Novedad
                 </button>
 
-                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalBaja">
+                <button type="button" class="btn inv-detail-action inv-detail-disable btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalBaja">
                     <i class="fas fa-ban me-1"></i> Dar de baja
                 </button>
             @endif

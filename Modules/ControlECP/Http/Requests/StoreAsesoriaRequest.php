@@ -18,9 +18,9 @@ class StoreAsesoriaRequest extends FormRequest // Define autorización y reglas 
             'id_usuario_aprendiz'   => ['required', 'exists:users,id'], // Exige seleccionar un aprendiz cuyo id exista en users.
             'id_categoria_asesoria' => ['required', 'exists:categorias_asesoria,id_categoria_asesoria'], // Exige una categoría de asesoría existente.
             'fecha'                 => ['required', 'date'], // Exige una fecha con formato válido.
-            'hora_inicio'           => ['required'], // Exige indicar la hora de inicio.
-            'hora_fin'              => ['required', 'after:hora_inicio'], // Exige que la hora de fin sea posterior al inicio.
-            'motivo'                => ['required', 'string', 'min:5'], // Exige un motivo escrito de al menos cinco caracteres.
+            'hora_inicio'           => ['required', 'date_format:H:i', 'after_or_equal:08:00'], // Exige iniciar a partir de las 8:00 a. m.
+            'hora_fin'              => ['required', 'date_format:H:i', 'after:hora_inicio', 'before_or_equal:15:00'], // Exige terminar después del inicio y máximo a las 3:00 p. m.
+            'motivo'                => ['required', 'string', 'min:10', 'max:200'], // Exige un motivo escrito de 10 a 200 caracteres.
             'id_usuario_instructor' => ['nullable', 'exists:users,id'], // Permite no asignar instructor; si se indica, debe existir.
         ];
     }
@@ -35,10 +35,15 @@ class StoreAsesoriaRequest extends FormRequest // Define autorización y reglas 
             'fecha.required'                 => 'Debes indicar la fecha de la asesoría.', // Avisa que falta indicar la fecha.
             'fecha.date'                     => 'El formato de fecha no es válido.', // Avisa que el formato de la fecha es incorrecto.
             'hora_inicio.required'           => 'La hora de inicio es obligatoria.', // Avisa que falta la hora de inicio.
+            'hora_inicio.date_format'         => 'El formato de la hora de inicio no es válido.',
+            'hora_inicio.after_or_equal'     => 'La hora de inicio debe ser a partir de las 8:00 a. m.',
             'hora_fin.required'              => 'La hora de finalización es obligatoria.', // Avisa que falta la hora de fin.
+            'hora_fin.date_format'           => 'El formato de la hora de finalización no es válido.',
             'hora_fin.after'                 => 'La hora de fin debe ser posterior a la hora de inicio.', // Avisa que el orden de las horas no es válido.
+            'hora_fin.before_or_equal'       => 'La hora de fin no puede ser después de las 3:00 p. m.',
             'motivo.required'                => 'El motivo o tema de la asesoría es obligatorio.', // Avisa que falta el motivo.
-            'motivo.min'                     => 'El motivo debe tener al menos 5 caracteres.', // Avisa que el motivo tiene menos de cinco caracteres.
+            'motivo.min'                     => 'El motivo debe tener al menos 10 caracteres.',
+            'motivo.max'                     => 'El motivo no puede superar los 200 caracteres.',
             'id_usuario_instructor.exists'   => 'El instructor seleccionado no es válido.', // Avisa que el id del instructor no existe.
         ];
     }

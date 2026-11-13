@@ -153,8 +153,8 @@ class PoeService
             $poe = Poe::create([
                 // Guarda el id del usuario responsable indicado en los datos.
                 'id_usuario' => $datos['id_usuario'],
-                // Normaliza el código a mayúsculas y quita espacios laterales.
-                'codigo'     => strtoupper(trim($datos['codigo'])),
+                // Asigna el siguiente código consecutivo del repositorio.
+                'codigo'     => $this->generarCodigoPoe(),
                 // Quita espacios laterales del nombre antes de guardarlo.
                 'nombre'     => trim($datos['nombre']),
             ]);
@@ -198,6 +198,25 @@ class PoeService
             // Devuelve el documento recién creado al código que llamó el servicio.
             return $poe;
         });
+    }
+
+    private function generarCodigoPoe(): string
+    {
+        $codigos = Poe::query()->lockForUpdate()->pluck('codigo');
+        $siguiente = 1;
+
+        foreach ($codigos as $codigoExistente) {
+            if (preg_match('/^ASIG-SGC-M-(\d+)$/i', (string) $codigoExistente, $coincidencia)) {
+                $siguiente = max($siguiente, (int) $coincidencia[1] + 1);
+            }
+        }
+
+        do {
+            $codigo = 'ASIG-SGC-M-' . str_pad((string) $siguiente, 3, '0', STR_PAD_LEFT);
+            $siguiente++;
+        } while (Poe::where('codigo', $codigo)->exists());
+
+        return $codigo;
     }
 
     /**

@@ -56,6 +56,30 @@ class Notificacion extends Model
         ?int $referenciaId = null,
         ?string $claveEvento = null
     ): self {
+        $tituloNormalizado = mb_strtolower($titulo);
+        $esResumenSesiones = str_contains($tituloNormalizado, 'sesiones de acompañamiento')
+            || str_contains($tituloNormalizado, 'próxima sesión de acompañamiento');
+
+        if (strtolower((string) $referenciaTipo) === 'acompanamiento' && !$esResumenSesiones) {
+            $cancelada = str_contains(mb_strtolower($titulo), 'cancel');
+            $titulo = $cancelada
+                ? 'Sesión de acompañamiento cancelada'
+                : 'Aviso de sesión de acompañamiento';
+
+            preg_match('/\b(\d{2}\/\d{2}\/\d{4})\b/u', $mensaje, $fecha);
+            preg_match_all('/\b([01]\d|2[0-3]):[0-5]\d\b/u', $mensaje, $horas);
+
+            if (empty($fecha[1])) {
+                $mensaje = 'Hay una novedad sobre tu sesión de acompañamiento.';
+            } else {
+                $mensaje = 'Fecha: ' . $fecha[1];
+                if (count($horas[0]) >= 2) {
+                    $mensaje .= ' · Hora: ' . $horas[0][0] . ' a ' . $horas[0][1];
+                }
+                $mensaje .= '.';
+            }
+        }
+
         return self::create([
             'id_usuario_receptor' => $idReceptor,
             'id_usuario_causante' => $idCausante,

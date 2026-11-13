@@ -22,18 +22,33 @@
 }
 
 /* ── Bienvenida ── */
+.dash-welcome {
+    padding: 1.35rem 1.75rem;
+    margin-bottom: 1rem !important;
+    border-radius: 24px;
+    background: linear-gradient(120deg, #001a29, #00324d);
+    color: #fff;
+}
+.dash-welcome .welcome-eyebrow {
+    margin-bottom: .35rem;
+    color: #62e31d;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
 .dash-welcome .welcome-title {
     font-family: 'Outfit', sans-serif;
     font-size: 2rem;
     font-weight: 800;
-    color: #001A29;
+    color: #fff;
     margin-bottom: .3rem;
     line-height: 1.2;
 }
 .dash-welcome .welcome-sub {
     font-size: .93rem;
-    color: #52796f;
-    margin-bottom: 1.1rem;
+    color: #c7d4da;
+    margin-bottom: 0;
 }
 .dash-welcome .welcome-section-label {
     font-size: .72rem;
@@ -46,7 +61,7 @@
 /* ── Tarjetas de resumen ── */
 .stat-card {
     background: #fff;
-    border: 1px solid #e0ece4;
+    border: 2px solid #e0ece4;
     border-radius: 14px;
     padding: 1.35rem 1.4rem;
     display: flex;
@@ -55,6 +70,10 @@
     height: 100%;
     transition: transform .18s, box-shadow .18s;
 }
+.stat-card-green  { border-color: rgba(57, 169, 0, .4); }
+.stat-card-blue   { border-color: rgba(0, 112, 184, .35); }
+.stat-card-amber  { border-color: rgba(217, 119, 6, .35); }
+.stat-card-purple { border-color: rgba(124, 58, 237, .35); }
 .stat-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba(0,50,77,.09);
@@ -98,12 +117,14 @@
 /* ── Tarjetas de alerta ── */
 .alert-card {
     background: #fff;
-    border: 1px solid #e0ece4;
+    border: 2px solid #e0ece4;
     border-radius: 14px;
     padding: 1.25rem 1.4rem;
     height: 100%;
     transition: transform .18s, box-shadow .18s;
 }
+.alert-card-orange { border-color: rgba(234, 88, 12, .35); }
+.alert-card-blue   { border-color: rgba(2, 136, 209, .35); }
 .alert-card-icon {
     width: 42px;
     height: 42px;
@@ -135,37 +156,33 @@
     border-radius: 4px;
     margin-bottom: 1.1rem;
 }
+@media (max-width: 575.98px) {
+    .dash-welcome { padding: 1.1rem 1.2rem; }
+    .dash-welcome .welcome-title { font-size: 1.55rem; }
+}
 </style>
 @endpush
 
 {{-- Contenido principal que organiza la interfaz específica de esta vista. --}}
 @section('dashboard-content')
 
-<div class="container-fluid px-3 py-3">
-
-<div class="page-title-bar">
-    <h5>
-        <i class="fas fa-house me-2 text-success"></i>
-        Panel de Inicio - Instructor
-    </h5>
-</div>
-
 <div class="dash-welcome mb-4">
+    <div class="welcome-eyebrow"><i class="fas fa-chart-line me-2"></i>Control ECP · Panel Instructor</div>
     <div class="welcome-title">
         Bienvenido, {{ Auth::user()->full_name ?? Auth::user()->name }} 👨‍🏫
     </div>
     <div class="welcome-sub">
         Gestión de sesiones, asistencias y seguimiento pedagógico ECP.
     </div>
-    <div class="welcome-section-label">Resumen de Gestión</div>
 </div>
+<div class="welcome-section-label mb-3">Resumen de Gestión</div>
 
 <!-- TARJETAS DE RESUMEN -->
 <div class="row g-3 mb-4">
 
     <!-- Fichas Asignadas -->
     <div class="col-12 col-sm-6 col-lg-3">
-        <div class="stat-card">
+        <div class="stat-card stat-card-green">
             <div class="stat-icon si-green">
                 <i class="fas fa-id-card"></i>
             </div>
@@ -179,7 +196,7 @@
 
     <!-- Sesiones Programadas Hoy -->
     <div class="col-12 col-sm-6 col-lg-3">
-        <div class="stat-card">
+        <div class="stat-card stat-card-blue">
             <div class="stat-icon si-blue">
                 <i class="fas fa-calendar-check"></i>
             </div>
@@ -193,7 +210,7 @@
 
     <!-- Momentos en Desarrollo -->
     <div class="col-12 col-sm-6 col-lg-3">
-        <div class="stat-card">
+        <div class="stat-card stat-card-amber">
             <div class="stat-icon si-amber">
                 <i class="fas fa-star"></i>
             </div>
@@ -207,7 +224,7 @@
 
     <!-- Asesorías Solicitadas -->
     <div class="col-12 col-sm-6 col-lg-3">
-        <div class="stat-card">
+        <div class="stat-card stat-card-purple">
             <div class="stat-icon si-purple">
                 <i class="fas fa-comments"></i>
             </div>
@@ -229,7 +246,7 @@
 
     <!-- Registro de Asistencias Pendientes -->
     <div class="col-12 col-md-6">
-        <div class="alert-card">
+        <div class="alert-card alert-card-orange">
             <div class="d-flex align-items-center gap-2 mb-3">
                 <div class="alert-card-icon ai-orange">
                     <i class="fas fa-user-check"></i>
@@ -252,7 +269,7 @@
 
     <!-- Acompañamiento Pedagógico -->
     <div class="col-12 col-md-6">
-        <div class="alert-card">
+        <div class="alert-card alert-card-blue">
             <div class="d-flex align-items-center gap-2 mb-3">
                 <div class="alert-card-icon ai-blue">
                     <i class="fas fa-hand-holding-hand"></i>
@@ -270,6 +287,5 @@
         </div>
     </div>
 
-</div>
 </div>
 @endsection

@@ -24,8 +24,8 @@ class PoeVersionRequest extends FormRequest // Define permisos y reglas para car
             'cambio' => [ // Inicia las validaciones para la descripción del cambio.
                 'required', // Exige describir qué cambió en esta versión.
                 'string', // Exige que la descripción sea texto.
-                'min:5', // Exige al menos cinco caracteres.
-                'max:1000', // Limita la descripción a mil caracteres.
+                'min:10', // Exige una descripción de al menos 10 caracteres.
+                'max:200', // Limita la descripción a 200 caracteres.
             ],
             'archivo' => [ // Inicia las reglas para el archivo que se va a subir.
                 'required', // Exige que se adjunte el documento.
@@ -47,8 +47,8 @@ class PoeVersionRequest extends FormRequest // Define permisos y reglas para car
     {
         return [ // Devuelve los mensajes relacionados con cada campo y regla.
             'cambio.required'  => 'El campo ¿Qué se modificó? es obligatorio.', // Avisa si se dejó vacía la descripción.
-            'cambio.min'       => 'Debe describir el cambio con al menos 5 caracteres.', // Avisa si la descripción es demasiado corta.
-            'cambio.max'       => 'La descripción del cambio no puede superar los 1000 caracteres.', // Avisa si se excedió el límite.
+            'cambio.min'       => 'Debe describir el cambio con al menos 10 caracteres.', // Avisa si la descripción es demasiado corta.
+            'cambio.max'       => 'La descripción del cambio no puede superar los 200 caracteres.', // Avisa si se excedió el límite.
             'archivo.required' => 'Debe adjuntar el archivo de la nueva versión.', // Avisa si falta adjuntar el archivo.
             'archivo.file'     => 'El archivo adjunto no es válido.', // Avisa si Laravel no reconoce un archivo válido.
             'archivo.mimes'    => 'Solo se permiten archivos en formato PDF (.pdf) o Word (.docx).', // Avisa si el tipo no está permitido.

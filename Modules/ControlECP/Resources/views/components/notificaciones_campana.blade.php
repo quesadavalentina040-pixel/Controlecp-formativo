@@ -101,28 +101,8 @@
     }
 
     .ecp-bell-animating {
-        animation: ecpBellShake 0.6s ease infinite;
-    }
-
-    .ecp-toast-aviso {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        z-index: 1090;
-        background: #001A29;
-        color: #ffffff;
-        border-left: 4px solid #39A900;
-        border-radius: 12px;
-        padding: 12px 18px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-        display: none;
-        max-width: 380px;
-        animation: slideInUp .3s ease;
-    }
-
-    @keyframes slideInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+        transform-origin: top center;
+        animation: ecpBellShake .7s ease-in-out 3;
     }
 </style>
 
@@ -159,7 +139,7 @@
                         <div class="flex-grow-1">
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <span class="badge rounded-pill bg-light text-dark border px-2 py-0 small" style="font-size: 0.65rem;">
-                                    {{ $notif->modulo }}
+                                    {{ $notif->modulo_mostrado }}
                                 </span>
                                 <small class="text-muted" style="font-size: 0.68rem;">{{ $notif->fecha_generacion->diffForHumans() }}</small>
                             </div>
@@ -185,24 +165,9 @@
 
         {{-- Pie del desplegable con enlace al historial completo --}}
         <div class="p-2 border-top bg-light text-center">
-            <a href="{{ route('controlecp.notificaciones.index') }}" class="btn btn-link text-decoration-none small fw-semibold p-0" style="color: #39A900; font-size: 0.78rem;">
+            <a href="{{ auth()->user()->hasRole('controlecp.apprentice') ? route('controlecp.aprendiz.notificaciones') : route('controlecp.notificaciones.index') }}" class="btn btn-link text-decoration-none small fw-semibold p-0" style="color: #39A900; font-size: 0.78rem;">
                 Ver todo el historial <i class="fas fa-arrow-right ms-1"></i>
             </a>
-        </div>
-    </div>
-</div>
-
-{{-- Toast emergente cuando llega una notificación nueva sin recargar --}}
-<div id="toastAvisoEmergente" class="ecp-toast-aviso">
-    <div class="d-flex align-items-start gap-2">
-        <i class="fas fa-bell text-warning mt-1 fs-5"></i>
-        <div class="flex-grow-1">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <span class="badge rounded-pill bg-success small" id="toastAvisoModulo" style="font-size: 0.65rem;">Módulo</span>
-                <button type="button" class="btn-close btn-close-white p-0 m-0" style="font-size: 0.6rem;" onclick="cerrarToastAviso()"></button>
-            </div>
-            <strong class="d-block small text-white" id="toastAvisoTitulo" style="font-size: 0.82rem;">Nueva notificación</strong>
-            <small class="text-white-50 d-block text-truncate" id="toastAvisoMensaje" style="font-size: 0.74rem;">Mensaje</small>
         </div>
     </div>
 </div>
@@ -214,6 +179,57 @@
     const urlResumenNotif = "{{ route('controlecp.notificaciones.resumen') }}";
     const urlMarcarTodas = "{{ route('controlecp.notificaciones.marcar-todas') }}";
     const notificacionesCsrfToken = "{{ csrf_token() }}";
+    let contextoAudioNotificaciones = null;
+    let audioNotificacionesHabilitado = false;
+
+    function habilitarAudioNotificaciones() {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+
+        contextoAudioNotificaciones ??= new AudioContextClass();
+        if (contextoAudioNotificaciones.state === 'suspended') {
+            contextoAudioNotificaciones.resume()
+                .then(() => { audioNotificacionesHabilitado = true; })
+                .catch(error => console.warn('No se pudo habilitar el sonido de notificaciones:', error));
+        } else {
+            audioNotificacionesHabilitado = true;
+        }
+    }
+
+    document.addEventListener('pointerdown', habilitarAudioNotificaciones, {once: true});
+    document.addEventListener('keydown', habilitarAudioNotificaciones, {once: true});
+
+    function sonarNotificacion() {
+        if (!audioNotificacionesHabilitado || !contextoAudioNotificaciones) return;
+
+        const oscillator = contextoAudioNotificaciones.createOscillator();
+        const gain = contextoAudioNotificaciones.createGain();
+        const ahora = contextoAudioNotificaciones.currentTime;
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, ahora);
+        oscillator.frequency.setValueAtTime(1174, ahora + 0.12);
+        gain.gain.setValueAtTime(0.0001, ahora);
+        gain.gain.exponentialRampToValueAtTime(0.12, ahora + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ahora + 0.32);
+        oscillator.connect(gain);
+        gain.connect(contextoAudioNotificaciones.destination);
+        oscillator.start(ahora);
+        oscillator.stop(ahora + 0.34);
+    }
+
+    function avisarNuevaNotificacion() {
+        const bell = document.getElementById('iconoCampana');
+        if (bell) {
+            bell.classList.remove('ecp-bell-animating');
+            void bell.offsetWidth;
+            bell.classList.add('ecp-bell-animating');
+            bell.addEventListener('animationend', () => bell.classList.remove('ecp-bell-animating'), {once: true});
+        }
+
+        const vibracionDisponible = typeof navigator.vibrate === 'function'
+            && navigator.vibrate([180, 90, 180]);
+        if (!vibracionDisponible) sonarNotificacion();
+    }
 
     // Actualiza los badges de la campana y del sidebar
     function actualizarContadoresVisuales(total) {
@@ -244,35 +260,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         actualizarContadoresVisuales(conteoNoLeidasGlobal);
     });
-
-    // Muestra aviso flotante para notificaciones nuevas
-    function mostrarAvisoEmergente(notif) {
-        const toast = document.getElementById('toastAvisoEmergente');
-        const mod = document.getElementById('toastAvisoModulo');
-        const tit = document.getElementById('toastAvisoTitulo');
-        const msg = document.getElementById('toastAvisoMensaje');
-        const icono = document.getElementById('iconoCampana');
-
-        if (toast && mod && tit && msg) {
-            mod.textContent = notif.modulo || 'Control ECP';
-            tit.textContent = notif.titulo || 'Nueva notificación';
-            msg.textContent = notif.mensaje || 'Haz clic para revisar los detalles.';
-            toast.style.display = 'block';
-
-            if (icono) {
-                icono.classList.add('ecp-bell-animating');
-                setTimeout(() => icono.classList.remove('ecp-bell-animating'), 3000);
-            }
-
-            setTimeout(cerrarToastAviso, 6000);
-        }
-    }
-
-    // Cierra el aviso emergente
-    function cerrarToastAviso() {
-        const toast = document.getElementById('toastAvisoEmergente');
-        if (toast) toast.style.display = 'none';
-    }
 
     // Abre una notificación marcándola como leída en el backend
     function abrirNotificacion(url) {
@@ -317,7 +304,7 @@
 
             // Si hay notificaciones nuevas registradas en este intervalo
             if (data.nuevas && data.nuevas.length > 0) {
-                data.nuevas.forEach(n => mostrarAvisoEmergente(n));
+                avisarNuevaNotificacion();
                 ultimoIdNotificacion = data.ultimo_id;
             }
 
@@ -344,34 +331,63 @@
             return;
         }
 
-        let html = '';
+        contenedor.replaceChildren();
         items.forEach(n => {
-            const noLeidaClass = !n.leida ? 'no-leida' : '';
-            const dot = !n.leida ? `<span class="ecp-notif-dot mt-1" id="dot-notif-${n.id}"></span>` : '';
-            const cant = n.cantidad > 1 ? `<span class="badge bg-secondary rounded-pill ms-1" style="font-size: 0.6rem;">x${n.cantidad}</span>` : '';
+            const item = document.createElement('a');
+            item.className = `ecp-notif-item ${!n.leida ? 'no-leida' : ''}`;
+            item.id = `item-notif-${n.id}`;
+            item.href = n.url;
 
-            html += `
-                <div class="ecp-notif-item ${noLeidaClass}" id="item-notif-${n.id}" onclick="abrirNotificacion('${n.url}')">
-                    <div class="d-flex align-items-start gap-2">
-                        ${dot}
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="badge rounded-pill bg-light text-dark border px-2 py-0 small" style="font-size: 0.65rem;">
-                                    ${n.modulo}
-                                </span>
-                                <small class="text-muted" style="font-size: 0.68rem;">${n.fecha}</small>
-                            </div>
-                            <strong class="d-block small text-dark mb-0 text-truncate" style="max-width: 280px; font-size: 0.8rem;">
-                                ${n.titulo} ${cant}
-                            </strong>
-                            ${n.mensaje ? `<p class="text-muted small mb-0 text-truncate" style="max-width: 280px; font-size: 0.73rem;">${n.mensaje}</p>` : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
+            const row = document.createElement('div');
+            row.className = 'd-flex align-items-start gap-2';
+            if (!n.leida) {
+                const dot = document.createElement('span');
+                dot.className = 'ecp-notif-dot mt-1';
+                dot.id = `dot-notif-${n.id}`;
+                row.append(dot);
+            }
+
+            const content = document.createElement('div');
+            content.className = 'flex-grow-1';
+            const meta = document.createElement('div');
+            meta.className = 'd-flex justify-content-between align-items-center mb-1';
+            const module = document.createElement('span');
+            module.className = 'badge rounded-pill bg-light text-dark border px-2 py-0 small';
+            module.style.fontSize = '0.65rem';
+            module.textContent = n.modulo || 'Control ECP';
+            const date = document.createElement('small');
+            date.className = 'text-muted';
+            date.style.fontSize = '0.68rem';
+            date.textContent = n.fecha || '';
+            meta.append(module, date);
+
+            const title = document.createElement('strong');
+            title.className = 'd-block small text-dark mb-0 text-truncate';
+            title.style.maxWidth = '280px';
+            title.style.fontSize = '0.8rem';
+            title.textContent = n.titulo || 'Nueva notificación';
+            if (n.cantidad > 1) {
+                const count = document.createElement('span');
+                count.className = 'badge bg-secondary rounded-pill ms-1';
+                count.style.fontSize = '0.6rem';
+                count.textContent = `x${n.cantidad}`;
+                title.append(count);
+            }
+            content.append(meta, title);
+
+            if (n.mensaje) {
+                const message = document.createElement('p');
+                message.className = 'text-muted small mb-0 text-truncate';
+                message.style.maxWidth = '280px';
+                message.style.fontSize = '0.73rem';
+                message.textContent = n.mensaje;
+                content.append(message);
+            }
+
+            row.append(content);
+            item.append(row);
+            contenedor.append(item);
         });
-
-        contenedor.innerHTML = html;
     }
 
     // Inicia sondeo periódico cada 12 segundos

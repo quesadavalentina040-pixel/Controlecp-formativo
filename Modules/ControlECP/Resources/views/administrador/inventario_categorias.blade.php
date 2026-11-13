@@ -2,19 +2,58 @@
 
 @push('styles')
 <style>
+    .categoria-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
+    }
     .btn-action-cat {
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
         padding: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 8px;
+        border-radius: 10px !important;
         font-size: 0.85rem;
-        transition: all 0.15s ease;
+        border: 1px solid transparent;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
     }
-    .btn-action-cat:hover {
-        transform: scale(1.05);
+    .btn-action-cat:hover,
+    .btn-action-cat:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+    }
+    .btn-action-cat-edit {
+        background: #f1f5f9;
+        border-color: #dbe3eb;
+        color: #475569;
+    }
+    .btn-action-cat-edit:hover {
+        background: #475569;
+        border-color: #475569;
+        color: #fff;
+    }
+    .btn-action-cat-disable {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
+    }
+    .btn-action-cat-disable:hover {
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
+    .btn-action-cat-enable {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .btn-action-cat-enable:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
     }
 </style>
 @endpush
@@ -121,10 +160,10 @@
 
                                 <!-- Columna 4: Acciones (Lapiz editar y botón power toggle) -->
                                 <td class="text-end pe-4">
-                                    <div class="d-inline-flex gap-1">
+                                    <div class="categoria-row-actions">
                                         <!-- Editar Categoría -->
-                                        <button type="button" class="btn btn-outline-secondary btn-action-cat" title="Editar categoría" onclick="editarCategoria({{ $cat->id_categoria_inventario }}, '{{ addslashes($cat->nombre) }}', '{{ $cat->estado }}')">
-                                            <i class="fas fa-pen text-primary"></i>
+                                        <button type="button" class="btn btn-action-cat btn-action-cat-edit" title="Editar categoría" aria-label="Editar categoría" onclick="editarCategoria({{ $cat->id_categoria_inventario }}, '{{ addslashes($cat->nombre) }}', '{{ $cat->estado }}')">
+                                            <i class="fas fa-pen"></i>
                                         </button>
 
                                         <!-- Activar / Desactivar (Toggle) -->
@@ -132,12 +171,12 @@
                                             @csrf
                                             @method('PATCH')
                                             @if($cat->estado === 'Activo')
-                                                <button type="submit" class="btn btn-outline-secondary btn-action-cat" title="Desactivar categoría (Conservará los recursos)">
-                                                    <i class="fas fa-power-off text-danger"></i>
+                                                <button type="submit" class="btn btn-action-cat btn-action-cat-disable" title="Desactivar categoría (Conservará los recursos)" aria-label="Desactivar categoría">
+                                                    <i class="fas fa-power-off"></i>
                                                 </button>
                                             @else
-                                                <button type="submit" class="btn btn-outline-secondary btn-action-cat" title="Activar categoría">
-                                                    <i class="fas fa-check text-success"></i>
+                                                <button type="submit" class="btn btn-action-cat btn-action-cat-enable" title="Activar categoría" aria-label="Activar categoría">
+                                                    <i class="fas fa-check"></i>
                                                 </button>
                                             @endif
                                         </form>

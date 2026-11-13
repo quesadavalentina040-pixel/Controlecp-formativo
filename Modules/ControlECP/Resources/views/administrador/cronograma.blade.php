@@ -14,6 +14,173 @@
         color: #64748b !important;
     }
 
+    #pills-tab .nav-link {
+        color: #001A29;
+    }
+    #pills-tab .nav-link.active,
+    #pills-tab .show > .nav-link {
+        background-color: #39A900;
+        color: #fff;
+    }
+    #pills-tab .nav-link:not(.active):hover {
+        color: #2e8800;
+    }
+
+    .cronograma-filter-card {
+        border-radius: 18px;
+        background: #001A29;
+    }
+    .cronograma-filter-grid {
+        display: grid;
+        grid-template-columns:
+            minmax(150px, 1.8fr)
+            minmax(120px, 1.35fr)
+            minmax(100px, .9fr)
+            minmax(130px, 1.3fr)
+            minmax(120px, 1fr)
+            minmax(120px, 1fr)
+            auto;
+        gap: .6rem;
+        align-items: end;
+    }
+    .cronograma-filter-grid .form-label {
+        display: block;
+        margin-bottom: .35rem;
+        color: #fff;
+    }
+    .cronograma-filter-grid .form-control,
+    .cronograma-filter-grid .form-select,
+    .cronograma-filter-grid .input-group-text {
+        min-width: 0;
+        min-height: 43px;
+        border-color: #dce5eb;
+        background-color: #fff;
+        color: #001A29;
+        box-shadow: none;
+    }
+    .cronograma-filter-grid .form-control:focus,
+    .cronograma-filter-grid .form-select:focus {
+        border-color: #39A900;
+        box-shadow: 0 0 0 .2rem rgba(57, 169, 0, .25);
+    }
+    .cronograma-filter-grid .input-group-text {
+        border-radius: 9px 0 0 9px;
+    }
+    .cronograma-filter-grid .search-field {
+        border-radius: 0 9px 9px 0 !important;
+    }
+    .cronograma-filter-grid .ficha-search-results,
+    .cronograma-ficha-search-results {
+        position: absolute;
+        top: calc(100% + .25rem);
+        left: 0;
+        right: 0;
+        z-index: 20;
+        display: none;
+        max-height: 180px;
+        overflow-y: auto;
+        padding: .25rem;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: .65rem;
+        box-shadow: 0 .35rem 1rem rgba(0, 26, 41, .12);
+    }
+    .cronograma-filter-grid .ficha-search-results.is-visible,
+    .cronograma-ficha-search-results.is-visible {
+        display: block;
+    }
+    .cronograma-filter-grid .ficha-search-option,
+    .cronograma-ficha-search-results .ficha-search-option {
+        display: block;
+        width: 100%;
+        padding: .4rem .55rem;
+        border: 0;
+        border-radius: .4rem;
+        background: transparent;
+        color: #001A29;
+        text-align: left;
+        font-size: .9rem;
+    }
+    .cronograma-filter-grid .ficha-search-option:hover,
+    .cronograma-filter-grid .ficha-search-option:focus,
+    .cronograma-ficha-search-results .ficha-search-option:hover,
+    .cronograma-ficha-search-results .ficha-search-option:focus {
+        background: #f0fbf4;
+        outline: none;
+    }
+    .cronograma-filter-grid .ficha-search-empty,
+    .cronograma-ficha-search-results .ficha-search-empty {
+        padding: .4rem .55rem;
+        color: #6c757d;
+        font-size: .8rem;
+    }
+    .cronograma-filter-grid .form-select,
+    .cronograma-filter-grid input[type="date"] {
+        border-radius: 9px;
+    }
+    .cronograma-filter-grid .filter-actions {
+        display: flex;
+        gap: .5rem;
+    }
+    .cronograma-filter-grid .filter-submit,
+    .cronograma-filter-grid .filter-reset {
+        min-height: 43px;
+        height: 43px;
+        white-space: nowrap;
+    }
+    .cronograma-filter-grid .filter-submit {
+        flex: 1;
+        min-width: 112px;
+        padding: 0 .85rem;
+        background: #39A900;
+        border-color: #39A900;
+        color: #fff;
+        font-weight: 700;
+    }
+    .cronograma-filter-grid .filter-submit:hover,
+    .cronograma-filter-grid .filter-submit:focus {
+        background: #2e8800;
+        border-color: #2e8800;
+        color: #fff;
+    }
+    .cronograma-filter-grid .filter-reset {
+        flex: 0 0 48px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border-color: #dce5eb;
+        background: #fff;
+        color: #001A29;
+    }
+    .cronograma-filter-grid .filter-reset:hover {
+        background: #f1f5f9;
+        color: #001A29;
+    }
+    @media (max-width: 1199.98px) {
+        .cronograma-filter-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .cronograma-filter-grid .search-filter {
+            grid-column: span 2;
+        }
+        .cronograma-filter-grid .filter-actions {
+            grid-column: span 2;
+            justify-content: flex-end;
+        }
+        .cronograma-filter-grid .filter-submit {
+            flex: 0 0 112px;
+        }
+    }
+    @media (max-width: 767.98px) {
+        .cronograma-filter-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .cronograma-filter-grid .search-filter,
+        .cronograma-filter-grid .filter-actions {
+            grid-column: 1 / -1;
+        }
+    }
+
     /* ── Estilos del Semáforo ── */
     .semaforo-indicator {
         width: 14px;
@@ -26,48 +193,87 @@
     .semaforo-verde {
         background-color: #39A900;
         box-shadow: 0 0 10px rgba(57, 169, 0, 0.6);
-        animation: pulse-green 2s infinite;
     }
     .semaforo-amarillo {
         background-color: #f57f17;
         box-shadow: 0 0 10px rgba(245, 127, 23, 0.6);
-        animation: pulse-yellow 2s infinite;
     }
     .semaforo-rojo {
         background-color: #d32f2f;
         box-shadow: 0 0 10px rgba(211, 47, 47, 0.6);
-        animation: pulse-red 2s infinite;
     }
     .semaforo-neutro {
         background-color: #94a3b8;
         box-shadow: none;
     }
 
-    @keyframes pulse-green {
-        0% { box-shadow: 0 0 0 0 rgba(57, 169, 0, 0.7); }
-        70% { box-shadow: 0 0 0 8px rgba(57, 169, 0, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(57, 169, 0, 0); }
-    }
-    @keyframes pulse-yellow {
-        0% { box-shadow: 0 0 0 0 rgba(245, 127, 23, 0.7); }
-        70% { box-shadow: 0 0 0 8px rgba(245, 127, 23, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(245, 127, 23, 0); }
-    }
-    @keyframes pulse-red {
-        0% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
-        70% { box-shadow: 0 0 0 8px rgba(211, 47, 47, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
-    }
-
     .card-semaforo-box {
-        border-radius: 18px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        border: none;
+        height: 100%;
+        border: 2px solid transparent;
+        border-radius: 14px;
+        background: #fff;
         cursor: pointer;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .card-semaforo-box .card-body {
+        padding: 1rem !important;
+    }
+    .card-semaforo-rojo {
+        border-color: rgba(220, 38, 38, .35);
+    }
+    .card-semaforo-amarillo {
+        border-color: rgba(245, 127, 23, .4);
+    }
+    .card-semaforo-verde {
+        border-color: rgba(22, 163, 74, .35);
+    }
+    .card-semaforo-neutro {
+        border-color: rgba(100, 116, 139, .35);
+    }
+    .card-semaforo-icon {
+        display: inline-flex;
+        width: 38px;
+        height: 38px;
+        flex: 0 0 38px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: .95rem;
+    }
+    .card-semaforo-rojo .card-semaforo-icon {
+        background: #fee2e2;
+        color: #d32f2f;
+    }
+    .card-semaforo-amarillo .card-semaforo-icon {
+        background: #ffedd5;
+        color: #ea580c;
+    }
+    .card-semaforo-verde .card-semaforo-icon {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+    .card-semaforo-neutro .card-semaforo-icon {
+        background: #e2e8f0;
+        color: #64748b;
     }
     .card-semaforo-box:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(0, 26, 41, .08);
+    }
+    .card-semaforo-label {
+        color: #475569;
+        font-size: .95rem;
+        font-weight: 500;
+    }
+    .card-semaforo-value {
+        margin-top: .15rem;
+        font-size: 1.7rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+    .card-semaforo-subtitle {
+        color: #64748b;
+        font-size: .9rem;
     }
 
     /* ── Estilos del Calendario Mensual ── */
@@ -99,8 +305,88 @@
         flex-direction: column;
         gap: 4px;
     }
+    .calendar-day-cell.has-events {
+        cursor: pointer;
+    }
+    .calendar-day-cell.has-events:hover {
+        background-color: #f0fbf4;
+    }
+    .calendar-day-activity-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        margin-top: .35rem;
+        padding: .3rem .5rem;
+        border-radius: 999px;
+        background: #e8f8e8;
+        color: #267800;
+        font-size: .72rem;
+        font-weight: 700;
+    }
+    .calendar-day-activity-indicator .activity-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #39A900;
+    }
+    .calendar-day-activity-indicator.semaforo-rojo {
+        background: #fee2e2;
+        color: #b91c1c;
+        animation: none;
+        box-shadow: none;
+    }
+    .calendar-day-activity-indicator.semaforo-rojo .activity-dot {
+        background: #dc2626;
+    }
+    .calendar-day-activity-indicator.semaforo-amarillo {
+        background: #ffedd5;
+        color: #c2410c;
+        animation: none;
+        box-shadow: none;
+    }
+    .calendar-day-activity-indicator.semaforo-amarillo .activity-dot {
+        background: #f57f17;
+    }
+    .calendar-day-activity-indicator.semaforo-verde {
+        background: #e8f8e8;
+        color: #267800;
+        animation: none;
+        box-shadow: none;
+    }
+    .calendar-day-activity-indicator.semaforo-neutro {
+        background: #e2e8f0;
+        color: #475569;
+        animation: none;
+        box-shadow: none;
+    }
+    .calendar-day-activity-indicator.semaforo-neutro .activity-dot {
+        background: #94a3b8;
+    }
+    .calendar-day-empty {
+        margin-top: .4rem;
+        color: #94a3b8;
+        font-size: .72rem;
+    }
+    .calendar-day-activity {
+        padding: .75rem;
+        border: 1px solid #e2e8f0;
+        border-left: 4px solid #39A900;
+        border-radius: 12px;
+        background: #fff;
+    }
+    .calendar-day-activity + .calendar-day-activity {
+        margin-top: .6rem;
+    }
+    .calendar-day-activity .activity-meta {
+        color: #64748b;
+        font-size: .85rem;
+    }
     .calendar-day-cell:hover {
         background-color: #f8fafc;
+    }
+    .calendar-day-cell.non-working-day,
+    .calendar-day-cell.non-working-day:hover {
+        background-color: #e8eef3;
     }
     .calendar-day-cell.other-month {
         background-color: #f1f5f9;
@@ -195,8 +481,308 @@
         border: 2px solid #ffffff;
         box-shadow: 0 0 0 2px #39A900;
     }
+    .cronograma-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
+    }
+    .cronograma-row-action {
+        display: inline-flex;
+        width: 34px;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 10px !important;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .cronograma-row-action:hover,
+    .cronograma-row-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+    }
+    .cronograma-row-action--view {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
+    }
+    .cronograma-row-action--view:hover {
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
+    .cronograma-row-action--edit {
+        background: #f1f5f9;
+        border-color: #dbe3eb;
+        color: #475569;
+    }
+    .cronograma-row-action--edit:hover {
+        background: #475569;
+        border-color: #475569;
+        color: #fff;
+    }
+    .cronograma-row-action--reassign {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .cronograma-row-action--reassign:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .cronograma-row-action--postpone {
+        background: #fff7e6;
+        border-color: #f8e3b2;
+        color: #c47a00;
+    }
+    .cronograma-row-action--postpone:hover {
+        background: #c47a00;
+        border-color: #c47a00;
+        color: #fff;
+    }
+    .cronograma-row-action--deactivate {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
+    }
+    .cronograma-row-action--deactivate:hover {
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
+    .cronograma-today-btn {
+        border-color: #39A900 !important;
+        color: #278000 !important;
+        background: #fff !important;
+        font-weight: 700;
+    }
+    .cronograma-today-btn:hover,
+    .cronograma-today-btn:focus {
+        border-color: #2e8800 !important;
+        color: #fff !important;
+        background: #39A900 !important;
+        box-shadow: 0 0 0 .2rem rgba(57, 169, 0, .18);
+    }
+
+    .cronograma-modal {
+        --cronograma-modal-accent: #39A900;
+        --cronograma-modal-tint: #f3faef;
+    }
+    .cronograma-modal .modal-dialog {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    .cronograma-modal .modal-content {
+        overflow: hidden;
+        border: 1px solid #e5ece6 !important;
+        border-top: 4px solid #39A900 !important;
+        border-radius: 20px !important;
+        background: #fff;
+        box-shadow: 0 22px 60px rgba(0, 26, 41, .18) !important;
+    }
+    .cronograma-modal .modal-header {
+        align-items: flex-start;
+        padding: 1.35rem 1.5rem 1.15rem !important;
+        border-bottom: 1px solid #e8eee8 !important;
+        background: linear-gradient(125deg, #f1f9ec 0%, #fff 78%);
+    }
+    .cronograma-modal .modal-header .btn-close {
+        margin-top: .2rem;
+        padding: .65rem;
+        border-radius: 50%;
+        background-color: #edf4e9;
+        box-shadow: none;
+    }
+    .cronograma-modal .modal-title {
+        color: #001A29 !important;
+        font-weight: 800;
+        letter-spacing: -.02em;
+    }
+    .cronograma-modal .modal-header h5 i {
+        display: inline-grid;
+        width: 2.45rem;
+        height: 2.45rem;
+        place-items: center;
+        margin-right: .55rem !important;
+        border-radius: 12px;
+        background: #e7f5de;
+        color: #39A900 !important;
+        vertical-align: middle;
+    }
+    .cronograma-modal .modal-body {
+        padding: 1.4rem 1.5rem !important;
+        background: #fff;
+    }
+    .cronograma-modal .modal-footer {
+        gap: .55rem;
+        padding: 1rem 1.5rem 1.35rem !important;
+        border-top: 1px solid #e8eee8 !important;
+        background: #fbfdfb;
+    }
+    .cronograma-modal .form-label {
+        margin-bottom: .45rem;
+        color: #001A29;
+        font-weight: 700;
+    }
+    .cronograma-modal .form-control,
+    .cronograma-modal .form-select {
+        min-height: 46px;
+        border: 1px solid #dce5dc;
+        border-radius: 11px !important;
+        color: #23313d;
+        background-color: #fff;
+        box-shadow: none;
+        transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+    }
+    .cronograma-modal .form-control::placeholder {
+        color: #9aa79b;
+    }
+    .cronograma-modal textarea.form-control {
+        min-height: auto;
+        border-radius: 11px !important;
+    }
+    .cronograma-modal .form-control:focus,
+    .cronograma-modal .form-select:focus {
+        border-color: #39A900;
+        box-shadow: 0 0 0 .22rem rgba(57, 169, 0, .14);
+    }
+    .cronograma-modal .btn {
+        min-height: 41px;
+        border-radius: 999px;
+        font-weight: 700;
+        transition: transform .16s ease, box-shadow .16s ease, background-color .16s ease, border-color .16s ease;
+    }
+    .cronograma-modal .btn:not(:disabled):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 5px 14px rgba(0, 26, 41, .1);
+    }
+    .cronograma-modal .modal-footer .btn:not(.btn-outline-secondary):not(.btn-outline-success):not(.btn-outline-warning):not(.btn-outline-danger):not(.btn-warning):not(.btn-danger):not(.btn-secondary) {
+        border-color: #39A900 !important;
+        background-color: #39A900 !important;
+        color: #fff !important;
+    }
+    .cronograma-modal .btn-outline-success {
+        border-color: #d3e9c8 !important;
+        background: #eff8e9 !important;
+        color: #347d1c !important;
+    }
+    .cronograma-modal .btn-outline-success:hover {
+        border-color: #c4e1b5 !important;
+        background: #e6f3dd !important;
+        color: #286a12 !important;
+    }
+    .cronograma-modal .btn-outline-secondary,
+    .cronograma-modal .btn-secondary {
+        border-color: #e1e8e2 !important;
+        background: #f1f5f2 !important;
+        color: #536258 !important;
+    }
+    .cronograma-modal .btn-outline-secondary:hover,
+    .cronograma-modal .btn-secondary:hover {
+        border-color: #d5dfd6 !important;
+        background: #e9efea !important;
+        color: #3e4b42 !important;
+    }
+    .cronograma-modal .btn-outline-warning,
+    .cronograma-modal .btn-warning {
+        border-color: #f2dfad !important;
+        background: #fff6df !important;
+        color: #8a640d !important;
+    }
+    .cronograma-modal .btn-outline-warning:hover,
+    .cronograma-modal .btn-warning:hover {
+        border-color: #ead18d !important;
+        background: #fff0c7 !important;
+        color: #75530a !important;
+    }
+    .cronograma-modal .btn-outline-danger,
+    .cronograma-modal .btn-danger {
+        border-color: #f1d0d0 !important;
+        background: #fff0f0 !important;
+        color: #b83b3b !important;
+    }
+    .cronograma-modal .btn-outline-danger:hover,
+    .cronograma-modal .btn-danger:hover {
+        border-color: #e9baba !important;
+        background: #ffe5e5 !important;
+        color: #a52e2e !important;
+    }
+    .cronograma-modal .modal-body .bg-light {
+        border: 1px solid #e5ece4;
+        background: #f5f9f3 !important;
+    }
+    .cronograma-modal .modal-body .border-top {
+        border-color: #e5ece4 !important;
+    }
+    #modalActividadesDia .calendar-day-activity {
+        margin-bottom: .75rem;
+        padding: 1rem;
+        border: 1px solid #e0eadc;
+        border-left: 4px solid #39A900;
+        border-radius: 12px;
+        background: #f8fcf6;
+        box-shadow: 0 3px 12px rgba(0, 26, 41, .045);
+    }
+    #modalDetalleSesion .modal-header {
+        gap: 1rem;
+    }
+    #modalDetalleSesion .modal-header h5 {
+        margin-top: .35rem;
+    }
+    #modalDetalleSesion .modal-body .row > [class*="col-"] > .p-3 {
+        padding: 1.1rem !important;
+        border: 1px solid #e2e9e5;
+        border-radius: 14px !important;
+        background: #f8fbf8 !important;
+    }
+    #modalDetalleSesion #detTimelineHistorial {
+        max-height: 270px;
+        overflow-y: auto;
+        padding-right: .25rem;
+    }
+    @media (max-width: 575.98px) {
+        .cronograma-modal .modal-header {
+            padding: 1.1rem 1rem .9rem !important;
+        }
+        .cronograma-modal .modal-body {
+            padding: 1rem !important;
+        }
+        .cronograma-modal .modal-footer {
+            display: grid;
+            grid-template-columns: 1fr;
+            padding: .8rem 1rem 1rem !important;
+        }
+        .cronograma-modal .modal-footer .btn {
+            width: 100%;
+        }
+        #modalDetalleSesion .modal-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        #modalDetalleSesion .modal-footer > div {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: .45rem;
+        }
+        #modalDetalleSesion .modal-footer > button {
+            width: 100%;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .cronograma-modal .btn,
+        .cronograma-modal .form-control,
+        .cronograma-modal .form-select {
+            transition: none;
+        }
+        .cronograma-modal .btn:not(:disabled):hover {
+            transform: none;
+        }
+    }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endpush
 
 @section('dashboard-content')
@@ -225,74 +811,65 @@
     <div class="row g-3 mb-4">
         <!-- Rojo: Crítico / Muy próximo (<= 2 días o vencida pendiente) -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card card-semaforo-box shadow-sm" style="background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%); border-left: 5px solid #d32f2f;" onclick="filtrarPorSemaforoCard('rojo')">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="semaforo-indicator semaforo-rojo" style="width: 22px; height: 22px;"></span>
-                        <div>
-                            <span class="d-block fw-bold text-uppercase small text-danger" style="letter-spacing: 0.5px; font-size: 0.75rem;">Crítico / Muy Próximo</span>
-                            <span class="h3 fw-bold mb-0 text-danger">{{ $stats['rojo'] }}</span>
-                            <span class="small text-muted d-block" style="font-size: 0.72rem;">Hoy o en ≤ 2 días</span>
-                        </div>
+            <div class="card card-semaforo-box card-semaforo-rojo shadow-sm" onclick="filtrarPorSemaforoCard('rojo')">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="card-semaforo-label">Crítico / Muy próximo</span>
+                        <span class="card-semaforo-icon"><i class="fas fa-triangle-exclamation"></i></span>
                     </div>
-                    <i class="fas fa-triangle-exclamation fa-2x text-danger opacity-50"></i>
+                    <div class="card-semaforo-value" style="color:#dc2626;">{{ $stats['rojo'] }}</div>
+                    <div class="card-semaforo-subtitle">Hoy o en ≤ 2 días</div>
                 </div>
             </div>
         </div>
 
         <!-- Amarillo: Aproximadamente una semana (3 a 7 días) -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card card-semaforo-box shadow-sm" style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border-left: 5px solid #f57f17;" onclick="filtrarPorSemaforoCard('amarillo')">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="semaforo-indicator semaforo-amarillo" style="width: 22px; height: 22px;"></span>
-                        <div>
-                            <span class="d-block fw-bold text-uppercase small" style="color: #B45309; letter-spacing: 0.5px; font-size: 0.75rem;">Próximo (~1 Semana)</span>
-                            <span class="h3 fw-bold mb-0" style="color: #F57F17;">{{ $stats['amarillo'] }}</span>
-                            <span class="small text-muted d-block" style="font-size: 0.72rem;">Entre 3 y 7 días</span>
-                        </div>
+            <div class="card card-semaforo-box card-semaforo-amarillo shadow-sm" onclick="filtrarPorSemaforoCard('amarillo')">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="card-semaforo-label">Próximo (~1 semana)</span>
+                        <span class="card-semaforo-icon"><i class="fas fa-clock"></i></span>
                     </div>
-                    <i class="fas fa-clock fa-2x text-warning opacity-50"></i>
+                    <div class="card-semaforo-value" style="color:#ea580c;">{{ $stats['amarillo'] }}</div>
+                    <div class="card-semaforo-subtitle">Entre 3 y 7 días</div>
                 </div>
             </div>
         </div>
 
         <!-- Verde: Dos semanas o más (>= 8 días) -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card card-semaforo-box shadow-sm" style="background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%); border-left: 5px solid #39A900;" onclick="filtrarPorSemaforoCard('verde')">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="semaforo-indicator semaforo-verde" style="width: 22px; height: 22px;"></span>
-                        <div>
-                            <span class="d-block fw-bold text-uppercase small" style="color: #166534; letter-spacing: 0.5px; font-size: 0.75rem;">En Tiempo (≥ 2 Semanas)</span>
-                            <span class="h3 fw-bold mb-0" style="color: #39A900;">{{ $stats['verde'] }}</span>
-                            <span class="small text-muted d-block" style="font-size: 0.72rem;">≥ 8 días de anticipación</span>
-                        </div>
+            <div class="card card-semaforo-box card-semaforo-verde shadow-sm" onclick="filtrarPorSemaforoCard('verde')">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="card-semaforo-label">En tiempo (≥ 2 semanas)</span>
+                        <span class="card-semaforo-icon"><i class="fas fa-circle-check"></i></span>
                     </div>
-                    <i class="fas fa-circle-check fa-2x text-success opacity-50"></i>
+                    <div class="card-semaforo-value" style="color:#16a34a;">{{ $stats['verde'] }}</div>
+                    <div class="card-semaforo-subtitle">≥ 8 días de anticipación</div>
                 </div>
             </div>
         </div>
 
         <!-- Pospuestas y Finalizadas (Sin Semáforo - Criterio 6) -->
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card card-semaforo-box shadow-sm" style="background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); border-left: 5px solid #64748b;" onclick="filtrarPorSemaforoCard('sin_color')">
-                <div class="card-body p-3 d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center gap-3">
-                        <span class="semaforo-indicator semaforo-neutro" style="width: 22px; height: 22px;"></span>
-                        <div>
-                            <span class="d-block fw-bold text-uppercase small text-secondary" style="letter-spacing: 0.5px; font-size: 0.75rem;">Sin Color (Otras)</span>
-                            <div class="d-flex align-items-baseline gap-2">
-                                <span class="h4 fw-bold mb-0 text-dark">{{ $stats['pospuestas'] }}</span>
-                                <span class="small text-muted">posp.</span>
-                                <span class="text-muted">/</span>
-                                <span class="h4 fw-bold mb-0 text-dark">{{ $stats['finalizadas'] }}</span>
-                                <span class="small text-muted">fin.</span>
-                            </div>
-                            <span class="small text-muted d-block" style="font-size: 0.72rem;">Pospuestas y finalizadas</span>
-                        </div>
+            <div class="card card-semaforo-box card-semaforo-neutro shadow-sm" onclick="filtrarPorSemaforoCard('sin_color')">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="card-semaforo-label">Sin color (otras)</span>
+                        <span class="card-semaforo-icon"><i class="fas fa-calendar-check"></i></span>
                     </div>
-                    <i class="fas fa-calendar-check fa-2x text-secondary opacity-50"></i>
+                    <div class="d-flex align-items-baseline flex-wrap gap-2">
+                        <span class="card-semaforo-value text-dark">{{ $stats['pospuestas'] }}</span>
+                        <span class="card-semaforo-subtitle">posp.</span>
+                        <span class="text-muted">/</span>
+                        <span class="card-semaforo-value text-dark">{{ $stats['finalizadas'] }}</span>
+                        <span class="card-semaforo-subtitle">fin.</span>
+                        <span class="text-muted">/</span>
+                        <span class="card-semaforo-value text-dark">{{ $stats['canceladas'] }}</span>
+                        <span class="card-semaforo-subtitle">des.</span>
+                    </div>
+                    <div class="card-semaforo-subtitle">Pospuestas, finalizadas y desactivadas</div>
                 </div>
             </div>
         </div>
@@ -302,100 +879,64 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
         <ul class="nav nav-pills p-1 bg-light rounded-pill border" id="pills-tab" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active rounded-pill px-4 fw-bold" id="tab-calendario" data-bs-toggle="pill" data-bs-target="#content-calendario" type="button" role="tab">
+                <button class="nav-link {{ request('vista', 'calendario') !== 'lista' ? 'active' : '' }} rounded-pill px-4 fw-bold" id="tab-calendario" data-bs-toggle="pill" data-bs-target="#content-calendario" type="button" role="tab">
                     <i class="fas fa-calendar-alt me-2"></i>Vista Calendario
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link rounded-pill px-4 fw-bold" id="tab-lista" data-bs-toggle="pill" data-bs-target="#content-lista" type="button" role="tab">
+                <button class="nav-link {{ request('vista') === 'lista' ? 'active' : '' }} rounded-pill px-4 fw-bold" id="tab-lista" data-bs-toggle="pill" data-bs-target="#content-lista" type="button" role="tab">
                     <i class="fas fa-list-ul me-2"></i>Vista Lista & Semáforo
-                    <span class="badge bg-secondary rounded-pill ms-1">{{ $todasSesiones->count() }}</span>
                 </button>
             </li>
         </ul>
 
-        <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" type="button" data-bs-toggle="collapse" data-bs-target="#panelFiltrosAvanzados">
-                <i class="fas fa-filter me-1"></i>Filtros Avanzados
-            </button>
-            <a href="{{ route('controlecp.administrador.cronograma') }}" class="btn btn-sm btn-link text-muted text-decoration-none">
-                <i class="fas fa-rotate-left me-1"></i>Limpiar
-            </a>
-        </div>
     </div>
 
-    <!-- ── Panel Colapsable de Filtros Avanzados (Criterio 7) ── -->
-    <div class="collapse show mb-4" id="panelFiltrosAvanzados">
-        <div class="card border-0 shadow-sm" style="border-radius: 18px;">
+    <!-- ── Panel de Filtros Avanzados (Criterio 7) ── -->
+    <div class="mb-4">
+        <div class="card cronograma-filter-card border-0 shadow-sm">
             <div class="card-body p-3">
                 <form method="GET" action="{{ route('controlecp.administrador.cronograma') }}" id="formFiltrosCronograma">
-                    <div class="row g-2 align-items-end">
+                    <input type="hidden" name="vista" id="filtroVista" value="{{ request('vista', 'calendario') }}">
+                    <div class="cronograma-filter-grid">
                         <!-- Filtro Buscar Texto -->
-                        <div class="col-12 col-md-3">
-                            <label class="form-label small fw-semibold text-muted mb-1">Buscar</label>
-                            <div class="input-group input-group-sm">
-                                <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">
-                                    <i class="fas fa-magnifying-glass text-muted"></i>
+                        <div class="search-filter">
+                            <label for="filtroSearch" class="form-label small fw-semibold">Buscar</label>
+                            <div class="input-group">
+                                <span class="input-group-text border-end-0 ps-3">
+                                    <i class="fas fa-magnifying-glass"></i>
                                 </span>
-                                <input type="text" name="search" id="filtroSearch" value="{{ request('search') }}" class="form-control border-start-0 rounded-end-pill" placeholder="Actividad, ficha, lugar...">
+                                <input type="text" name="search" id="filtroSearch" value="{{ request('search') }}" class="form-control border-start-0 search-field" placeholder="Actividad, ficha, lugar...">
                             </div>
                         </div>
 
                         <!-- Filtro Ficha -->
-                        <div class="col-12 col-md-2">
-                            <label class="form-label small fw-semibold text-muted mb-1">Ficha</label>
-                            <select name="ficha_id" id="filtroFicha" class="form-select form-select-sm rounded-pill">
-                                <option value="">Todas las Fichas</option>
-                                @foreach($fichas as $f)
-                                    <option value="{{ $f->id }}" {{ request('ficha_id') == $f->id ? 'selected' : '' }}>
-                                        {{ $f->code }} - {{ Str::limit($f->program?->name ?? 'S/P', 18) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Filtro Instructor -->
-                        <div class="col-12 col-md-2">
-                            <label class="form-label small fw-semibold text-muted mb-1">Instructor</label>
-                            <select name="instructor_id" id="filtroInstructor" class="form-select form-select-sm rounded-pill">
-                                <option value="">Todos los Instructores</option>
-                                @foreach($instructores as $inst)
-                                    @php $p = $inst->person; @endphp
-                                    <option value="{{ $inst->id }}" {{ request('instructor_id') == $inst->id ? 'selected' : '' }}>
-                                        {{ $p ? "{$p->first_name} {$p->first_last_name}" : $inst->nickname }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Filtro Momento -->
-                        <div class="col-12 col-md-2">
-                            <label class="form-label small fw-semibold text-muted mb-1">Momento</label>
-                            <select name="momento_id" id="filtroMomento" class="form-select form-select-sm rounded-pill">
-                                <option value="">Todos los Momentos</option>
-                                @foreach($momentos as $m)
-                                    <option value="{{ $m->id }}" {{ request('momento_id') == $m->id ? 'selected' : '' }}>
-                                        {{ $m->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div class="position-relative">
+                            <label for="filtroFicha" class="form-label small fw-semibold">Ficha</label>
+                            <input id="filtroFicha" type="search" name="ficha" class="form-control"
+                                   value="{{ $fichas->firstWhere('id', request('ficha_id'))?->code ?? request('ficha') }}"
+                                   placeholder="Buscar..." autocomplete="off" aria-autocomplete="list"
+                                   aria-controls="cronogramaFichaResults" aria-expanded="false">
+                            <input id="filtroFichaId" type="hidden" name="ficha_id" value="{{ request('ficha_id') }}">
+                            <div id="cronogramaFichaResults" class="ficha-search-results" role="listbox"></div>
                         </div>
 
                         <!-- Filtro Estado -->
-                        <div class="col-6 col-md-1">
-                            <label class="form-label small fw-semibold text-muted mb-1">Estado</label>
-                            <select name="estado" id="filtroEstado" class="form-select form-select-sm rounded-pill">
+                        <div>
+                            <label for="filtroEstado" class="form-label small fw-semibold">Estado</label>
+                            <select name="estado" id="filtroEstado" class="form-select">
                                 <option value="">Todos</option>
                                 <option value="Pendiente" {{ request('estado') === 'Pendiente' ? 'selected' : '' }}>Pendiente</option>
                                 <option value="Pospuesta" {{ request('estado') === 'Pospuesta' ? 'selected' : '' }}>Pospuesta</option>
                                 <option value="Finalizada" {{ request('estado') === 'Finalizada' ? 'selected' : '' }}>Finalizada</option>
+                                <option value="Cancelada" {{ request('estado') === 'Cancelada' ? 'selected' : '' }}>Desactivada</option>
                             </select>
                         </div>
 
                         <!-- Filtro Semáforo -->
-                        <div class="col-6 col-md-2">
-                            <label class="form-label small fw-semibold text-muted mb-1">Semáforo</label>
-                            <select name="semaforo" id="filtroSemaforo" class="form-select form-select-sm rounded-pill">
+                        <div>
+                            <label for="filtroSemaforo" class="form-label small fw-semibold">Semáforo</label>
+                            <select name="semaforo" id="filtroSemaforo" class="form-select">
                                 <option value="todos">Todos</option>
                                 <option value="rojo" {{ request('semaforo') === 'rojo' ? 'selected' : '' }}>🔴 Rojo (≤ 2 días)</option>
                                 <option value="amarillo" {{ request('semaforo') === 'amarillo' ? 'selected' : '' }}>🟡 Amarillo (~1 sem)</option>
@@ -403,24 +944,20 @@
                                 <option value="sin_color" {{ request('semaforo') === 'sin_color' ? 'selected' : '' }}>⚪ Sin color (Posp/Fin)</option>
                             </select>
                         </div>
-                    </div>
-
-                    <!-- Fila 2 de Filtros: Rango de Fechas y Botones -->
-                    <div class="row g-2 align-items-end mt-2 pt-2 border-top">
-                        <div class="col-6 col-md-2">
-                            <label class="form-label small fw-semibold text-muted mb-1">Fecha Desde</label>
-                            <input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}" class="form-control form-control-sm rounded-pill">
+                        <div>
+                            <label for="filtroFechaDesde" class="form-label small fw-semibold">Fecha desde</label>
+                            <input type="date" id="filtroFechaDesde" name="fecha_desde" value="{{ request('fecha_desde') }}" class="form-control">
                         </div>
-                        <div class="col-6 col-md-2">
-                            <label class="form-label small fw-semibold text-muted mb-1">Fecha Hasta</label>
-                            <input type="date" name="fecha_hasta" value="{{ request('fecha_hasta') }}" class="form-control form-control-sm rounded-pill">
+                        <div>
+                            <label for="filtroFechaHasta" class="form-label small fw-semibold">Fecha hasta</label>
+                            <input type="date" id="filtroFechaHasta" name="fecha_hasta" value="{{ request('fecha_hasta') }}" class="form-control">
                         </div>
-                        <div class="col-12 col-md-8 text-md-end">
-                            <button type="submit" class="btn btn-sm text-white rounded-pill px-4" style="background-color: #001A29;">
-                                <i class="fas fa-filter me-1"></i>Aplicar Filtros
+                        <div class="filter-actions">
+                            <button type="submit" class="btn filter-submit rounded-3" title="Buscar actividades">
+                                <i class="fas fa-search me-1"></i>Buscar
                             </button>
-                            <a href="{{ route('controlecp.administrador.cronograma') }}" class="btn btn-sm btn-outline-secondary rounded-pill px-3 ms-1">
-                                Restablecer
+                            <a href="{{ route('controlecp.administrador.cronograma', ['vista' => request('vista', 'calendario')]) }}" class="btn filter-reset rounded-3" title="Restablecer filtros" aria-label="Restablecer filtros">
+                                <i class="fas fa-rotate-left"></i>
                             </a>
                         </div>
                     </div>
@@ -435,7 +972,7 @@
         <!-- ════════════════════════════════════════════════
              PESTAÑA 1: VISTA CALENDARIO MENSUAL (Criterio 1, 5, 6)
         ════════════════════════════════════════════════ -->
-        <div class="tab-pane fade show active" id="content-calendario" role="tabpanel">
+        <div class="tab-pane fade {{ request('vista', 'calendario') !== 'lista' ? 'show active' : '' }}" id="content-calendario" role="tabpanel">
             <div class="card border-0 shadow-sm" style="border-radius: 20px;">
                 <div class="card-header bg-white p-3 px-4 d-flex justify-content-between align-items-center border-bottom">
                     <div class="d-flex align-items-center gap-3">
@@ -450,15 +987,9 @@
                         </button>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-sm btn-outline-success rounded-pill px-3" id="todayBtn">
+                        <button class="btn btn-sm rounded-pill px-3 cronograma-today-btn" id="todayBtn">
                             <i class="fas fa-calendar-day me-1"></i>Hoy
                         </button>
-                        <div class="d-none d-md-flex align-items-center gap-2 ms-3 ps-3 border-start text-muted small">
-                            <span><span class="semaforo-indicator semaforo-rojo me-1" style="width: 10px; height: 10px;"></span>≤ 2 días</span>
-                            <span><span class="semaforo-indicator semaforo-amarillo me-1" style="width: 10px; height: 10px;"></span>~1 sem</span>
-                            <span><span class="semaforo-indicator semaforo-verde me-1" style="width: 10px; height: 10px;"></span>≥ 2 sem</span>
-                            <span><span class="semaforo-indicator semaforo-neutro me-1" style="width: 10px; height: 10px;"></span>Sin semáforo</span>
-                        </div>
                     </div>
                 </div>
 
@@ -481,7 +1012,7 @@
         <!-- ════════════════════════════════════════════════
              PESTAÑA 2: VISTA LISTA Y TABLA DE SEMÁFOROS (Criterio 5, 6, 7)
         ════════════════════════════════════════════════ -->
-        <div class="tab-pane fade" id="content-lista" role="tabpanel">
+        <div class="tab-pane fade {{ request('vista') === 'lista' ? 'show active' : '' }}" id="content-lista" role="tabpanel">
             <div class="card border-0 shadow-sm" style="border-radius: 18px; overflow: hidden;">
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -571,14 +1102,9 @@
 
                                         <!-- Instructor -->
                                         <td>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <div class="rounded-circle bg-success-subtle text-success d-flex align-items-center justify-content-center fw-bold small" style="width: 32px; height: 32px;">
-                                                    {{ strtoupper(substr($nomInst, 0, 2)) }}
-                                                </div>
-                                                <div>
-                                                    <div class="small fw-bold text-dark">{{ $nomInst }}</div>
-                                                    <div class="text-muted" style="font-size: 0.70rem;">Instructor Responsable</div>
-                                                </div>
+                                            <div>
+                                                <div class="small fw-bold text-dark">{{ $nomInst }}</div>
+                                                <div class="text-muted" style="font-size: 0.70rem;">Instructor Responsable</div>
                                             </div>
                                         </td>
 
@@ -603,6 +1129,10 @@
                                                 <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-2 py-1">
                                                     <i class="fas fa-check-circle me-1"></i>Finalizada
                                                 </span>
+                                            @elseif($sesion->estado === 'Cancelada')
+                                                <span class="badge rounded-pill bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                                                    <i class="fas fa-ban me-1"></i>Desactivada
+                                                </span>
                                             @else
                                                 <span class="badge rounded-pill bg-secondary px-2 py-1">{{ $sesion->estado }}</span>
                                             @endif
@@ -610,22 +1140,26 @@
 
                                         <!-- Acciones (Criterios 8, 9, 10, 11) -->
                                         <td class="text-end pe-4">
-                                            <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-outline-secondary rounded-start-pill" title="Ver Detalle y Auditoría" onclick="verDetalleSesion({{ $sesion->id_cronograma }})">
-                                                    <i class="fas fa-eye text-primary"></i>
+                                            <div class="cronograma-row-actions">
+                                                <button type="button" class="btn cronograma-row-action cronograma-row-action--view" title="Ver Detalle y Auditoría" aria-label="Ver detalle y auditoría" onclick="verDetalleSesion({{ $sesion->id_cronograma }})">
+                                                    <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="btn btn-outline-secondary" title="Editar Programación" onclick="abrirModalEditar({{ $sesion->id_cronograma }})">
-                                                    <i class="fas fa-pen text-dark"></i>
-                                                </button>
-                                                <button class="btn btn-outline-secondary" title="Reasignar Instructor" onclick="abrirModalReasignar({{ $sesion->id_cronograma }})">
-                                                    <i class="fas fa-user-pen text-success"></i>
-                                                </button>
-                                                <button class="btn btn-outline-secondary" title="Posponer Actividad" onclick="abrirModalPosponer({{ $sesion->id_cronograma }})">
-                                                    <i class="fas fa-calendar-plus text-warning"></i>
-                                                </button>
-                                                <button class="btn btn-outline-danger rounded-end-pill" title="Eliminar Programación" onclick="confirmarEliminarSesion({{ $sesion->id_cronograma }})">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
+                                                @if($sesion->estado !== 'Cancelada')
+                                                    <button type="button" class="btn cronograma-row-action cronograma-row-action--edit" title="Editar Programación" aria-label="Editar programación" onclick="abrirModalEditar({{ $sesion->id_cronograma }})">
+                                                        <i class="fas fa-pen"></i>
+                                                    </button>
+                                                    <button type="button" class="btn cronograma-row-action cronograma-row-action--reassign" title="Reasignar Instructor" aria-label="Reasignar instructor" onclick="abrirModalReasignar({{ $sesion->id_cronograma }})">
+                                                        <i class="fas fa-user-pen"></i>
+                                                    </button>
+                                                    <button type="button" class="btn cronograma-row-action cronograma-row-action--postpone" title="Posponer Actividad" aria-label="Posponer actividad" onclick="abrirModalPosponer({{ $sesion->id_cronograma }})">
+                                                        <i class="fas fa-calendar-plus"></i>
+                                                    </button>
+                                                    @if($sesion->estado !== 'Finalizada')
+                                                        <button type="button" class="btn cronograma-row-action cronograma-row-action--deactivate" title="Desactivar Programación" aria-label="Desactivar programación" onclick="confirmarDesactivarSesion({{ $sesion->id_cronograma }})">
+                                                            <i class="fas fa-ban"></i>
+                                                        </button>
+                                                    @endif
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -655,7 +1189,7 @@
 <!-- ════════════════════════════════════════════════
      MODAL 1: PROGRAMAR ACTIVIDAD (Criterios 1, 2, 3, 4, 12)
 ════════════════════════════════════════════════ -->
-<div class="modal fade" id="modalProgramarActividad" tabindex="-1" aria-hidden="true">
+<div class="modal fade cronograma-modal" id="modalProgramarActividad" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-0 pt-4 px-4">
@@ -663,7 +1197,6 @@
                     <h5 class="modal-title fw-bold" style="color: #001A29;">
                         <i class="fas fa-calendar-plus me-2" style="color: #39A900;"></i>Programar Actividad en Cronograma
                     </h5>
-                    <p class="text-muted small mb-0">Asigna ficha, horario, instructor y asocia recursos del inventario (HU-006)</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -695,14 +1228,12 @@
                             <label class="form-label small fw-bold text-dark">
                                 Ficha de Formación SENA <span class="text-danger">*</span>
                             </label>
-                            <select name="id_ficha" id="progFicha" class="form-select rounded-pill" required>
-                                <option value="">— Seleccionar Ficha —</option>
-                                @foreach($fichas as $f)
-                                    <option value="{{ $f->id }}">
-                                        Ficha {{ $f->code }} — {{ $f->program?->name ?? 'Sin programa' }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="position-relative">
+                                <input id="progFicha" type="search" class="form-control rounded-pill" placeholder="Buscar..." autocomplete="off"
+                                       aria-autocomplete="list" aria-controls="progFichaResults" aria-expanded="false" required>
+                                <input type="hidden" name="id_ficha" id="progFichaId">
+                                <div id="progFichaResults" class="cronograma-ficha-search-results" role="listbox"></div>
+                            </div>
                         </div>
 
                         <!-- Fecha Programada -->
@@ -718,7 +1249,7 @@
                             <label class="form-label small fw-bold text-dark">
                                 Hora Inicio <span class="text-danger">*</span>
                             </label>
-                            <input type="time" name="hora_inicio" id="progHoraInicio" class="form-control rounded-pill" value="08:00" required onchange="verificarDisponibilidadEnVivo()">
+                            <input type="time" name="hora_inicio" id="progHoraInicio" class="form-control rounded-pill" value="08:00" min="08:00" max="14:59" step="60" required onchange="verificarDisponibilidadEnVivo()">
                         </div>
 
                         <!-- Hora Fin -->
@@ -726,7 +1257,7 @@
                             <label class="form-label small fw-bold text-dark">
                                 Hora Fin <span class="text-danger">*</span>
                             </label>
-                            <input type="time" name="hora_fin" id="progHoraFin" class="form-control rounded-pill" value="10:00" required onchange="verificarDisponibilidadEnVivo()">
+                            <input type="time" name="hora_fin" id="progHoraFin" class="form-control rounded-pill" value="15:00" min="08:00" max="15:00" step="60" required onchange="verificarDisponibilidadEnVivo()">
                         </div>
 
                         <!-- Instructor Responsable (Criterio 3) -->
@@ -789,7 +1320,7 @@
 <!-- ════════════════════════════════════════════════
      MODAL 2: EDITAR PROGRAMACIÓN (Criterio 8)
 ════════════════════════════════════════════════ -->
-<div class="modal fade" id="modalEditarProgramacion" tabindex="-1" aria-hidden="true">
+<div class="modal fade cronograma-modal" id="modalEditarProgramacion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-0 pt-4 px-4">
@@ -841,12 +1372,12 @@
 
                         <div class="col-6 col-md-4">
                             <label class="form-label small fw-bold text-dark">Hora Inicio</label>
-                            <input type="time" name="hora_inicio" id="editHoraInicio" class="form-control rounded-pill" required>
+                            <input type="time" name="hora_inicio" id="editHoraInicio" class="form-control rounded-pill" min="08:00" max="14:59" step="60" required>
                         </div>
 
                         <div class="col-6 col-md-4">
                             <label class="form-label small fw-bold text-dark">Hora Fin</label>
-                            <input type="time" name="hora_fin" id="editHoraFin" class="form-control rounded-pill" required>
+                            <input type="time" name="hora_fin" id="editHoraFin" class="form-control rounded-pill" min="08:00" max="15:00" step="60" required>
                         </div>
 
                         <div class="col-12">
@@ -887,7 +1418,7 @@
 <!-- ════════════════════════════════════════════════
      MODAL 3: REASIGNAR INSTRUCTOR (Criterio 10)
 ════════════════════════════════════════════════ -->
-<div class="modal fade" id="modalReasignarInstructor" tabindex="-1" aria-hidden="true">
+<div class="modal fade cronograma-modal" id="modalReasignarInstructor" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-0 pt-4 px-4">
@@ -949,7 +1480,7 @@
 <!-- ════════════════════════════════════════════════
      MODAL 4: POSPONER ACTIVIDAD (Criterio 11)
 ════════════════════════════════════════════════ -->
-<div class="modal fade" id="modalPosponerActividad" tabindex="-1" aria-hidden="true">
+<div class="modal fade cronograma-modal" id="modalPosponerActividad" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-0 pt-4 px-4">
@@ -984,11 +1515,11 @@
                     <div class="row g-2 mb-3">
                         <div class="col-6">
                             <label class="form-label small fw-bold text-dark">Nueva Hora Inicio</label>
-                            <input type="time" name="hora_inicio" id="posponerHoraInicio" class="form-control rounded-pill">
+                            <input type="time" name="hora_inicio" id="posponerHoraInicio" class="form-control rounded-pill" min="08:00" max="14:59" step="60">
                         </div>
                         <div class="col-6">
                             <label class="form-label small fw-bold text-dark">Nueva Hora Fin</label>
-                            <input type="time" name="hora_fin" id="posponerHoraFin" class="form-control rounded-pill">
+                            <input type="time" name="hora_fin" id="posponerHoraFin" class="form-control rounded-pill" min="08:00" max="15:00" step="60">
                         </div>
                     </div>
 
@@ -1010,10 +1541,26 @@
     </div>
 </div>
 
+<!-- Modal: Actividades del día -->
+<div class="modal fade cronograma-modal" id="modalActividadesDia" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark" id="actividadesDiaTitulo">Actividades del día</h5>
+                    <p class="text-muted small mb-0" id="actividadesDiaResumen"></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4" id="actividadesDiaLista"></div>
+        </div>
+    </div>
+</div>
+
 <!-- ════════════════════════════════════════════════
      MODAL 5: VER DETALLE Y AUDITORÍA (Criterios 1, 5, 6, 8, 10, 11)
 ════════════════════════════════════════════════ -->
-<div class="modal fade" id="modalDetalleSesion" tabindex="-1" aria-hidden="true">
+<div class="modal fade cronograma-modal" id="modalDetalleSesion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-0 pt-4 px-4">
@@ -1084,8 +1631,8 @@
             </div>
             <div class="modal-footer border-0 pt-0 px-4 pb-4 d-flex justify-content-between">
                 <div>
-                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 me-1" id="btnDetEliminar">
-                        <i class="fas fa-trash me-1"></i>Eliminar
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 me-1" id="btnDetDesactivar">
+                        <i class="fas fa-ban me-1"></i>Desactivar
                     </button>
                     <button type="button" class="btn btn-outline-warning btn-sm rounded-pill px-3 me-1" id="btnDetPosponer">
                         <i class="fas fa-clock-rotate-left me-1"></i>Posponer
@@ -1107,8 +1654,116 @@
     let mesActual = new Date().getMonth() + 1; // 1-12
     let anioActual = new Date().getFullYear();
     let eventosCalendario = [];
+    let diasNoLaboralesCalendario = [];
+    let fechaUltimaActualizacionSemaforo = '';
+    let temporizadorActualizacionSemaforo;
+
+    function obtenerFechaLocalActual() {
+        const hoy = new Date();
+        return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+    }
+
+    function programarActualizacionSemaforoDiaria() {
+        clearTimeout(temporizadorActualizacionSemaforo);
+        const ahora = new Date();
+        const proximaMedianoche = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate() + 1);
+        temporizadorActualizacionSemaforo = setTimeout(() => {
+            fechaUltimaActualizacionSemaforo = obtenerFechaLocalActual();
+            cargarEventosCalendario(anioActual, mesActual);
+            programarActualizacionSemaforoDiaria();
+        }, proximaMedianoche.getTime() - ahora.getTime() + 1000);
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
+        const fichas = @json($fichas->map(fn ($ficha) => ['id' => $ficha->id, 'code' => $ficha->code])->values());
+
+        const configurarBusquedaFicha = (inputId, hiddenId, resultsId) => {
+            const fichaInput = document.getElementById(inputId);
+            const fichaId = document.getElementById(hiddenId);
+            const fichaResults = document.getElementById(resultsId);
+
+            const hideResults = () => {
+                fichaResults.classList.remove('is-visible');
+                fichaInput.setAttribute('aria-expanded', 'false');
+            };
+
+            const showResults = () => {
+                const term = fichaInput.value.trim().toLocaleLowerCase();
+                fichaResults.replaceChildren();
+                if (!term) {
+                    hideResults();
+                    return;
+                }
+
+                const matches = fichas
+                    .filter(ficha => String(ficha.code).toLocaleLowerCase().includes(term))
+                    .slice(0, 5);
+
+                if (!matches.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'ficha-search-empty';
+                    empty.textContent = 'Sin coincidencias';
+                    fichaResults.append(empty);
+                } else {
+                    matches.forEach(ficha => {
+                        const option = document.createElement('button');
+                        option.type = 'button';
+                        option.className = 'ficha-search-option';
+                        option.setAttribute('role', 'option');
+                        option.textContent = ficha.code;
+                        option.addEventListener('click', () => {
+                            fichaInput.value = ficha.code;
+                            fichaId.value = ficha.id;
+                            fichaInput.setCustomValidity('');
+                            hideResults();
+                            fichaInput.focus();
+                        });
+                        fichaResults.append(option);
+                    });
+                }
+
+                fichaResults.classList.add('is-visible');
+                fichaInput.setAttribute('aria-expanded', 'true');
+            };
+
+            fichaInput.addEventListener('input', () => {
+                fichaId.value = '';
+                fichaInput.setCustomValidity('');
+                showResults();
+            });
+            fichaInput.addEventListener('focus', showResults);
+            fichaInput.addEventListener('keydown', event => {
+                if (event.key === 'Escape') hideResults();
+                if (event.key === 'Enter' && fichaResults.querySelector('.ficha-search-option')) {
+                    event.preventDefault();
+                    fichaResults.querySelector('.ficha-search-option').click();
+                }
+            });
+            document.addEventListener('click', event => {
+                if (!fichaResults.parentElement.contains(event.target)) hideResults();
+            });
+        };
+
+        configurarBusquedaFicha('filtroFicha', 'filtroFichaId', 'cronogramaFichaResults');
+        configurarBusquedaFicha('progFicha', 'progFichaId', 'progFichaResults');
+
+        const filtroVista = document.getElementById('filtroVista');
+        document.querySelectorAll('#pills-tab [data-bs-toggle="pill"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', event => {
+                filtroVista.value = event.target.id === 'tab-lista' ? 'lista' : 'calendario';
+            });
+        });
+
+        fechaUltimaActualizacionSemaforo = obtenerFechaLocalActual();
+        programarActualizacionSemaforoDiaria();
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && fechaUltimaActualizacionSemaforo !== obtenerFechaLocalActual()) {
+                fechaUltimaActualizacionSemaforo = obtenerFechaLocalActual();
+                cargarEventosCalendario(anioActual, mesActual);
+                programarActualizacionSemaforoDiaria();
+            }
+        });
+
         cargarEventosCalendario(anioActual, mesActual);
 
         // Controles de navegación de mes
@@ -1140,13 +1795,23 @@
 
     // ── 1. Cargar Eventos y Renderizar Calendario (Criterio 1, 5, 6) ──
     function cargarEventosCalendario(year, month) {
-        const url = `{{ route('controlecp.administrador.cronograma.eventos') }}?year=${year}&month=${month}`;
+        const filtrosFicha = new URLSearchParams();
+        const fichaId = document.getElementById('filtroFichaId')?.value;
+        const ficha = document.getElementById('filtroFicha')?.value.trim();
+        if (fichaId) {
+            filtrosFicha.set('ficha_id', fichaId);
+        } else if (ficha) {
+            filtrosFicha.set('ficha', ficha);
+        }
+        const query = filtrosFicha.toString();
+        const url = `{{ route('controlecp.administrador.cronograma.eventos') }}?year=${year}&month=${month}${query ? `&${query}` : ''}`;
 
         fetch(url)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
                     eventosCalendario = data.data;
+                    diasNoLaboralesCalendario = data.dias_no_laborales || [];
                     renderizarCalendario(year, month, eventosCalendario);
                 }
             })
@@ -1178,12 +1843,19 @@
         const hoy = new Date();
         const esMismoMesYHoy = hoy.getFullYear() === year && (hoy.getMonth() + 1) === month;
         const diaHoyNumero = hoy.getDate();
+        const diasNoLaborales = new Set(diasNoLaboralesCalendario);
+        const fechaComoTexto = date =>
+            `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
         // 1. Días del mes anterior
         for (let i = diaSemanaInicio - 1; i >= 0; i--) {
             const numDia = diasEnMesAnterior - i;
+            const fecha = new Date(year, month - 2, numDia);
             const celda = document.createElement('div');
             celda.className = 'calendar-day-cell other-month';
+            if (diasNoLaborales.has(fechaComoTexto(fecha))) {
+                celda.classList.add('non-working-day');
+            }
             celda.innerHTML = `
                 <div class="calendar-day-header-top">
                     <span class="calendar-day-number">${numDia}</span>
@@ -1199,55 +1871,43 @@
 
             const celda = document.createElement('div');
             celda.className = `calendar-day-cell ${esHoy ? 'today' : ''}`;
+            if (diasNoLaborales.has(fechaStr)) {
+                celda.classList.add('non-working-day');
+            }
 
             // Filtrar eventos de este día
             const eventosDelDia = eventos.filter(e => e.fecha === fechaStr);
-
-            let htmlEventos = '';
-            eventosDelDia.forEach(ev => {
-                // Criterio 6: Semáforo solo a pendientes
-                let clasePill = 'event-pill-neutro';
-                let dotColor = '#94a3b8';
-
-                if (ev.estado === 'Pendiente') {
-                    if (ev.semaforo === 'rojo') {
-                        clasePill = 'event-pill-rojo';
-                        dotColor = '#d32f2f';
-                    } else if (ev.semaforo === 'amarillo') {
-                        clasePill = 'event-pill-amarillo';
-                        dotColor = '#f57f17';
-                    } else if (ev.semaforo === 'verde') {
-                        clasePill = 'event-pill-verde';
-                        dotColor = '#39A900';
-                    }
-                }
-
-                // Criterio 1: Nombre en el calendario "Actividad X – Momento Y"
-                htmlEventos += `
-                    <div class="calendar-event-pill ${clasePill}" onclick="verDetalleSesion(${ev.id})" title="${ev.titulo} | Ficha ${ev.ficha_codigo} | ${ev.horario}">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="badge-ficha">Ficha ${ev.ficha_codigo}</span>
-                            <span class="semaforo-indicator" style="background-color: ${dotColor}; width: 8px; height: 8px;"></span>
-                        </div>
-                        <div class="fw-bold" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            ${ev.titulo}
-                        </div>
-                        <div class="small text-muted" style="font-size: 0.65rem;">
-                            <i class="far fa-clock me-1"></i>${ev.horario}
-                        </div>
-                    </div>
-                `;
-            });
+            if (eventosDelDia.length) {
+                celda.classList.add('has-events');
+            }
+            const prioridadSemaforo = ['rojo', 'amarillo', 'verde', 'neutro'];
+            const semaforoDia = prioridadSemaforo.find(semaforo =>
+                eventosDelDia.some(evento =>
+                    evento.estado === 'Pendiente'
+                        ? evento.semaforo === semaforo
+                        : semaforo === 'neutro'
+                )
+            ) || 'neutro';
 
             celda.innerHTML = `
                 <div class="calendar-day-header-top">
                     <span class="calendar-day-number">${dia}</span>
                     ${esHoy ? '<span class="badge bg-success small" style="font-size: 0.6rem;">Hoy</span>' : ''}
                 </div>
-                <div class="calendar-day-events">
-                    ${htmlEventos}
-                </div>
+                ${eventosDelDia.length
+                    ? `<span class="calendar-day-activity-indicator semaforo-${semaforoDia}"><span class="activity-dot"></span>${eventosDelDia.length} ${eventosDelDia.length === 1 ? 'actividad' : 'actividades'}</span>`
+                    : ''}
             `;
+            celda.setAttribute('role', 'button');
+            celda.setAttribute('tabindex', '0');
+            celda.setAttribute('aria-label', `${dia} de ${mesesNombres[month - 1]}: ${eventosDelDia.length} actividades`);
+            celda.addEventListener('click', () => mostrarActividadesDia(fechaStr, eventosDelDia));
+            celda.addEventListener('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    mostrarActividadesDia(fechaStr, eventosDelDia);
+                }
+            });
             grid.appendChild(celda);
         }
 
@@ -1255,8 +1915,12 @@
         const totalCeldasActuales = diaSemanaInicio + diasEnMes;
         const celdasRestantes = (totalCeldasActuales <= 35 ? 35 : 42) - totalCeldasActuales;
         for (let diaSig = 1; diaSig <= celdasRestantes; diaSig++) {
+            const fecha = new Date(year, month, diaSig);
             const celda = document.createElement('div');
             celda.className = 'calendar-day-cell other-month';
+            if (diasNoLaborales.has(fechaComoTexto(fecha))) {
+                celda.classList.add('non-working-day');
+            }
             celda.innerHTML = `
                 <div class="calendar-day-header-top">
                     <span class="calendar-day-number">${diaSig}</span>
@@ -1266,11 +1930,87 @@
         }
     }
 
+    function mostrarActividadesDia(fecha, eventos) {
+        const [year, month, day] = fecha.split('-').map(Number);
+        const fechaTexto = new Date(year, month - 1, day).toLocaleDateString('es-CO', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        });
+        const titulo = document.getElementById('actividadesDiaTitulo');
+        const resumen = document.getElementById('actividadesDiaResumen');
+        const lista = document.getElementById('actividadesDiaLista');
+        const modalElement = document.getElementById('modalActividadesDia');
+
+        titulo.textContent = `Actividades del ${fechaTexto}`;
+        resumen.textContent = eventos.length
+            ? `${eventos.length} ${eventos.length === 1 ? 'actividad programada' : 'actividades programadas'}`
+            : 'No hay actividades programadas para este día.';
+        lista.replaceChildren();
+
+        if (!eventos.length) {
+            const vacio = document.createElement('div');
+            vacio.className = 'text-center text-muted py-4';
+            vacio.textContent = 'No hay actividades programadas para esta fecha.';
+            lista.append(vacio);
+        } else {
+            eventos
+                .slice()
+                .sort((a, b) => String(a.hora_inicio || '').localeCompare(String(b.hora_inicio || '')))
+                .forEach(evento => {
+                    const tarjeta = document.createElement('div');
+                    tarjeta.className = 'calendar-day-activity';
+
+                    const encabezado = document.createElement('div');
+                    encabezado.className = 'd-flex flex-wrap justify-content-between align-items-start gap-2';
+
+                    const tituloActividad = document.createElement('h6');
+                    tituloActividad.className = 'fw-bold mb-1';
+                    tituloActividad.textContent = evento.titulo || 'Actividad programada';
+
+                    const estado = document.createElement('span');
+                    estado.className = 'badge rounded-pill bg-light text-dark border';
+                    estado.textContent = evento.estado === 'Cancelada'
+                        ? 'Desactivada'
+                        : (evento.estado || 'Sin estado');
+
+                    encabezado.append(tituloActividad, estado);
+
+                    const detalles = document.createElement('div');
+                    detalles.className = 'activity-meta';
+                    detalles.textContent = `Ficha ${evento.ficha_codigo || '—'} · ${evento.horario || 'Horario sin definir'}`;
+
+                    const ubicacion = document.createElement('div');
+                    ubicacion.className = 'activity-meta';
+                    ubicacion.textContent = `Instructor: ${evento.instructor_nombre || 'Sin asignar'} · Lugar: ${evento.lugar || 'Sin definir'}`;
+
+                    const acciones = document.createElement('div');
+                    acciones.className = 'text-end mt-2';
+                    const botonDetalle = document.createElement('button');
+                    botonDetalle.type = 'button';
+                    botonDetalle.className = 'btn btn-sm btn-outline-success rounded-pill px-3';
+                    botonDetalle.innerHTML = '<i class="fas fa-circle-info me-1"></i>Ver detalle';
+                    botonDetalle.addEventListener('click', () => {
+                        modalElement.addEventListener('hidden.bs.modal', () => verDetalleSesion(evento.id), { once: true });
+                        bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+                    });
+                    acciones.append(botonDetalle);
+
+                    tarjeta.append(encabezado, detalles, ubicacion, acciones);
+                    lista.append(tarjeta);
+                });
+        }
+
+        bootstrap.Modal.getOrCreateInstance(modalElement).show();
+    }
+
     // ── 2. Filtro Rápido desde las Tarjetas de Semáforo ──
     function filtrarPorSemaforoCard(tipo) {
         const selectSem = document.getElementById('filtroSemaforo');
         if (selectSem) {
             selectSem.value = tipo;
+            document.getElementById('filtroVista').value = 'lista';
             document.getElementById('formFiltrosCronograma').submit();
         }
     }
@@ -1377,6 +2117,9 @@
     // ── 5. Guardar Nueva Programación (Criterios 1, 2, 3, 4, 12) ──
     function ejecutarGuardarProgramacion() {
         const form = document.getElementById('formProgramarActividad');
+        const fichaInput = document.getElementById('progFicha');
+        const fichaId = document.getElementById('progFichaId');
+        fichaInput.setCustomValidity(fichaId.value ? '' : 'Selecciona una ficha de la lista.');
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
@@ -1445,9 +2188,10 @@
                 document.getElementById('detFichaBadge').textContent = `Ficha ${d.ficha_code} - ${d.ficha_programa || ''}`;
 
                 const badgeEstado = document.getElementById('detEstadoBadge');
-                badgeEstado.textContent = d.estado;
+                badgeEstado.textContent = d.estado === 'Cancelada' ? 'Desactivada' : d.estado;
                 badgeEstado.className = d.estado === 'Finalizada' ? 'badge rounded-pill bg-success px-3' :
-                                       (d.estado === 'Pospuesta' ? 'badge rounded-pill bg-warning text-dark px-3' : 'badge rounded-pill bg-primary px-3');
+                                       (d.estado === 'Pospuesta' ? 'badge rounded-pill bg-warning text-dark px-3' :
+                                       (d.estado === 'Cancelada' ? 'badge rounded-pill bg-secondary px-3' : 'badge rounded-pill bg-primary px-3'));
 
                 const dot = document.getElementById('detSemaforoDot');
                 dot.className = 'semaforo-indicator ' + (d.semaforo === 'rojo' ? 'semaforo-rojo' : (d.semaforo === 'amarillo' ? 'semaforo-amarillo' : (d.semaforo === 'verde' ? 'semaforo-verde' : 'semaforo-neutro')));
@@ -1500,15 +2244,24 @@
                 }
 
                 // Configurar botones de acción del modal detalle
-                document.getElementById('btnDetEliminar').onclick = () => {
+                const btnDetDesactivar = document.getElementById('btnDetDesactivar');
+                const btnDetPosponer = document.getElementById('btnDetPosponer');
+                const btnDetReasignar = document.getElementById('btnDetReasignar');
+                const estaDesactivada = d.estado === 'Cancelada';
+
+                btnDetDesactivar.hidden = estaDesactivada || d.estado === 'Finalizada';
+                btnDetPosponer.hidden = estaDesactivada;
+                btnDetReasignar.hidden = estaDesactivada;
+
+                btnDetDesactivar.onclick = () => {
                     bootstrap.Modal.getInstance(document.getElementById('modalDetalleSesion')).hide();
-                    confirmarEliminarSesion(d.id_cronograma);
+                    confirmarDesactivarSesion(d.id_cronograma);
                 };
-                document.getElementById('btnDetPosponer').onclick = () => {
+                btnDetPosponer.onclick = () => {
                     bootstrap.Modal.getInstance(document.getElementById('modalDetalleSesion')).hide();
                     abrirModalPosponer(d.id_cronograma);
                 };
-                document.getElementById('btnDetReasignar').onclick = () => {
+                btnDetReasignar.onclick = () => {
                     bootstrap.Modal.getInstance(document.getElementById('modalDetalleSesion')).hide();
                     abrirModalReasignar(d.id_cronograma);
                 };
@@ -1719,21 +2472,21 @@
         });
     }
 
-    // ── 10. Eliminar Programación (Criterio 9) ──
-    function confirmarEliminarSesion(idCronograma) {
+    // ── 10. Desactivar Programación sin eliminar su historial ──
+    function confirmarDesactivarSesion(idCronograma) {
         Swal.fire({
-            title: '¿Eliminar programación?',
-            text: 'Esta acción cancelará la sesión y liberará los recursos asignados. No se permite si ya tiene asistencia.',
+            title: '¿Desactivar programación?',
+            text: 'La programación se conservará en el historial como desactivada y se liberarán los recursos. No se permite si ya tiene asistencia.',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#d32f2f',
+            confirmButtonColor: '#39A900',
             cancelButtonColor: '#64748b',
-            confirmButtonText: '<i class="fas fa-trash me-1"></i>Sí, eliminar',
+            confirmButtonText: '<i class="fas fa-ban me-1"></i>Sí, desactivar',
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`{{ url('/control-ecp/administrador/cronograma') }}/${idCronograma}`, {
-                    method: 'DELETE',
+                fetch(`{{ url('/control-ecp/administrador/cronograma') }}/${idCronograma}/desactivar`, {
+                    method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
@@ -1744,14 +2497,14 @@
                     if (status === 200 && body.success) {
                         Swal.fire({
                             icon: 'success',
-                            title: '¡Eliminada!',
+                            title: '¡Programación desactivada!',
                             text: body.message,
                             confirmButtonColor: '#39A900'
                         }).then(() => location.reload());
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'No se puede eliminar',
+                            title: 'No se puede desactivar',
                             text: body.message,
                             confirmButtonColor: '#001A29'
                         });

@@ -1,4 +1,4 @@
-﻿@extends('controlecp::components.layouts.dashboard')
+@extends('controlecp::components.layouts.dashboard')
 
 @push('styles')
 <style>
@@ -46,22 +46,88 @@
         display: inline-block;
         margin-right: 6px;
     }
+    .inv-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
+    }
     .btn-action-icon {
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
         padding: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 8px;
+        border-radius: 10px !important;
         font-size: 0.85rem;
-        transition: all 0.15s ease;
-        border: 1px solid #E2E8F0;
-        background: #FFFFFF;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+        border: 1px solid transparent;
     }
-    .btn-action-icon:hover {
-        transform: scale(1.08);
-        box-shadow: 0 2px 8px rgba(0, 26, 41, 0.1);
+    .btn-action-icon:hover,
+    .btn-action-icon:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+    }
+    .inv-action-view {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
+    }
+    .inv-action-view:hover {
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
+    .inv-action-edit {
+        background: #f1f5f9;
+        border-color: #dbe3eb;
+        color: #475569;
+    }
+    .inv-action-edit:hover {
+        background: #475569;
+        border-color: #475569;
+        color: #fff;
+    }
+    .inv-action-move,
+    .inv-action-category-enable {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .inv-action-move:hover,
+    .inv-action-category-enable:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .inv-action-disable,
+    .inv-action-category-disable {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
+    }
+    .inv-action-disable:hover,
+    .inv-action-category-disable:hover {
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
+    .inv-action-history {
+        background: #f3edff;
+        border-color: #ddccff;
+        color: #7541c8;
+    }
+    .inv-action-history:hover {
+        background: #7541c8;
+        border-color: #7541c8;
+        color: #fff;
+    }
+    .inv-category-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
     }
     .drag-drop-box {
         border: 2px dashed #CBD5E1;
@@ -132,6 +198,100 @@
     .inventario-header-card .btn-outline-success {
         color: #ffffff;
         border-color: rgba(255, 255, 255, .65);
+    }
+
+    .inventario-filter-card {
+        padding: 1rem 1.15rem;
+        margin-bottom: 1.5rem;
+        background: #001A29;
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0,26,41,.08);
+    }
+    .inventario-filter-form {
+        display: grid;
+        grid-template-columns: minmax(200px, 1.4fr) minmax(160px, 1fr) minmax(190px, 1.2fr) minmax(170px, 1fr) 160px;
+        align-items: end;
+        gap: .75rem;
+    }
+    .inventario-filter-field { min-width: 0; }
+    .inventario-filter-field label {
+        display: block;
+        margin: 0 0 .3rem;
+        color: #fff;
+        font-size: .75rem;
+        font-weight: 700;
+    }
+    .inventario-filter-field .form-control,
+    .inventario-filter-field .form-select {
+        width: 100%;
+        min-width: 0;
+        height: 44px;
+        padding: .55rem .8rem;
+        border: 1px solid #fff;
+        border-radius: 10px;
+        background-color: #fff;
+        color: #001A29;
+        font-size: .88rem;
+        box-shadow: none;
+    }
+    .inventario-filter-field .input-group { flex-wrap: nowrap; }
+    .inventario-filter-field .input-group-text {
+        height: 44px;
+        padding: 0 .8rem;
+        border: 1px solid #fff;
+        border-right: 0;
+        border-radius: 10px 0 0 10px;
+        background: #fff;
+        color: #001A29;
+    }
+    .inventario-filter-field .input-group .form-control {
+        border-left: 0;
+        border-radius: 0 10px 10px 0;
+    }
+    .inventario-filter-actions {
+        display: flex;
+        gap: .55rem;
+        min-width: 0;
+    }
+    .inventario-filter-actions .btn-filter {
+        flex: 1;
+        min-width: 0;
+        height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: #39A900;
+        color: #fff;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .inventario-filter-actions .btn-filter:hover {
+        background: #318f00;
+        color: #fff;
+    }
+    .inventario-filter-actions .btn-reset {
+        flex: 0 0 48px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 1px solid #fff;
+        border-radius: 10px;
+        background: #fff;
+        color: #001A29;
+    }
+    .inventario-filter-actions .btn-reset:hover {
+        background: #f1f5f9;
+        color: #001A29;
+    }
+    @media (max-width: 1100px) {
+        .inventario-filter-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .inventario-filter-actions { grid-column: span 2; justify-content: flex-end; }
+        .inventario-filter-actions .btn-filter { flex: 0 0 200px; }
+    }
+    @media (max-width: 520px) {
+        .inventario-filter-form { grid-template-columns: minmax(0, 1fr); }
+        .inventario-filter-actions { grid-column: auto; }
+        .inventario-filter-actions .btn-filter { flex: 1; }
     }
 </style>
 @endpush
@@ -288,22 +448,23 @@
     @endif
 
     <!-- 3. Buscador y Filtros (Mockup Image 1 & 2) -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
-        <div class="card-body p-3">
-            <form action="{{ route('controlecp.administrador.inventario') }}" method="GET" class="row g-2 align-items-center">
+    <div class="inventario-filter-card">
+            <form action="{{ route('controlecp.administrador.inventario') }}" method="GET" class="inventario-filter-form">
                 <!-- Buscador por texto -->
-                <div class="col-12 col-md-4">
+                <div class="inventario-filter-field">
+                    <label for="inventario-buscar">Buscar</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3 text-muted">
+                        <span class="input-group-text">
                             <i class="fas fa-magnifying-glass"></i>
                         </span>
-                        <input type="text" name="buscar" value="{{ request('buscar') }}" class="form-control border-start-0 rounded-end-pill" placeholder="Buscar recurso por nombre...">
+                        <input id="inventario-buscar" type="text" name="buscar" value="{{ request('buscar') }}" class="form-control" placeholder="Buscar recurso por nombre...">
                     </div>
                 </div>
 
                 <!-- Categorías -->
-                <div class="col-6 col-md-2">
-                    <select name="categoria_id" class="form-select rounded-pill" onchange="this.form.submit()">
+                <div class="inventario-filter-field">
+                    <label for="inventario-categoria">Categoría</label>
+                    <select id="inventario-categoria" name="categoria_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Todas las categorías</option>
                         @foreach ($categorias as $cat)
                             <option value="{{ $cat->id_categoria_inventario }}" {{ request('categoria_id') == $cat->id_categoria_inventario ? 'selected' : '' }}>
@@ -314,8 +475,9 @@
                 </div>
 
                 <!-- Estados físicos -->
-                <div class="col-6 col-md-2">
-                    <select name="estado_fisico" class="form-select rounded-pill" onchange="this.form.submit()">
+                <div class="inventario-filter-field">
+                    <label for="inventario-estado-fisico">Estado físico</label>
+                    <select id="inventario-estado-fisico" name="estado_fisico" class="form-select" onchange="this.form.submit()">
                         <option value="">Todos los estados físicos</option>
                         <option value="Bueno" {{ request('estado_fisico') == 'Bueno' ? 'selected' : '' }}>Bueno</option>
                         <option value="Regular" {{ request('estado_fisico') == 'Regular' ? 'selected' : '' }}>Regular</option>
@@ -324,8 +486,9 @@
                 </div>
 
                 <!-- Semáforo -->
-                <div class="col-6 col-md-2">
-                    <select name="semaforo" class="form-select rounded-pill" onchange="this.form.submit()">
+                <div class="inventario-filter-field">
+                    <label for="inventario-semaforo">Semáforo</label>
+                    <select id="inventario-semaforo" name="semaforo" class="form-select" onchange="this.form.submit()">
                         <option value="">Todos los semáforos</option>
                         <option value="verde" {{ request('semaforo') == 'verde' ? 'selected' : '' }}>🟢 Disponible</option>
                         <option value="amarillo" {{ request('semaforo') == 'amarillo' ? 'selected' : '' }}>🟡 Moderado</option>
@@ -333,19 +496,15 @@
                     </select>
                 </div>
 
-                <!-- Botón Limpiar Filtros -->
-                <div class="col-6 col-md-2 d-flex gap-2 justify-content-end">
-                    <button type="submit" class="btn text-white rounded-pill px-3 flex-grow-1" style="background-color: #39A900;">
-                        <i class="fas fa-filter me-1"></i> Filtrar
+                <div class="inventario-filter-actions">
+                    <button type="submit" class="btn btn-filter">
+                        <i class="fas fa-search me-1"></i> Buscar
                     </button>
-                    @if(request()->hasAny(['buscar', 'categoria_id', 'estado_fisico', 'semaforo', 'ver_bajas']))
-                        <a href="{{ route('controlecp.administrador.inventario') }}" class="btn btn-outline-secondary rounded-pill" title="Limpiar filtros">
-                            <i class="fas fa-rotate-left"></i>
-                        </a>
-                    @endif
+                    <a href="{{ route('controlecp.administrador.inventario') }}" class="btn btn-reset" title="Restablecer filtros" aria-label="Restablecer filtros">
+                        <i class="fas fa-rotate-left"></i>
+                    </a>
                 </div>
             </form>
-        </div>
     </div>
 
     <!-- HU 18: Pestañas de Navegación: Recursos Activos vs Recursos Dados de Baja -->
@@ -495,31 +654,31 @@
 
                                 <!-- 8. Acciones -->
                                 <td class="text-end pe-4">
-                                    <div class="d-inline-flex gap-1">
+                                    <div class="inv-row-actions">
                                         <!-- Ver Detalle (Abre Modal Detalle sin salir) -->
-                                        <button type="button" class="btn btn-action-icon" title="Ver Detalle" onclick="abrirDetalleModal({{ $recurso->id_inventario }})">
-                                            <i class="fas fa-eye text-primary"></i>
+                                        <button type="button" class="btn btn-action-icon inv-action-view" title="Ver detalle" aria-label="Ver detalle" onclick="abrirDetalleModal({{ $recurso->id_inventario }})">
+                                            <i class="fas fa-eye"></i>
                                         </button>
 
                                         @if($recurso->estado !== 'Inactivo')
                                             <!-- Editar (Abre Modal Editar sin salir) -->
-                                            <button type="button" class="btn btn-action-icon" title="Editar recurso" onclick="abrirEditarModal({{ $recurso->id_inventario }})">
-                                                <i class="fas fa-pen text-success"></i>
+                                            <button type="button" class="btn btn-action-icon inv-action-edit" title="Editar recurso" aria-label="Editar recurso" onclick="abrirEditarModal({{ $recurso->id_inventario }})">
+                                                <i class="fas fa-pen"></i>
                                             </button>
 
                                             <!-- Registrar Movimiento Rápido -->
-                                            <button type="button" class="btn btn-action-icon" title="Registrar Entrega / Devolución" onclick="abrirMovimientoRapido({{ $recurso->id_inventario }}, '{{ addslashes($recurso->nombre) }}', {{ $recurso->cantidad_disponible }})">
-                                                <i class="fas fa-right-left text-info"></i>
+                                            <button type="button" class="btn btn-action-icon inv-action-move" title="Registrar entrega o devolución" aria-label="Registrar entrega o devolución" onclick="abrirMovimientoRapido({{ $recurso->id_inventario }}, '{{ addslashes($recurso->nombre) }}', {{ $recurso->cantidad_disponible }})">
+                                                <i class="fas fa-right-left"></i>
                                             </button>
 
                                             <!-- Dar de Baja -->
-                                            <button type="button" class="btn btn-action-icon" title="Dar de baja" onclick="abrirModalBaja({{ $recurso->id_inventario }}, '{{ addslashes($recurso->nombre) }}', {{ $recurso->cantidad_disponible }})">
-                                                <i class="fas fa-ban text-danger"></i>
+                                            <button type="button" class="btn btn-action-icon inv-action-disable" title="Dar de baja" aria-label="Dar de baja" onclick="abrirModalBaja({{ $recurso->id_inventario }}, '{{ addslashes($recurso->nombre) }}', {{ $recurso->cantidad_disponible }})">
+                                                <i class="fas fa-ban"></i>
                                             </button>
                                         @else
                                             <!-- Historial de movimientos del recurso dado de baja -->
-                                            <a href="{{ route('controlecp.administrador.inventario.movimientos', ['buscar' => $recurso->nombre]) }}" class="btn btn-action-icon" title="Ver historial de movimientos">
-                                                <i class="fas fa-clock-rotate-left text-info"></i>
+                                            <a href="{{ route('controlecp.administrador.inventario.movimientos', ['buscar' => $recurso->nombre]) }}" class="btn btn-action-icon inv-action-history" title="Ver historial de movimientos" aria-label="Ver historial de movimientos">
+                                                <i class="fas fa-clock-rotate-left"></i>
                                             </a>
                                         @endif
                                     </div>
@@ -552,7 +711,38 @@
             <!-- Paginación -->
             <div class="p-3 border-top d-flex flex-wrap justify-content-end align-items-center gap-2">
                 <div>
-                    {{ $recursos->links() }}
+                    @if ($recursos->hasPages())
+                        <nav aria-label="Paginación de inventario">
+                            <ul class="pagination justify-content-center">
+                                @if ($recursos->onFirstPage())
+                                    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                                @else
+                                    <li class="page-item"><a class="page-link" href="{{ $recursos->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                                @endif
+                                @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                                @for ($pagina = 1; $pagina <= $recursos->lastPage(); $pagina++)
+                                    @if ($pagina === 1 || $pagina === $recursos->lastPage() || abs($pagina - $recursos->currentPage()) <= 1)
+                                        @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        @endif
+                                        <li class="page-item {{ $pagina === $recursos->currentPage() ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ $recursos->url($pagina) }}" @if($pagina === $recursos->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                        </li>
+                                        @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                    @endif
+                                @endfor
+                                @if ($recursos->hasMorePages())
+                                    <li class="page-item"><a class="page-link" href="{{ $recursos->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                                @else
+                                    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
                 </div>
             </div>
         </div>
@@ -1000,17 +1190,17 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <div class="d-inline-flex gap-1">
-                                        <button type="button" class="btn btn-sm btn-outline-primary p-1 px-2 rounded-circle" onclick="editarCategoriaModal({{ $catItem->id_categoria_inventario }}, '{{ addslashes($catItem->nombre) }}', '{{ $catItem->estado }}')">
+                                    <div class="inv-category-actions">
+                                        <button type="button" class="btn btn-action-icon inv-action-edit" title="Editar categoría" aria-label="Editar categoría" onclick="editarCategoriaModal({{ $catItem->id_categoria_inventario }}, '{{ addslashes($catItem->nombre) }}', '{{ $catItem->estado }}')">
                                             <i class="fas fa-pen"></i>
                                         </button>
                                         <form action="{{ route('controlecp.administrador.inventario.categorias.toggle', $catItem->id_categoria_inventario) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('PATCH')
                                             @if($catItem->estado === 'Activo')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger p-1 px-2 rounded-circle" title="Inactivar"><i class="fas fa-power-off"></i></button>
+                                                <button type="submit" class="btn btn-action-icon inv-action-category-disable" title="Inactivar categoría" aria-label="Inactivar categoría"><i class="fas fa-power-off"></i></button>
                                             @else
-                                                <button type="submit" class="btn btn-sm btn-outline-success p-1 px-2 rounded-circle" title="Activar"><i class="fas fa-check"></i></button>
+                                                <button type="submit" class="btn btn-action-icon inv-action-category-enable" title="Activar categoría" aria-label="Activar categoría"><i class="fas fa-check"></i></button>
                                             @endif
                                         </form>
                                     </div>
@@ -1157,7 +1347,7 @@
                     </div>
                     <div class="col-5">
                         <label for="checkHora" class="form-label small fw-semibold text-dark">Hora <span class="text-danger">*</span></label>
-                        <input type="time" id="checkHora" class="form-control rounded-3" value="08:00">
+                        <input type="time" id="checkHora" class="form-control rounded-3" value="08:00" min="08:00" max="15:00" step="60" required>
                     </div>
                 </div>
                 <div id="resultadoDisponibilidad" class="d-none">
@@ -1361,7 +1551,7 @@ function abrirDetalleModal(id) {
                 });
             }
         })
-        .catch(err => { console.error(err); alert('Error al cargar la información del recurso.'); });
+        .catch(err => { console.error(err); window.showSystemAlert('Error al cargar la información del recurso.', 'error'); });
 }
 
 function abrirEditarModal(id) {
@@ -1386,7 +1576,7 @@ function abrirEditarModal(id) {
             });
             modal.show();
         })
-        .catch(err => { console.error(err); alert('Error al cargar el recurso para edición.'); });
+        .catch(err => { console.error(err); window.showSystemAlert('Error al cargar el recurso para edición.', 'error'); });
 }
 
 function mostrarModalNovedadDesdeDetalle() {
@@ -1451,8 +1641,10 @@ function abrirModalBaja(idRecurso, nombre, cant) {
 function ejecutarVerificacion() {
     const idRecurso = document.getElementById('checkRecursoSelect').value;
     const fecha = document.getElementById('checkFecha').value;
-    const hora = document.getElementById('checkHora').value;
-    if (!idRecurso) { alert('Por favor selecciona un recurso.'); return; }
+    const horaInput = document.getElementById('checkHora');
+    if (!horaInput.reportValidity()) return;
+    const hora = horaInput.value;
+    if (!idRecurso) { window.showSystemAlert('Por favor selecciona un recurso.', 'warning'); return; }
     fetch("{{ route('controlecp.administrador.inventario.verificar-disponibilidad') }}", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-CSRF-TOKEN": "{{ csrf_token() }}" },
@@ -1476,7 +1668,7 @@ function ejecutarVerificacion() {
             icon.className = 'fas fa-circle-xmark fs-5 text-danger mt-1'; msg.innerText = data.mensaje;
         }
     })
-    .catch(err => { console.error(err); alert('Ocurrió un error al verificar la disponibilidad.'); });
+    .catch(err => { console.error(err); window.showSystemAlert('Ocurrió un error al verificar la disponibilidad.', 'error'); });
 }
 
 let graficasInicializadas = false;

@@ -115,6 +115,12 @@
     height: 100%;
     transition: transform .18s, box-shadow .18s;
 }
+.alert-card-inventory {
+    border-color: rgba(57, 169, 0, .4);
+}
+.alert-card-moments {
+    border-color: rgba(234, 88, 12, .35);
+}
 .alert-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 18px rgba(0,50,77,.08);
@@ -316,7 +322,7 @@
 
     {{-- Recursos de inventario en estado crítico --}}
     <div class="col-12 col-md-6">
-        <div class="alert-card">
+        <div class="alert-card alert-card-inventory">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div class="d-flex align-items-center gap-2">
                     <div class="alert-card-icon {{ ($recursosCriticos ?? 0) > 0 ? 'ai-red' : 'ai-green' }}">
@@ -353,7 +359,7 @@
 
     {{-- Fichas próximas a completar los 3 momentos --}}
     <div class="col-12 col-md-6">
-        <div class="alert-card">
+        <div class="alert-card alert-card-moments">
             <div class="d-flex align-items-center justify-content-between mb-3">
                 <div class="d-flex align-items-center gap-2">
                     <div class="alert-card-icon ai-orange">

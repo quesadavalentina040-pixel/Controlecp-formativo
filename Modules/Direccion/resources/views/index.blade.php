@@ -218,7 +218,41 @@
 
         @if($politicas->hasPages())
             <div class="card-footer bg-white py-3 px-4 border-top">
-                {{ $politicas->withQueryString()->links() }}
+                @php
+                    $politicas->withQueryString();
+                @endphp
+                @if ($politicas->hasPages())
+                    <nav aria-label="Paginación de políticas">
+                        <ul class="pagination justify-content-center">
+                            @if ($politicas->onFirstPage())
+                                <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                            @else
+                                <li class="page-item"><a class="page-link" href="{{ $politicas->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                            @endif
+                            @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                            @for ($pagina = 1; $pagina <= $politicas->lastPage(); $pagina++)
+                                @if ($pagina === 1 || $pagina === $politicas->lastPage() || abs($pagina - $politicas->currentPage()) <= 1)
+                                    @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                                    @endif
+                                    <li class="page-item {{ $pagina === $politicas->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $politicas->url($pagina) }}" @if($pagina === $politicas->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                    </li>
+                                    @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                @endif
+                            @endfor
+                            @if ($politicas->hasMorePages())
+                                <li class="page-item"><a class="page-link" href="{{ $politicas->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                            @else
+                                <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                            @endif
+                        </ul>
+                    </nav>
+                @endif
             </div>
         @endif
     </div>

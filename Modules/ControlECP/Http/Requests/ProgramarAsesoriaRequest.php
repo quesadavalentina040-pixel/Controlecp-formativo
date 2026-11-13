@@ -4,6 +4,7 @@ namespace Modules\ControlECP\Http\Requests; // Define el espacio de nombres para
 
 use Illuminate\Foundation\Http\FormRequest; // Importa la clase base de Laravel para solicitudes con validación.
 use Illuminate\Support\Facades\Auth; // Importa la herramienta de Laravel que obtiene el usuario autenticado.
+use Modules\ControlECP\Rules\NotWeekendOrColombianHoliday;
 
 class ProgramarAsesoriaRequest extends FormRequest // Define autorización y validaciones para programar una asesoría.
 {
@@ -16,9 +17,9 @@ class ProgramarAsesoriaRequest extends FormRequest // Define autorización y val
     {
         return [ // Devuelve las reglas que Laravel debe comprobar.
             'id_usuario_instructor' => ['required', 'exists:users,id'], // Exige seleccionar un instructor existente en users.
-            'fecha'                 => ['required', 'date'], // Exige una fecha con formato válido.
-            'hora_inicio'           => ['required'], // Exige indicar una hora de inicio.
-            'hora_fin'              => ['required', 'after:hora_inicio'], // Exige hora final posterior a la hora inicial.
+            'fecha'                 => ['required', 'date', new NotWeekendOrColombianHoliday()], // Exige una fecha hábil.
+            'hora_inicio'           => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:15:00'], // Limita la hora de inicio al horario de atención.
+            'hora_fin'              => ['required', 'date_format:H:i', 'after:hora_inicio', 'before_or_equal:15:00'], // Exige una hora final posterior y no mayor a las 3:00 p. m.
         ];
     }
 
@@ -30,8 +31,11 @@ class ProgramarAsesoriaRequest extends FormRequest // Define autorización y val
             'fecha.required'                 => 'Debes indicar la fecha del encuentro.', // Avisa que falta la fecha.
             'fecha.date'                     => 'El formato de fecha no es válido.', // Avisa cuando la fecha no tiene formato válido.
             'hora_inicio.required'           => 'La hora de inicio es requerida.', // Avisa que falta la hora inicial.
+            'hora_inicio.after_or_equal'    => 'La asesoría debe iniciar a partir de las 8:00 a. m.',
+            'hora_inicio.before'             => 'La asesoría debe iniciar antes de las 3:00 p. m.',
             'hora_fin.required'              => 'La hora de fin es requerida.', // Avisa que falta la hora final.
             'hora_fin.after'                 => 'La hora de fin debe ser posterior a la de inicio.', // Avisa que la hora final no es posterior a la inicial.
+            'hora_fin.before_or_equal'       => 'La asesoría debe finalizar como máximo a las 3:00 p. m.',
         ];
     }
 

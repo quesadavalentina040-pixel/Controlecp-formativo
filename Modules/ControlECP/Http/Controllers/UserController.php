@@ -82,7 +82,7 @@ class UserController extends Controller // Controlador administrativo para gesti
             });
         }
 
-        $usuarios = $query->orderBy('users.created_at', 'desc')->paginate(15)->withQueryString(); // Ordena del más reciente al más antiguo y conserva filtros entre páginas.
+        $usuarios = $query->orderBy('users.created_at', 'desc')->paginate(10)->withQueryString(); // Ordena del más reciente al más antiguo y conserva filtros entre páginas.
 
         $totalActivos   = User::withTrashed() // Contadores rápidos
             ->whereNull('users.deleted_at')
@@ -126,20 +126,24 @@ class UserController extends Controller // Controlador administrativo para gesti
         }
 
         $request->validate([ // Comprueba datos obligatorios, formatos, longitudes y valores únicos antes de persistir.
-            'first_name'       => 'required|string|max:100',
-            'first_last_name'  => 'required|string|max:100',
-            'second_last_name' => 'nullable|string|max:100',
+            'first_name'       => ['required', 'string', 'max:100', 'regex:/^[\pL ]+$/u'],
+            'first_last_name'  => ['required', 'string', 'max:100', 'regex:/^[\pL ]+$/u'],
+            'second_last_name' => ['nullable', 'string', 'max:100', 'regex:/^[\pL ]+$/u'],
             'document_type'    => 'required|string|max:60',
             'document_number'  => 'required|string|max:30|unique:people,document_number',
             'email'            => 'required|email|max:191|unique:users,email',
             'nickname'         => 'nullable|string|max:60|unique:users,nickname',
-            'telephone1'       => 'nullable|string|max:20',
+            'telephone1'       => 'nullable|digits:10',
             'password'         => 'required|string|min:8|confirmed',
             'rol_id'           => 'required|exists:roles,id',
         ], [ // Usa mensajes entendibles para los conflictos de unicidad más comunes.
             'document_number.unique' => 'Ya existe una persona con ese número de documento.',
             'email.unique'           => 'Ese correo ya está registrado en el sistema.',
             'nickname.unique'        => 'Ese nombre de usuario ya está en uso.',
+            'first_name.regex'       => 'El nombre solo puede contener letras y espacios.',
+            'first_last_name.regex'  => 'El primer apellido solo puede contener letras y espacios.',
+            'second_last_name.regex' => 'El segundo apellido solo puede contener letras y espacios.',
+            'telephone1.digits'      => 'El teléfono debe tener exactamente 10 dígitos.',
         ]); // Si la validación falla, Laravel no ejecuta la creación.
 
         $rol = Role::whereIn('slug', self::ROLES_ECP)->findOrFail($request->input('rol_id')); // Busca el rol elegido dentro del conjunto permitido o responde 404. | Validar que el rol seleccionado sea un rol ECP
@@ -216,14 +220,19 @@ class UserController extends Controller // Controlador administrativo para gesti
         $usuario = User::withTrashed()->with(['person', 'roles'])->findOrFail($id); // Recupera al usuario activo o inactivo junto con sus relaciones.
 
         $request->validate([ // Revisa datos editables; las reglas únicas excluyen el registro que se está editando.
-            'first_name'       => 'required|string|max:100',
-            'first_last_name'  => 'required|string|max:100',
-            'second_last_name' => 'nullable|string|max:100',
-            'telephone1'       => 'nullable|string|max:20',
+            'first_name'       => ['required', 'string', 'max:100', 'regex:/^[\pL ]+$/u'],
+            'first_last_name'  => ['required', 'string', 'max:100', 'regex:/^[\pL ]+$/u'],
+            'second_last_name' => ['nullable', 'string', 'max:100', 'regex:/^[\pL ]+$/u'],
+            'telephone1'       => 'nullable|digits:10',
             'email'            => ['required', 'email', 'max:191', Rule::unique('users', 'email')->ignore($usuario->id)],
             'nickname'         => ['nullable', 'string', 'max:60', Rule::unique('users', 'nickname')->ignore($usuario->id)],
             'password'         => 'nullable|string|min:8|confirmed',
             'rol_id'           => 'required|exists:roles,id',
+        ], [
+            'first_name.regex'       => 'El nombre solo puede contener letras y espacios.',
+            'first_last_name.regex'  => 'El primer apellido solo puede contener letras y espacios.',
+            'second_last_name.regex' => 'El segundo apellido solo puede contener letras y espacios.',
+            'telephone1.digits'      => 'El teléfono debe tener exactamente 10 dígitos.',
         ]); // La actualización no continúa si algún campo incumple las reglas.
 
         $rol = Role::whereIn('slug', self::ROLES_ECP)->findOrFail($request->input('rol_id')); // Impide asignar un rol ajeno al módulo. | Validar que el rol sea ECP

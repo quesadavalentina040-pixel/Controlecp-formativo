@@ -101,7 +101,38 @@
 
             @if(method_exists($elementos, 'links'))
                 <div class="card-footer bg-white border-0 py-3">
-                    {{ $elementos->links() }}
+                    @if ($elementos->hasPages())
+                        <nav aria-label="Paginación de elementos">
+                            <ul class="pagination justify-content-center">
+                                @if ($elementos->onFirstPage())
+                                    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                                @else
+                                    <li class="page-item"><a class="page-link" href="{{ $elementos->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                                @endif
+                                @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                                @for ($pagina = 1; $pagina <= $elementos->lastPage(); $pagina++)
+                                    @if ($pagina === 1 || $pagina === $elementos->lastPage() || abs($pagina - $elementos->currentPage()) <= 1)
+                                        @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        @endif
+                                        <li class="page-item {{ $pagina === $elementos->currentPage() ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ $elementos->url($pagina) }}" @if($pagina === $elementos->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                        </li>
+                                        @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                    @endif
+                                @endfor
+                                @if ($elementos->hasMorePages())
+                                    <li class="page-item"><a class="page-link" href="{{ $elementos->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                                @else
+                                    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
                 </div>
             @endif
         </div>

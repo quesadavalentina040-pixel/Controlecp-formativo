@@ -268,7 +268,7 @@
         Array.from(files).forEach((file, index) => {
             const ext = file.name.split('.').pop().toLowerCase();
             if (!['jpg', 'jpeg', 'png'].includes(ext)) {
-                alert(`El archivo "${file.name}" no es válido. Solo se admiten formatos JPG o PNG.`);
+                window.showSystemAlert(`El archivo "${file.name}" no es válido. Solo se admiten formatos JPG o PNG.`, 'warning');
                 return;
             }
 

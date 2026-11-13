@@ -311,7 +311,7 @@ class FichaSyncController extends Controller
     /**
      * HU2 — Vista de detalle de una ficha con aprendices, actividades finalizadas y momentos certificados.
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
@@ -331,6 +331,10 @@ class FichaSyncController extends Controller
             'certificados'=> $ficha->apprentices->where('apprentice_status', 'CERTIFICADO')->count(),
             'retirados'   => $ficha->apprentices->whereIn('apprentice_status', ['RETIRO VOLUNTARIO', 'CANCELADO'])->count(),
         ];
+
+        if ($request->ajax()) {
+            return view('controlecp::administrador.ficha_detalle_modal', compact('ficha', 'statsAprendices'));
+        }
 
         return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.fichas_show', compact('ficha', 'statsAprendices'));
     }

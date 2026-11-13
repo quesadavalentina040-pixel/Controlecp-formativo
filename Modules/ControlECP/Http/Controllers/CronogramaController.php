@@ -17,6 +17,8 @@ use Modules\ControlECP\Entities\CronogramaRecurso;
 use Modules\ControlECP\Entities\Inventario;
 use Modules\ControlECP\Entities\Momento;
 use Modules\ControlECP\Entities\Notificacion;
+use Modules\ControlECP\Rules\NotWeekendOrColombianHoliday;
+use Modules\ControlECP\Services\ColombianWorkingDayService;
 use Modules\SICA\Entities\Course;
 
 class CronogramaController extends Controller
@@ -45,6 +47,9 @@ class CronogramaController extends Controller
         // Filtro por Ficha
         if ($request->filled('ficha_id')) {
             $query->where('id_ficha', $request->ficha_id);
+        } elseif ($request->filled('ficha')) {
+            $ficha = trim($request->input('ficha'));
+            $query->whereHas('ficha', fn ($q) => $q->where('code', 'like', "%{$ficha}%"));
         }
 
         // Filtro por Instructor
@@ -113,12 +118,15 @@ class CronogramaController extends Controller
         $conteoVerde = 0;
         $conteoPospuestas = 0;
         $conteoFinalizadas = 0;
+        $conteoCanceladas = 0;
 
         foreach ($todasParaEstadisticas as $sesion) { /* Recorre uno por uno los elementos de esta lista. */
             if ($sesion->estado === 'Pospuesta') {
                 $conteoPospuestas++;
             } elseif ($sesion->estado === 'Finalizada') {
                 $conteoFinalizadas++;
+            } elseif ($sesion->estado === 'Cancelada') {
+                $conteoCanceladas++;
             } elseif ($sesion->estado === 'Pendiente') {
                 $sem = $sesion->semaforo;
                 if ($sem === 'rojo') {
@@ -139,6 +147,7 @@ class CronogramaController extends Controller
             'verde'       => $conteoVerde,
             'pospuestas'  => $conteoPospuestas,
             'finalizadas' => $conteoFinalizadas,
+            'canceladas'  => $conteoCanceladas,
         ];
 
         // ── 3. Catálogos para Modales y Filtros ───────────────────
@@ -195,18 +204,32 @@ class CronogramaController extends Controller
             'instructor.person',
             'recursos.inventario',
         ]);
+        $diasNoLaborales = [];
 
         // Filtrar por año y mes si se envían
         if ($request->filled('year') && $request->filled('month')) {
             $year = (int) $request->year;
             $month = (int) $request->month;
-            $inicioMes = Carbon::createFromDate($year, $month, 1)->startOfMonth()->subDays(7)->toDateString();
-            $finMes = Carbon::createFromDate($year, $month, 1)->endOfMonth()->addDays(7)->toDateString();
+            $mesCalendario = Carbon::createFromDate($year, $month, 1);
+            $inicioCalendario = $mesCalendario->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY);
+            $finCalendario = $mesCalendario->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY);
+            $inicioMes = $inicioCalendario->toDateString();
+            $finMes = $finCalendario->toDateString();
             $query->whereBetween('fecha', [$inicioMes, $finMes]);
+
+            $calendarioLaboral = app(ColombianWorkingDayService::class);
+            for ($fecha = $inicioCalendario->copy(); $fecha->lte($finCalendario); $fecha->addDay()) {
+                if (! $calendarioLaboral->isWorkingDay($fecha->toDateString())) {
+                    $diasNoLaborales[] = $fecha->toDateString();
+                }
+            }
         }
 
         if ($request->filled('ficha_id')) {
             $query->where('id_ficha', $request->ficha_id);
+        } elseif ($request->filled('ficha')) {
+            $ficha = trim($request->input('ficha'));
+            $query->whereHas('ficha', fn ($q) => $q->where('code', 'like', "%{$ficha}%"));
         }
         if ($request->filled('instructor_id')) {
             $query->where('id_instructor', $request->instructor_id);
@@ -258,7 +281,8 @@ class CronogramaController extends Controller
 
         return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
             'success' => true,
-            'data'    => $eventos,
+            'data' => $eventos,
+            'dias_no_laborales' => $diasNoLaborales,
         ]);
     }
 
@@ -364,9 +388,9 @@ class CronogramaController extends Controller
             'id_actividad'  => 'required|exists:controlecp_actividades,id',
             'id_ficha'      => 'required|exists:courses,id',
             'id_instructor' => 'required|exists:users,id',
-            'fecha'         => 'required|date',
-            'hora_inicio'   => 'required|date_format:H:i',
-            'hora_fin'      => 'required|date_format:H:i|after:hora_inicio',
+            'fecha'         => ['required', 'date', new NotWeekendOrColombianHoliday()],
+            'hora_inicio'   => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:15:00'],
+            'hora_fin'      => ['required', 'date_format:H:i', 'after:hora_inicio', 'before_or_equal:15:00'],
             'lugar'         => 'required|string|max:200',
             'recursos'      => 'nullable|array',
             'recursos.*.id_inventario' => 'required|exists:inventario,id_inventario',
@@ -381,8 +405,11 @@ class CronogramaController extends Controller
             'fecha.required'         => 'La fecha de programación es obligatoria.',
             'fecha.date'             => 'La fecha ingresada no tiene un formato válido.',
             'hora_inicio.required'   => 'La hora de inicio es obligatoria.',
+            'hora_inicio.after_or_equal' => 'La actividad debe iniciar a partir de las 8:00 a. m.',
+            'hora_inicio.before' => 'La actividad debe iniciar antes de las 3:00 p. m.',
             'hora_fin.required'      => 'La hora de fin es obligatoria.',
             'hora_fin.after'         => 'La hora de fin debe ser posterior a la hora de inicio.',
+            'hora_fin.before_or_equal' => 'La actividad debe finalizar como máximo a las 3:00 p. m.',
             'lugar.required'         => 'El lugar o aula es obligatorio.',
         ]);
 
@@ -502,13 +529,16 @@ class CronogramaController extends Controller
         if (!$cronograma) {
             return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
+        if ($cronograma->estado === 'Cancelada') {
+            return response()->json(['success' => false, 'message' => 'No se puede editar una programación desactivada.'], 422);
+        }
 
         $request->validate([
             'id_actividad'  => 'required|exists:controlecp_actividades,id',
             'id_ficha'      => 'required|exists:courses,id',
-            'fecha'         => 'required|date',
-            'hora_inicio'   => 'required|date_format:H:i',
-            'hora_fin'      => 'required|date_format:H:i|after:hora_inicio',
+            'fecha'         => ['required', 'date', new NotWeekendOrColombianHoliday()],
+            'hora_inicio'   => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:15:00'],
+            'hora_fin'      => ['required', 'date_format:H:i', 'after:hora_inicio', 'before_or_equal:15:00'],
             'lugar'         => 'required|string|max:200',
             'recursos'      => 'nullable|array',
             'recursos.*.id_inventario' => 'required|exists:inventario,id_inventario',
@@ -626,10 +656,13 @@ class CronogramaController extends Controller
         if (!$cronograma) {
             return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
+        if ($cronograma->estado === 'Cancelada') {
+            return response()->json(['success' => false, 'message' => 'No se puede reasignar una programación desactivada.'], 422);
+        }
 
         $request->validate([
             'nuevo_instructor_id' => 'required|exists:users,id',
-            'motivo_reasignacion' => 'required|string|min:5|max:500',
+            'motivo_reasignacion' => 'required|string|min:10|max:200',
         ], [
             'nuevo_instructor_id.required' => 'Debes seleccionar el nuevo instructor.',
             'nuevo_instructor_id.exists'   => 'El instructor seleccionado no existe.',
@@ -733,21 +766,32 @@ class CronogramaController extends Controller
         if (!$cronograma) {
             return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
+        if ($cronograma->estado === 'Cancelada') {
+            return response()->json(['success' => false, 'message' => 'No se puede posponer una programación desactivada.'], 422);
+        }
 
         $request->validate([
-            'nueva_fecha'   => 'required|date|after_or_equal:today',
-            'hora_inicio'   => 'nullable|date_format:H:i',
-            'hora_fin'      => 'nullable|date_format:H:i',
-            'motivo'        => 'required|string|min:5|max:1000',
+            'nueva_fecha'   => ['required', 'date', 'after_or_equal:today', new NotWeekendOrColombianHoliday()],
+            'hora_inicio'   => ['nullable', 'date_format:H:i', 'after_or_equal:08:00', 'before:15:00'],
+            'hora_fin'      => ['nullable', 'date_format:H:i', 'after_or_equal:08:00', 'before_or_equal:15:00'],
+            'motivo'        => 'required|string|min:10|max:200',
         ], [
             'nueva_fecha.required'        => 'La nueva fecha es obligatoria.',
             'nueva_fecha.after_or_equal'  => 'La nueva fecha debe ser igual o posterior a hoy.',
             'motivo.required'             => 'El motivo de posposición es obligatorio.',
-            'motivo.min'                  => 'El motivo debe tener al menos 5 caracteres.',
+            'motivo.min'                  => 'El motivo debe tener al menos 10 caracteres.',
+            'motivo.max'                  => 'El motivo no puede superar los 200 caracteres.',
         ]);
 
         $nuevaHoraInicio = $request->hora_inicio ?: $cronograma->hora_inicio;
         $nuevaHoraFin    = $request->hora_fin ?: $cronograma->hora_fin;
+        if ($nuevaHoraInicio < '08:00' || $nuevaHoraInicio >= '15:00'
+            || $nuevaHoraFin <= $nuevaHoraInicio || $nuevaHoraFin > '15:00') {
+            return response()->json([
+                'success' => false,
+                'message' => 'El horario debe estar entre las 8:00 a. m. y las 3:00 p. m., y la hora de fin debe ser posterior al inicio.',
+            ], 422);
+        }
 
         // Validar disponibilidad del instructor en la nueva fecha y hora
         $conflicto = $this->validarDisponibilidadInstructor(
@@ -817,43 +861,46 @@ class CronogramaController extends Controller
     }
 
     /**
-     * Criterio 9: Eliminar programación que aún no se ha realizado.
-     * No permite eliminar si ya tiene asistencia registrada.
+     * Desactiva una programación sin borrar su historial ni sus recursos asociados.
      */
-    public function destroy($id): JsonResponse
+    public function desactivar($id): JsonResponse
     {
         $user = Auth::user();
         if (!$user || !$user->hasRole('controlecp.admin')) {
             return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Sin permisos.'], 403);
         }
 
-        $cronograma = Cronograma::with('recursos')->find($id);
+        $cronograma = Cronograma::with(['recursos', 'actividad'])->find($id);
         if (!$cronograma) {
             return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Programación no encontrada.'], 404);
         }
 
-        // Criterio 9: NO permitir eliminar si ya tiene asistencia registrada o si fue finalizada
-        if ($cronograma->estado === 'Finalizada') {
+        if ($cronograma->estado === 'Cancelada') {
             return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => false,
-                'message' => 'No es posible eliminar una programación que ya ha sido Finalizada.',
+                'message' => 'Esta programación ya está desactivada.',
             ], 422);
         }
 
-        // Verificar si existe registro de asistencia para este cronograma
+        if ($cronograma->estado === 'Finalizada') {
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
+                'success' => false,
+                'message' => 'No es posible desactivar una programación que ya ha sido finalizada.',
+            ], 422);
+        }
+
         if (Schema::hasTable('asistencias') && Schema::hasColumn('asistencias', 'id_cronograma')) {
             $tieneAsistencia = DB::table('asistencias')->where('id_cronograma', $cronograma->id_cronograma)->exists();
             if ($tieneAsistencia) {
                 return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                     'success' => false,
-                    'message' => 'No se puede eliminar la programación porque ya cuenta con asistencia registrada.',
+                    'message' => 'No se puede desactivar la programación porque ya cuenta con asistencia registrada.',
                 ], 422);
             }
         }
 
         DB::beginTransaction();
         try {
-            // Devolver cantidades reservadas de inventario
             foreach ($cronograma->recursos as $recurso) { /* Recorre uno por uno los elementos de esta lista. */
                 $inv = Inventario::find($recurso->id_inventario);
                 if ($inv) {
@@ -861,33 +908,37 @@ class CronogramaController extends Controller
                 }
             }
 
-            // Notificar al instructor antes de eliminar
             $fechaSesion = Carbon::parse($cronograma->fecha)->format('d/m/Y');
+            $cronograma->estado = 'Cancelada';
+            $cronograma->save();
+
+            CronogramaHistorial::create([
+                'id_cronograma'    => $cronograma->id_cronograma,
+                'id_usuario_autor' => $user->id,
+                'accion'           => 'desactivar',
+                'fecha_anterior'   => $cronograma->fecha,
+                'motivo'           => 'Programación desactivada por el administrador.',
+            ]);
+
             Notificacion::crear(
                 idReceptor: (int) $cronograma->id_instructor,
                 idCausante: $user->id,
-                titulo: "Actividad Cancelada / Eliminada",
-                mensaje: "La programación de la actividad '{$cronograma->actividad?->nombre}' del {$fechaSesion} fue cancelada y eliminada por el administrador.",
+                titulo: 'Actividad desactivada',
+                mensaje: "La programación de la actividad '{$cronograma->actividad?->nombre}' del {$fechaSesion} fue desactivada por el administrador.",
                 referenciaTipo: 'cronograma',
                 referenciaId: $cronograma->id_cronograma,
-                claveEvento: 'eliminar'
+                claveEvento: 'desactivar'
             );
-
-            // Eliminar recursos asociados e historial
-            CronogramaRecurso::where('id_cronograma', $cronograma->id_cronograma)->delete();
-            CronogramaHistorial::where('id_cronograma', $cronograma->id_cronograma)->delete();
-
-            $cronograma->delete();
 
             DB::commit();
 
             return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([
                 'success' => true,
-                'message' => '¡Programación eliminada con éxito y recursos liberados en el inventario!',
+                'message' => 'Programación desactivada. El registro y su historial se conservaron, y los recursos fueron liberados.',
             ]);
         } catch (\Throwable $e) {
             DB::rollBack();
-            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Error al eliminar: ' . $e->getMessage()], 500);
+            return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json(['success' => false, 'message' => 'Error al desactivar: ' . $e->getMessage()], 500);
         }
     }
 

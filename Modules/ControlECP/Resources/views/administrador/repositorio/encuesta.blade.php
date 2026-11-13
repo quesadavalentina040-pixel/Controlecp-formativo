@@ -103,33 +103,149 @@
         border-color: #ffffff;
     }
 
-    /* Botones circulares de acción en tabla */
+    .encuesta-filter-toolbar {
+        padding: 12px;
+        background: var(--petroleo-ecp);
+        border-color: var(--petroleo-ecp);
+        border-radius: 18px;
+    }
+
+    .encuesta-filter-toolbar .form-control,
+    .encuesta-filter-toolbar .form-select,
+    .encuesta-filter-toolbar .btn {
+        min-height: 46px;
+        border-radius: 10px !important;
+    }
+
+    .encuesta-filter-toolbar .form-control {
+        padding: .55rem .8rem;
+    }
+
+    .encuesta-filter-toolbar .btn {
+        flex: 1;
+    }
+
+    .encuesta-filter-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(180px, .9fr) minmax(220px, 1fr);
+        align-items: end;
+        gap: .75rem;
+        width: 100%;
+        margin: 0;
+    }
+
+    .encuesta-filter-form label {
+        display: block;
+        margin: 0 0 .3rem;
+        color: #ffffff;
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    .encuesta-filter-form > * {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .encuesta-filter-actions {
+        display: flex;
+        gap: .6rem;
+        min-width: 0;
+    }
+
+    .encuesta-filter-actions .btn {
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .encuesta-filter-actions .btn-outline-secondary {
+        flex: 0 0 52px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    @media (max-width: 767.98px) {
+        .encuesta-filter-form {
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        }
+
+        .encuesta-filter-actions {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .encuesta-filter-form {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .encuesta-filter-actions {
+            grid-column: auto;
+        }
+    }
+
+    .encuesta-row-actions {
+        display: flex;
+        justify-content: center;
+        gap: .4rem;
+        white-space: nowrap;
+    }
+
     .btn-action-icon {
         width: 34px;
         height: 34px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        border: 1px solid var(--gris-ecp-borde);
-        background: #ffffff;
-        color: var(--petroleo-ecp);
-        transition: all .2s ease;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
         text-decoration: none;
         cursor: pointer;
     }
 
-    .btn-action-icon:hover {
-        background: var(--petroleo-ecp);
-        color: #ffffff;
-        border-color: var(--petroleo-ecp);
-        transform: translateY(-1px);
+    .btn-action-icon:hover,
+    .btn-action-icon:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
     }
 
-    .btn-action-icon.btn-action-success:hover {
-        background: var(--verde-ecp);
+    .btn-action-info {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
+    }
+
+    .btn-action-info:hover {
+        background: #0876bd;
+        border-color: #0876bd;
         color: #ffffff;
-        border-color: var(--verde-ecp);
+    }
+
+    .btn-action-edit {
+        background: #f1f5f9;
+        border-color: #dbe3eb;
+        color: #475569;
+    }
+
+    .btn-action-edit:hover {
+        background: #475569;
+        border-color: #475569;
+        color: #ffffff;
+    }
+
+    .btn-action-success {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+
+    .btn-action-success:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #ffffff;
     }
 
     .encuesta-header-card {
@@ -153,16 +269,16 @@
         padding-left: 0;
     }
 
-    .btn-action-icon.btn-action-danger:hover {
-        background: #dc2626;
-        color: #ffffff;
-        border-color: #dc2626;
+    .btn-action-danger {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
     }
 
-    .btn-action-icon.btn-action-info:hover {
-        background: #0284c7;
+    .btn-action-danger:hover {
+        background: #d63939;
+        border-color: #d63939;
         color: #ffffff;
-        border-color: #0284c7;
     }
 
     /* Badges de estado de encuesta */
@@ -409,27 +525,23 @@
             </div>
     </div>
 
-    <div class="encuesta-card p-3 mb-4">
+    <div class="encuesta-card encuesta-filter-toolbar mb-4">
 
-        <form method="GET" action="{{ route('controlecp.administrador.repositorio.encuesta.index') }}" class="row g-2 align-items-center" id="formFiltros">
-            <div class="col-12 col-md-6 col-lg-5">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3 text-muted">
-                        <i class="fas fa-search"></i>
-                    </span>
-                    <input type="text"
-                           name="buscar"
-                           id="filtroBuscarInput"
-                           class="form-control border-start-0 rounded-end-pill pe-3"
-                           placeholder="Buscar por nombre o descripción de la encuesta..."
-                           value="{{ request('buscar') }}"
-                           onkeyup="filtrarTablaEnVivo()">
-
-                </div>
+        <form method="GET" action="{{ route('controlecp.administrador.repositorio.encuesta.index') }}" class="encuesta-filter-form" id="formFiltros">
+            <div>
+                <label for="filtroBuscarInput">Buscar encuesta:</label>
+                <input type="text"
+                       name="buscar"
+                       id="filtroBuscarInput"
+                       class="form-control"
+                       placeholder="Buscar por nombre o descripción de la encuesta..."
+                       value="{{ request('buscar') }}"
+                       onkeyup="filtrarTablaEnVivo()">
             </div>
 
-            <div class="col-6 col-md-4 col-lg-3">
-                <select name="estado" class="form-select rounded-pill px-3" onchange="document.getElementById('formFiltros').submit()">
+            <div>
+                <label for="filtroEstado">Estado:</label>
+                <select name="estado" id="filtroEstado" class="form-select px-3" onchange="document.getElementById('formFiltros').submit()">
                     <option value="">Todos los estados</option>
                     <option value="Borrador" {{ request('estado') === 'Borrador' ? 'selected' : '' }}>Borrador</option>
                     <option value="Activa" {{ request('estado') === 'Activa' ? 'selected' : '' }}>Activa</option>
@@ -437,12 +549,15 @@
                 </select>
             </div>
 
-            <div class="col-12 col-md-6 col-lg-4 d-flex gap-2">
-                <button type="submit" class="btn btn-ecp-primary btn-sm rounded-pill px-4 flex-grow-1">
+            <div class="encuesta-filter-actions">
+                <button type="submit" class="btn btn-ecp-primary btn-sm px-4 flex-grow-1">
                     <i class="fas fa-search me-1"></i> Buscar
                 </button>
-                <a href="{{ route('controlecp.administrador.repositorio.encuesta.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-4 flex-grow-1">
-                    <i class="fas fa-rotate-left me-1"></i> Limpiar
+                <a href="{{ route('controlecp.administrador.repositorio.encuesta.index') }}"
+                   class="btn btn-outline-secondary btn-sm"
+                   title="Limpiar filtros"
+                   aria-label="Limpiar filtros">
+                    <i class="fas fa-rotate-left"></i>
                 </a>
             </div>
         </form>
@@ -550,51 +665,59 @@
                             </td>
 
                             <td class="text-center pe-4">
-                                <div class="d-inline-flex align-items-center gap-1">
+                                <div class="encuesta-row-actions">
 
                                     <button type="button" class="btn-action-icon btn-action-info"
                                             title="Ver estructura de la encuesta"
+                                            aria-label="Ver estructura de la encuesta"
                                             onclick="abrirModalVerEncuesta({{ $encId }})">
 
                                         <i class="fas fa-eye"></i>
                                     </button>
 
-                                    <button type="button" class="btn-action-icon"
-                                            title="Editar datos y gestionar preguntas"
-                                            onclick="abrirModalGestionarEncuesta({{ $encId }})">
-
-                                        <i class="fas fa-pen-to-square"></i>
-                                    </button>
+                                    @if($encuesta->estado !== 'Inactiva')
+                                        <button type="button" class="btn-action-icon btn-action-edit"
+                                                title="Editar datos y gestionar preguntas"
+                                                aria-label="Editar datos y gestionar preguntas"
+                                                onclick="abrirModalGestionarEncuesta({{ $encId }})">
+                                            <i class="fas fa-pen-to-square"></i>
+                                        </button>
+                                    @endif
 
                                     @if($encuesta->estado === 'Activa')
                                         <button type="button" class="btn-action-icon btn-action-danger"
                                                 title="Desactivar encuesta"
+                                                aria-label="Desactivar encuesta"
                                                 onclick="confirmarDesactivarEncuesta({{ $encId }}, @json($encuesta->nombre))">
 
-                                            <i class="fas fa-toggle-on text-success"></i>
+                                            <i class="fas fa-ban"></i>
                                         </button>
                                     @elseif($encuesta->estado === 'Borrador')
                                         <button type="button" class="btn-action-icon btn-action-success"
                                                 title="Activar encuesta (requiere preguntas)"
+                                                aria-label="Activar encuesta"
                                                 onclick="confirmarActivarEncuesta({{ $encId }}, @json($encuesta->nombre), {{ $encuesta->preguntas_count }})">
 
-                                            <i class="fas fa-toggle-off text-muted"></i>
+                                            <i class="fas fa-ban"></i>
                                         </button>
                                         <button type="button" class="btn-action-icon btn-action-danger"
                                                 title="Desactivar encuesta (pasar a Inactiva)"
+                                                aria-label="Desactivar encuesta"
                                                 onclick="confirmarDesactivarEncuesta({{ $encId }}, @json($encuesta->nombre))">
 
-                                            <i class="fas fa-ban text-muted"></i>
+                                            <i class="fas fa-ban"></i>
                                         </button>
                                     @else
                                         <button type="button" class="btn-action-icon btn-action-success"
                                                 title="Reactivar encuesta"
+                                                aria-label="Reactivar encuesta"
                                                 onclick="confirmarActivarEncuesta({{ $encId }}, @json($encuesta->nombre), {{ $encuesta->preguntas_count }})">
 
-                                            <i class="fas fa-toggle-off text-muted"></i>
+                                            <i class="fas fa-ban"></i>
                                         </button>
                                     @endif
                                 </div>
+
                             </td>
                         </tr>
                     @empty
@@ -636,11 +759,6 @@
             <form id="formCrearEncuesta" method="POST" action="{{ route('controlecp.administrador.repositorio.encuesta.store') }}">
                 @csrf
                 <div class="modal-body p-4">
-                    <div class="alert alert-light border rounded-3 p-3 mb-4 d-flex align-items-center gap-2 small">
-                        <i class="fas fa-info-circle text-primary fs-5"></i>
-                        <span>La encuesta se creará en estado <strong>Borrador</strong> con fecha de creación automática y asociada a tu usuario administrador. Luego podrás agregar preguntas y activarla.</span>
-                    </div>
-
                     <div class="mb-3">
                         <label for="crear_nombre" class="form-label fw-bold font-outfit text-dark small mb-1">
                             Nombre de la Encuesta <span class="text-danger">*</span>
@@ -760,15 +878,14 @@
 <div class="modal fade" id="modalGestionarEncuesta" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
-            <div class="modal-header text-white" style="background-color: var(--petroleo-ecp); border-bottom: 3px solid var(--verde-ecp);">
+            <div class="modal-header encuesta-manage-header text-white" style="background-color: var(--petroleo-ecp); border-bottom: 3px solid var(--verde-ecp);">
                 <div class="d-flex align-items-center gap-2 flex-wrap">
                     <i class="fas fa-sliders fs-5" style="color: #62E31D;"></i>
                     <h5 class="modal-title font-outfit fw-bold mb-0" id="gestionarModalTitle">Gestionar Encuesta</h5>
-                    <div id="gestionarModalEstadoBadge" class="ms-1"></div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <div id="gestionarModalEstadoBtn"></div>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <div class="d-flex align-items-center gap-3 ms-auto">
+                    <div id="gestionarModalEstadoBadge"></div>
+                    <button type="button" class="btn-close btn-close-white m-0" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
             </div>
 
@@ -978,7 +1095,6 @@
 
 @push('scripts')
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
@@ -1206,7 +1322,7 @@
                 renderizarPreguntasEnModal(enc.preguntas || [], data.puede_modificar_preguntas);
 
                 // Renderizar estado y botones rápidos en la cabecera
-                actualizarCabeceraEstadoModal(enc, (enc.preguntas || []).length);
+                actualizarCabeceraEstadoModal(enc);
 
                 modalGestionarInstancia.show();
             })
@@ -1229,43 +1345,21 @@
                 encuestaActualData = data.encuesta;
                 const enc = data.encuesta;
                 renderizarPreguntasEnModal(enc.preguntas || [], data.puede_modificar_preguntas);
-                actualizarCabeceraEstadoModal(enc, (enc.preguntas || []).length);
+                actualizarCabeceraEstadoModal(enc);
             })
             .catch(err => console.error('Error al recargar preguntas:', err));
     }
 
-    function actualizarCabeceraEstadoModal(enc, totalPreg) {
+    function actualizarCabeceraEstadoModal(enc) {
         const estadoBadgeEl = document.getElementById('gestionarModalEstadoBadge');
-        const estadoBtnEl = document.getElementById('gestionarModalEstadoBtn');
-        if (!estadoBadgeEl || !estadoBtnEl) return;
-
-        const encId = enc.id_encuesta || enc.id;
-        const safeNombre = escapeHtml(JSON.stringify(enc.nombre || ''));
+        if (!estadoBadgeEl) return;
 
         if (enc.estado === 'Activa') {
             estadoBadgeEl.innerHTML = `<span class="badge-estado-activa"><i class="fas fa-circle-check me-1"></i> Activa</span>`;
-            estadoBtnEl.innerHTML = `
-                <button type="button" class="btn btn-sm btn-outline-danger text-white border-white-50" onclick="confirmarDesactivarEncuesta(${encId}, ${safeNombre})">
-                    <i class="fas fa-ban me-1"></i> Desactivar
-                </button>
-            `;
         } else if (enc.estado === 'Borrador') {
             estadoBadgeEl.innerHTML = `<span class="badge-estado-borrador"><i class="fas fa-pen-ruler me-1"></i> Borrador</span>`;
-            estadoBtnEl.innerHTML = `
-                <button type="button" class="btn btn-sm btn-outline-success text-white border-white-50 me-1" onclick="confirmarActivarEncuesta(${encId}, ${safeNombre}, ${totalPreg})">
-                    <i class="fas fa-check me-1"></i> Activar
-                </button>
-                <button type="button" class="btn btn-sm btn-outline-danger text-white border-white-50" onclick="confirmarDesactivarEncuesta(${encId}, ${safeNombre})">
-                    <i class="fas fa-ban me-1"></i> Pasar a Inactiva
-                </button>
-            `;
         } else {
             estadoBadgeEl.innerHTML = `<span class="badge-estado-inactiva"><i class="fas fa-ban me-1"></i> Inactiva</span>`;
-            estadoBtnEl.innerHTML = `
-                <button type="button" class="btn btn-sm btn-outline-success text-white border-white-50" onclick="confirmarActivarEncuesta(${encId}, ${safeNombre}, ${totalPreg})">
-                    <i class="fas fa-check me-1"></i> Reactivar
-                </button>
-            `;
         }
     }
 
@@ -1873,15 +1967,10 @@
        7. UTILIDADES (TOASTS)
        ========================================================================= */
     const ToastEncuesta = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3200,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-        }
+        toast: false,
+        position: 'center',
+        showConfirmButton: true,
+        confirmButtonText: 'Entendido'
     });
 
     function mostrarToastEncuesta(msg, tipo = 'success') {

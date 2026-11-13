@@ -43,7 +43,7 @@ class Encuesta extends Model
                 $encuesta->id_usuario = Auth::id() ?? 1;
             }
             if (empty($encuesta->estado)) {
-                $encuesta->estado = 'Borrador';
+                $encuesta->estado = 'Activa';
             }
             if (empty($encuesta->fecha_creacion)) {
                 $encuesta->fecha_creacion = now();

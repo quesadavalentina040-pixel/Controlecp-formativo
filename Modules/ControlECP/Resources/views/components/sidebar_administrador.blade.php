@@ -29,6 +29,21 @@
         font-size: 0.85rem;
         padding-left: 2.4rem !important;
     }
+    .ecp-sidebar-notif-badge {
+        margin-left: auto;
+        background: #ef4444;
+        color: #fff;
+        font-size: .68rem;
+        font-weight: 700;
+        min-width: 19px;
+        height: 19px;
+        padding: 0 5px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 5px rgba(239, 68, 68, .4);
+    }
 
     /* Toggle 100% CSS, sin depender de JS de Bootstrap */
     .ecp-submenu-checkbox {
@@ -73,6 +88,7 @@
                     'label' => 'Repositorio',
                     'route' => NULL,
                     'children' => [
+                        ['icon' => 'fa-images', 'label' => 'Evidencias', 'route' => 'controlecp.administrador.repositorio.evidencias'],
                         ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => 'controlecp.administrador.repositorio.historia.index'],
                         ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.administrador.repositorio.encuesta.index'],
                         ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => 'controlecp.administrador.repositorio.tabulacion.index'],
@@ -154,6 +170,17 @@
                        class="nav-link ecp-sidebar-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 {{ $active ? 'ecp-active' : '' }}"
                        style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
                         <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}
+                        @if($item['label'] === 'Notificaciones')
+                            @php
+                                $notificacionesNoLeidas = \Modules\ControlECP\Entities\Notification::query()
+                                    ->where('id_usuario_receptor', auth()->id())
+                                    ->where('leida', false)
+                                    ->count();
+                            @endphp
+                            <span id="ecp-notif-sidebar-badge" class="ecp-sidebar-notif-badge {{ $notificacionesNoLeidas > 0 ? '' : 'd-none' }}">
+                                {{ $notificacionesNoLeidas > 99 ? '99+' : $notificacionesNoLeidas }}
+                            </span>
+                        @endif
                     </a>
                 </li>
             @endif

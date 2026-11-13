@@ -117,38 +117,69 @@
         background-color: #e5ece9;
     }
 
+    .usuarios-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
+    }
     .btn-action-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: none;
-        background-color: #f1f5f9;
-        color: var(--ecp-navy);
-        transition: all .2s ease;
+        padding: 0;
+        border: 1px solid transparent;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
         text-decoration: none;
         cursor: pointer;
     }
-    .btn-action-icon:hover {
-        transform: scale(1.1);
+    .btn-action-icon:hover,
+    .btn-action-icon:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+    }
+    .btn-action-view {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
     }
     .btn-action-view:hover {
-        background-color: #e0f2fe;
-        color: #0284c7;
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
     }
-    .btn-action-edit:hover {
-        background-color: #e2e8f0;
+    .btn-action-edit {
+        background: #f1f5f9;
+        border-color: #dbe3eb;
         color: #475569;
     }
+    .btn-action-edit:hover {
+        background: #475569;
+        border-color: #475569;
+        color: #fff;
+    }
+    .btn-action-enable {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
     .btn-action-enable:hover {
-        background-color: #dcfce7;
-        color: #16a34a;
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .btn-action-disable {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
     }
     .btn-action-disable:hover {
-        background-color: #fee2e2;
-        color: #dc2626;
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
     }
 
     .usuarios-header-card {
@@ -174,17 +205,36 @@
 
     .usuarios-filter-bar {
         background-color: var(--ecp-navy) !important;
+        border-radius: 18px !important;
+    }
+
+    .usuarios-filter-grid {
+        display: grid;
+        grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) minmax(240px, 1.6fr);
+        gap: .6rem;
+        align-items: end;
+    }
+
+    .usuarios-filter-grid .form-label {
+        display: block;
+        margin-bottom: .35rem;
+        color: #fff;
     }
 
     .usuarios-filter-bar .form-select,
     .usuarios-filter-bar .form-control,
     .usuarios-filter-bar .input-group-text {
-        border-color: #ffffff;
+        min-height: 43px;
+        border-color: #dce5eb;
+        background-color: #fff;
         color: var(--ecp-navy);
+        box-shadow: none;
     }
 
-    .usuarios-filter-bar .form-select {
-        background-color: #ffffff;
+    .usuarios-filter-bar .form-select,
+    .usuarios-filter-bar .search-icon,
+    .usuarios-filter-bar .search-clear {
+        border-radius: 9px;
     }
 
     .usuarios-filter-bar .form-select:focus,
@@ -193,23 +243,66 @@
         box-shadow: 0 0 0 0.2rem rgba(57, 169, 0, 0.25);
     }
 
-    .usuarios-filter-bar .input-group-text {
-        background-color: #ffffff;
+    .usuarios-filter-bar .search-form {
+        min-width: 0;
     }
 
-    .usuarios-filter-bar .input-group-text.text-success {
+    .usuarios-filter-bar .search-icon {
         color: var(--ecp-green) !important;
     }
 
     .usuarios-filter-bar .btn-filter {
+        min-height: 43px;
+        flex: 0 0 112px;
+        min-width: 112px;
+        padding: 0 1rem;
         background-color: var(--ecp-green);
         border-color: var(--ecp-green);
+        border-radius: 9px;
+        color: #fff;
+        white-space: nowrap;
     }
 
     .usuarios-filter-bar .btn-filter:hover,
     .usuarios-filter-bar .btn-filter:focus {
         background-color: var(--ecp-green-hover);
         border-color: var(--ecp-green-hover);
+        color: #fff;
+    }
+
+    .usuarios-filter-bar .btn-clear-search {
+        display: inline-flex;
+        width: 48px;
+        min-height: 43px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dce5eb;
+        border-radius: 9px;
+        background-color: #fff;
+        color: var(--ecp-navy);
+        text-decoration: none;
+    }
+
+    .usuarios-filter-bar .btn-clear-search:hover,
+    .usuarios-filter-bar .btn-clear-search:focus {
+        background-color: #f1f5f9;
+        color: var(--ecp-navy);
+    }
+
+    @media (max-width: 1199.98px) {
+        .usuarios-filter-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .usuarios-filter-grid .search-form {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .usuarios-filter-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
     }
 
     .btn-clear-filters {
@@ -315,90 +408,86 @@
     </div>
 
     <!-- Barra de Filtros y Búsqueda -->
-    <div class="card usuarios-filter-bar border-0 shadow-sm mb-4" style="border-radius: 24px;">
+    <div class="card usuarios-filter-bar border-0 shadow-sm mb-4">
         <div class="card-body p-3 p-lg-4">
-            <div class="row g-3 align-items-center">
+            <div class="usuarios-filter-grid">
                 <!-- Filtro por Rol -->
-                <div class="col-lg-auto">
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="filtroRolUsuarios" class="small text-white fw-semibold mb-0 text-nowrap">
-                            <i class="fas fa-filter me-1"></i>Rol:
-                        </label>
-                        <select id="filtroRolUsuarios"
-                                class="form-select form-select-sm rounded-pill fw-semibold border-0"
-                                style="width: 240px;"
-                                onchange="window.location.href = this.value;">
-                            <option value="{{ route('controlecp.administrador.usuarios', ['search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                                {{ empty($roleFilter) ? 'selected' : '' }}>
-                                Todos
-                            </option>
-                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'admin', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                                {{ $roleFilter === 'admin' ? 'selected' : '' }}>
-                                Administradores
-                            </option>
-                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'instructor', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                                {{ $roleFilter === 'instructor' ? 'selected' : '' }}>
-                                Instructores
-                            </option>
-                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'apprentice', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
-                                {{ $roleFilter === 'apprentice' ? 'selected' : '' }}>
-                                Aprendices
-                            </option>
-                        </select>
-                    </div>
+                <div>
+                    <label for="filtroRolUsuarios" class="form-label small fw-semibold">
+                        <i class="fas fa-filter me-1"></i>Rol
+                    </label>
+                    <select id="filtroRolUsuarios"
+                            class="form-select fw-semibold"
+                            onchange="window.location.href = this.value;">
+                        <option value="{{ route('controlecp.administrador.usuarios', ['search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                            {{ empty($roleFilter) ? 'selected' : '' }}>
+                            Todos
+                        </option>
+                        <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'admin', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                            {{ $roleFilter === 'admin' ? 'selected' : '' }}>
+                            Administradores
+                        </option>
+                        <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'instructor', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                            {{ $roleFilter === 'instructor' ? 'selected' : '' }}>
+                            Instructores
+                        </option>
+                        <option value="{{ route('controlecp.administrador.usuarios', ['rol' => 'apprentice', 'search' => $searchTerm, 'estado' => $estadoFilter]) }}"
+                            {{ $roleFilter === 'apprentice' ? 'selected' : '' }}>
+                            Aprendices
+                        </option>
+                    </select>
                 </div>
 
                 {{-- Filtro por Estado (HU2) --}}
-                <div class="col-lg-auto">
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="filtroEstadoUsuarios" class="small text-white fw-semibold mb-0 text-nowrap">
-                            <i class="fas fa-toggle-on me-1"></i>Estado:
-                        </label>
-                        <select id="filtroEstadoUsuarios"
-                                class="form-select form-select-sm rounded-pill fw-semibold border-0"
-                                style="width: 210px;"
-                                onchange="window.location.href = this.value;">
-                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm]) }}"
-                                {{ empty($estadoFilter) ? 'selected' : '' }}>
-                                Todos
-                            </option>
-                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Activo']) }}"
-                                {{ $estadoFilter === 'Activo' ? 'selected' : '' }}>
-                                Activos
-                            </option>
-                            <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Inactivo']) }}"
-                                {{ $estadoFilter === 'Inactivo' ? 'selected' : '' }}>
-                                Inactivos
-                            </option>
-                        </select>
-                    </div>
+                <div>
+                    <label for="filtroEstadoUsuarios" class="form-label small fw-semibold">
+                        <i class="fas fa-toggle-on me-1"></i>Estado
+                    </label>
+                    <select id="filtroEstadoUsuarios"
+                            class="form-select fw-semibold"
+                            onchange="window.location.href = this.value;">
+                        <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm]) }}"
+                            {{ empty($estadoFilter) ? 'selected' : '' }}>
+                            Todos
+                        </option>
+                        <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Activo']) }}"
+                            {{ $estadoFilter === 'Activo' ? 'selected' : '' }}>
+                            Activos
+                        </option>
+                        <option value="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'search' => $searchTerm, 'estado' => 'Inactivo']) }}"
+                            {{ $estadoFilter === 'Inactivo' ? 'selected' : '' }}>
+                            Inactivos
+                        </option>
+                    </select>
                 </div>
 
                 <!-- Buscador en tiempo real -->
-                <div class="col-lg flex-grow-1">
-                    <form method="GET" action="{{ route('controlecp.administrador.usuarios') }}" class="d-flex gap-2">
-                        @if($roleFilter)
-                            <input type="hidden" name="rol" value="{{ $roleFilter }}">
-                        @endif
-                        @if($estadoFilter)
-                            <input type="hidden" name="estado" value="{{ $estadoFilter }}">
-                        @endif
+                <form method="GET" action="{{ route('controlecp.administrador.usuarios') }}" class="search-form">
+                    @if($roleFilter)
+                        <input type="hidden" name="rol" value="{{ $roleFilter }}">
+                    @endif
+                    @if($estadoFilter)
+                        <input type="hidden" name="estado" value="{{ $estadoFilter }}">
+                    @endif
+                    <label for="inputSearchUser" class="form-label small fw-semibold">Buscar usuario</label>
+                    <div class="d-flex gap-2">
                         <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0 rounded-start-pill text-success">
+                            <span class="input-group-text search-icon border-end-0">
                                 <i class="fas fa-magnifying-glass"></i>
                             </span>
-                            <input type="text" name="search" id="inputSearchUser" class="form-control border-start-0 ps-0"
+                            <input type="search" name="search" id="inputSearchUser" class="form-control border-start-0 ps-0"
                                    placeholder="Buscar por nombre, correo o rol..."
                                    value="{{ $searchTerm }}">
-                            @if(!empty($searchTerm))
-                                <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'estado' => $estadoFilter]) }}" class="input-group-text bg-white text-muted text-decoration-none">
-                                    <i class="fas fa-xmark"></i>
-                                </a>
-                            @endif
-                            <button class="btn btn-filter rounded-end-pill px-4 text-white fw-semibold" type="submit">Filtrar</button>
                         </div>
-                    </form>
-                </div>
+                        <button class="btn btn-filter fw-semibold" type="submit" title="Buscar" aria-label="Buscar usuarios">
+                            <i class="fas fa-search me-1"></i>Buscar
+                        </button>
+                        <a href="{{ route('controlecp.administrador.usuarios', ['rol' => $roleFilter, 'estado' => $estadoFilter]) }}"
+                           class="btn-clear-search" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+                            <i class="fas fa-rotate-left"></i>
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -519,7 +608,7 @@
 
                                     <!-- Acciones -->
                                     <td class="text-end pe-4">
-                                        <div class="d-flex justify-content-end gap-2">
+                                        <div class="usuarios-row-actions">
                                             <button class="btn-action-icon btn-action-view" type="button"
                                                     title="Ver ficha"
                                                     onclick="verCredencialUsuario({{ json_encode([
@@ -566,7 +655,38 @@
                 <!-- Paginación -->
                 <div class="p-3 border-top d-flex justify-content-end align-items-center">
                     <div>
-                        {{ $usuarios->links('pagination::bootstrap-5') }}
+                        @if ($usuarios->hasPages())
+                            <nav aria-label="Paginación de usuarios">
+                                <ul class="pagination justify-content-center">
+                                    @if ($usuarios->onFirstPage())
+                                        <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                                    @else
+                                        <li class="page-item"><a class="page-link" href="{{ $usuarios->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                                    @endif
+                                    @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                                    @for ($pagina = 1; $pagina <= $usuarios->lastPage(); $pagina++)
+                                        @if ($pagina === 1 || $pagina === $usuarios->lastPage() || abs($pagina - $usuarios->currentPage()) <= 1)
+                                            @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                                <li class="page-item disabled"><span class="page-link">…</span></li>
+                                            @endif
+                                            <li class="page-item {{ $pagina === $usuarios->currentPage() ? 'active' : '' }}">
+                                                <a class="page-link" href="{{ $usuarios->url($pagina) }}" @if($pagina === $usuarios->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                            </li>
+                                            @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                        @endif
+                                    @endfor
+                                    @if ($usuarios->hasMorePages())
+                                        <li class="page-item"><a class="page-link" href="{{ $usuarios->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                                    @else
+                                        <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                                    @endif
+                                </ul>
+                            </nav>
+                        @endif
                     </div>
                 </div>
             @else
@@ -832,9 +952,6 @@
                     <div class="d-flex justify-content-center gap-2">
                         <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">
                             Cerrar
-                        </button>
-                        <button type="button" class="btn btn-sm text-white rounded-pill px-3" style="background-color: var(--ecp-navy);" onclick="imprimirCredencial()">
-                            <i class="fas fa-print me-1"></i> Imprimir Ficha
                         </button>
                     </div>
                 </div>
@@ -1311,10 +1428,6 @@
 
         const modal = new bootstrap.Modal(document.getElementById('modalCredencialUsuario'));
         modal.show();
-    }
-
-    function imprimirCredencial() {
-        window.print();
     }
 
     // ── 9. Utilidades (Copiar, Alertas) ────────────────────────────────────────────

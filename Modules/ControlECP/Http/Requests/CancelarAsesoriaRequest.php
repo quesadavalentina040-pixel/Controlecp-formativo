@@ -15,7 +15,7 @@ class CancelarAsesoriaRequest extends FormRequest // Define autorización y vali
     public function rules(): array // rules() entrega las condiciones que debe cumplir el motivo de cancelación.
     {
         return [ // Devuelve el arreglo de reglas para Laravel.
-            'motivo' => ['required', 'string', 'min:5'], // Exige un motivo de texto con al menos cinco caracteres.
+            'motivo' => ['required', 'string', 'min:10', 'max:200'], // Exige un motivo de texto de 10 a 200 caracteres.
         ];
     }
 
@@ -23,7 +23,8 @@ class CancelarAsesoriaRequest extends FormRequest // Define autorización y vali
     {
         return [ // Asocia cada regla con su mensaje personalizado.
             'motivo.required' => 'Debes indicar el motivo de la cancelación.', // Se muestra cuando se deja vacío el motivo.
-            'motivo.min'      => 'El motivo debe tener al menos 5 caracteres.', // Se muestra cuando el texto es demasiado corto.
+            'motivo.min'      => 'El motivo debe tener al menos 10 caracteres.',
+            'motivo.max'      => 'El motivo no puede superar los 200 caracteres.',
         ];
     }
 

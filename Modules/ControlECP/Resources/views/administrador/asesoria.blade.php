@@ -15,10 +15,6 @@
         --borde: #e0ece4;
     }
 
-    body {
-        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    }
-
     .font-outfit {
         font-family: 'Outfit', sans-serif;
     }
@@ -78,6 +74,77 @@
         font-size: .9rem;
         color: #64748b;
     }
+    .asesoria-view-toggle {
+        display: inline-flex;
+        gap: .2rem;
+        padding: .25rem;
+        border: 1px solid #dce5eb;
+        border-radius: 999px;
+        background: #f8fafc;
+    }
+    .asesoria-view-toggle button {
+        min-height: 42px;
+        padding: .55rem 1.15rem;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--petroleo);
+        font-weight: 750;
+        white-space: nowrap;
+    }
+    .asesoria-view-toggle button.is-active {
+        background: var(--verde);
+        color: #fff;
+    }
+    .asesoria-calendar-card { overflow:hidden; border:1px solid #dce8df; border-radius:16px; background:#fff; }
+    .asesoria-calendar-toolbar { display:flex; min-height:58px; align-items:center; justify-content:space-between; gap:1rem; padding:.65rem 1rem; border-bottom:1px solid #e7edf0; }
+    .asesoria-calendar-toolbar button { display:grid; width:34px; height:34px; flex:0 0 34px; place-items:center; border:1px solid #cbd5e1; border-radius:50%; background:#fff; color:#526579; }
+    .asesoria-calendar-toolbar button:hover { border-color:var(--verde); color:var(--verde); }
+    .asesoria-calendar-toolbar .asesoria-calendar-today { width:auto; height:auto; flex-basis:auto; margin-left:0; padding:.35rem .75rem; border-color:var(--verde); color:#318f00; font-size:.8rem; font-weight:700; }
+    .asesoria-calendar-month-nav { display:flex; align-items:center; gap:.55rem; }
+    .asesoria-calendar-month { color:var(--petroleo); font-size:.95rem; font-weight:800; }
+    .asesoria-calendar-body { padding:.85rem; }
+    .asesoria-calendar-weekdays,
+    .asesoria-calendar-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
+    .asesoria-calendar-weekday { padding:.65rem .4rem; background:var(--petroleo); color:#fff; font-size:.7rem; font-weight:800; text-align:center; }
+    .asesoria-calendar-weekday:first-child { border-top-left-radius:8px; }
+    .asesoria-calendar-weekday:last-child { border-top-right-radius:8px; }
+    .asesoria-calendar-day { min-width:0; min-height:88px; padding:.55rem; border:0; border-right:1px solid #d9e3ea; border-bottom:1px solid #d9e3ea; background:#fff; color:#334155; text-align:left; vertical-align:top; }
+    .asesoria-calendar-day:nth-child(7n+1) { border-left:1px solid #d9e3ea; }
+    .asesoria-calendar-day:hover { background:#f6fff2; }
+    .asesoria-calendar-day.is-today .asesoria-calendar-day-number { display:inline-flex; width:22px; height:22px; align-items:center; justify-content:center; border-radius:50%; background:var(--verde); color:#fff; }
+    .asesoria-calendar-day.is-outside { background:#eaf1f5; color:#82909b; }
+    .asesoria-calendar-day-heading { display:flex; flex-direction:column; align-items:flex-start; gap:.25rem; }
+    .asesoria-calendar-day-number { display:inline-flex; min-height:22px; align-items:center; color:#334155; font-size:.8rem; font-weight:800; }
+    .asesoria-calendar-day.is-outside .asesoria-calendar-day-number { color:#82909b; }
+    .asesoria-calendar-day-count { display:block; width:100%; overflow:hidden; margin-top:.3rem; padding:.25rem .4rem; border-left:3px solid #0284c7; border-radius:5px; background:#eaf5ff; color:#075985; font-size:.68rem; font-weight:700; line-height:1.25; text-align:left; text-overflow:ellipsis; white-space:nowrap; }
+    .asesoria-calendar-day.is-done .asesoria-calendar-day-count { border-left-color:var(--verde); background:#eef9e9; color:#287a13; }
+    .asesoria-admin-calendar-item { padding:1rem; border:1px solid #dce5eb; border-radius:12px; background:#fff; }
+    .asesoria-admin-calendar-item + .asesoria-admin-calendar-item { margin-top:.75rem; }
+    .asesoria-admin-calendar-time { color:var(--petroleo); font-weight:800; }
+    .asesoria-calendar-selection { min-height:80px; margin-top:1rem; padding:1rem; border:1px solid #e5edf2; border-radius:14px; background:#f8fafc; }
+    .asesoria-calendar-event { padding:.8rem; border:1px solid #e1e9ee; border-left:4px solid #0284c7; border-radius:10px; background:#fff; }
+    .asesoria-calendar-event + .asesoria-calendar-event { margin-top:.6rem; }
+    .asesoria-calendar-event-title { color:var(--petroleo); font-size:.88rem; font-weight:800; }
+    .asesoria-calendar-event-meta { margin-top:.25rem; color:#64748b; font-size:.78rem; }
+    .asesoria-calendar-event-status { display:inline-flex; margin-top:.45rem; padding:.16rem .55rem; border-radius:999px; background:#e0f2fe; color:#0369a1; font-size:.7rem; font-weight:750; }
+    .asesoria-calendar-event-status[data-state="Realizada"] { background:#e1f4e9; color:#16804a; }
+    .asesoria-calendar-event-status[data-state="Rechazada"],
+    .asesoria-calendar-event-status[data-state="Cancelada"] { background:#fff0f0; color:#d63939; }
+    .asesoria-calendar-event-status[data-state="Solicitada"] { background:#fef3c7; color:#a16207; }
+    .asesoria-detail-motive { border:1px solid #e0ece4 !important; border-radius:14px; background:#fff; }
+    .asesoria-detail-motive-text { padding:.45rem; border-radius:6px; background:#f8f9fa; }
+    .asesoria-detail-section { border:1px solid #e0ece4 !important; border-radius:14px; background:#fff; }
+    @media (max-width:575px) {
+        .asesoria-view-toggle { display:flex; width:100%; }
+        .asesoria-view-toggle button { flex:1; padding:.55rem .65rem; font-size:.85rem; }
+        .asesoria-calendar-toolbar { padding:.6rem; }
+        .asesoria-calendar-body { padding:.55rem; }
+        .asesoria-calendar-grid { gap:1px; }
+        .asesoria-calendar-weekday { min-height:32px; font-size:.58rem; }
+        .asesoria-calendar-day { min-height:68px; padding:.35rem; font-size:.78rem; }
+        .asesoria-calendar-day-count { padding:.15rem .3rem; font-size:.55rem; }
+    }
 
     .ecp-card:hover {
         transform: translateY(-2px);
@@ -127,6 +194,101 @@
         border-color: #ffffff;
     }
 
+    .asesoria-filter-card {
+        padding: 1rem 1.15rem;
+        margin-bottom: 1.5rem;
+        background: var(--petroleo);
+        border-radius: 18px;
+        box-shadow: 0 5px 20px rgba(0, 26, 41, .08);
+    }
+
+    .asesoria-filter-form {
+        display: grid;
+        grid-template-columns: minmax(220px, 1.5fr) repeat(2, minmax(145px, 1fr)) minmax(170px, 1fr) 160px;
+        align-items: end;
+        gap: .65rem;
+    }
+
+    .asesoria-filter-field { min-width: 0; }
+
+    .asesoria-filter-field .form-label {
+        display: block;
+        margin: 0 0 .3rem;
+        color: #fff !important;
+        font-size: .75rem;
+        font-weight: 700;
+    }
+
+    .asesoria-filter-field .form-control,
+    .asesoria-filter-field .form-select {
+        width: 100%;
+        min-width: 0;
+        height: 44px;
+        padding: .55rem .8rem;
+        border: 1px solid #fff;
+        border-radius: 10px !important;
+        background: #fff;
+        color: var(--petroleo);
+        font-size: .88rem;
+        box-shadow: none;
+    }
+
+    .asesoria-filter-actions {
+        display: flex;
+        gap: .5rem;
+        min-width: 0;
+    }
+
+    .asesoria-filter-actions .btn-filter {
+        flex: 1;
+        min-width: 0;
+        height: 44px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--verde);
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .asesoria-filter-actions .btn-filter:hover {
+        background: #2e8b00;
+        color: #fff;
+    }
+
+    .asesoria-filter-actions .btn-reset {
+        flex: 0 0 48px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        padding: 0;
+        border: 1px solid #fff;
+        border-radius: 10px;
+        background: #fff;
+        color: var(--petroleo);
+    }
+
+    .asesoria-filter-actions .btn-reset:hover {
+        background: #f1f5f9;
+        color: var(--petroleo);
+    }
+
+    @media (max-width: 1100px) {
+        .asesoria-filter-form { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .asesoria-filter-actions { grid-column: span 3; justify-content: flex-end; }
+        .asesoria-filter-actions .btn-filter { flex: 0 0 130px; }
+    }
+
+    @media (max-width: 767px) {
+        .asesoria-filter-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .asesoria-filter-actions { grid-column: span 2; }
+    }
+
+    @media (max-width: 480px) {
+        .asesoria-filter-form { grid-template-columns: minmax(0, 1fr); }
+        .asesoria-filter-actions { grid-column: auto; }
+        .asesoria-filter-actions .btn-filter { flex: 1; }
+    }
+
     /* Badges de estado */
     .badge-estado-solicitada {
         background-color: #fef3c7;
@@ -152,42 +314,313 @@
         border: 1px solid #fecaca;
     }
 
+    .badge-estado-rechazada {
+        background-color: #fee2e2;
+        color: #b91c1c;
+        border: 1px solid #fecaca;
+    }
+
     .badge-estado-sin-asignar {
         background-color: #ffedd5;
         color: #c2410c;
         border: 1px solid #fed7aa;
     }
 
-    /* Acciones en tabla */
-    .btn-action-icon {
-        width: 32px;
-        height: 32px;
+    .asesoria-row-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
+    }
+    .asesoria-category-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
+    }
+    .asesoria-category-actions .asesoria-row-action {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px !important;
+    }
+    .asesoria-category-actions .asesoria-row-action--edit {
+        background: #fff7e6;
+        border-color: #f8e3b2;
+        color: #c47a00;
+    }
+    .asesoria-category-actions .asesoria-row-action--edit:hover {
+        background: #c47a00;
+        border-color: #c47a00;
+        color: #fff;
+    }
+    .asesoria-category-actions .asesoria-row-action--category-disable {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
+    }
+    .asesoria-category-actions .asesoria-row-action--category-disable:hover {
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
+    .asesoria-category-actions .asesoria-row-action--category-enable {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .asesoria-category-actions .asesoria-row-action--category-enable:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .asesoria-row-action {
+        width: 34px;
+        height: 34px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50%;
-        border: 1px solid var(--borde);
-        background: #ffffff;
-        color: var(--petroleo);
-        transition: all .2s ease;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 10px !important;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
     }
-
-    .btn-action-icon:hover {
-        background: var(--petroleo);
-        color: #ffffff;
-        border-color: var(--petroleo);
+    .asesoria-row-action:hover,
+    .asesoria-row-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
     }
-
-    .asesoria-actions-dropdown .dropdown-menu {
-        position: fixed !important;
-        z-index: 1090;
-        min-width: 220px;
+    .asesoria-row-action--view {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
     }
+    .asesoria-row-action--view:hover {
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
+    .asesoria-row-action--edit {
+        background: #f1f5f9;
+        border-color: #dbe3eb;
+        color: #475569;
+    }
+    .asesoria-row-action--edit:hover {
+        background: #475569;
+        border-color: #475569;
+        color: #fff;
+    }
+    .asesoria-row-action--rating {
+        background: #fff7e6;
+        border-color: #f8e3b2;
+        color: #e8a000;
+    }
+    .asesoria-row-action--rating:hover {
+        background: #e8a000;
+        border-color: #e8a000;
+        color: #fff;
+    }
+    .asesoria-row-action--schedule,
+    .asesoria-row-action--finish {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .asesoria-row-action--schedule:hover,
+    .asesoria-row-action--finish:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .asesoria-row-action--resources {
+        background: #f3edff;
+        border-color: #ddccff;
+        color: #7541c8;
+    }
+    .asesoria-row-action--resources:hover {
+        background: #7541c8;
+        border-color: #7541c8;
+        color: #fff;
+    }
+    .asesoria-row-action--reschedule {
+        background: #fff7e6;
+        border-color: #f8e3b2;
+        color: #c47a00;
+    }
+    .asesoria-row-action--reschedule:hover {
+        background: #c47a00;
+        border-color: #c47a00;
+        color: #fff;
+    }
+    .asesoria-row-action--cancel {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
+    }
+    .asesoria-row-action--cancel:hover {
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
+    .asesoria-row-action--followup {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .asesoria-row-action--followup:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .asesoria-admin-modal .modal-content {
+        overflow: hidden;
+        border: 0;
+        border-radius: 22px;
+        box-shadow: 0 20px 55px rgba(0, 26, 41, .22);
+    }
+    .asesoria-admin-modal .modal-header {
+        gap: .85rem;
+        padding: 1.25rem 1.5rem;
+        border: 0;
+        border-bottom: 2px solid var(--verde);
+        background: linear-gradient(135deg, #001A29 0%, #12394d 100%) !important;
+        color: #fff;
+    }
+    .asesoria-admin-modal .modal-header .modal-title { color: #fff !important; }
+    .asesoria-admin-modal .modal-header .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+    .asesoria-admin-modal .modal-header .rounded-circle {
+        width: 46px !important;
+        height: 46px !important;
+        flex: 0 0 46px;
+        border: 1px solid rgba(255, 255, 255, .25);
+        border-radius: 15px !important;
+        background: rgba(255, 255, 255, .1) !important;
+        color: #86efac;
+        font-size: 1.1rem;
+    }
+    .asesoria-admin-modal#modalDetalle .modal-header .rounded-circle,
+    .asesoria-admin-modal#modalSolicitudesCalendario .modal-header .rounded-circle { color: #7dd3fc; }
+    .asesoria-admin-modal#modalReprogramar .modal-header .rounded-circle { color: #fcd34d; }
+    .asesoria-admin-modal#modalCancelar .modal-header .rounded-circle,
+    .asesoria-admin-modal#modalRechazarSolicitudAdmin .modal-header .rounded-circle { color: #fca5a5; }
+    .asesoria-admin-modal#modalRecursos .modal-header .rounded-circle { color: #c4b5fd; }
+    .asesoria-admin-modal#modalProgramar .modal-header .rounded-circle,
+    .asesoria-admin-modal#modalReprogramar .modal-header .rounded-circle {
+        background: rgba(245, 158, 11, .16) !important;
+        border-color: rgba(252, 211, 77, .38);
+        color: #fcd34d;
+    }
+    .asesoria-admin-modal#modalCancelar .modal-header .rounded-circle {
+        background: rgba(239, 68, 68, .16) !important;
+        border-color: rgba(252, 165, 165, .38);
+        color: #fca5a5;
+    }
+    .asesoria-admin-modal#modalSeguimiento .modal-header .rounded-circle {
+        background: rgba(34, 197, 94, .16) !important;
+        border-color: rgba(134, 239, 172, .38);
+        color: #86efac;
+    }
+    .asesoria-admin-modal#modalRecursos .modal-header .rounded-circle {
+        background: rgba(139, 92, 246, .16) !important;
+        border-color: rgba(196, 181, 253, .38);
+        color: #c4b5fd;
+    }
+    .asesoria-admin-rating-modal .modal-header .rounded-circle {
+        background: rgba(245, 158, 11, .16) !important;
+        border-color: rgba(252, 211, 77, .38);
+        color: #fcd34d;
+    }
+    .asesoria-admin-rating-stars { display: flex; gap: .3rem; color: #f59e0b; font-size: 1.75rem; }
+    .asesoria-admin-rating-stars .is-empty { color: #cbd5e1; }
+    .asesoria-admin-modal#modalSolicitudesCalendario .modal-dialog { max-width:560px; }
+    .asesoria-admin-modal#modalSolicitudesCalendario .modal-header { min-height:90px; }
+    .asesoria-admin-modal#modalSolicitudesCalendario .modal-header .rounded-circle {
+        background:rgba(14,165,233,.16) !important;
+        border-color:rgba(125,211,252,.38);
+        color:#7dd3fc;
+    }
+    .asesoria-admin-modal-subtitle { margin:.2rem 0 0; color:#c7d4da; font-size:.82rem; }
+    .asesoria-admin-modal .modal-body { background: #f8fafc; }
+    .asesoria-admin-modal .modal-footer {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #edf1f5;
+        background: #fff;
+    }
+    .asesoria-admin-modal .modal-footer .btn { min-height: 40px; border-radius: 999px; font-weight: 700; }
+    .asesoria-admin-modal .form-control,
+    .asesoria-admin-modal .form-select {
+        border-radius: 12px;
+        box-shadow: none;
+    }
+    .asesoria-admin-modal .form-control:focus,
+    .asesoria-admin-modal .form-select:focus {
+        border-color: var(--verde);
+        box-shadow: 0 0 0 .2rem rgba(57, 169, 0, .13);
+    }
+    .asesoria-admin-modal .modal-footer .btn-ecp-primary { background: #168a5b; border-color: #168a5b; color: #fff; }
+    .asesoria-admin-modal .modal-footer .btn-ecp-primary:hover { background: #11734b; border-color: #11734b; color: #fff; }
+    .asesoria-admin-modal .modal-footer .btn-danger { background: #e83245; border-color: #e83245; }
+    .asesoria-admin-modal .modal-footer .btn-danger:hover { background: #cc293a; border-color: #cc293a; }
+    .asesoria-admin-modal#modalProgramar .modal-dialog,
+    .asesoria-admin-modal#modalReprogramar .modal-dialog,
+    .asesoria-admin-modal#modalCancelar .modal-dialog,
+    .asesoria-admin-modal#modalRecursos .modal-dialog { max-width: 520px; }
+    .asesoria-admin-modal#modalSeguimiento .modal-dialog { max-width: 820px; }
+    .asesoria-admin-modal#modalProgramar .form-control,
+    .asesoria-admin-modal#modalProgramar .form-select,
+    .asesoria-admin-modal#modalReprogramar .form-control,
+    .asesoria-admin-modal#modalReprogramar .form-select,
+    .asesoria-admin-modal#modalCancelar .form-control,
+    .asesoria-admin-modal#modalCancelar .form-select,
+    .asesoria-admin-modal#modalSeguimiento .form-control,
+    .asesoria-admin-modal#modalSeguimiento .form-select,
+    .asesoria-admin-modal#modalRecursos .form-control,
+    .asesoria-admin-modal#modalRecursos .form-select { min-height: 46px; }
+    .asesoria-admin-modal#modalProgramar textarea.form-control,
+    .asesoria-admin-modal#modalReprogramar textarea.form-control,
+    .asesoria-admin-modal#modalCancelar textarea.form-control,
+    .asesoria-admin-modal#modalSeguimiento textarea.form-control { min-height: 112px; resize: vertical; }
+    .asesoria-admin-modal#modalEditarAsesoria .modal-header .rounded-circle {
+        background: rgba(255, 255, 255, .1) !important;
+        border-color: rgba(255, 255, 255, .25);
+        color: #e2e8f0;
+    }
+    .asesoria-admin-modal#modalEditarAsesoria .form-control,
+    .asesoria-admin-modal#modalEditarAsesoria .form-select { min-height: 42px; }
+    .asesoria-admin-modal#modalEditarAsesoria textarea.form-control { min-height: 72px; }
+    .asesoria-pagination {
+        display: flex;
+        justify-content: center;
+        padding: 1rem;
+        border-top: 1px solid #edf1f5;
+        background: #fff;
+    }
+    .asesoria-pagination .pagination { gap: 0; margin: 0; }
+    .asesoria-pagination .page-link {
+        display: flex;
+        min-width: 42px;
+        height: 42px;
+        align-items: center;
+        justify-content: center;
+        border-color: #cfe5d4;
+        background: #fff;
+        color: #39a900;
+        font-weight: 700;
+        box-shadow: none;
+    }
+    .asesoria-pagination .page-item:first-child .page-link { border-radius: 7px 0 0 7px; }
+    .asesoria-pagination .page-item:last-child .page-link { border-radius: 0 7px 7px 0; }
+    .asesoria-pagination .page-item.active .page-link {
+        border-color: #39a900;
+        background: #39a900;
+        color: #fff;
+    }
+    .asesoria-pagination .page-item.disabled .page-link { color: #8aa18d; background: #f7faf8; }
 </style>
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-3 py-3">
+<div class="container-fluid px-3 py-3 asesoria-admin-page">
 
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
         @if(session('success'))
@@ -243,18 +676,15 @@
                 <i class="fas fa-chart-line me-2"></i>Control ECP · Panel administrativo
             </div>
             <h1 class="h3 fw-bold mb-1 font-outfit" style="color: var(--petroleo);">
-                <i class="fas fa-comments me-2" style="color: var(--verde);"></i>Gestión de Asesorías
+                <i class="fas fa-comments me-2" style="color: var(--verde);"></i>Solicitudes de Asesoría
             </h1>
             <p class="mb-0 small" style="color: var(--gris-texto);">
-                Asigna responsables y controla los encuentros de acompañamiento
+                Revisa y gestiona las solicitudes de asesoría que te enviaron
             </p>
         </div>
         <div class="d-flex flex-wrap gap-2">
-            <button type="button" class="btn btn-ecp-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaSolicitud">
-                <i class="fas fa-plus me-1"></i> Nueva solicitud
-            </button>
             <button type="button" class="btn btn-ecp-outline px-3" data-bs-toggle="modal" data-bs-target="#modalDisponibilidad">
-                <i class="fas fa-clock me-1"></i> Disponibilidad
+                <i class="fas fa-clock me-1"></i> Mi disponibilidad
             </button>
             <button type="button" class="btn btn-ecp-outline px-3" data-bs-toggle="modal" data-bs-target="#modalCategorias">
                 <i class="fas fa-tags me-1"></i> Categorías
@@ -306,13 +736,13 @@
         <div class="col-6 col-md-4 col-lg">
             <div class="ecp-card asesoria-kpi h-100" style="border-color:rgba(194,65,12,.35);">
                 <div class="d-flex justify-content-between align-items-center">
-                    <span class="asesoria-kpi-label">Sin asignar</span>
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #ffedd5; color: #c2410c;">
-                        <i class="fas fa-user-xmark"></i>
+                    <span class="asesoria-kpi-label">Rechazadas</span>
+                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; background: #fee2e2; color: #b91c1c;">
+                        <i class="fas fa-xmark"></i>
                     </div>
                 </div>
-                <div class="asesoria-kpi-value" style="color:#c2410c;">{{ $indicadores['sin_asignar'] }}</div>
-                <div class="asesoria-kpi-subtitle">Requieren instructor</div>
+                <div class="asesoria-kpi-value" style="color:#b91c1c;">{{ $indicadores['rechazadas'] }}</div>
+                <div class="asesoria-kpi-subtitle">Solo consulta</div>
             </div>
         </div>
 
@@ -330,69 +760,89 @@
         </div>
     </div>
 
-    <div class="ecp-card p-3 mb-4">
-
-        <form method="GET" action="{{ route('controlecp.administrador.asesorias.index') }}" class="row g-2 align-items-end">
-            <div class="col-12 col-md-3">
-                <label class="form-label small fw-semibold text-muted mb-1">
-                    <i class="fas fa-search me-1"></i> Buscar Aprendiz
-                </label>
-                <input type="text" name="aprendiz" value="{{ request('aprendiz') }}" class="form-control form-control-sm rounded-pill" placeholder="Nombre, correo o documento...">
+    <div class="asesoria-filter-card mb-4">
+        <form method="GET" action="{{ route('controlecp.administrador.asesorias.index') }}" class="asesoria-filter-form">
+            <input type="hidden" name="vista" value="solicitudes">
+            <div class="asesoria-filter-field">
+                <label class="form-label small fw-semibold mb-1"><i class="fas fa-search me-1"></i> Buscar Aprendiz</label>
+                <input type="text" name="aprendiz" value="{{ request('aprendiz') }}" class="form-control" placeholder="Nombre, correo o documento...">
             </div>
-
-            <div class="col-6 col-md-2">
-                <label class="form-label small fw-semibold text-muted mb-1">Categoría</label>
-                <select name="categoria_id" class="form-select form-select-sm rounded-pill">
+            <div class="asesoria-filter-field">
+                <label class="form-label small fw-semibold mb-1">Categoría</label>
+                <select name="categoria_id" class="form-select">
                     <option value="">Todas</option>
-
                     @foreach($categorias as $cat)
-                        <option value="{{ $cat->id_categoria_asesoria }}" {{ request('categoria_id') == $cat->id_categoria_asesoria ? 'selected' : '' }}>
-                            {{ $cat->nombre }}
-                        </option>
+                        <option value="{{ $cat->id_categoria_asesoria }}" {{ request('categoria_id') == $cat->id_categoria_asesoria ? 'selected' : '' }}>{{ $cat->nombre }}</option>
                     @endforeach
                 </select>
             </div>
-
-            <div class="col-6 col-md-2">
-                <label class="form-label small fw-semibold text-muted mb-1">Instructor</label>
-                <select name="instructor_id" class="form-select form-select-sm rounded-pill">
+            <div class="asesoria-filter-field">
+                <label class="form-label small fw-semibold mb-1">Estado</label>
+                <select name="estado" class="form-select">
                     <option value="">Todos</option>
-                    <option value="sin_asignar" {{ request('instructor_id') === 'sin_asignar' ? 'selected' : '' }}>-- Sin Asignar --</option>
-                    @foreach($instructores as $inst)
-                        <option value="{{ $inst->id }}" {{ request('instructor_id') == $inst->id ? 'selected' : '' }}>
-                            {{ $inst->full_name }}
-                        </option>
+                    @foreach(['Solicitada', 'Programada', 'Realizada', 'Cancelada', 'Rechazada'] as $estado)
+                        <option value="{{ $estado }}" {{ request('estado') === $estado ? 'selected' : '' }}>{{ $estado }}</option>
                     @endforeach
                 </select>
             </div>
-
-            <div class="col-6 col-md-2">
-                <label class="form-label small fw-semibold text-muted mb-1">Estado</label>
-                <select name="estado" class="form-select form-select-sm rounded-pill">
-                    <option value="">Todos</option>
-                    <option value="Solicitada" {{ request('estado') === 'Solicitada' ? 'selected' : '' }}>Solicitada</option>
-                    <option value="Programada" {{ request('estado') === 'Programada' ? 'selected' : '' }}>Programada</option>
-                    <option value="Realizada" {{ request('estado') === 'Realizada' ? 'selected' : '' }}>Realizada</option>
-                    <option value="Cancelada" {{ request('estado') === 'Cancelada' ? 'selected' : '' }}>Cancelada</option>
-                </select>
+            <div class="asesoria-filter-field">
+                <label class="form-label small fw-semibold mb-1">Fecha</label>
+                <input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}" class="form-control" title="Desde">
             </div>
-
-            <div class="col-6 col-md-2">
-                <label class="form-label small fw-semibold text-muted mb-1">Fecha</label>
-                <input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}" class="form-control form-control-sm rounded-pill mb-1" title="Desde">
-            </div>
-
-            <div class="col-12 col-md-1 d-flex gap-1">
-                <button type="submit" class="btn btn-ecp-primary btn-sm flex-fill rounded-pill" title="Aplicar filtros">
-                    <i class="fas fa-filter"></i>
-                </button>
-                <a href="{{ route('controlecp.administrador.asesorias.index') }}" class="btn btn-outline-secondary btn-sm flex-fill rounded-pill" title="Limpiar filtros">
-                    <i class="fas fa-rotate"></i>
-                </a>
+            <div class="asesoria-filter-actions">
+                <button type="submit" class="btn btn-filter" title="Buscar asesorías"><i class="fas fa-magnifying-glass me-1"></i>Buscar</button>
+                <a href="{{ route('controlecp.administrador.asesorias.index', ['vista' => 'solicitudes']) }}" class="btn btn-reset" title="Restablecer filtros" aria-label="Restablecer filtros"><i class="fas fa-rotate-left"></i></a>
             </div>
         </form>
     </div>
 
+    <div class="d-flex justify-content-start mb-4">
+        <div class="asesoria-view-toggle" role="group" aria-label="Cambiar vista de asesorías">
+            <button type="button" class="is-active" id="adminVistaCalendarioBtn" aria-pressed="true">
+                <i class="fas fa-calendar-days me-2"></i>Vista Calendario
+            </button>
+            <button type="button" id="adminVistaSolicitudesBtn" aria-pressed="false">
+                <i class="fas fa-list-ul me-2"></i>Vista Solicitudes
+            </button>
+        </div>
+    </div>
+
+    <section class="asesoria-calendar-card mb-4" id="adminVistaCalendario" aria-label="Calendario de solicitudes">
+        <div class="asesoria-calendar-toolbar">
+            <div class="asesoria-calendar-month-nav">
+                <button type="button" id="adminCalendarioAnterior" aria-label="Mes anterior"><i class="fas fa-chevron-left"></i></button>
+                <h2 class="asesoria-calendar-month text-capitalize mb-0" id="adminCalendarioMes"></h2>
+                <button type="button" id="adminCalendarioSiguiente" aria-label="Mes siguiente"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <button type="button" class="asesoria-calendar-today" id="adminCalendarioHoy"><i class="fas fa-calendar-day me-1"></i>Hoy</button>
+        </div>
+        <div class="asesoria-calendar-body">
+            <div class="asesoria-calendar-weekdays" aria-hidden="true">
+                @foreach(['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'] as $weekday)
+                    <div class="asesoria-calendar-weekday">{{ $weekday }}</div>
+                @endforeach
+            </div>
+            <div class="asesoria-calendar-grid" id="adminCalendarioGrid"></div>
+        </div>
+    </section>
+
+    <div class="modal fade asesoria-admin-modal" id="modalSolicitudesCalendario" tabindex="-1" aria-labelledby="modalSolicitudesCalendarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow" style="border-radius:16px; overflow:hidden;">
+                <div class="modal-header text-white" style="background-color:var(--petroleo); border-bottom:2px solid var(--verde);">
+                    <span class="rounded-circle d-flex align-items-center justify-content-center"><i class="fas fa-calendar-check" aria-hidden="true"></i></span>
+                    <div>
+                        <h2 class="modal-title fs-5 fw-bold mb-0" id="modalSolicitudesCalendarioLabel">Horario reservado</h2>
+                        <p class="asesoria-admin-modal-subtitle" id="modalSolicitudesCalendarioFecha"></p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="modalSolicitudesCalendarioContenido"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminVistaSolicitudes" class="d-none">
     <div class="ecp-card mb-4 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -400,7 +850,7 @@
                     <tr class="small text-uppercase" style="letter-spacing: 0.5px;">
                         <th class="ps-3 py-3">Aprendiz</th>
                         <th class="py-3">Categoría</th>
-                        <th class="py-3">Instructor</th>
+                        <th class="py-3">Motivo de solicitud</th>
                         <th class="py-3">Fecha y Hora</th>
                         <th class="py-3 text-center">Estado</th>
                         <th class="pe-3 py-3 text-end">Acciones</th>
@@ -414,9 +864,10 @@
                                 'Programada' => 'badge-estado-programada',
                                 'Realizada'  => 'badge-estado-realizada',
                                 'Cancelada'  => 'badge-estado-cancelada',
+                                'Rechazada' => 'badge-estado-rechazada',
                                 default      => 'badge-estado-sin-asignar',
                             };
-                            $sinAsignar = is_null($item->id_usuario_instructor) && $item->estado !== 'Cancelada';
+                            $sinAsignar = is_null($item->id_usuario_instructor) && !in_array($item->estado, ['Cancelada', 'Rechazada'], true);
                         @endphp
                         <tr>
 
@@ -442,19 +893,10 @@
                                 </span>
                             </td>
 
-                            <td>
-                                @if($item->instructor)
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="fas fa-chalkboard-user text-muted" style="font-size: 0.85rem;"></i>
-                                        <span class="small fw-medium" style="color: var(--petroleo);">
-                                            {{ $item->instructor->full_name }}
-                                        </span>
-                                    </div>
-                                @else
-                                    <span class="badge badge-estado-sin-asignar px-2 py-1 rounded-pill small">
-                                        <i class="fas fa-user-xmark me-1"></i> Sin asignar
-                                    </span>
-                                @endif
+                            <td class="small" style="min-width: 260px; max-width: 380px; white-space: normal; overflow-wrap: anywhere;">
+                                <span>
+                                    {{ $item->motivo ?: 'Sin motivo registrado' }}
+                                </span>
                             </td>
 
                             <td>
@@ -463,7 +905,7 @@
                                         <i class="fas fa-calendar-day me-1 text-muted"></i>{{ $item->fecha ? $item->fecha->format('d/m/Y') : '-' }}
                                     </span>
                                     <span class="text-muted" style="font-size: 0.72rem;">
-                                        <i class="fas fa-clock me-1 text-muted"></i>{{ substr($item->hora_inicio, 0, 5) }} - {{ substr($item->hora_fin, 0, 5) }}
+                                        <i class="fas fa-clock me-1 text-muted"></i>{{ $item->hora_inicio_formateada }} - {{ $item->hora_fin_formateada }}
                                     </span>
                                 </div>
                             </td>
@@ -475,70 +917,64 @@
                             </td>
 
                             <td class="pe-3 py-3 text-end">
-                                <div class="d-inline-flex align-items-center gap-1">
+                                <div class="asesoria-row-actions">
 
-                                    <button type="button" class="btn-action-icon" title="Ver detalle completo" onclick="verDetalle({{ $item->id_asesoria }})">
-                                        <i class="fas fa-eye text-primary"></i>
+                                    <button type="button" class="btn asesoria-row-action asesoria-row-action--view" title="Ver detalle completo" aria-label="Ver detalle completo" onclick="verDetalle({{ $item->id_asesoria }})">
+                                        <i class="fas fa-eye"></i>
                                     </button>
-
-                                    @if($item->estado !== 'Cancelada')
-                                        <button type="button" class="btn-action-icon" title="Editar asesoría" onclick="abrirEditar({{ $item->id_asesoria }}, {{ $item->id_usuario_aprendiz }}, {{ $item->id_categoria_asesoria }}, '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }}', '{{ substr($item->hora_fin, 0, 5) }}', {{ $item->id_usuario_instructor ?? 'null' }}, '{{ addslashes(preg_replace('/\r|\n/', ' ', $item->motivo)) }}')">
-                                            <i class="fas fa-edit text-warning"></i>
-                                        </button>
-                                    @endif
-
-                                    @if($item->estado === 'Solicitada')
-                                        <button type="button" class="btn-action-icon" title="Asignar y Programar" onclick="abrirProgramar({{ $item->id_asesoria }}, '{{ addslashes($item->aprendiz ? $item->aprendiz->full_name : '') }}', {{ $item->id_categoria_asesoria }}, '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }}', '{{ substr($item->hora_fin, 0, 5) }}', {{ $item->id_usuario_instructor ?? 'null' }}, '{{ addslashes($item->categoria ? $item->categoria->nombre : '') }}')">
-                                            <i class="fas fa-calendar-check" style="color: var(--verde);"></i>
+                                    @if($item->estado !== 'Rechazada')
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--rating" title="{{ $item->calificacion ? 'Ver calificación' : 'Calificación pendiente' }}" aria-label="{{ $item->calificacion ? 'Ver calificación' : 'Calificación pendiente' }}" data-bs-toggle="modal" data-bs-target="#calificacion{{ $item->id_asesoria }}">
+                                            <i class="fas fa-star" aria-hidden="true"></i>
                                         </button>
                                     @endif
 
                                     @if($item->estado === 'Programada')
-                                        <button type="button" class="btn-action-icon" title="Finalizar asesoría" onclick="abrirFinalizar({{ $item->id_asesoria }}, '{{ addslashes($item->aprendiz ? $item->aprendiz->full_name : '') }}', '{{ addslashes($item->categoria ? $item->categoria->nombre : '') }}', '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }} - {{ substr($item->hora_fin, 0, 5) }}', '{{ addslashes($item->instructor ? $item->instructor->full_name : 'Sin asignar') }}')">
-                                            <i class="fas fa-circle-check text-success"></i>
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--reschedule" title="Reprogramar asesoría" aria-label="Reprogramar asesoría" onclick="abrirReprogramar({{ $item->id_asesoria }}, '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }}', '{{ substr($item->hora_fin, 0, 5) }}')">
+                                            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+                                        </button>
+                                    @elseif(!in_array($item->estado, ['Cancelada', 'Rechazada'], true) && !($item->estado === 'Solicitada' && $item->id_usuario_instructor))
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--edit" title="Editar asesoría" aria-label="Editar asesoría" onclick="abrirEditar({{ $item->id_asesoria }}, {{ $item->id_usuario_aprendiz }}, {{ $item->id_categoria_asesoria }}, '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }}', '{{ substr($item->hora_fin, 0, 5) }}', {{ $item->id_usuario_instructor ?? 'null' }}, '{{ addslashes(preg_replace('/\r|\n/', ' ', $item->motivo)) }}')">
+                                            <i class="fas fa-edit" aria-hidden="true"></i>
                                         </button>
                                     @endif
 
-                                    <div class="dropdown d-inline-block asesoria-actions-dropdown">
-                                        <button class="btn-action-icon dropdown-toggle dropdown-toggle-split" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Más opciones">
-                                            <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                    @if($item->estado === 'Solicitada' && !$item->id_usuario_instructor)
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--reschedule" title="Asignar y programar" aria-label="Asignar y programar" onclick="abrirProgramar({{ $item->id_asesoria }}, '{{ addslashes($item->aprendiz ? $item->aprendiz->full_name : '') }}', {{ $item->id_categoria_asesoria }}, '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }}', '{{ substr($item->hora_fin, 0, 5) }}', {{ $item->id_usuario_instructor ?? 'null' }}, '{{ addslashes($item->categoria ? $item->categoria->nombre : '') }}')">
+                                            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 small" style="border-radius: 10px;">
-                                            @if($item->estado !== 'Cancelada' && $item->estado !== 'Realizada')
-                                                <li>
-                                                    <a class="dropdown-item py-2" href="javascript:void(0)" onclick="abrirFinalizar({{ $item->id_asesoria }}, '{{ addslashes($item->aprendiz ? $item->aprendiz->full_name : '') }}', '{{ addslashes($item->categoria ? $item->categoria->nombre : '') }}', '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }} - {{ substr($item->hora_fin, 0, 5) }}', '{{ addslashes($item->instructor ? $item->instructor->full_name : 'Sin asignar') }}')">
-                                                        <i class="fas fa-circle-check me-2 text-success"></i> Finalizar Asesoría
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item py-2" href="javascript:void(0)" onclick="abrirReprogramar({{ $item->id_asesoria }}, '{{ $item->fecha ? $item->fecha->format('Y-m-d') : '' }}', '{{ substr($item->hora_inicio, 0, 5) }}', '{{ substr($item->hora_fin, 0, 5) }}')">
-                                                        <i class="fas fa-calendar-days me-2 text-warning"></i> Reprogramar
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item py-2" href="javascript:void(0)" onclick="abrirCancelar({{ $item->id_asesoria }})">
-                                                        <i class="fas fa-ban me-2 text-danger"></i> Cancelar
-                                                    </a>
-                                                </li>
-                                            @endif
+                                    @endif
 
-                                            @if($item->estado === 'Programada' || $item->estado === 'Realizada')
-                                                <li>
-                                                    <a class="dropdown-item py-2" href="javascript:void(0)" onclick="abrirSeguimiento({{ $item->id_asesoria }})">
-                                                        <i class="fas fa-clipboard-check me-2" style="color: var(--verde);"></i> Registrar Seguimiento
-                                                    </a>
-                                                </li>
-                                            @endif
+                                    @if($item->estado === 'Solicitada' && (int) $item->id_usuario_instructor === (int) auth()->id())
+                                        <form method="POST" action="{{ route('controlecp.administrador.asesorias.solicitudes.aceptar', $item->id_asesoria) }}" class="d-inline" onsubmit="return confirm('¿Confirmas que deseas aceptar esta solicitud?');">
+                                            @csrf @method('PUT')
+                                            <button type="submit" class="btn asesoria-row-action asesoria-row-action--schedule" title="Aceptar solicitud" aria-label="Aceptar solicitud">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--cancel" title="Rechazar solicitud" aria-label="Rechazar solicitud"
+                                            data-bs-toggle="modal" data-bs-target="#modalRechazarSolicitudAdmin"
+                                            data-action="{{ route('controlecp.administrador.asesorias.solicitudes.rechazar', $item->id_asesoria) }}">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    @endif
 
-                                            @if($item->estado !== 'Cancelada')
-                                                <li>
-                                                    <a class="dropdown-item py-2" href="javascript:void(0)" onclick="abrirRecursos({{ $item->id_asesoria }})">
-                                                        <i class="fas fa-boxes-stacked me-2 text-info"></i> Vincular Recursos
-                                                    </a>
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </div>
+                                    @if($item->estado === 'Programada')
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--cancel" title="Cancelar asesoría" aria-label="Cancelar asesoría" onclick="abrirCancelar({{ $item->id_asesoria }})">
+                                            <i class="fas fa-ban" aria-hidden="true"></i>
+                                        </button>
+                                    @endif
+
+                                    @if($item->estado === 'Programada' || $item->estado === 'Realizada')
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--followup" title="Registrar seguimiento" aria-label="Registrar seguimiento" onclick="abrirSeguimiento({{ $item->id_asesoria }})">
+                                            <i class="fas fa-clipboard-check" aria-hidden="true"></i>
+                                        </button>
+                                    @endif
+
+                                    @if(in_array($item->estado, ['Programada', 'Realizada'], true))
+                                        <button type="button" class="btn asesoria-row-action asesoria-row-action--resources" title="Vincular recursos" aria-label="Vincular recursos" onclick="abrirRecursos({{ $item->id_asesoria }})">
+                                            <i class="fas fa-box" aria-hidden="true"></i>
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -548,10 +984,7 @@
                                 <div class="text-muted">
                                     <i class="fas fa-folder-open fa-3x mb-3 text-secondary opacity-50"></i>
                                     <h6 class="fw-bold text-secondary mb-1">No se encontraron asesorías</h6>
-                                    <p class="small mb-3">No hay registros con los criterios de búsqueda actuales o aún no has creado una solicitud.</p>
-                                    <button type="button" class="btn btn-ecp-primary btn-sm px-3" data-bs-toggle="modal" data-bs-target="#modalNuevaSolicitud">
-                                        <i class="fas fa-plus me-1"></i> Crear primera solicitud
-                                    </button>
+                                    <p class="small mb-0">No tienes solicitudes asignadas que coincidan con los filtros actuales.</p>
                                 </div>
                             </td>
                         </tr>
@@ -561,15 +994,118 @@
         </div>
 
         @if($asesorias->hasPages())
-            <div class="d-flex justify-content-center align-items-center p-3 border-top bg-light">
-                {{ $asesorias->links() }}
+            <div class="asesoria-pagination">
+                @if ($asesorias->hasPages())
+                    <nav aria-label="Paginación de asesorías">
+                        <ul class="pagination justify-content-center">
+                            @if ($asesorias->onFirstPage())
+                                <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                            @else
+                                <li class="page-item"><a class="page-link" href="{{ $asesorias->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                            @endif
+                            @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                            @for ($pagina = 1; $pagina <= $asesorias->lastPage(); $pagina++)
+                                @if ($pagina === 1 || $pagina === $asesorias->lastPage() || abs($pagina - $asesorias->currentPage()) <= 1)
+                                    @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                                    @endif
+                                    <li class="page-item {{ $pagina === $asesorias->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $asesorias->url($pagina) }}" @if($pagina === $asesorias->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                    </li>
+                                    @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                @endif
+                            @endfor
+                            @if ($asesorias->hasMorePages())
+                                <li class="page-item"><a class="page-link" href="{{ $asesorias->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                            @else
+                                <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                            @endif
+                        </ul>
+                    </nav>
+                @endif
             </div>
         @endif
     </div>
-
+    </div>
 </div>
 
-<div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
+@foreach($asesorias as $item)
+    @if($item->estado !== 'Rechazada')
+    <div class="modal fade asesoria-admin-modal asesoria-admin-rating-modal" id="calificacion{{ $item->id_asesoria }}" tabindex="-1" aria-labelledby="calificacionTitulo{{ $item->id_asesoria }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="rounded-circle d-flex align-items-center justify-content-center"><i class="fas fa-star" aria-hidden="true"></i></span>
+                    <div class="min-w-0">
+                        <h2 class="modal-title h5 fw-bold mb-0" id="calificacionTitulo{{ $item->id_asesoria }}">Calificación de la asesoría</h2>
+                        <p class="asesoria-admin-modal-subtitle">{{ $item->categoria?->nombre ?? 'Asesoría' }} · {{ $item->aprendiz?->full_name ?? 'Aprendiz' }}</p>
+                    </div>
+                    <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    @if($item->calificacion)
+                        <div class="card border rounded-3 bg-white p-3">
+                            <div class="asesoria-admin-rating-stars mb-2" role="img" aria-label="{{ $item->calificacion->estrellas }} de 5 estrellas">
+                                @for($estrella = 1; $estrella <= 5; $estrella++)
+                                    <i class="fas fa-star {{ $estrella <= $item->calificacion->estrellas ? '' : 'is-empty' }}" aria-hidden="true"></i>
+                                @endfor
+                            </div>
+                            <div class="fw-bold text-dark">{{ $item->calificacion->estrellas }} de 5 estrellas</div>
+                            <div class="small text-muted">Calificada por {{ $item->calificacion->aprendiz?->nickname ?? $item->aprendiz?->full_name ?? 'el aprendiz' }} · {{ $item->calificacion->created_at?->copy()->timezone('America/Bogota')->format('d/m/Y g:i a') ?? '—' }}</div>
+                            <hr>
+                            <h3 class="h6 fw-bold">Comentario</h3>
+                            <p class="mb-0 text-muted">{{ $item->calificacion->comentario ?: 'El aprendiz no agregó un comentario.' }}</p>
+                        </div>
+                    @else
+                        <div class="card border rounded-3 bg-white p-4 text-center">
+                            <div class="asesoria-admin-rating-stars justify-content-center mb-3" aria-hidden="true">
+                                @for($estrella = 1; $estrella <= 5; $estrella++)
+                                    <i class="fas fa-star is-empty"></i>
+                                @endfor
+                            </div>
+                            <h3 class="h6 fw-bold mb-1">Calificación pendiente</h3>
+                            <p class="text-muted mb-0">El aprendiz aún no ha calificado esta asesoría.</p>
+                        </div>
+                    @endif
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-secondary" type="button" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+@endforeach
+
+<div class="modal fade asesoria-admin-modal" id="modalRechazarSolicitudAdmin" tabindex="-1" aria-labelledby="modalRechazarSolicitudAdminLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius:16px; overflow:hidden;">
+            <form method="POST" action="" id="formRechazarSolicitudAdmin">
+                @csrf
+                @method('PUT')
+                <div class="modal-header text-white" style="background-color:var(--petroleo);">
+                    <span class="rounded-circle d-flex align-items-center justify-content-center"><i class="fas fa-ban" aria-hidden="true"></i></span>
+                    <h2 class="modal-title h5 fw-bold mb-0" id="modalRechazarSolicitudAdminLabel">Rechazar solicitud</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label fw-semibold" for="motivoRechazoAdmin">Motivo del rechazo</label>
+                    <textarea class="form-control" id="motivoRechazoAdmin" name="motivo" rows="4" minlength="5" maxlength="1000" required placeholder="Explica brevemente por qué rechazas la solicitud."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-3">Confirmar rechazo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade asesoria-admin-modal" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
@@ -578,14 +1114,16 @@
                         <i class="fas fa-info-circle text-white"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalDetalleLabel">
-                            Ficha de Asesoría #<span id="det-id">-</span>
-                        </h5>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalDetalleLabel">
+                                Ficha de Asesoría #<span id="det-id">-</span>
+                            </h5>
+                            <span id="det-badge-estado" class="badge rounded-pill px-3 py-1">-</span>
+                        </div>
                         <small class="text-white-50" style="font-size: 0.75rem;">Trazabilidad, seguimientos y recursos vinculados</small>
                     </div>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <span id="det-badge-estado" class="badge rounded-pill px-3 py-1">-</span>
+                <div class="d-flex align-items-center gap-2 ms-auto">
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
             </div>
@@ -644,12 +1182,12 @@
                         </div>
                     </div>
 
-                    <div class="card border-0 shadow-sm mb-3" style="border-radius: 14px; border: 1px solid var(--borde) !important;">
+                    <div class="card asesoria-detail-motive shadow-sm mb-3">
                         <div class="card-body p-3">
                             <h6 class="fw-bold mb-1" style="color: var(--petroleo); font-size: 0.9rem;">
                                 <i class="fas fa-align-left me-1" style="color: var(--verde);"></i> Motivo de la Solicitud
                             </h6>
-                            <p id="det-motivo" class="text-muted small mb-0 p-2 rounded bg-light" style="white-space: pre-line;">-</p>
+                            <p id="det-motivo" class="asesoria-detail-motive-text text-muted small mb-0" style="white-space: pre-line;">-</p>
                         </div>
                     </div>
 
@@ -663,39 +1201,28 @@
                         </div>
                     </div>
 
-                    <ul class="nav nav-pills nav-fill gap-2 mb-2 p-1 bg-white rounded-3 border" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active py-2 small fw-semibold" id="tab-seg" data-bs-toggle="pill" data-bs-target="#panel-seg" type="button" role="tab">
-                                <i class="fas fa-clipboard-check me-1"></i> Seguimientos (<span id="det-count-seguimientos">0</span>)
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link py-2 small fw-semibold" id="tab-hist" data-bs-toggle="pill" data-bs-target="#panel-hist" type="button" role="tab">
-                                <i class="fas fa-history me-1"></i> Historial (<span id="det-count-historial">0</span>)
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link py-2 small fw-semibold" id="tab-rec" data-bs-toggle="pill" data-bs-target="#panel-rec" type="button" role="tab">
-                                <i class="fas fa-boxes-stacked me-1"></i> Recursos (<span id="det-count-recursos">0</span>)
-                            </button>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="panel-seg" role="tabpanel">
-                            <div class="card border-0 shadow-sm p-3" style="border-radius: 14px;">
+                    <div class="card asesoria-detail-section shadow-sm mb-3" id="panel-seg">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold mb-1" style="color:var(--petroleo);font-size:.9rem;"><i class="fas fa-clipboard-check me-1" style="color:var(--verde);"></i>Seguimientos (<span id="det-count-seguimientos">0</span>)</h6>
+                            <div class="asesoria-detail-motive-text">
                                 <div id="det-lista-seguimientos" class="d-flex flex-column gap-2"></div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="tab-pane fade" id="panel-hist" role="tabpanel">
-                            <div class="card border-0 shadow-sm p-3" style="border-radius: 14px;">
+                    <div class="card asesoria-detail-section shadow-sm mb-3" id="panel-hist">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold mb-1" style="color:var(--petroleo);font-size:.9rem;"><i class="fas fa-history me-1" style="color:var(--verde);"></i>Historial (<span id="det-count-historial">0</span>)</h6>
+                            <div class="asesoria-detail-motive-text">
                                 <div id="det-lista-historial" class="d-flex flex-column gap-2"></div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="tab-pane fade" id="panel-rec" role="tabpanel">
-                            <div class="card border-0 shadow-sm p-3" style="border-radius: 14px;">
+                    <div class="card asesoria-detail-section shadow-sm" id="panel-rec">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold mb-1" style="color:var(--petroleo);font-size:.9rem;"><i class="fas fa-boxes-stacked me-1" style="color:var(--verde);"></i>Recursos (<span id="det-count-recursos">0</span>)</h6>
+                            <div class="asesoria-detail-motive-text">
                                 <div id="det-lista-recursos"></div>
                             </div>
                         </div>
@@ -717,142 +1244,19 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalNuevaSolicitud" tabindex="-1" aria-labelledby="modalNuevaSolicitudLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalEditarAsesoria" tabindex="-1" aria-labelledby="modalEditarAsesoriaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
                 <div class="d-flex align-items-center gap-2">
                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: rgba(57, 169, 0, 0.2);">
-                        <i class="fas fa-calendar-plus text-white"></i>
-                    </div>
-                    <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalNuevaSolicitudLabel">Nueva Solicitud de Asesoría</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Registra el requerimiento de acompañamiento del aprendiz</small>
-                    </div>
-                </div>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <form method="POST" action="{{ route('controlecp.administrador.asesorias.store') }}" id="formNuevaSolicitud">
-                @csrf
-                <div class="modal-body p-4" style="background-color: #f8fafc;">
-                    @if($errors->any() && session('modal_abrir') === 'modalNuevaSolicitud')
-                        <div class="alert alert-danger alert-dismissible fade show rounded-3 small p-3 mb-3 border-0 shadow-sm" role="alert">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <strong>Corrige los siguientes errores:</strong>
-                            </div>
-                            <ul class="mb-0 ps-3">
-                                @foreach($errors->all() as $err)
-                                    <li>{{ $err }}</li>
-                                @endforeach
-                            </ul>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                        </div>
-                    @endif
-
-                    <div class="row g-3">
-
-                        <div class="col-12 col-md-6">
-                            <label for="sol_aprendiz" class="form-label small fw-semibold text-muted mb-1">
-                                <i class="fas fa-user-graduate me-1" style="color: var(--verde);"></i> Aprendiz <span class="text-danger">*</span>
-                            </label>
-                            <select name="id_usuario_aprendiz" id="sol_aprendiz" class="form-select form-select-sm rounded-pill" required>
-                                <option value="">-- Selecciona el aprendiz --</option>
-                                @foreach($aprendices as $ap)
-                                    <option value="{{ $ap->id }}" {{ old('id_usuario_aprendiz') == $ap->id ? 'selected' : '' }}>
-                                        {{ $ap->full_name }} ({{ $ap->email }})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="sol_categoria" class="form-label small fw-semibold text-muted mb-1">
-                                <i class="fas fa-tag me-1" style="color: var(--verde);"></i> Categoría Temática <span class="text-danger">*</span>
-                            </label>
-                            <select name="id_categoria_asesoria" id="sol_categoria" class="form-select form-select-sm rounded-pill" required onchange="consultarInstructoresDisponibles('sol')">
-                                <option value="">-- Selecciona la categoría --</option>
-                                @foreach($categorias->where('estado', 'Activa') as $cat)
-                                    <option value="{{ $cat->id_categoria_asesoria }}" {{ old('id_categoria_asesoria') == $cat->id_categoria_asesoria ? 'selected' : '' }}>
-                                        {{ $cat->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-4">
-                            <label for="sol_fecha" class="form-label small fw-semibold text-muted mb-1">
-                                <i class="fas fa-calendar-day me-1" style="color: var(--verde);"></i> Fecha <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" name="fecha" id="sol_fecha" value="{{ old('fecha', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('sol')">
-                        </div>
-
-                        <div class="col-6 col-md-4">
-                            <label for="sol_hora_inicio" class="form-label small fw-semibold text-muted mb-1">
-                                <i class="fas fa-clock me-1" style="color: var(--verde);"></i> Hora Inicio <span class="text-danger">*</span>
-                            </label>
-                            <input type="time" name="hora_inicio" id="sol_hora_inicio" value="{{ old('hora_inicio', '08:00') }}" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('sol')">
-                        </div>
-
-                        <div class="col-6 col-md-4">
-                            <label for="sol_hora_fin" class="form-label small fw-semibold text-muted mb-1">
-                                <i class="fas fa-clock me-1" style="color: var(--verde);"></i> Hora Fin <span class="text-danger">*</span>
-                            </label>
-                            <input type="time" name="hora_fin" id="sol_hora_fin" value="{{ old('hora_fin', '09:00') }}" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('sol')">
-                        </div>
-
-                        <div class="col-12">
-                            <div class="p-3 border rounded-3 bg-white shadow-sm">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <label for="sol_instructor" class="form-label small fw-semibold mb-0" style="color: var(--petroleo);">
-                                        <i class="fas fa-chalkboard-user me-1" style="color: #0284c7;"></i> Instructor Disponible (Opcional)
-                                    </label>
-                                    <span id="sol_badge_disponibles" class="badge rounded-pill bg-light text-muted border small">
-                                        Selecciona categoría y horario
-                                    </span>
-                                </div>
-                                <select name="id_usuario_instructor" id="sol_instructor" class="form-select form-select-sm rounded-pill">
-                                    <option value="">-- Dejar sin asignar (Solicitada) --</option>
-                                </select>
-                                <div id="sol_alerta_disponibilidad" class="small mt-2" style="display: none;"></div>
-                            </div>
-                        </div>
-
-                        <div class="col-12">
-                            <label for="sol_motivo" class="form-label small fw-semibold text-muted mb-1">
-                                <i class="fas fa-align-left me-1" style="color: var(--verde);"></i> Motivo de la Solicitud <span class="text-danger">*</span>
-                            </label>
-                            <textarea name="motivo" id="sol_motivo" rows="3" class="form-control form-control-sm rounded-3" placeholder="Describe la necesidad o temática a tratar..." required minlength="5">{{ old('motivo') }}</textarea>
-                            <small class="text-muted" style="font-size: 0.72rem;">Mínimo 5 caracteres.</small>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="modal-footer bg-white border-top-0 px-4 py-3 gap-2">
-                    <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-ecp-primary px-4 shadow-sm">
-                        <i class="fas fa-save me-1"></i> Guardar Solicitud
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="modalEditarAsesoria" tabindex="-1" aria-labelledby="modalEditarAsesoriaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
-            <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: rgba(57, 169, 0, 0.2);">
-                        <i class="fas fa-edit text-white"></i>
+                        <i class="fas fa-pen-to-square"></i>
                     </div>
                     <div>
                         <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalEditarAsesoriaLabel">
                             Editar Asesoría #<span id="edit_asesoria_numero">-</span>
                         </h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Modifica los datos del requerimiento o reasigna instructor</small>
+                        <small class="text-white-50" style="font-size: 0.82rem;">Modifica los datos del requerimiento o reasigna instructor</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -883,10 +1287,10 @@
                     <div class="row g-3">
 
                         <div class="col-12 col-md-6">
-                            <label for="edit_aprendiz" class="form-label small fw-semibold text-muted mb-1">
+                            <label for="edit_aprendiz" class="form-label fw-semibold text-dark mb-1">
                                 <i class="fas fa-user-graduate me-1" style="color: var(--verde);"></i> Aprendiz <span class="text-danger">*</span>
                             </label>
-                            <select name="id_usuario_aprendiz" id="edit_aprendiz" class="form-select form-select-sm rounded-pill" required>
+                            <select name="id_usuario_aprendiz" id="edit_aprendiz" class="form-select" required>
                                 <option value="">-- Selecciona el aprendiz --</option>
                                 @foreach($aprendices as $ap)
                                     <option value="{{ $ap->id }}" {{ old('id_usuario_aprendiz') == $ap->id ? 'selected' : '' }}>
@@ -897,10 +1301,10 @@
                         </div>
 
                         <div class="col-12 col-md-6">
-                            <label for="edit_categoria" class="form-label small fw-semibold text-muted mb-1">
+                            <label for="edit_categoria" class="form-label fw-semibold text-dark mb-1">
                                 <i class="fas fa-tag me-1" style="color: var(--verde);"></i> Categoría Temática <span class="text-danger">*</span>
                             </label>
-                            <select name="id_categoria_asesoria" id="edit_categoria" class="form-select form-select-sm rounded-pill" required onchange="consultarInstructoresDisponibles('edit')">
+                            <select name="id_categoria_asesoria" id="edit_categoria" class="form-select" required onchange="consultarInstructoresDisponibles('edit')">
                                 <option value="">-- Selecciona la categoría --</option>
                                 @foreach($categorias->where('estado', 'Activa') as $cat)
                                     <option value="{{ $cat->id_categoria_asesoria }}" {{ old('id_categoria_asesoria') == $cat->id_categoria_asesoria ? 'selected' : '' }}>
@@ -911,37 +1315,37 @@
                         </div>
 
                         <div class="col-12 col-md-4">
-                            <label for="edit_fecha" class="form-label small fw-semibold text-muted mb-1">
+                            <label for="edit_fecha" class="form-label fw-semibold text-dark mb-1">
                                 <i class="fas fa-calendar-day me-1" style="color: var(--verde);"></i> Fecha <span class="text-danger">*</span>
                             </label>
-                            <input type="date" name="fecha" id="edit_fecha" value="{{ old('fecha') }}" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('edit')">
+                            <input type="date" name="fecha" id="edit_fecha" value="{{ old('fecha') }}" class="form-control" required onchange="consultarInstructoresDisponibles('edit')">
                         </div>
 
                         <div class="col-6 col-md-4">
-                            <label for="edit_hora_inicio" class="form-label small fw-semibold text-muted mb-1">
+                            <label for="edit_hora_inicio" class="form-label fw-semibold text-dark mb-1">
                                 <i class="fas fa-clock me-1" style="color: var(--verde);"></i> Hora Inicio <span class="text-danger">*</span>
                             </label>
-                            <input type="time" name="hora_inicio" id="edit_hora_inicio" value="{{ old('hora_inicio') }}" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('edit')">
+                            <input type="time" name="hora_inicio" id="edit_hora_inicio" value="{{ old('hora_inicio') }}" class="form-control" min="08:00" max="14:59" step="60" required onchange="consultarInstructoresDisponibles('edit')">
                         </div>
 
                         <div class="col-6 col-md-4">
-                            <label for="edit_hora_fin" class="form-label small fw-semibold text-muted mb-1">
+                            <label for="edit_hora_fin" class="form-label fw-semibold text-dark mb-1">
                                 <i class="fas fa-clock me-1" style="color: var(--verde);"></i> Hora Fin <span class="text-danger">*</span>
                             </label>
-                            <input type="time" name="hora_fin" id="edit_hora_fin" value="{{ old('hora_fin') }}" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('edit')">
+                            <input type="time" name="hora_fin" id="edit_hora_fin" value="{{ old('hora_fin') }}" class="form-control" min="08:00" max="15:00" step="60" required onchange="consultarInstructoresDisponibles('edit')">
                         </div>
 
                         <div class="col-12">
                             <div class="p-3 border rounded-3 bg-white shadow-sm">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <label for="edit_instructor" class="form-label small fw-semibold mb-0" style="color: var(--petroleo);">
+                                    <label for="edit_instructor" class="form-label fw-semibold mb-0" style="color: var(--petroleo);">
                                         <i class="fas fa-chalkboard-user me-1" style="color: #0284c7;"></i> Instructor Disponible (Opcional)
                                     </label>
                                     <span id="edit_badge_disponibles" class="badge rounded-pill bg-light text-muted border small">
                                         Selecciona categoría y horario
                                     </span>
                                 </div>
-                                <select name="id_usuario_instructor" id="edit_instructor" class="form-select form-select-sm rounded-pill">
+                                <select name="id_usuario_instructor" id="edit_instructor" class="form-select">
                                     <option value="">-- Dejar sin asignar (Solicitada) --</option>
                                 </select>
                                 <div id="edit_alerta_disponibilidad" class="small mt-2" style="display: none;"></div>
@@ -949,10 +1353,10 @@
                         </div>
 
                         <div class="col-12">
-                            <label for="edit_motivo" class="form-label small fw-semibold text-muted mb-1">
+                            <label for="edit_motivo" class="form-label fw-semibold text-dark mb-1">
                                 <i class="fas fa-align-left me-1" style="color: var(--verde);"></i> Motivo de la Solicitud <span class="text-danger">*</span>
                             </label>
-                            <textarea name="motivo" id="edit_motivo" rows="3" class="form-control form-control-sm rounded-3" placeholder="Describe la necesidad o temática a tratar..." required minlength="5">{{ old('motivo') }}</textarea>
+                            <textarea name="motivo" id="edit_motivo" rows="3" class="form-control" placeholder="Describe la necesidad o temática a tratar..." required minlength="5">{{ old('motivo') }}</textarea>
                             <small class="text-muted" style="font-size: 0.72rem;">Mínimo 5 caracteres.</small>
                         </div>
                     </div>
@@ -969,17 +1373,17 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalProgramar" tabindex="-1" aria-labelledby="modalProgramarLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalProgramar" tabindex="-1" aria-labelledby="modalProgramarLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
                 <div class="d-flex align-items-center gap-2">
                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: rgba(57, 169, 0, 0.2);">
-                        <i class="fas fa-calendar-check text-white"></i>
+                        <i class="fas fa-calendar-alt"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalProgramarLabel">Asignar y Programar Asesoría</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Asigna un instructor libre y reserva la franja horaria</small>
+                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalProgramarLabel">Programar asesoría</h5>
+                        <small class="text-white-50" style="font-size: 0.82rem;">Selecciona la nueva fecha y el horario de atención.</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1015,28 +1419,28 @@
                     </div>
 
                     <div class="row g-2 mb-3">
-                        <div class="col-12 col-md-4">
-                            <label for="prog_fecha" class="form-label small fw-semibold text-muted mb-1">Fecha</label>
-                            <input type="date" name="fecha" id="prog_fecha" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('prog')">
+                        <div class="col-12">
+                            <label for="prog_fecha" class="form-label fw-semibold text-dark mb-1">Nueva fecha <span class="text-danger">*</span></label>
+                            <input type="date" name="fecha" id="prog_fecha" class="form-control" required onchange="consultarInstructoresDisponibles('prog')">
                         </div>
-                        <div class="col-6 col-md-4">
-                            <label for="prog_hora_inicio" class="form-label small fw-semibold text-muted mb-1">Hora Inicio</label>
-                            <input type="time" name="hora_inicio" id="prog_hora_inicio" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('prog')">
+                        <div class="col-6">
+                            <label for="prog_hora_inicio" class="form-label fw-semibold text-dark mb-1">Desde <span class="text-danger">*</span></label>
+                            <input type="time" name="hora_inicio" id="prog_hora_inicio" class="form-control" min="08:00" max="14:59" step="60" required onchange="consultarInstructoresDisponibles('prog')">
                         </div>
-                        <div class="col-6 col-md-4">
-                            <label for="prog_hora_fin" class="form-label small fw-semibold text-muted mb-1">Hora Fin</label>
-                            <input type="time" name="hora_fin" id="prog_hora_fin" class="form-control form-control-sm rounded-pill" required onchange="consultarInstructoresDisponibles('prog')">
+                        <div class="col-6">
+                            <label for="prog_hora_fin" class="form-label fw-semibold text-dark mb-1">Hasta <span class="text-danger">*</span></label>
+                            <input type="time" name="hora_fin" id="prog_hora_fin" class="form-control" min="08:00" max="15:00" step="60" required onchange="consultarInstructoresDisponibles('prog')">
                         </div>
                     </div>
 
                     <div class="mb-2">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <label for="prog_instructor" class="form-label small fw-semibold text-muted mb-0">
-                                Instructor Disponible <span class="text-danger">*</span>
+                            <label for="prog_instructor" class="form-label fw-semibold text-dark mb-0">
+                                Instructor disponible <span class="text-danger">*</span>
                             </label>
                             <span id="prog_badge_disponibles" class="badge rounded-pill bg-light text-muted border small">Consultando...</span>
                         </div>
-                        <select name="id_usuario_instructor" id="prog_instructor" class="form-select form-select-sm rounded-pill" required>
+                        <select name="id_usuario_instructor" id="prog_instructor" class="form-select" required>
                             <option value="">-- Selecciona el instructor --</option>
                         </select>
                         <div id="prog_alerta_disponibilidad" class="small mt-2" style="display: none;"></div>
@@ -1046,7 +1450,7 @@
                 <div class="modal-footer bg-white border-top-0 px-4 py-3 gap-2">
                     <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-ecp-primary px-4 shadow-sm">
-                        <i class="fas fa-check-circle me-1"></i> Confirmar y Programar
+                        <i class="fas fa-calendar-check me-1"></i> Confirmar y programar
                     </button>
                 </div>
             </form>
@@ -1054,7 +1458,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalCategorias" tabindex="-1" aria-labelledby="modalCategoriasLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalCategorias" tabindex="-1" aria-labelledby="modalCategoriasLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
@@ -1064,7 +1468,7 @@
                     </div>
                     <div>
                         <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalCategoriasLabel">Categorías de Asesoría</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Creación de áreas temáticas y asignación de instructores</small>
+                        <small class="text-white-50" style="font-size: 0.75rem;">Gestiona tus áreas de especialidad para asesorías</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1093,28 +1497,11 @@
                             <i class="fas fa-plus-circle me-1" style="color: var(--verde);"></i> Nueva Categoría Temática
                         </h6>
                         <div class="row g-3">
-                            <div class="col-12 col-md-6">
+                            <div class="col-12">
                                 <label for="cat_nombre" class="form-label small fw-semibold text-muted mb-1">
                                     Nombre de la Categoría <span class="text-danger">*</span>
                                 </label>
                                 <input type="text" name="nombre" id="cat_nombre" class="form-control form-control-sm rounded-pill" placeholder="Ej: Paz y Convivencia, Liderazgo..." required>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label small fw-semibold text-muted mb-1">
-                                    Instructores Asignados a esta Área
-                                </label>
-                                <div class="p-2 border rounded-3 bg-light overflow-auto" style="max-height: 120px;">
-                                    @forelse($instructores as $inst)
-                                        <div class="form-check form-check-sm mb-1">
-                                            <input class="form-check-input" type="checkbox" name="instructores[]" value="{{ $inst->id }}" id="cat_inst_{{ $inst->id }}">
-                                            <label class="form-check-label small" for="cat_inst_{{ $inst->id }}">
-                                                {{ $inst->full_name }} ({{ $inst->email }})
-                                            </label>
-                                        </div>
-                                    @empty
-                                        <span class="text-muted small">No hay instructores disponibles.</span>
-                                    @endforelse
-                                </div>
                             </div>
                             <div class="col-12 text-end">
                                 <button type="submit" class="btn btn-ecp-primary btn-sm px-4 shadow-sm">
@@ -1125,39 +1512,6 @@
                     </div>
                 </form>
 
-                <div id="cat_contenedor_edicion" class="card border-0 shadow-sm p-3 rounded-3 bg-white mb-3" style="display: none; border-left: 4px solid var(--verde) !important;">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="fw-bold mb-0" style="color: var(--petroleo);"><i class="fas fa-edit me-1 text-primary"></i> Editar Categoría</h6>
-                        <button type="button" class="btn-close btn-sm" onclick="cancelarEdicionCategoria()"></button>
-                    </div>
-
-                    <form method="POST" id="formEditarCategoria" action="">
-                        @csrf
-                        @method('PUT')
-                        <div class="row g-2">
-                            <div class="col-12 col-md-6">
-                                <label class="form-label small fw-semibold text-muted mb-1">Nombre de la Categoría <span class="text-danger">*</span></label>
-                                <input type="text" name="nombre" id="edit_cat_nombre" class="form-control form-control-sm rounded-pill" required>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <label class="form-label small fw-semibold text-muted mb-1">Instructores Asignados</label>
-                                <div class="p-2 border rounded-3 bg-light overflow-auto" style="max-height: 110px;">
-                                    @foreach($instructores as $inst)
-                                        <div class="form-check form-check-sm mb-1">
-                                            <input class="form-check-input edit-cat-inst" type="checkbox" name="instructores[]" value="{{ $inst->id }}" id="edit_cat_inst_{{ $inst->id }}">
-                                            <label class="form-check-label small" for="edit_cat_inst_{{ $inst->id }}">{{ $inst->full_name }}</label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                            <div class="col-12 text-end">
-                                <button type="button" class="btn btn-ecp-outline btn-sm px-3 me-1" onclick="cancelarEdicionCategoria()">Cancelar</button>
-                                <button type="submit" class="btn btn-ecp-primary btn-sm px-4 shadow-sm">Guardar Cambios</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
                 <h6 class="fw-bold mb-2 font-outfit" style="color: var(--petroleo);">
                     <i class="fas fa-list me-1" style="color: #0284c7;"></i> Categorías Registradas ({{ $categorias->count() }})
                 </h6>
@@ -1166,7 +1520,6 @@
                         <thead class="table-light small">
                             <tr>
                                 <th class="ps-3 py-2">Categoría</th>
-                                <th class="py-2">Instructores Vinculados</th>
                                 <th class="py-2 text-center">Estado</th>
                                 <th class="pe-3 py-2 text-end">Acciones</th>
                             </tr>
@@ -1177,25 +1530,22 @@
                                     <td class="ps-3 py-2 fw-semibold" style="color: var(--petroleo);">
                                         <i class="fas fa-tag me-1 text-muted"></i>{{ $c->nombre }}
                                     </td>
-                                    <td class="py-2">
-                                        <span class="badge bg-light text-dark border">{{ $c->instructores_count }} instructor(es)</span>
-                                    </td>
                                     <td class="py-2 text-center">
                                         <span class="badge {{ $c->estado === 'Activa' ? 'badge-estado-realizada' : 'badge-estado-cancelada' }} rounded-pill" style="font-size: 0.7rem;">
                                             {{ $c->estado }}
                                         </span>
                                     </td>
                                     <td class="pe-3 py-2 text-end">
-                                        <div class="d-inline-flex align-items-center gap-1">
-                                            <button type="button" class="btn-action-icon" title="Editar categoría" onclick="editarCategoria({{ $c->id_categoria_asesoria }}, '{{ addslashes($c->nombre) }}', {{ json_encode($c->instructores->pluck('id')) }})">
-                                                <i class="fas fa-edit text-primary"></i>
+                                        <div class="asesoria-category-actions">
+                                            <button type="button" class="btn asesoria-row-action asesoria-row-action--edit" title="Editar categoría" aria-label="Editar categoría" onclick="editarCategoria({{ $c->id_categoria_asesoria }}, '{{ addslashes($c->nombre) }}')">
+                                                <i class="fas fa-edit"></i>
                                             </button>
 
                                             <form method="POST" action="{{ route('controlecp.administrador.asesorias.categorias.estado', $c->id_categoria_asesoria) }}" class="d-inline">
                                                 @csrf
                                                 @method('PUT')
-                                                <button type="submit" class="btn-action-icon" title="{{ $c->estado === 'Activa' ? 'Desactivar categoría' : 'Activar categoría' }}">
-                                                    <i class="fas {{ $c->estado === 'Activa' ? 'fa-toggle-on text-success' : 'fa-toggle-off text-muted' }}"></i>
+                                                <button type="submit" class="btn asesoria-row-action {{ $c->estado === 'Activa' ? 'asesoria-row-action--category-disable' : 'asesoria-row-action--category-enable' }}" title="{{ $c->estado === 'Activa' ? 'Desactivar categoría' : 'Activar categoría' }}" aria-label="{{ $c->estado === 'Activa' ? 'Desactivar categoría' : 'Activar categoría' }}">
+                                                    <i class="fas {{ $c->estado === 'Activa' ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
                                                 </button>
                                             </form>
                                         </div>
@@ -1203,7 +1553,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-3 text-muted">No hay categorías registradas aún.</td>
+                                    <td colspan="3" class="text-center py-3 text-muted">No hay categorías registradas aún.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -1218,7 +1568,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalDisponibilidad" tabindex="-1" aria-labelledby="modalDisponibilidadLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalDisponibilidad" tabindex="-1" aria-labelledby="modalDisponibilidadLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
@@ -1227,8 +1577,8 @@
                         <i class="fas fa-clock text-white"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalDisponibilidadLabel">Disponibilidad de Instructores</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Define franjas horarias semanales por año y trimestre</small>
+                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalDisponibilidadLabel">Mi disponibilidad</h5>
+                        <small class="text-white-50" style="font-size: 0.75rem;">Define tus días y horarios disponibles para asesorías</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1250,23 +1600,35 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('controlecp.administrador.asesorias.disponibilidad.guardar') }}" id="formGuardarDisponibilidad" class="mb-4">
+                <form method="POST" action="{{ route('controlecp.administrador.asesorias.mi-disponibilidad.categoria') }}" class="mb-4">
                     @csrf
+                    <div class="card border-0 shadow-sm p-3 rounded-3 bg-white">
+                        <label for="disp_categoria" class="form-label fw-bold mb-3" style="color:var(--petroleo)">
+                            <i class="fas fa-tags me-1" style="color:var(--verde);"></i> Selecciona categoría <span class="text-danger">*</span>
+                        </label>
+                        <select name="id_categoria_asesoria" id="disp_categoria" class="form-select form-select-sm rounded-pill" required>
+                            <option value="">Selecciona una categoría</option>
+                            @foreach($categoriasDisponibilidad as $categoria)
+                                <option value="{{ $categoria->id_categoria_asesoria }}" @selected(old('id_categoria_asesoria', $categoriaDisponibilidadSeleccionada) == $categoria->id_categoria_asesoria)>{{ $categoria->nombre }}</option>
+                            @endforeach
+                        </select>
+                        <div class="d-flex flex-wrap align-items-center justify-content-end gap-2 mt-2">
+                            <button type="submit" class="btn btn-ecp-primary btn-sm px-4 shadow-sm">
+                                <i class="fas fa-save me-1"></i> Guardar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <form method="POST" action="{{ route('controlecp.administrador.asesorias.mi-disponibilidad.guardar') }}" id="formGuardarDisponibilidad" class="mb-4">
+                    @csrf
+                    <input type="hidden" name="anio" value="{{ date('Y') }}">
+                    <input type="hidden" name="trimestre" value="{{ (int) ceil(date('n') / 3) }}">
                     <div class="card border-0 shadow-sm p-3 rounded-3 bg-white">
                         <h6 class="fw-bold mb-3" style="color: var(--petroleo);">
                             <i class="fas fa-calendar-plus me-1" style="color: var(--verde);"></i> Agregar Franja Horaria
                         </h6>
                         <div class="row g-2">
-
-                            <div class="col-12 col-md-6">
-                                <label for="disp_usuario" class="form-label small fw-semibold text-muted mb-1">Instructor <span class="text-danger">*</span></label>
-                                <select name="id_usuario" id="disp_usuario" class="form-select form-select-sm rounded-pill" required onchange="cargarDisponibilidadesInstructor(this.value)">
-                                    <option value="">-- Selecciona el instructor --</option>
-                                    @foreach($instructores as $inst)
-                                        <option value="{{ $inst->id }}">{{ $inst->full_name }} ({{ $inst->email }})</option>
-                                    @endforeach
-                                </select>
-                            </div>
 
                             <div class="col-12 col-md-6">
                                 <label for="disp_dia" class="form-label small fw-semibold text-muted mb-1">Día de la Semana <span class="text-danger">*</span></label>
@@ -1276,33 +1638,19 @@
                                     <option value="3">Miércoles</option>
                                     <option value="4">Jueves</option>
                                     <option value="5">Viernes</option>
-                                    <option value="6">Sábado</option>
-                                    <option value="7">Domingo</option>
-                                </select>
-                            </div>
-
-                            <div class="col-6 col-md-3">
-                                <label for="disp_anio" class="form-label small fw-semibold text-muted mb-1">Año <span class="text-danger">*</span></label>
-                                <input type="number" name="anio" id="disp_anio" value="{{ date('Y') }}" class="form-control form-control-sm rounded-pill" required min="2024" max="2035">
-                            </div>
-                            <div class="col-6 col-md-3">
-                                <label for="disp_trimestre" class="form-label small fw-semibold text-muted mb-1">Trimestre <span class="text-danger">*</span></label>
-                                <select name="trimestre" id="disp_trimestre" class="form-select form-select-sm rounded-pill" required>
-                                    @php $trimActual = ceil(date('n') / 3); @endphp
-                                    <option value="1" {{ $trimActual == 1 ? 'selected' : '' }}>T1 (Ene - Mar)</option>
-                                    <option value="2" {{ $trimActual == 2 ? 'selected' : '' }}>T2 (Abr - Jun)</option>
-                                    <option value="3" {{ $trimActual == 3 ? 'selected' : '' }}>T3 (Jul - Sep)</option>
-                                    <option value="4" {{ $trimActual == 4 ? 'selected' : '' }}>T4 (Oct - Dic)</option>
                                 </select>
                             </div>
 
                             <div class="col-6 col-md-3">
                                 <label for="disp_hora_inicio" class="form-label small fw-semibold text-muted mb-1">Hora Inicio <span class="text-danger">*</span></label>
-                                <input type="time" name="hora_inicio" id="disp_hora_inicio" value="08:00" class="form-control form-control-sm rounded-pill" required>
+                                <input type="time" name="hora_inicio" id="disp_hora_inicio" value="08:00" min="08:00" max="14:59" step="60" class="form-control form-control-sm rounded-pill" required>
                             </div>
                             <div class="col-6 col-md-3">
                                 <label for="disp_hora_fin" class="form-label small fw-semibold text-muted mb-1">Hora Fin <span class="text-danger">*</span></label>
-                                <input type="time" name="hora_fin" id="disp_hora_fin" value="12:00" class="form-control form-control-sm rounded-pill" required>
+                                <input type="time" name="hora_fin" id="disp_hora_fin" value="15:00" min="08:00" max="15:00" step="60" class="form-control form-control-sm rounded-pill" required>
+                            </div>
+                            <div class="col-12">
+                                <small class="text-muted">Las franjas deben estar entre las 8:00 a. m. y las 3:00 p. m.</small>
                             </div>
 
                             <div class="col-12 text-end mt-2">
@@ -1315,10 +1663,10 @@
                 </form>
 
                 <h6 class="fw-bold mb-2 font-outfit" style="color: var(--petroleo);">
-                    <i class="fas fa-calendar-check me-1" style="color: #0284c7;"></i> Franjas Registradas para el Instructor
+                    <i class="fas fa-calendar-check me-1" style="color: #0284c7;"></i> Mis franjas registradas
                 </h6>
                 <div id="disp_lista_franjas" class="p-3 border rounded-3 bg-white shadow-sm">
-                    <p class="text-muted small text-center my-2">Selecciona un instructor para ver sus franjas.</p>
+                    <p class="text-muted small text-center my-2">Consultando tus franjas...</p>
                 </div>
             </div>
 
@@ -1329,17 +1677,89 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalReprogramar" tabindex="-1" aria-labelledby="modalReprogramarLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalEditarDisponibilidad" tabindex="-1" aria-labelledby="modalEditarDisponibilidadLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
+                <h5 class="modal-title fw-bold font-outfit" id="modalEditarDisponibilidadLabel">
+                    <i class="fas fa-clock me-2"></i>Editar horario disponible
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="POST" id="formEditarDisponibilidad" action="">
+                @csrf
+                @method('PUT')
+                <div class="modal-body p-4" style="background-color: #f8fafc;">
+                    @if($errors->any() && session('modal_abrir') === 'modalEditarDisponibilidad')
+                        <div class="alert alert-danger small rounded-3">
+                            @foreach($errors->all() as $err)
+                                <div>{{ $err }}</div>
+                            @endforeach
+                        </div>
+                    @endif
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="edit_disp_hora_inicio" class="form-label small fw-semibold text-muted">Hora Inicio</label>
+                            <input type="time" name="hora_inicio" id="edit_disp_hora_inicio" min="08:00" max="14:59" step="60" class="form-control rounded-pill" value="{{ old('hora_inicio') }}" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="edit_disp_hora_fin" class="form-label small fw-semibold text-muted">Hora Fin</label>
+                            <input type="time" name="hora_fin" id="edit_disp_hora_fin" min="08:00" max="15:00" step="60" class="form-control rounded-pill" value="{{ old('hora_fin') }}" required>
+                        </div>
+                    </div>
+                    <small class="text-muted d-block mt-2">El horario debe estar entre las 8:00 a. m. y las 3:00 p. m.</small>
+                </div>
+                <div class="modal-footer bg-white border-top-0 px-4 py-3">
+                    <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-ecp-primary px-4 shadow-sm">
+                        <i class="fas fa-save me-1"></i>Guardar Horario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade asesoria-admin-modal" id="modalEditarCategoria" tabindex="-1" aria-labelledby="modalEditarCategoriaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
+                <h5 class="modal-title fw-bold font-outfit" id="modalEditarCategoriaLabel">
+                    <i class="fas fa-edit me-2"></i>Editar Categoría
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="POST" id="formEditarCategoria" action="">
+                @csrf
+                @method('PUT')
+                <div class="modal-body p-4" style="background-color: #f8fafc;">
+                    <label for="edit_cat_nombre" class="form-label small fw-semibold text-muted mb-1">
+                        Nombre de la Categoría <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" name="nombre" id="edit_cat_nombre" class="form-control form-control-sm rounded-pill" required maxlength="100">
+                </div>
+                <div class="modal-footer bg-white border-top-0 px-4 py-3">
+                    <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-ecp-primary px-4 shadow-sm">
+                        <i class="fas fa-save me-1"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade asesoria-admin-modal" id="modalReprogramar" tabindex="-1" aria-labelledby="modalReprogramarLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
                 <div class="d-flex align-items-center gap-2">
                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: rgba(57, 169, 0, 0.2);">
-                        <i class="fas fa-calendar-days text-white"></i>
+                        <i class="fas fa-calendar-alt"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalReprogramarLabel">Reprogramar Asesoría</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Modifica la fecha y horario conservando la trazabilidad</small>
+                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalReprogramarLabel">Reprogramar asesoría</h5>
+                        <small class="text-white-50" style="font-size: 0.82rem;">Selecciona la nueva fecha y el horario de atención.</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1365,23 +1785,23 @@
                     @endif
 
                     <div class="row g-2 mb-3">
-                        <div class="col-12 col-md-4">
-                            <label for="reprog_fecha" class="form-label small fw-semibold text-muted mb-1">Nueva Fecha <span class="text-danger">*</span></label>
-                            <input type="date" name="fecha" id="reprog_fecha" class="form-control form-control-sm rounded-pill" required min="{{ date('Y-m-d') }}">
+                        <div class="col-12">
+                            <label for="reprog_fecha" class="form-label fw-semibold text-dark mb-1">Nueva fecha <span class="text-danger">*</span></label>
+                            <input type="date" name="fecha" id="reprog_fecha" class="form-control" required min="{{ date('Y-m-d') }}">
                         </div>
-                        <div class="col-6 col-md-4">
-                            <label for="reprog_hora_inicio" class="form-label small fw-semibold text-muted mb-1">Hora Inicio <span class="text-danger">*</span></label>
-                            <input type="time" name="hora_inicio" id="reprog_hora_inicio" class="form-control form-control-sm rounded-pill" required>
+                        <div class="col-6">
+                            <label for="reprog_hora_inicio" class="form-label fw-semibold text-dark mb-1">Desde <span class="text-danger">*</span></label>
+                            <input type="time" name="hora_inicio" id="reprog_hora_inicio" class="form-control" min="08:00" max="14:59" step="60" required>
                         </div>
-                        <div class="col-6 col-md-4">
-                            <label for="reprog_hora_fin" class="form-label small fw-semibold text-muted mb-1">Hora Fin <span class="text-danger">*</span></label>
-                            <input type="time" name="hora_fin" id="reprog_hora_fin" class="form-control form-control-sm rounded-pill" required>
+                        <div class="col-6">
+                            <label for="reprog_hora_fin" class="form-label fw-semibold text-dark mb-1">Hasta <span class="text-danger">*</span></label>
+                            <input type="time" name="hora_fin" id="reprog_hora_fin" class="form-control" min="08:00" max="15:00" step="60" required>
                         </div>
                     </div>
 
                     <div class="mb-2">
-                        <label for="reprog_motivo" class="form-label small fw-semibold text-muted mb-1">Motivo de Reprogramación <span class="text-danger">*</span></label>
-                        <textarea name="motivo" id="reprog_motivo" rows="3" class="form-control form-control-sm rounded-3" placeholder="Explica la causa del cambio de fecha/horario..." required minlength="5"></textarea>
+                        <label for="reprog_motivo" class="form-label fw-semibold text-dark mb-1">Motivo <span class="text-danger">*</span></label>
+                        <textarea name="motivo" id="reprog_motivo" rows="3" class="form-control" placeholder="Indica por qué necesitas reprogramar..." required minlength="5"></textarea>
                         <small class="text-muted" style="font-size:0.72rem;">Quedará guardado en el historial de trazabilidad.</small>
                     </div>
                 </div>
@@ -1389,7 +1809,7 @@
                 <div class="modal-footer bg-white border-top-0 px-4 py-3 gap-2">
                     <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-ecp-primary px-4 shadow-sm">
-                        <i class="fas fa-calendar-check me-1"></i> Guardar Reprogramación
+                        <i class="fas fa-calendar-check me-1"></i> Guardar cambio
                     </button>
                 </div>
             </form>
@@ -1397,17 +1817,17 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalCancelar" tabindex="-1" aria-labelledby="modalCancelarLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalCancelar" tabindex="-1" aria-labelledby="modalCancelarLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
-            <div class="modal-header text-white" style="background-color: #b91c1c; border-bottom: 2px solid #ef4444;">
+            <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
                 <div class="d-flex align-items-center gap-2">
                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: rgba(255, 255, 255, 0.2);">
-                        <i class="fas fa-ban text-white"></i>
+                        <i class="fas fa-ban"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalCancelarLabel">Cancelar Asesoría</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Anulación formal del encuentro de acompañamiento</small>
+                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalCancelarLabel">Cancelar asesoría</h5>
+                        <small class="text-white-50" style="font-size: 0.82rem;">Se notificará al aprendiz y se liberará la franja.</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1432,21 +1852,16 @@
                         </div>
                     @endif
 
-                    <div class="alert alert-warning border-0 shadow-sm small p-3 mb-3 rounded-3">
-                        <i class="fas fa-triangle-exclamation me-1"></i>
-                        Esta acción anulará el encuentro y liberará el horario del instructor. El motivo quedará registrado con tu usuario.
-                    </div>
-
                     <div class="mb-2">
-                        <label for="canc_motivo" class="form-label small fw-semibold text-muted mb-1">Motivo de Cancelación <span class="text-danger">*</span></label>
-                        <textarea name="motivo" id="canc_motivo" rows="3" class="form-control form-control-sm rounded-3" placeholder="Indica la razón detallada de la cancelación..." required minlength="5"></textarea>
+                        <label for="canc_motivo" class="form-label fw-semibold text-dark mb-1">Motivo <span class="text-danger">*</span></label>
+                        <textarea name="motivo" id="canc_motivo" rows="3" class="form-control" placeholder="Explica el motivo de la cancelación..." required minlength="5"></textarea>
                     </div>
                 </div>
 
                 <div class="modal-footer bg-white border-top-0 px-4 py-3 gap-2">
                     <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Volver</button>
                     <button type="submit" class="btn btn-danger px-4 shadow-sm">
-                        <i class="fas fa-ban me-1"></i> Confirmar Cancelación
+                        <i class="fas fa-ban me-1"></i> Confirmar cancelación
                     </button>
                 </div>
             </form>
@@ -1454,7 +1869,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalFinalizar" tabindex="-1" aria-labelledby="modalFinalizarLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalFinalizar" tabindex="-1" aria-labelledby="modalFinalizarLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: #15803d; border-bottom: 2px solid #22c55e;">
@@ -1544,17 +1959,17 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalSeguimiento" tabindex="-1" aria-labelledby="modalSeguimientoLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalSeguimiento" tabindex="-1" aria-labelledby="modalSeguimientoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
                 <div class="d-flex align-items-center gap-2">
                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: rgba(57, 169, 0, 0.2);">
-                        <i class="fas fa-clipboard-check text-white"></i>
+                        <i class="fas fa-clipboard-check"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalSeguimientoLabel">Registrar Seguimiento</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Consigna los avances y compromisos (pasa a Realizada)</small>
+                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalSeguimientoLabel">Registrar seguimiento</h5>
+                        <small class="text-white-50" style="font-size: 0.82rem;">Registra avances y compromisos para finalizar la asesoría.</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1579,25 +1994,25 @@
                     @endif
 
                     <div class="mb-3">
-                        <label for="seg_avances" class="form-label small fw-semibold text-muted mb-1">Avances del Aprendiz <span class="text-danger">*</span></label>
-                        <textarea name="avances" id="seg_avances" rows="3" class="form-control form-control-sm rounded-3" placeholder="Describe los logros, temas revisados y competencias trabajadas..." required minlength="5"></textarea>
+                        <label for="seg_avances" class="form-label fw-semibold text-dark mb-1">Avances <span class="text-danger">*</span></label>
+                        <textarea name="avances" id="seg_avances" rows="3" class="form-control" placeholder="Describe los avances alcanzados..." required minlength="5"></textarea>
                     </div>
 
                     <div class="mb-3">
-                        <label for="seg_compromisos" class="form-label small fw-semibold text-muted mb-1">Compromisos y Tareas <span class="text-danger">*</span></label>
-                        <textarea name="compromisos" id="seg_compromisos" rows="3" class="form-control form-control-sm rounded-3" placeholder="Puntos acordados para la siguiente sesión o entrega..." required minlength="5"></textarea>
+                        <label for="seg_compromisos" class="form-label fw-semibold text-dark mb-1">Compromisos <span class="text-danger">*</span></label>
+                        <textarea name="compromisos" id="seg_compromisos" rows="3" class="form-control" placeholder="Escribe los compromisos acordados..." required minlength="5"></textarea>
                     </div>
 
                     <div class="mb-2">
-                        <label for="seg_observaciones" class="form-label small fw-semibold text-muted mb-1">Observaciones Adicionales (Opcional)</label>
-                        <textarea name="observaciones" id="seg_observaciones" rows="2" class="form-control form-control-sm rounded-3" placeholder="Comentarios generales o recomendaciones..."></textarea>
+                        <label for="seg_observaciones" class="form-label fw-semibold text-dark mb-1">Observaciones</label>
+                        <textarea name="observaciones" id="seg_observaciones" rows="2" class="form-control" placeholder="Observaciones adicionales (opcional)"></textarea>
                     </div>
                 </div>
 
                 <div class="modal-footer bg-white border-top-0 px-4 py-3 gap-2">
                     <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-ecp-primary px-4 shadow-sm">
-                        <i class="fas fa-save me-1"></i> Guardar Seguimiento
+                        <i class="fas fa-check me-1"></i> Guardar y finalizar
                     </button>
                 </div>
             </form>
@@ -1605,7 +2020,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalCorregirSeguimiento" tabindex="-1" aria-labelledby="modalCorregirSeguimientoLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalCorregirSeguimiento" tabindex="-1" aria-labelledby="modalCorregirSeguimientoLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid #eab308;">
@@ -1677,17 +2092,17 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalRecursos" tabindex="-1" aria-labelledby="modalRecursosLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalRecursos" tabindex="-1" aria-labelledby="modalRecursosLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
                 <div class="d-flex align-items-center gap-2">
                     <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background-color: rgba(57, 169, 0, 0.2);">
-                        <i class="fas fa-boxes-stacked text-white"></i>
+                        <i class="fas fa-box"></i>
                     </div>
                     <div>
-                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalRecursosLabel">Vincular Recurso de Inventario</h5>
-                        <small class="text-white-50" style="font-size: 0.75rem;">Asigna materiales y descuenta el stock en tiempo real</small>
+                        <h5 class="modal-title fw-bold mb-0 font-outfit" id="modalRecursosLabel">Agregar recurso</h5>
+                        <small class="text-white-50" style="font-size: 0.82rem;">Asigna un recurso utilizado durante la asesoría.</small>
                     </div>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -1712,9 +2127,9 @@
                     @endif
 
                     <div class="mb-3">
-                        <label for="rec_inventario" class="form-label small fw-semibold text-muted mb-1">Elemento del Inventario <span class="text-danger">*</span></label>
-                        <select name="id_inventario" id="rec_inventario" class="form-select form-select-sm rounded-pill" required>
-                            <option value="">-- Selecciona el recurso --</option>
+                        <label for="rec_inventario" class="form-label fw-semibold text-dark mb-1">Recurso disponible <span class="text-danger">*</span></label>
+                        <select name="id_inventario" id="rec_inventario" class="form-select" required>
+                            <option value="">Selecciona un recurso</option>
                             @foreach($inventarios as $inv)
                                 <option value="{{ $inv->id }}">
                                     {{ $inv->element ? $inv->element->name : 'Elemento #'.$inv->id }} (Código: {{ $inv->inventory_code ?? 'S/C' }} | Stock: {{ $inv->stock }})
@@ -1724,8 +2139,8 @@
                     </div>
 
                     <div class="mb-2">
-                        <label for="rec_cantidad" class="form-label small fw-semibold text-muted mb-1">Cantidad a Utilizar <span class="text-danger">*</span></label>
-                        <input type="number" name="cantidad" id="rec_cantidad" value="1" min="1" class="form-control form-control-sm rounded-pill" required>
+                        <label for="rec_cantidad" class="form-label fw-semibold text-dark mb-1">Cantidad <span class="text-danger">*</span></label>
+                        <input type="number" name="cantidad" id="rec_cantidad" value="1" min="1" class="form-control" required>
                         <small class="text-muted" style="font-size: 0.72rem;">Se descontará automáticamente del stock de inventario.</small>
                     </div>
                 </div>
@@ -1733,7 +2148,7 @@
                 <div class="modal-footer bg-white border-top-0 px-4 py-3 gap-2">
                     <button type="button" class="btn btn-ecp-outline px-4" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-ecp-primary px-4 shadow-sm">
-                        <i class="fas fa-boxes-stacked me-1"></i> Asignar y Descontar Stock
+                        <i class="fas fa-box me-1"></i> Agregar recurso
                     </button>
                 </div>
             </form>
@@ -1741,7 +2156,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalReporte" tabindex="-1" aria-labelledby="modalReporteLabel" aria-hidden="true">
+<div class="modal fade asesoria-admin-modal" id="modalReporte" tabindex="-1" aria-labelledby="modalReporteLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content border-0 shadow" style="border-radius: 16px; overflow: hidden;">
             <div class="modal-header text-white" style="background-color: var(--petroleo); border-bottom: 2px solid var(--verde);">
@@ -1840,6 +2255,151 @@
 @push('scripts')
 
 <script>
+    (() => {
+        const modalDisponibilidad = document.getElementById('modalDisponibilidad');
+        if (modalDisponibilidad) {
+            modalDisponibilidad.addEventListener('show.bs.modal', () => cargarDisponibilidadesInstructor({{ auth()->id() }}));
+        }
+
+        const calendarSection = document.getElementById('adminVistaCalendario');
+        const requestsSection = document.getElementById('adminVistaSolicitudes');
+        const calendarButton = document.getElementById('adminVistaCalendarioBtn');
+        const requestsButton = document.getElementById('adminVistaSolicitudesBtn');
+        const monthLabel = document.getElementById('adminCalendarioMes');
+        const calendarGrid = document.getElementById('adminCalendarioGrid');
+        const calendarRequestsModal = document.getElementById('modalSolicitudesCalendario');
+        const calendarRequestsContent = document.getElementById('modalSolicitudesCalendarioContenido');
+        const calendarRequestsDate = document.getElementById('modalSolicitudesCalendarioFecha');
+        const appointments = @json($calendarioAsesorias);
+        const dateKey = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        const todayKey = dateKey(new Date());
+        let currentMonth = new Date();
+        currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+        let selectedDate = todayKey;
+
+        const dayAppointments = date => appointments.filter(appointment => appointment.fecha === date);
+        const formatTime = time => {
+            const [hour, minute] = time.split(':').map(Number);
+            return `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour < 12 ? 'am' : 'pm'}`;
+        };
+        const openCalendarRequests = (items, date) => {
+            const calendarDate = new Date(`${date}T00:00:00`);
+            calendarRequestsDate.textContent = new Intl.DateTimeFormat('es-CO', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(calendarDate);
+            calendarRequestsContent.replaceChildren();
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'asesoria-admin-calendar-item';
+                const row = document.createElement('div');
+                row.className = 'd-flex align-items-start justify-content-between gap-3';
+                const description = document.createElement('div');
+                const heading = document.createElement('div');
+                heading.className = 'asesoria-admin-calendar-time';
+                heading.textContent = `${formatTime(item.inicio)} – ${formatTime(item.fin)}`;
+                const reservedFor = document.createElement('div');
+                reservedFor.className = 'mt-1';
+                reservedFor.append('Reservado con ');
+                const learner = document.createElement('strong');
+                learner.textContent = item.aprendiz;
+                reservedFor.append(learner);
+                const meta = document.createElement('div');
+                meta.className = 'small text-muted mt-1';
+                meta.textContent = `${item.categoria} · ${item.estado}`;
+                description.append(heading, reservedFor, meta);
+                const detailButton = document.createElement('button');
+                detailButton.type = 'button';
+                detailButton.className = 'btn btn-sm btn-outline-primary rounded-pill text-nowrap';
+                detailButton.textContent = 'Ver detalle';
+                detailButton.addEventListener('click', () => {
+                    const modal = bootstrap.Modal.getOrCreateInstance(calendarRequestsModal);
+                    calendarRequestsModal.addEventListener('hidden.bs.modal', () => verDetalle(item.id, true), {once:true});
+                    modal.hide();
+                });
+                row.append(description, detailButton);
+                card.append(row);
+                calendarRequestsContent.append(card);
+            });
+            bootstrap.Modal.getOrCreateInstance(calendarRequestsModal).show();
+        };
+
+        const renderCalendar = () => {
+            const first = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+            const monthName = new Intl.DateTimeFormat('es-CO', {month:'long', year:'numeric'});
+            monthLabel.textContent = monthName.format(first);
+            calendarGrid.replaceChildren();
+            const gridStart = new Date(first);
+            gridStart.setDate(first.getDate() - ((first.getDay() + 6) % 7));
+            for (let index = 0; index < 42; index++) {
+                const date = new Date(gridStart);
+                date.setDate(gridStart.getDate() + index);
+                const key = dateKey(date);
+                const items = dayAppointments(key);
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'asesoria-calendar-day';
+                if (date.getMonth() !== currentMonth.getMonth()) button.classList.add('is-outside');
+                if (items.length) button.classList.add('has-events');
+                if (items.length && items.every(item => item.estado === 'Realizada')) button.classList.add('is-done');
+                if (key === selectedDate) button.classList.add('is-selected');
+                if (key === todayKey) button.classList.add('is-today');
+                const dateNumber = document.createElement('span');
+                dateNumber.className = 'asesoria-calendar-day-number';
+                dateNumber.textContent = String(date.getDate());
+                const dayHeading = document.createElement('div');
+                dayHeading.className = 'asesoria-calendar-day-heading';
+                dayHeading.append(dateNumber);
+                if (items.length) {
+                    const count = document.createElement('span');
+                    count.className = 'asesoria-calendar-day-count';
+                    count.textContent = `${items.length} ${items.length === 1 ? 'asesoría' : 'asesorías'}`;
+                    dayHeading.append(count);
+                }
+                button.append(dayHeading);
+                button.setAttribute('aria-label', `${date.toLocaleDateString('es-CO', {day:'numeric', month:'long', year:'numeric'})}${items.length ? `, ${items.length} ${items.length === 1 ? 'asesoría' : 'asesorías'}` : ''}`);
+                button.addEventListener('click', () => {
+                    selectedDate = key;
+                    if (date.getMonth() !== currentMonth.getMonth() || date.getFullYear() !== currentMonth.getFullYear()) {
+                        currentMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+                    }
+                    renderCalendar();
+                    if (items.length) openCalendarRequests(items, key);
+                });
+                calendarGrid.append(button);
+            }
+        };
+
+        const setView = showCalendar => {
+            calendarSection.classList.toggle('d-none', !showCalendar);
+            requestsSection.classList.toggle('d-none', showCalendar);
+            calendarButton.classList.toggle('is-active', showCalendar);
+            requestsButton.classList.toggle('is-active', !showCalendar);
+            calendarButton.setAttribute('aria-pressed', String(showCalendar));
+            requestsButton.setAttribute('aria-pressed', String(!showCalendar));
+        };
+        calendarButton.addEventListener('click', () => setView(true));
+        requestsButton.addEventListener('click', () => setView(false));
+        document.getElementById('adminCalendarioAnterior').addEventListener('click', () => {
+            currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
+            selectedDate = dateKey(currentMonth);
+            renderCalendar();
+        });
+        document.getElementById('adminCalendarioSiguiente').addEventListener('click', () => {
+            currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+            selectedDate = dateKey(currentMonth);
+            renderCalendar();
+        });
+        document.getElementById('adminCalendarioHoy').addEventListener('click', () => {
+            currentMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+            selectedDate = todayKey;
+            renderCalendar();
+        });
+        renderCalendar();
+        setView(@json(request('vista') !== 'solicitudes'));
+    })();
+
     // Muestra toast dinámico flotante
     function mostrarToast(mensaje, tipo = 'info') {
         const toastEl = document.getElementById('toastDinamico');
@@ -1872,7 +2432,7 @@
     }
 
     // Consulta y muestra el detalle de una asesoría en el modal
-    function verDetalle(id) {
+    function verDetalle(id, desdeCalendario = false) {
         const modalEl = document.getElementById('modalDetalle');
         const bsModal = new bootstrap.Modal(modalEl);
 
@@ -1902,11 +2462,10 @@
             document.getElementById('det-instructor-nombre').innerText = a.instructor.nombre;
             document.getElementById('det-instructor-email').innerText = a.instructor.email || '';
             document.getElementById('det-categoria').innerText = a.categoria;
-            document.getElementById('det-fecha-hora').innerText = `${a.fecha_formateada || '-'} | ${a.hora_inicio} - ${a.hora_fin}`;
+            document.getElementById('det-fecha-hora').innerText = `${a.fecha_formateada || '-'} | ${a.horario_formateado}`;
             document.getElementById('det-fecha-solicitud').innerText = a.fecha_solicitud || '-';
             document.getElementById('det-motivo').innerText = a.motivo || 'Sin motivo especificado.';
 
-            // Estado y badge
             const badgeEl = document.getElementById('det-badge-estado');
             badgeEl.innerText = a.estado;
             badgeEl.className = 'badge rounded-pill px-3 py-1 ';
@@ -1914,6 +2473,7 @@
             else if (a.estado === 'Programada') badgeEl.className += 'badge-estado-programada';
             else if (a.estado === 'Realizada') badgeEl.className += 'badge-estado-realizada';
             else if (a.estado === 'Cancelada') badgeEl.className += 'badge-estado-cancelada';
+            else if (a.estado === 'Rechazada') badgeEl.className += 'badge-estado-rechazada';
             else badgeEl.className += 'badge-estado-sin-asignar';
 
             // Cancelación
@@ -1925,12 +2485,11 @@
 
             // Seguimientos
             document.getElementById('det-count-seguimientos').innerText = a.seguimientos.length;
+            document.getElementById('panel-seg').style.display = a.seguimientos.length ? '' : 'none';
             const listaSeg = document.getElementById('det-lista-seguimientos');
             listaSeg.innerHTML = '';
             window._currentSeguimientos = {};
-            if (a.seguimientos.length === 0) {
-                listaSeg.innerHTML = '<p class="text-muted small text-center my-3">No hay seguimientos registrados para esta asesoría.</p>';
-            } else {
+            if (a.seguimientos.length > 0) {
                 a.seguimientos.forEach(s => {
                     window._currentSeguimientos[s.id_seguimiento] = s;
                     listaSeg.innerHTML += `
@@ -1956,19 +2515,14 @@
 
             // Historial
             document.getElementById('det-count-historial').innerText = a.historial.length;
+            document.getElementById('panel-hist').style.display = a.historial.length ? '' : 'none';
             const listaHist = document.getElementById('det-lista-historial');
             listaHist.innerHTML = '';
-            if (a.historial.length === 0) {
-                listaHist.innerHTML = '<p class="text-muted small text-center my-3">Sin reprogramaciones ni cancelaciones previas.</p>';
-            } else {
+            if (a.historial.length > 0) {
                 a.historial.forEach(h => {
-                    const badgeAccion = h.accion === 'Reprogramo' ? 'bg-primary' : 'bg-danger';
                     listaHist.innerHTML += `
                         <div class="p-3 border rounded-3 bg-white mb-2 shadow-sm">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="badge ${badgeAccion} rounded-pill small">${h.accion}</span>
-                                <small class="text-muted">${h.fecha || ''}</small>
-                            </div>
+                            <div class="text-end mb-1"><small class="text-muted">${h.fecha || ''}</small></div>
                             <p class="small mb-1"><strong>Motivo:</strong> ${h.motivo}</p>
                             ${h.fecha_anterior ? `<small class="text-muted d-block">Anterior: ${h.fecha_anterior} (${h.hora_anterior}) &rarr; Nueva: ${h.fecha_nueva} (${h.hora_nueva})</small>` : ''}
                             <small class="text-muted">Por: ${h.usuario}</small>
@@ -1979,11 +2533,10 @@
 
             // Recursos
             document.getElementById('det-count-recursos').innerText = a.recursos.length;
+            document.getElementById('panel-rec').style.display = a.recursos.length ? '' : 'none';
             const listaRec = document.getElementById('det-lista-recursos');
             listaRec.innerHTML = '';
-            if (a.recursos.length === 0) {
-                listaRec.innerHTML = '<p class="text-muted small text-center my-3">No se han asociado recursos de inventario.</p>';
-            } else {
+            if (a.recursos.length > 0) {
                 let htmlRec = `
                     <table class="table table-sm table-bordered small mb-0">
                         <thead class="table-light"><tr><th>Recurso de Inventario</th><th class="text-center" style="width: 100px;">Cantidad</th></tr></thead>
@@ -1999,7 +2552,7 @@
             // Botón finalizar desde el detalle
             const btnFin = document.getElementById('det-btn-finalizar');
             if (btnFin) {
-                if (a.estado === 'Programada' || (a.estado !== 'Cancelada' && a.estado !== 'Realizada')) {
+                if (!desdeCalendario && a.estado === 'Programada') {
                     btnFin.style.display = 'inline-block';
                     window._currentDetalleAsesoria = a;
                 } else {
@@ -2165,7 +2718,7 @@
         const cont = document.getElementById('disp_lista_franjas');
         if (!cont) return;
         if (!usuarioId) {
-            cont.innerHTML = '<p class="text-muted small text-center my-2">Selecciona un instructor para ver sus franjas.</p>';
+            cont.innerHTML = '<p class="text-muted small text-center my-2">No se pudo identificar al administrador.</p>';
             return;
         }
         cont.innerHTML = '<div class="text-center py-2"><span class="spinner-border spinner-border-sm text-success"></span> Consultando franjas...</div>';
@@ -2176,12 +2729,13 @@
         .then(r => r.json())
         .then(data => {
             if (!data.success || data.disponibilidades.length === 0) {
-                cont.innerHTML = '<p class="text-muted small text-center my-2">Este instructor aún no tiene franjas de disponibilidad registradas.</p>';
+                cont.innerHTML = '<p class="text-muted small text-center my-2">Aún no tienes franjas de disponibilidad registradas.</p>';
                 return;
             }
-            let html = '<div class="table-responsive"><table class="table table-sm table-bordered small mb-0 align-middle"><thead class="table-light"><tr><th>Año</th><th>Trim.</th><th>Día</th><th>Horario</th><th>Estado</th></tr></thead><tbody>';
+            let html = '<div class="table-responsive"><table class="table table-sm table-bordered small mb-0 align-middle"><thead class="table-light"><tr><th>Día</th><th>Horario</th><th>Categoría</th><th>Estado</th></tr></thead><tbody>';
             data.disponibilidades.forEach(d => {
-                html += `<tr><td>${d.anio}</td><td>${d.trimestre}</td><td>${d.dia_nombre}</td><td>${d.hora_inicio} - ${d.hora_fin}</td><td><span class="badge ${d.habilitada ? 'badge-estado-realizada' : 'badge-estado-cancelada'} rounded-pill" style="font-size:0.7rem;">${d.habilitada ? 'Activa' : 'Inactiva'}</span></td></tr>`;
+                const categoria = String(d.categoria || 'Sin categoría').replace(/[&<>"']/g, caracter => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[caracter]));
+                html += `<tr><td>${d.dia_nombre}</td><td>${d.hora_inicio} - ${d.hora_fin}</td><td>${categoria}</td><td><div class="d-flex align-items-center justify-content-between gap-2"><span class="badge ${d.habilitada ? 'badge-estado-realizada' : 'badge-estado-cancelada'} rounded-pill" style="font-size:0.7rem;">${d.habilitada ? 'Activa' : 'Inactiva'}</span><div class="d-flex gap-1"><button type="button" class="btn btn-sm btn-outline-primary py-0 px-2" title="Editar franja" aria-label="Editar franja del ${d.dia_nombre}" onclick="editarDisponibilidad(${d.id}, '${d.hora_inicio_raw}', '${d.hora_fin_raw}')"><i class="fas fa-edit"></i></button><button type="button" class="btn btn-sm ${d.habilitada ? 'btn-outline-danger' : 'btn-outline-success'} py-0 px-2" title="${d.habilitada ? 'Desactivar franja' : 'Activar franja'}" aria-label="${d.habilitada ? 'Desactivar' : 'Activar'} franja del ${d.dia_nombre}" onclick="cambiarEstadoDisponibilidad(${d.id}, ${d.habilitada ? 0 : 1})"><i class="fas ${d.habilitada ? 'fa-ban' : 'fa-check'}"></i></button></div></div></td></tr>`;
             });
             html += '</tbody></table></div>';
             cont.innerHTML = html;
@@ -2189,6 +2743,26 @@
         .catch(() => {
             cont.innerHTML = '<p class="text-danger small text-center my-2">No se pudieron consultar las franjas.</p>';
         });
+    }
+
+    function editarDisponibilidad(id, horaInicio, horaFin) {
+        const form = document.getElementById('formEditarDisponibilidad');
+        form.action = `{{ url('control-ecp/administrador/asesorias/mi-disponibilidad') }}/${id}`;
+        document.getElementById('edit_disp_hora_inicio').value = horaInicio;
+        document.getElementById('edit_disp_hora_fin').value = horaFin;
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEditarDisponibilidad')).show();
+    }
+
+    function cambiarEstadoDisponibilidad(id, habilitada) {
+        const accion = habilitada ? 'activar' : 'desactivar';
+        if (!window.confirm(`¿Seguro que deseas ${accion} esta franja?`)) return;
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `{{ url('control-ecp/administrador/asesorias/disponibilidad') }}/${id}/estado`;
+        form.innerHTML = `<input type="hidden" name="_token" value="{{ csrf_token() }}"><input type="hidden" name="_method" value="PUT"><input type="hidden" name="habilitada" value="${habilitada}">`;
+        document.body.appendChild(form);
+        form.submit();
     }
 
     // Reabrir modales automáticamente en caso de error de validación
@@ -2222,6 +2796,15 @@
                 } else if (modalId === 'modalRecursos' && targetId) {
                     const formRec = document.getElementById('formRecursos');
                     if (formRec) formRec.action = `{{ url('control-ecp/administrador/asesorias') }}/${targetId}/recursos`;
+                } else if (modalId === 'modalEditarDisponibilidad' && targetId) {
+                    const formDisp = document.getElementById('formEditarDisponibilidad');
+                    if (formDisp) formDisp.action = `{{ url('control-ecp/administrador/asesorias/mi-disponibilidad') }}/${targetId}`;
+                    const modalDisponibilidad = document.getElementById('modalDisponibilidad');
+                    modalDisponibilidad.addEventListener('shown.bs.modal', () => {
+                        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                    }, { once: true });
+                    bootstrap.Modal.getOrCreateInstance(modalDisponibilidad).show();
+                    return;
                 }
                 const bsModal = new bootstrap.Modal(modalEl);
                 bsModal.show();
@@ -2340,25 +2923,20 @@
         new bootstrap.Modal(document.getElementById('modalRecursos')).show();
     }
 
-    // Edición de categorías en línea dentro del modal de categorías
-    function editarCategoria(id, nombre, instructoresIds) {
-        const cont = document.getElementById('cat_contenedor_edicion');
-        if (!cont) return;
-        cont.style.display = 'block';
+    // Abre el modal para editar la categoría seleccionada.
+    function editarCategoria(id, nombre) {
         const form = document.getElementById('formEditarCategoria');
         form.action = `{{ url('control-ecp/administrador/asesorias/categorias') }}/${id}`;
         document.getElementById('edit_cat_nombre').value = nombre;
-        document.querySelectorAll('.edit-cat-inst').forEach(chk => {
-            chk.checked = instructoresIds && instructoresIds.includes(parseInt(chk.value));
-        });
-        cont.scrollIntoView({ behavior: 'smooth' });
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('modalEditarCategoria')).show();
     }
 
-    // Cancelar la edición de categoría
-    function cancelarEdicionCategoria() {
-        const cont = document.getElementById('cat_contenedor_edicion');
-        if (cont) cont.style.display = 'none';
-    }
+    document.getElementById('modalRechazarSolicitudAdmin')?.addEventListener('show.bs.modal', event => {
+        const trigger = event.relatedTarget;
+        const form = document.getElementById('formRechazarSolicitudAdmin');
+        form.action = trigger.dataset.action;
+        form.querySelector('textarea[name="motivo"]').value = '';
+    });
 </script>
 @endpush
 @endsection

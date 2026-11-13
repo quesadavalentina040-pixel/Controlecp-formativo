@@ -27,6 +27,27 @@
         height: 100px;
         object-fit: cover;
     }
+    .photo-delete-action {
+        display: inline-flex;
+        width: 28px;
+        height: 28px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 1px solid #f7cccc;
+        border-radius: 8px;
+        background: #fff0f0;
+        color: #d63939;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .photo-delete-action:hover,
+    .photo-delete-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
 </style>
 @endpush
 
@@ -227,8 +248,8 @@
                                         <form action="{{ route('controlecp.administrador.inventario.foto.eliminar', $foto->id_recurso_foto) }}" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar esta fotografía?')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger p-0 px-1 border-0" title="Eliminar foto">
-                                                <i class="fas fa-trash-can" style="font-size: 0.75rem;"></i>
+                                            <button type="submit" class="btn photo-delete-action" title="Eliminar foto" aria-label="Eliminar foto">
+                                                <i class="fas fa-trash-can"></i>
                                             </button>
                                         </form>
                                     @endif
@@ -293,7 +314,7 @@
         Array.from(files).forEach((file, index) => {
             const ext = file.name.split('.').pop().toLowerCase();
             if (!['jpg', 'jpeg', 'png'].includes(ext)) {
-                alert(`El archivo "${file.name}" no es válido. Solo JPG o PNG.`);
+                window.showSystemAlert(`El archivo "${file.name}" no es válido. Solo JPG o PNG.`, 'warning');
                 return;
             }
 

@@ -350,7 +350,7 @@
                                     </td>
                                     <td>
                                         <span class="badge rounded-pill px-2 py-1 small" style="background-color: {{ $pqr->tipo_badge['bg'] }}; color: {{ $pqr->tipo_badge['text'] }};">
-                                            {{ $pqr->tipo->nombre ?? 'PQRS' }}
+                                            {{ $pqr->tipo_nombre }}
                                         </span>
                                     </td>
                                     <td>

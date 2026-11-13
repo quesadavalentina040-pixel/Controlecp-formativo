@@ -58,13 +58,13 @@
                              font-size:.78rem;">
                     <i class="{{ $pqr->estado_badge['icon'] }} me-1"></i>{{ $pqr->estado }}
                 </span>
-                @if($pqr->tipo)
+                @if($pqr->id_tipo_pqrs)
                 <span class="badge rounded-pill border px-3 py-1"
                       style="background:{{ $pqr->tipo_badge['bg'] }};
                              color:{{ $pqr->tipo_badge['text'] }};
                              border-color:{{ $pqr->tipo_badge['border'] }} !important;
                              font-size:.78rem;">
-                    <i class="{{ $pqr->tipo_badge['icon'] }} me-1"></i>{{ $pqr->tipo->nombre }}
+                    <i class="{{ $pqr->tipo_badge['icon'] }} me-1"></i>{{ $pqr->tipo_nombre }}
                 </span>
                 @endif
                 <span class="text-muted small">
@@ -197,7 +197,7 @@
                             <textarea name="respuesta" rows="5"
                                       class="form-control rounded-3 @error('respuesta') is-invalid @enderror"
                                       placeholder="Redacta la respuesta institucional clara y formal…"
-                                      minlength="10" required>{{ old('respuesta') }}</textarea>
+                                      minlength="10" maxlength="200" required>{{ old('respuesta') }}</textarea>
                             @error('respuesta')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

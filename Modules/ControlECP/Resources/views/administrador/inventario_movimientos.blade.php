@@ -41,6 +41,48 @@
         color: #FFFFFF;
         box-shadow: 0 2px 8px rgba(57, 169, 0, 0.25);
     }
+    .inv-movement-action {
+        display: inline-flex;
+        width: 34px;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 1px solid #c9e6fb;
+        border-radius: 10px;
+        background: #eaf5ff;
+        color: #0876bd;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .inv-movement-action:hover,
+    .inv-movement-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
+    .inv-return-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .4rem;
+        padding: .4rem .8rem;
+        border: 1px solid #ccebd6;
+        border-radius: 10px;
+        background: #eaf8ef;
+        color: #278344;
+        font-weight: 600;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .inv-return-action:hover,
+    .inv-return-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
 </style>
 @endpush
 
@@ -363,8 +405,8 @@
                                         <!-- Evidencia Fotográfica (HU 14) -->
                                         <td class="text-end pe-4">
                                             @if($mov->foto)
-                                                <a href="{{ asset($mov->foto) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-1 small" title="Ver fotografía adjunta">
-                                                    <i class="fas fa-camera me-1"></i>Foto
+                                                <a href="{{ asset($mov->foto) }}" target="_blank" class="btn inv-movement-action" title="Ver fotografía adjunta" aria-label="Ver fotografía adjunta">
+                                                    <i class="fas fa-camera"></i>
                                                 </a>
                                             @else
                                                 <span class="text-muted small">-</span>
@@ -390,7 +432,38 @@
                             Mostrando {{ $movimientos->firstItem() ?? 0 }} - {{ $movimientos->lastItem() ?? 0 }} de {{ $movimientos->total() }} movimientos
                         </div>
                         <div>
-                            {{ $movimientos->links() }}
+                            @if ($movimientos->hasPages())
+                                <nav aria-label="Paginación de movimientos">
+                                    <ul class="pagination justify-content-center">
+                                        @if ($movimientos->onFirstPage())
+                                            <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                                        @else
+                                            <li class="page-item"><a class="page-link" href="{{ $movimientos->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                                        @endif
+                                        @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                                        @for ($pagina = 1; $pagina <= $movimientos->lastPage(); $pagina++)
+                                            @if ($pagina === 1 || $pagina === $movimientos->lastPage() || abs($pagina - $movimientos->currentPage()) <= 1)
+                                                @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                                    <li class="page-item disabled"><span class="page-link">…</span></li>
+                                                @endif
+                                                <li class="page-item {{ $pagina === $movimientos->currentPage() ? 'active' : '' }}">
+                                                    <a class="page-link" href="{{ $movimientos->url($pagina) }}" @if($pagina === $movimientos->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                                </li>
+                                                @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                            @endif
+                                        @endfor
+                                        @if ($movimientos->hasMorePages())
+                                            <li class="page-item"><a class="page-link" href="{{ $movimientos->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                                        @else
+                                            <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                                        @endif
+                                    </ul>
+                                </nav>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -470,7 +543,7 @@
 
                                         <!-- Acción Rápida Devolver -->
                                         <td class="text-end pe-4">
-                                            <button type="button" class="btn btn-sm text-white rounded-pill px-3 shadow-sm" style="background-color: #39A900;" onclick="prepararDevolucionRapida({{ $p->id_inventario }}, {{ $p->id }}, {{ $p->saldo_pendiente }})">
+                                            <button type="button" class="btn inv-return-action" onclick="prepararDevolucionRapida({{ $p->id_inventario }}, {{ $p->id }}, {{ $p->saldo_pendiente }})">
                                                 <i class="fas fa-arrow-rotate-left me-1"></i> Devolver
                                             </button>
                                         </td>

@@ -68,7 +68,9 @@
     }
 
     .fichas-status-select {
-        min-width: 220px;
+        width: 100%;
+        min-width: 0;
+        min-height: 52px;
         border-color: #dce5df;
         color: var(--ecp-navy);
         font-weight: 600;
@@ -84,12 +86,159 @@
     .fichas-filter-card .text-muted {
         color: #ffffff !important;
     }
+    .fichas-filter-layout {
+        display: grid;
+        grid-template-columns: minmax(390px, .95fr) minmax(0, 2fr);
+        align-items: center;
+        gap: .75rem;
+    }
+    .fichas-filter-layout form {
+        min-width: 0;
+        margin: 0;
+    }
+    .fichas-status-form {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: center;
+        gap: .6rem;
+    }
+    .fichas-status-form label {
+        white-space: nowrap;
+    }
+    .fichas-search-form {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 108px 48px;
+        align-items: center;
+        gap: .55rem;
+    }
+    .fichas-search-form .input-group {
+        min-width: 0;
+        flex-wrap: nowrap;
+    }
+    .fichas-search-form .input-group-text,
+    .fichas-search-form .form-control {
+        min-height: 52px;
+        border-color: #dce5eb;
+        box-shadow: none;
+    }
+    .fichas-search-form .input-group-text {
+        border-radius: 26px 0 0 26px !important;
+    }
+    .fichas-search-form .form-control {
+        border-radius: 0 9px 9px 0 !important;
+        min-width: 0;
+    }
+    .fichas-search-form .btn-search-ficha {
+        width: 108px;
+        min-height: 52px;
+        padding: .45rem .65rem;
+        border-radius: 10px !important;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+    .fichas-search-form .btn-clear-ficha {
+        width: 48px;
+        min-height: 52px;
+        border-radius: 10px;
+    }
+    @media (max-width: 991.98px) {
+        .fichas-filter-layout {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    @media (max-width: 575.98px) {
+        .fichas-status-form {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .fichas-search-form {
+            grid-template-columns: minmax(0, 1fr) 48px;
+        }
+        .fichas-search-form .input-group {
+            grid-column: 1 / -1;
+        }
+        .fichas-search-form .btn-search-ficha {
+            width: 100%;
+        }
+    }
 
     .table-fichas tbody tr {
         transition: background-color 0.15s ease;
     }
     .table-fichas tbody tr:hover {
         background-color: #f6fcf8;
+    }
+
+    .fichas-row-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: .4rem;
+        white-space: nowrap;
+    }
+    .fichas-row-action {
+        display: inline-flex;
+        width: 34px;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 1px solid transparent;
+        border-radius: 10px !important;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .fichas-row-action:hover,
+    .fichas-row-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+    }
+    .fichas-row-action--view {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
+    }
+    .fichas-row-action--view:hover {
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
+    .fichas-row-action--roster {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .fichas-row-action--roster:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .fichas-row-action--sync {
+        background: #fff7e6;
+        border-color: #f8e3b2;
+        color: #c47a00;
+    }
+    .fichas-row-action--sync:hover {
+        background: #c47a00;
+        border-color: #c47a00;
+        color: #fff;
+    }
+    .fichas-row-action--disable {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
+    }
+    .fichas-row-action--disable:hover {
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
+    }
+    .fichas-row-action--enable {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
+    }
+    .fichas-row-action--enable:hover {
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
     }
 
     .ficha-badge {
@@ -165,6 +314,389 @@
         background-color: var(--ecp-green-hover);
         border-color: var(--ecp-green-hover);
         color: #fff;
+    }
+    .btn-clear-ficha {
+        display: inline-flex;
+        width: 48px;
+        min-height: 43px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dce5eb;
+        border-radius: 9px;
+        background-color: #fff;
+        color: var(--ecp-navy);
+        text-decoration: none;
+    }
+    .btn-clear-ficha:hover,
+    .btn-clear-ficha:focus {
+        background-color: #f1f5f9;
+        color: var(--ecp-navy);
+    }
+
+    .ficha-admin-modal .modal-content {
+        overflow: hidden;
+        border-radius: 20px;
+    }
+    .ficha-admin-modal .modal-header {
+        color: var(--ecp-navy);
+    }
+    .ficha-admin-modal .modal-title {
+        font-weight: 800;
+        letter-spacing: -.02em;
+    }
+    .ficha-admin-modal .btn-close {
+        box-shadow: none;
+    }
+    .ficha-detalle-summary {
+        border-radius: 12px;
+        background: #f6f7f8;
+    }
+    .ficha-detalle-dl dt,
+    .ficha-detalle-dl dd {
+        margin-bottom: .65rem;
+        line-height: 1.4;
+    }
+    .ficha-detalle-dl dt {
+        color: #475569;
+        font-weight: 700;
+    }
+    .ficha-detalle-dl dd {
+        color: var(--ecp-navy);
+        overflow-wrap: anywhere;
+    }
+    .ficha-detalle-stat {
+        min-height: 84px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-color: #dce3e8 !important;
+    }
+    .ficha-detalle-stat .h4 {
+        color: #00324d;
+    }
+    .ficha-detalle-stat--training {
+        border-color: #d9e8ff !important;
+    }
+    .ficha-detalle-stat--certified {
+        border-color: #cfe9d8 !important;
+    }
+    .ficha-detalle-stat--retired {
+        border-color: #f4d5d9 !important;
+    }
+    .ficha-detalle-roster-table {
+        max-height: 360px;
+        border-color: #dce3e8 !important;
+    }
+    .ficha-detalle-roster-table .table {
+        margin-bottom: 0;
+    }
+    .ficha-detalle-roster-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        color: #334155;
+        font-size: .8rem;
+        white-space: nowrap;
+    }
+    .ficha-detalle-empty {
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-color: #dce3e8 !important;
+    }
+    .ficha-detalle-empty i {
+        font-size: 1.35rem;
+    }
+    .ficha-modal-empty {
+        min-height: 155px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        text-align: center;
+    }
+    .ficha-modal-empty i {
+        margin-bottom: .55rem;
+        font-size: 1.8rem;
+    }
+    .ficha-modal-footer {
+        gap: .55rem;
+    }
+    .ficha-modal-btn {
+        min-height: 42px;
+        border-radius: 10px !important;
+        font-weight: 700;
+    }
+    .ficha-sync-icon {
+        width: 68px;
+        height: 68px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #eaf5fb;
+        color: #2784bd;
+        font-size: 1.65rem;
+        box-shadow: 0 4px 12px rgba(0, 26, 41, .08);
+    }
+    .ficha-sync-copy {
+        max-width: 410px;
+        margin: 0 auto;
+        line-height: 1.55;
+    }
+    .ficha-config-icon {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #e9f7e8;
+        color: var(--ecp-green);
+    }
+    .ficha-config-form .form-label {
+        margin-bottom: .45rem;
+        color: #303943 !important;
+    }
+    .ficha-config-form .form-control,
+    .ficha-config-form .form-select,
+    .ficha-config-form .input-group-text,
+    .ficha-config-form .btn-local-mock {
+        min-height: 42px;
+        border-color: #d7dee5;
+    }
+    .ficha-config-form .form-control:focus,
+    .ficha-config-form .form-select:focus {
+        border-color: var(--ecp-green);
+        box-shadow: 0 0 0 .2rem rgba(57, 169, 0, .12);
+    }
+    .ficha-config-form .form-text {
+        color: #697586;
+    }
+    .ficha-config-test {
+        background: #f7faf8;
+        border: 1px solid #dcebe1;
+    }
+    .ficha-config-result {
+        min-height: 48px;
+        overflow-wrap: anywhere;
+        font-family: monospace;
+    }
+    #modalConfigApiFichas .modal-dialog {
+        max-width: 800px;
+    }
+    #modalConfigApiFichas .modal-content {
+        overflow: hidden;
+        border: 1px solid #e4e9ec !important;
+        border-top: 5px solid #39a900 !important;
+        border-radius: 24px !important;
+        background: #fff;
+        box-shadow: 0 26px 80px rgba(0, 26, 41, .32) !important;
+    }
+    #modalConfigApiFichas .modal-header {
+        align-items: flex-start;
+        padding: 1.35rem 1.5rem 1.15rem;
+        border-bottom: 1px solid #e8edf0 !important;
+        background: linear-gradient(110deg, #f3fbf2, #fff 62%);
+    }
+    #modalConfigApiFichas .modal-header > .d-flex {
+        gap: .8rem !important;
+    }
+    #modalConfigApiFichas .ficha-config-icon {
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
+        font-size: 1.1rem;
+        box-shadow: inset 0 0 0 1px rgba(57, 169, 0, .1);
+    }
+    #modalConfigApiFichas .modal-title {
+        margin-bottom: .15rem;
+        font-size: 1.25rem;
+        line-height: 1.3;
+    }
+    #modalConfigApiFichas .modal-body {
+        padding: 1.25rem 1.5rem 1.5rem !important;
+    }
+    #modalConfigApiFichas .ficha-config-form .form-label {
+        font-size: .9rem;
+    }
+    #modalConfigApiFichas .ficha-config-form .form-control,
+    #modalConfigApiFichas .ficha-config-form .form-select,
+    #modalConfigApiFichas .ficha-config-form .input-group-text,
+    #modalConfigApiFichas .ficha-config-form .btn-local-mock {
+        min-height: 40px;
+        border-color: #d7dee5;
+    }
+    #modalConfigApiFichas .ficha-config-form .input-group-text {
+        min-width: 44px;
+        justify-content: center;
+        background: #f7f9fb !important;
+    }
+    #modalConfigApiFichas .ficha-config-form .form-control,
+    #modalConfigApiFichas .ficha-config-form .form-select {
+        color: #23313d;
+        font-size: .95rem;
+    }
+    #modalConfigApiFichas .ficha-config-test {
+        padding: 1rem !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 14px rgba(0, 26, 41, .035);
+    }
+    #modalConfigApiFichas .ficha-config-test > .d-flex {
+        gap: .75rem;
+    }
+    #modalConfigApiFichas .ficha-config-result {
+        padding: .6rem .75rem !important;
+        border-color: #d7dee5 !important;
+        border-radius: 6px !important;
+        line-height: 1.5;
+    }
+    #modalConfigApiFichas .ficha-config-form > .ficha-modal-footer {
+        gap: .5rem;
+        margin-top: 1.15rem;
+        padding-top: .85rem;
+        border-color: #e2e8ec !important;
+    }
+    #modalConfigApiFichas .ficha-modal-btn {
+        min-height: 40px;
+        border-radius: 999px !important;
+        font-weight: 600;
+    }
+    #modalConfigApiFichas .ficha-modal-btn[type="submit"] {
+        min-width: 258px;
+        background: #39a900 !important;
+        border-color: #39a900 !important;
+    }
+    #modalConfigApiFichas .ficha-modal-btn[type="submit"]:hover {
+        background: #2e8800 !important;
+        border-color: #2e8800 !important;
+    }
+    #modalDetalleFicha .modal-dialog {
+        max-width: 1140px;
+    }
+    #modalDetalleFicha .modal-content,
+    #modalAprendicesFicha .modal-content,
+    #modalSyncAprendices .modal-content {
+        border: 1px solid #e4e9ec !important;
+        border-radius: 22px !important;
+        box-shadow: 0 24px 70px rgba(0, 26, 41, .24) !important;
+    }
+    #modalDetalleFicha .modal-content,
+    #modalAprendicesFicha .modal-content {
+        border-top: 5px solid #39a900 !important;
+    }
+    #modalDetalleFicha .modal-header,
+    #modalAprendicesFicha .modal-header {
+        padding: 1.4rem 1.5rem 1rem;
+        border-bottom: 1px solid #e8edf0 !important;
+        background: linear-gradient(110deg, #f3fbf2, #fff 70%);
+    }
+    #modalDetalleFicha .modal-body,
+    #modalAprendicesFicha .modal-body {
+        padding: 1.25rem 1.5rem !important;
+    }
+    #modalAprendicesFicha .modal-footer {
+        padding-top: 1rem;
+        border-top: 1px solid #e8edf0;
+        background: #fbfcfd;
+    }
+    #modalAprendicesFicha .ficha-detalle-roster-table {
+        max-height: 420px;
+        border-radius: 12px;
+    }
+    #modalAprendicesFicha .ficha-detalle-roster-table thead th {
+        padding-top: .8rem;
+        padding-bottom: .8rem;
+        background: #f0f8f2;
+        color: #23313d;
+    }
+    #modalAprendicesFicha .ficha-modal-empty {
+        min-height: 230px;
+        padding: 1.5rem;
+        border: 1px dashed #cbd5dc;
+        border-radius: 14px;
+        background: #fafcfd;
+    }
+    #modalSyncAprendices .modal-dialog {
+        max-width: 480px;
+    }
+    #modalSyncAprendices .modal-content {
+        background: linear-gradient(180deg, #f7fbfd 0, #fff 125px);
+        border-top: 5px solid #2582ba !important;
+    }
+    #modalSyncAprendices .modal-header {
+        padding-top: 1.75rem;
+    }
+    #modalSyncAprendices .modal-body {
+        padding: 1.25rem 2rem 1.75rem !important;
+    }
+    #modalSyncAprendices .ficha-sync-icon {
+        width: 76px;
+        height: 76px;
+        background: #e8f4fb;
+        color: #2582ba;
+        font-size: 1.8rem;
+        box-shadow: 0 8px 24px rgba(37, 130, 186, .18);
+    }
+    #modalSyncAprendices #syncAprendicesCodigoLabel {
+        display: inline-block;
+        padding: .2rem .65rem;
+        border-radius: 999px;
+        background: #eef4f7;
+        color: #00324d;
+    }
+    #modalCambioEstadoFicha .modal-content,
+    #modalSyncFichasConfirm .modal-content {
+        overflow: hidden;
+        border: 1px solid #e4e9ec !important;
+        border-top: 5px solid #39a900 !important;
+        border-radius: 22px !important;
+        box-shadow: 0 24px 70px rgba(0, 26, 41, .25) !important;
+    }
+    #modalCambioEstadoFicha .modal-header,
+    #modalSyncFichasConfirm .modal-header {
+        padding-top: 1.5rem;
+    }
+    #modalSyncFichasConfirm .modal-body {
+        padding: 1.25rem 1.75rem 1.75rem !important;
+    }
+    #modalSyncFichasConfirm .modal-body > .text-start {
+        border: 1px solid #e0eee2;
+        background: #f5faf5 !important;
+        line-height: 1.5;
+    }
+    @media (max-width: 575.98px) {
+        .ficha-admin-modal .modal-body {
+            padding: 1rem !important;
+        }
+        #modalConfigApiFichas .modal-header {
+            padding: 1.25rem 1rem 0;
+        }
+        #modalConfigApiFichas .modal-body {
+            padding: 1rem !important;
+        }
+        #modalConfigApiFichas .ficha-config-test > .d-flex {
+            align-items: flex-start !important;
+            flex-direction: column;
+        }
+        #modalConfigApiFichas .ficha-config-test .btn {
+            width: 100%;
+        }
+        .ficha-modal-footer {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+        .ficha-modal-footer .btn {
+            width: 100%;
+        }
+        #modalConfigApiFichas .ficha-modal-btn[type="submit"] {
+            min-width: 0;
+        }
     }
 </style>
 @endpush
@@ -282,10 +814,10 @@
     <!-- Barra de Filtros y Búsqueda -->
     <div class="card border-0 shadow-sm mb-4 fichas-filter-card">
         <div class="card-body p-3">
-            <div class="row g-2 align-items-center justify-content-between">
+            <div class="fichas-filter-layout">
                 <!-- Filtro por Estado -->
-                <div class="col-lg-5">
-                    <form method="GET" action="{{ route('controlecp.administrador.fichas') }}" class="d-flex align-items-center gap-2">
+                <div>
+                    <form method="GET" action="{{ route('controlecp.administrador.fichas') }}" class="fichas-status-form">
                         @if(!empty($searchTerm))
                             <input type="hidden" name="search" value="{{ $searchTerm }}">
                         @endif
@@ -302,8 +834,8 @@
                 </div>
 
                 <!-- Buscador de Fichas -->
-                <div class="col-lg-7">
-                    <form method="GET" action="{{ route('controlecp.administrador.fichas') }}" class="d-flex gap-2">
+                <div>
+                    <form method="GET" action="{{ route('controlecp.administrador.fichas') }}" class="fichas-search-form">
                         @if($statusFilter)
                             <input type="hidden" name="estado" value="{{ $statusFilter }}">
                         @endif
@@ -314,13 +846,14 @@
                             <input type="text" name="search" id="inputSearchFicha" class="form-control border-start-0 ps-0"
                                    placeholder="Buscar por número de ficha o nombre del programa académico..."
                                    value="{{ $searchTerm }}">
-                            @if(!empty($searchTerm))
-                                <a href="{{ route('controlecp.administrador.fichas', ['estado' => $statusFilter]) }}" class="input-group-text bg-white text-muted text-decoration-none">
-                                    <i class="fas fa-xmark"></i>
-                                </a>
-                            @endif
-                            <button class="btn btn-search-ficha rounded-end-pill px-3" type="submit">Buscar</button>
                         </div>
+                        <button class="btn btn-search-ficha" type="submit">
+                            <i class="fas fa-search me-1"></i> Buscar
+                        </button>
+                        <a href="{{ route('controlecp.administrador.fichas', ['estado' => $statusFilter]) }}"
+                           class="btn-clear-ficha" title="Limpiar búsqueda" aria-label="Limpiar búsqueda">
+                            <i class="fas fa-rotate-left"></i>
+                        </a>
                     </form>
                 </div>
             </div>
@@ -412,51 +945,35 @@
 
                                     <!-- Acciones -->
                                     <td class="text-end pe-4">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light rounded-pill px-2" type="button" data-bs-toggle="dropdown">
-                                                <i class="fas fa-ellipsis-vertical text-muted"></i>
+                                        <div class="fichas-row-actions">
+                                            <button type="button" class="btn fichas-row-action fichas-row-action--view"
+                                               data-url="{{ route('controlecp.administrador.fichas.show', $f->id) }}"
+                                               onclick="abrirDetalleFicha(this)" title="Ver detalle" aria-label="Ver detalle">
+                                                <i class="fas fa-eye"></i>
                                             </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 12px; font-size: 0.85rem;">
-                                                {{-- HU2: Ver detalle --}}
-                                                <li>
-                                                    <a class="dropdown-item py-2"
-                                                       href="{{ route('controlecp.administrador.fichas.show', $f->id) }}">
-                                                        <i class="fas fa-eye me-2 text-primary"></i> Ver Detalle
-                                                    </a>
-                                                </li>
-                                                {{-- HU2: Ver aprendices (modal rápido) --}}
-                                                <li>
-                                                    <button type="button" class="dropdown-item py-2"
-                                                            onclick="cargarAprendicesFicha({{ $f->id }})">
-                                                        <i class="fas fa-users-viewfinder me-2 text-success"></i> Nómina de Aprendices
-                                                    </button>
-                                                </li>
-                                                {{-- HU4: Sincronizar aprendices de esta ficha --}}
-                                                <li>
-                                                    <button type="button" class="dropdown-item py-2"
-                                                            onclick="sincronizarAprendicesFicha({{ $f->id }}, '{{ $f->code }}')">
-                                                        <i class="fas fa-arrows-rotate me-2 text-info"></i> Sincronizar Aprendices
-                                                    </button>
-                                                </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                {{-- HU5: No hay opción de crear/editar manualmente --}}
-                                                {{-- HU6 / HU7: Desactivar / Activar ficha --}}
-                                                @if($isActive)
-                                                    <li>
-                                                        <button class="dropdown-item py-2 text-danger" type="button"
-                                                                onclick="confirmarCambioEstadoFicha({{ $f->id }}, 'desactivar', '{{ $f->code }}')">
-                                                            <i class="fas fa-ban me-2"></i> Desactivar Ficha
-                                                        </button>
-                                                    </li>
-                                                @else
-                                                    <li>
-                                                        <button class="dropdown-item py-2 text-success" type="button"
-                                                                onclick="confirmarCambioEstadoFicha({{ $f->id }}, 'activar', '{{ $f->code }}')">
-                                                            <i class="fas fa-circle-check me-2"></i> Activar Ficha
-                                                        </button>
-                                                    </li>
-                                                @endif
-                                            </ul>
+                                            <button type="button" class="btn fichas-row-action fichas-row-action--roster"
+                                                    onclick="cargarAprendicesFicha({{ $f->id }})"
+                                                    title="Nómina de aprendices" aria-label="Nómina de aprendices">
+                                                <i class="fas fa-users-viewfinder"></i>
+                                            </button>
+                                            <button type="button" class="btn fichas-row-action fichas-row-action--sync"
+                                                    onclick="sincronizarAprendicesFicha({{ $f->id }}, '{{ $f->code }}')"
+                                                    title="Sincronizar aprendices" aria-label="Sincronizar aprendices">
+                                                <i class="fas fa-arrows-rotate"></i>
+                                            </button>
+                                            @if($isActive)
+                                                <button class="btn fichas-row-action fichas-row-action--disable" type="button"
+                                                        onclick="confirmarCambioEstadoFicha({{ $f->id }}, 'desactivar', '{{ $f->code }}')"
+                                                        title="Desactivar ficha" aria-label="Desactivar ficha">
+                                                    <i class="fas fa-ban"></i>
+                                                </button>
+                                            @else
+                                                <button class="btn fichas-row-action fichas-row-action--enable" type="button"
+                                                        onclick="confirmarCambioEstadoFicha({{ $f->id }}, 'activar', '{{ $f->code }}')"
+                                                        title="Activar ficha" aria-label="Activar ficha">
+                                                    <i class="fas fa-circle-check"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -466,7 +983,38 @@
                 </div>
 
                 <div class="fichas-pagination">
-                    {{ $fichas->onEachSide(1)->links('pagination::bootstrap-5') }}
+                    @if ($fichas->hasPages())
+                        <nav aria-label="Paginación de fichas">
+                            <ul class="pagination justify-content-center">
+                                @if ($fichas->onFirstPage())
+                                    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                                @else
+                                    <li class="page-item"><a class="page-link" href="{{ $fichas->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                                @endif
+                                @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                                @for ($pagina = 1; $pagina <= $fichas->lastPage(); $pagina++)
+                                    @if ($pagina === 1 || $pagina === $fichas->lastPage() || abs($pagina - $fichas->currentPage()) <= 1)
+                                        @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                            <li class="page-item disabled"><span class="page-link">…</span></li>
+                                        @endif
+                                        <li class="page-item {{ $pagina === $fichas->currentPage() ? 'active' : '' }}">
+                                            <a class="page-link" href="{{ $fichas->url($pagina) }}" @if($pagina === $fichas->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                        </li>
+                                        @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                    @endif
+                                @endfor
+                                @if ($fichas->hasMorePages())
+                                    <li class="page-item"><a class="page-link" href="{{ $fichas->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                                @else
+                                    <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                                @endif
+                            </ul>
+                        </nav>
+                    @endif
                 </div>
 
             @else
@@ -498,6 +1046,31 @@
 <!-- MODALES DEL SISTEMA DE GESTIÓN Y SINCRONIZACIÓN DE FICHAS                                  -->
 <!-- ========================================================================================= -->
 
+<div class="modal fade ficha-admin-modal" id="modalDetalleFicha" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pb-0 pt-4 px-4">
+                <div>
+                    <h5 class="modal-title fw-bold" style="color: var(--ecp-navy);">
+                        <i class="fas fa-id-card-clip me-2 text-success"></i>Detalle de ficha
+                    </h5>
+                    <p class="text-muted small mb-0" id="detalleFichaSubtitulo">Información general y aprendices matriculados</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4" id="detalleFichaContenido">
+                <div class="text-center py-5">
+                    <i class="fas fa-spinner fa-spin fa-2x text-success mb-2"></i>
+                    <div class="small text-muted">Cargando detalle de la ficha...</div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal: Confirmación Activar / Desactivar Ficha (HU6 / HU7 / HU8) -->
 <div class="modal fade" id="modalCambioEstadoFicha" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -524,20 +1097,19 @@
 </div>
 
 <!-- Modal: Sincronizar Aprendices de una Ficha (HU4 / HU8 / HU9) -->
-<div class="modal fade" id="modalSyncAprendices" tabindex="-1" aria-hidden="true">
+<div class="modal fade ficha-admin-modal" id="modalSyncAprendices" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-0 pt-4 px-4 text-center justify-content-center position-relative">
                 <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
-                <div class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                     style="width: 65px; height: 65px; background: #ebf5fb; color: #2980b9; font-size: 1.8rem;">
+                <div class="ficha-sync-icon">
                     <i class="fas fa-arrows-rotate" id="syncAprendicezIcon"></i>
                 </div>
             </div>
             <div class="modal-body p-4 text-center">
                 <h5 class="fw-bold mb-1" style="color: var(--ecp-navy);">Sincronizar Aprendices</h5>
                 <p class="text-muted small mb-3">Ficha: <strong id="syncAprendicesCodigoLabel">--</strong></p>
-                <p class="text-muted small mb-3">Se obtendrá la nómina desde SICEFA, se agregarán los aprendices nuevos y se actualizarán los existentes por número de documento, sin duplicar.</p>
+                <p class="text-muted small mb-4 ficha-sync-copy">Se obtendrá la nómina desde SICEFA, se agregarán los aprendices nuevos y se actualizarán los existentes por número de documento, sin duplicar.</p>
 
                 <div id="syncAprendicesProgress" class="d-none text-start mb-3">
                     <div class="d-flex justify-content-between small text-muted mb-1">
@@ -551,10 +1123,10 @@
 
                 <div id="syncAprendicesResult" class="d-none small text-start p-3 rounded-3 border mb-3"></div>
 
-                <div class="d-flex justify-content-center gap-3" id="syncAprendicesBtns">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn rounded-pill px-4 text-white" id="btnEjecutarSyncAprendices"
-                            style="background-color: #2980b9;" onclick="ejecutarSyncAprendices()">
+                <div class="d-flex justify-content-center flex-wrap ficha-modal-footer" id="syncAprendicesBtns">
+                    <button type="button" class="btn btn-outline-secondary ficha-modal-btn px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn ficha-modal-btn px-4 text-white" id="btnEjecutarSyncAprendices"
+                        style="background-color: #2784bd; border-color: #2784bd;" onclick="ejecutarSyncAprendices()">
                         <i class="fas fa-arrows-rotate me-1"></i> Sincronizar
                     </button>
                 </div>
@@ -564,13 +1136,12 @@
 </div>
 
 <!-- 1. Modal: Configuración de la API REST Central de Fichas -->
-<div class="modal fade" id="modalConfigApiFichas" tabindex="-1" aria-hidden="true">
+<div class="modal fade ficha-admin-modal" id="modalConfigApiFichas" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
             <div class="modal-header border-0 pb-0 pt-4 px-4">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center"
-                         style="width: 42px; height: 42px; background: #e8f8e8; color: var(--ecp-green);">
+                    <div class="ficha-config-icon">
                         <i class="fas fa-sliders"></i>
                     </div>
                     <div>
@@ -580,18 +1151,18 @@
                         <p class="text-muted small mb-0">Endpoint Académico Central (SICEFA / SOFIA Plus)</p>
                     </div>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="formApiFichasConfig" onsubmit="guardarConfigApiFichas(event)">
+                <form id="formApiFichasConfig" class="ficha-config-form" onsubmit="guardarConfigApiFichas(event)">
                     <div class="mb-3">
-                        <label class="form-label fw-semibold small text-dark">URL del Endpoint REST de Fichas:</label>
+                        <label for="cfgApiFichasUrl" class="form-label fw-semibold small text-dark">URL del Endpoint REST de Fichas:</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-muted"><i class="fas fa-link"></i></span>
                             <input type="url" class="form-control" id="cfgApiFichasUrl" required
                                    value="{{ $apiConfig['url'] ?? route('controlecp.api.fichas.mock') }}"
                                    placeholder="https://sicefa.senaempresa.edu.co/api/v1/fichas">
-                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="restablecerUrlMockFichas()" title="Restablecer al endpoint integrado">
+                            <button type="button" class="btn btn-outline-secondary btn-local-mock" onclick="restablecerUrlMockFichas()" title="Restablecer al endpoint integrado">
                                 <i class="fas fa-rotate-left me-1"></i> Local Mock
                             </button>
                         </div>
@@ -602,7 +1173,7 @@
 
                     <div class="row g-3 mb-3">
                         <div class="col-md-8">
-                            <label class="form-label fw-semibold small text-dark">Bearer Token (Opcional):</label>
+                            <label for="cfgApiFichasToken" class="form-label fw-semibold small text-dark">Bearer Token (Opcional):</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted"><i class="fas fa-key"></i></span>
                                 <input type="password" class="form-control" id="cfgApiFichasToken"
@@ -611,7 +1182,7 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold small text-dark">Timeout de Respuesta:</label>
+                            <label for="cfgApiFichasTimeout" class="form-label fw-semibold small text-dark">Timeout de Respuesta:</label>
                             <select class="form-select" id="cfgApiFichasTimeout">
                                 <option value="5" {{ ($apiConfig['timeout'] ?? 5) == 5 ? 'selected' : '' }}>5 segundos</option>
                                 <option value="10" {{ ($apiConfig['timeout'] ?? 5) == 10 ? 'selected' : '' }}>10 segundos</option>
@@ -621,21 +1192,21 @@
                     </div>
 
                     <!-- Panel de Prueba en Vivo -->
-                    <div class="p-3 rounded-3 mb-3" style="background-color: #f8faf9; border: 1px solid #e1ece5;">
+                    <div class="p-3 rounded-3 mb-3 ficha-config-test">
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span class="fw-semibold small text-dark"><i class="fas fa-terminal me-1 text-success"></i>Prueba de Conexión en Vivo:</span>
                             <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3" onclick="probarConexionModalFichas()">
                                 <i class="fas fa-play me-1"></i> Probar Conexión Ahora
                             </button>
                         </div>
-                        <div id="modalTestResultBoxFichas" class="small p-2 rounded bg-white border text-muted" style="min-height: 48px; font-family: monospace;">
+                        <div id="modalTestResultBoxFichas" class="small p-2 rounded bg-white border text-muted ficha-config-result">
                             Presione "Probar Conexión Ahora" para validar la disponibilidad del servicio.
                         </div>
                     </div>
 
-                    <div class="d-flex justify-content-end gap-2 pt-2 border-top">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn text-white rounded-pill px-4" style="background-color: var(--ecp-green);">
+                    <div class="d-flex justify-content-end flex-wrap ficha-modal-footer pt-2 border-top">
+                        <button type="button" class="btn btn-outline-secondary ficha-modal-btn px-4" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn text-white ficha-modal-btn px-4" style="background-color: var(--ecp-green);">
                             <i class="fas fa-floppy-disk me-1"></i> Guardar Configuración
                         </button>
                     </div>
@@ -705,17 +1276,17 @@
 </div>
 
 <!-- 3. Modal: Nómina de Aprendices por Ficha -->
-<div class="modal fade" id="modalAprendicesFicha" tabindex="-1" aria-hidden="true">
+<div class="modal fade ficha-admin-modal" id="modalAprendicesFicha" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+            <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-start">
                 <div>
                     <h5 class="modal-title fw-bold" style="color: var(--ecp-navy);">
                         <i class="fas fa-users-viewfinder me-2 text-success"></i>Nómina de Aprendices Matriculados
                     </h5>
-                    <p class="text-muted small mb-0" id="modalFichaSubTitle">Ficha: -- &bull; Programa: --</p>
+                    <p class="text-muted small mb-0" id="modalFichaSubTitle">Ficha: <strong>--</strong> &bull; Programa: <strong>--</strong></p>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body p-4">
                 <div id="modalAprendicesLoading" class="text-center py-4">
@@ -723,10 +1294,10 @@
                     <div class="small text-muted">Cargando aprendices matriculados desde la base central...</div>
                 </div>
 
-                <div id="modalAprendicesContent" class="d-none">
-                    <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
-                        <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.85rem;">
-                            <thead class="table-light sticky-top">
+                <div id="modalAprendicesContent" class="d-none ficha-detalle-roster-table rounded-3 border overflow-auto">
+                    <div class="table-responsive" style="max-height: 420px;">
+                        <table class="table table-sm table-hover align-middle mb-0" style="font-size: .88rem;">
+                            <thead class="table-light">
                                 <tr>
                                     <th class="ps-3 py-2">Documento</th>
                                     <th>Nombre del Aprendiz</th>
@@ -741,19 +1312,19 @@
                     </div>
                 </div>
 
-                <div id="modalAprendicesEmpty" class="d-none text-center py-4 text-muted small">
-                    <i class="fas fa-users-slash fa-2x mb-2 text-muted"></i>
+                <div id="modalAprendicesEmpty" class="d-none ficha-modal-empty">
+                    <i class="fas fa-users-slash" aria-hidden="true"></i>
                     <p class="mb-0">Esta ficha aún no cuenta con aprendices vinculados en la base de datos.</p>
                 </div>
             </div>
-            <div class="modal-footer border-0 pt-0 px-4 pb-4">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 btn-sm" data-bs-dismiss="modal">
+            <div class="modal-footer border-0 pt-0 px-4 pb-4 ficha-modal-footer">
+                <button type="button" class="btn btn-outline-secondary ficha-modal-btn px-4" data-bs-dismiss="modal">
                     Cerrar
                 </button>
-                <button type="button" class="btn btn-outline-info rounded-pill px-4 btn-sm" id="btnSyncAprendicesDesdeModal">
+                <button type="button" class="btn btn-outline-info ficha-modal-btn px-4" id="btnSyncAprendicesDesdeModal">
                     <i class="fas fa-arrows-rotate me-1"></i> Sincronizar Aprendices
                 </button>
-                <button type="button" class="btn text-white rounded-pill px-4 btn-sm" style="background-color: var(--ecp-navy);" onclick="window.print()">
+                <button type="button" class="btn text-white ficha-modal-btn px-4" style="background-color: var(--ecp-navy);" onclick="window.print()">
                     <i class="fas fa-print me-1"></i> Imprimir Nómina
                 </button>
             </div>
@@ -1108,6 +1679,43 @@
 
     // ── 5. Cargar Aprendices de una Ficha ─────────────────────────────────────────────
     let _aprendicesFichaId = null;
+
+    async function abrirDetalleFicha(button) {
+        const modalElement = document.getElementById('modalDetalleFicha');
+        const content = document.getElementById('detalleFichaContenido');
+        const subtitle = document.getElementById('detalleFichaSubtitulo');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+        subtitle.innerText = 'Información general y aprendices';
+        content.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-spinner fa-spin fa-2x text-success mb-2"></i>
+                <div class="small text-muted">Cargando detalle de la ficha...</div>
+            </div>
+        `;
+        modal.show();
+
+        try {
+            const response = await fetch(button.dataset.url, {
+                headers: {
+                    'Accept': 'text/html',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            if (!response.ok) {
+                throw new Error(`No fue posible cargar el detalle (HTTP ${response.status}).`);
+            }
+
+            content.innerHTML = await response.text();
+            subtitle.innerText = 'Información general y aprendices matriculados';
+        } catch (error) {
+            content.innerHTML = `
+                <div class="alert alert-danger mb-0" role="alert">
+                    <i class="fas fa-triangle-exclamation me-2"></i>${error.message}
+                </div>
+            `;
+        }
+    }
 
     async function cargarAprendicesFicha(courseId) {
         _aprendicesFichaId = courseId;

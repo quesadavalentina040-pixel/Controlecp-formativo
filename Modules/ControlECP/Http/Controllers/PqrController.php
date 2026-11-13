@@ -72,13 +72,13 @@ class PqrController extends Controller
         };
 
         // ── Grupo 1: PQRS de Administración (sin instructor asignado) ──
-        $queryAdmin = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas', 'historial'])
+        $queryAdmin = Pqrs::with(['tipoPqrs', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])
             ->whereNull('id_usuario_instructor_destino');
         $applyFilters($queryAdmin);
         $pqrsAdmin = $queryAdmin->orderBy('fecha_radicacion', 'desc')->paginate(10, ['*'], 'page_admin')->withQueryString();
 
         // ── Grupo 2: PQRS de Instructores (con instructor asignado) ──
-        $queryInstructor = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas', 'historial'])
+        $queryInstructor = Pqrs::with(['tipoPqrs', 'aprendiz', 'instructorDestino', 'respuestas', 'historial'])
             ->whereNotNull('id_usuario_instructor_destino');
         if ($request->filled('id_instructor')) {
             $queryInstructor->where('id_usuario_instructor_destino', $request->input('id_instructor'));
@@ -127,7 +127,7 @@ class PqrController extends Controller
      */
     public function getDetalleJson($id)
     {
-        $pqr = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
+        $pqr = Pqrs::with(['tipoPqrs', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
 
         $respuestas = $pqr->respuestas->map(function ($r) {
             return /* Devuelve el resultado de este m�todo. */ [
@@ -157,7 +157,7 @@ class PqrController extends Controller
             'estado'             => $pqr->estado,
             'estado_badge'       => $pqr->estado_badge,
             'tipo_id'            => $pqr->id_tipo_pqrs,
-            'tipo_nombre'        => $pqr->tipo ? $pqr->tipo->nombre : 'Petición',
+            'tipo_nombre'        => $pqr->tipo_nombre,
             'tipo_badge'         => $pqr->tipo_badge,
             'fecha_radicacion'   => $pqr->fecha_radicacion ? $pqr->fecha_radicacion->format('d/m/Y H:i') : '',
             'aprendiz'           => [
@@ -185,7 +185,7 @@ class PqrController extends Controller
 
         $validated = $request->validate([
             'estado'      => 'required|in:Pendiente,En trámite,Resuelta,Resuelto,Cerrada',
-            'observacion' => 'nullable|string|max:500',
+            'observacion' => 'nullable|string|min:10|max:200',
         ]);
 
         $pqr = Pqrs::findOrFail($id);
@@ -257,7 +257,7 @@ class PqrController extends Controller
             return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
-        $pqr = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
+        $pqr = Pqrs::with(['tipoPqrs', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
         $tipos = TipoPqrs::orderBy('nombre')->get();
         $instructores = User::whereHas('roles', fn($q) => $q->where('slug', 'controlecp.instructor'))->get();
         $estados = ['Pendiente', 'En trámite', 'Resuelto', 'Cerrado'];
@@ -270,7 +270,7 @@ class PqrController extends Controller
      */
     public function getHistorialJson($id)
     {
-        $pqr = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
+        $pqr = Pqrs::with(['tipoPqrs', 'aprendiz', 'instructorDestino', 'respuestas.usuario', 'historial.usuario'])->findOrFail($id);
 
         $eventos = collect();
 
@@ -340,7 +340,7 @@ class PqrController extends Controller
             'asunto'           => $pqr->asunto,
             'estado'           => $pqr->estado,
             'estado_badge'     => $pqr->estado_badge,
-            'tipo_nombre'      => $pqr->tipo ? $pqr->tipo->nombre : 'Petición',
+            'tipo_nombre'      => $pqr->tipo_nombre,
             'fecha_radicacion' => $pqr->fecha_radicacion ? $pqr->fecha_radicacion->format('d/m/Y H:i') : '',
             'aprendiz'         => $nombreSolicitante,
             'eventos'          => $eventosOrdenados,
@@ -358,11 +358,12 @@ class PqrController extends Controller
         }
 
         $validated = $request->validate([
-            'respuesta'      => 'required|string|min:10',
+            'respuesta'      => 'required|string|min:10|max:200',
             'cambiar_estado' => 'nullable|string',
             'estado'         => 'nullable|string',
         ], [
-            'respuesta.min'      => 'La respuesta debe ser clara y contener al menos 10 caracteres.',
+            'respuesta.min'      => 'La respuesta debe tener al menos 10 caracteres.',
+            'respuesta.max'      => 'La respuesta no puede superar los 200 caracteres.',
             'respuesta.required' => 'El texto de la respuesta es obligatorio.',
         ]);
 
@@ -450,13 +451,14 @@ class PqrController extends Controller
             'id_tipo_pqrs'                  => 'required|exists:tipos_pqrs,id_tipo_pqrs',
             'id_usuario_aprendiz'           => 'required|exists:users,id',
             'id_usuario_instructor_destino' => 'nullable|exists:users,id',
-            'asunto'                        => 'required|string|max:255',
-            'descripcion'                   => 'required|string|min:10',
+            'asunto'                        => 'required|string|min:10|max:200',
+            'descripcion'                   => 'required|string|min:10|max:200',
         ], [
             'id_tipo_pqrs.required' => 'Debes seleccionar el tipo de PQRS.',
             'asunto.required'       => 'El asunto de la solicitud es obligatorio.',
             'descripcion.required'  => 'La descripción de la solicitud es obligatoria.',
             'descripcion.min'       => 'La descripción debe tener al menos 10 caracteres.',
+            'descripcion.max'       => 'La descripción no puede superar los 200 caracteres.',
         ]);
 
         DB::beginTransaction();
@@ -503,7 +505,7 @@ class PqrController extends Controller
             return /* Devuelve el resultado de este m�todo. */ $redirect;
         }
 
-        $query = Pqrs::with(['tipo', 'aprendiz', 'instructorDestino', 'respuestas']);
+        $query = Pqrs::with(['tipoPqrs', 'aprendiz', 'instructorDestino', 'respuestas']);
 
         if ($request->filled('id_tipo_pqrs')) {
             $query->where('id_tipo_pqrs', $request->input('id_tipo_pqrs'));

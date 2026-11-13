@@ -482,10 +482,6 @@
             </div>
             <div class="modal-footer border-0 pt-0 px-4 pb-4">
                 <button type="button" class="btn btn-outline-secondary rounded-pill px-4 btn-sm" data-bs-dismiss="modal">Cerrar</button>
-                <a href="{{ route('controlecp.administrador.actividades') }}"
-                   class="btn text-white rounded-pill px-4 btn-sm" style="background-color: var(--ecp-navy);">
-                    <i class="fas fa-list-check me-1"></i> Ver Catálogo Completo
-                </a>
             </div>
         </div>
     </div>
@@ -718,9 +714,6 @@
                                     ${a.objetivo ? `<p class="text-muted mb-0" style="font-size:.8rem;line-height:1.4;">${escaparHtml(a.objetivo)}</p>` : ''}
                                 </div>
                                 <div class="d-flex flex-column align-items-end gap-1 flex-shrink-0">
-                                    <span class="badge bg-light text-muted border rounded-pill" style="font-size:.72rem;">
-                                        <i class="far fa-clock me-1"></i>${escaparHtml(a.duracion)}
-                                    </span>
                                     <span class="badge rounded-pill" style="font-size:.68rem;
                                           background: ${a.estado==='Activo'?'#e8f8e8':'#f5f5f5'};
                                           color: ${a.estado==='Activo'?'#1e7000':'#666'};

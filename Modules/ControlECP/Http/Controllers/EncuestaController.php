@@ -70,7 +70,7 @@ class EncuestaController extends Controller // Controlador de administración de
     }
 
     /**
-     * 2. Crear nueva encuesta (Estado inicial: Borrador, fecha_creacion automática, id_usuario = auth)
+     * 2. Crear nueva encuesta (Estado inicial: Activa, fecha_creacion automática, id_usuario = auth)
      */
     public function store(EncuestaRequest $request) // store(): Valida y crea una encuesta junto con sus asociaciones; se usa al enviar el formulario de alta. | EncuestaRequest extiende Request y aplica sus reglas de validación antes de entrar a este método.
     {
@@ -84,7 +84,7 @@ class EncuestaController extends Controller // Controlador de administración de
                 'id_usuario'     => Auth::id() ?? 1, // Auth::id() obtiene el ID del usuario conectado; ?? usa 1 si no hay ID.
                 'nombre'         => trim($request->nombre), // Toma nombre de la petición y quita espacios sobrantes.
                 'descripcion'    => trim($request->descripcion ?? ''), // Usa la descripción enviada o texto vacío si falta, y elimina espacios externos.
-                'estado'         => 'Borrador',
+                'estado'         => 'Activa',
                 'fecha_creacion' => now(),
             ]);
 
@@ -99,7 +99,7 @@ class EncuestaController extends Controller // Controlador de administración de
 
             return /* Devuelve el resultado de este m�todo. */ redirect()
                 ->route('controlecp.administrador.repositorio.encuesta.index', ['abrir' => $encuesta->id_encuesta]) // Redirige al listado y envía el ID para abrir el detalle de la nueva encuesta.
-                ->with('success', 'La encuesta "' . $encuesta->nombre . '" fue creada en estado Borrador. Ahora puedes agregar sus preguntas.'); // with() adjunta un aviso temporal de éxito.
+                ->with('success', 'La encuesta "' . $encuesta->nombre . '" fue creada en estado Activa. Puedes desactivarla desde la lista cuando lo necesites.'); // with() adjunta un aviso temporal de éxito.
 
         } catch (\Exception $e) {
             DB::rollBack(); // Si algo falla, revierte todos los cambios hechos desde beginTransaction().
@@ -277,7 +277,7 @@ class EncuestaController extends Controller // Controlador de administración de
         }
 
         $validator = Validator::make($request->all(), [ // make() valida todos los datos de la petición usando las reglas declaradas. | Validación de datos
-            'texto'       => ['required', 'string', 'max:1000'],
+            'texto'       => ['required', 'string', 'min:10', 'max:200'],
             'tipo'        => ['required', 'string'],
             'obligatoria' => ['nullable'],
             'opciones'    => ['nullable', 'array'],
@@ -385,7 +385,7 @@ class EncuestaController extends Controller // Controlador de administración de
             ->findOrFail($preguntaId); // Busca esa pregunta por su clave primaria dentro del filtro; falla con 404 si no pertenece.
 
         $validator = Validator::make($request->all(), [ // make() crea el validador para todos los campos enviados por el cliente.
-            'texto'       => ['required', 'string', 'max:1000'],
+            'texto'       => ['required', 'string', 'min:10', 'max:200'],
             'tipo'        => ['required', 'string'],
             'obligatoria' => ['nullable'],
             'opciones'    => ['nullable', 'array'],

@@ -13,6 +13,7 @@ use Modules\ControlECP\Entities\Inventario;
 use Modules\ControlECP\Entities\MovimientoInventario;
 use Modules\ControlECP\Entities\RecursoFoto;
 use Modules\ControlECP\Entities\RecursoNovedad;
+use Modules\ControlECP\Rules\NotWeekendOrColombianHoliday;
 
 class InventarioController extends Controller
 {
@@ -345,7 +346,7 @@ class InventarioController extends Controller
             'umbral_critico'  => 'nullable|integer|min:0',
             'umbral_regular'  => 'nullable|integer|min:0',
             'estado_fisico'   => 'required|in:Bueno,Regular,Crítico',
-            'observaciones'   => 'nullable|string',
+            'observaciones'   => 'nullable|string|min:10|max:200',
             'fotos'           => 'required|array|min:1',
             'fotos.*'         => 'required|image|mimes:jpeg,jpg,png|max:4096',
         ], [
@@ -518,7 +519,7 @@ class InventarioController extends Controller
             'umbral_critico'  => 'nullable|integer|min:0',
             'umbral_regular'  => 'nullable|integer|min:0',
             'estado_fisico'   => 'required|in:Bueno,Regular,Crítico',
-            'observaciones'   => 'nullable|string',
+            'observaciones'   => 'nullable|string|min:10|max:200',
             'fotos'           => 'nullable|array',
             'fotos.*'         => 'image|mimes:jpeg,jpg,png|max:4096',
             'fotos_nuevas'    => 'nullable|array',
@@ -608,7 +609,7 @@ class InventarioController extends Controller
         }
 
         $request->validate([
-            'descripcion' => 'required|string|max:1000',
+            'descripcion' => 'required|string|min:10|max:200',
         ]);
 
         $recurso = Inventario::findOrFail($id);
@@ -638,7 +639,7 @@ class InventarioController extends Controller
         $validated = $request->validate([
             'cantidad'    => "required|integer|min:1|max:{$recurso->cantidad_disponible}",
             'destino'     => 'required|string|max:255',
-            'observacion' => 'nullable|string',
+            'observacion' => 'nullable|string|min:10|max:200',
             'foto'        => 'nullable|image|mimes:jpeg,jpg,png|max:4096',
         ], [
             'cantidad.max' => "No puedes entregar más de la cantidad disponible actual ({$recurso->cantidad_disponible}).",
@@ -699,7 +700,7 @@ class InventarioController extends Controller
         $validated = $request->validate([
             'id_movimiento_entrega' => 'nullable|exists:movimientos_inventario,id_movimiento_inventario',
             'cantidad'              => 'required|integer|min:1',
-            'observacion'           => 'nullable|string',
+            'observacion'           => 'nullable|string|min:10|max:200',
             'foto'                  => 'nullable|image|mimes:jpeg,jpg,png|max:4096',
         ], [
             'foto.mimes' => 'La evidencia debe ser una fotografía en formato JPG o PNG.',
@@ -804,7 +805,7 @@ class InventarioController extends Controller
 
         $validated = $request->validate([
             'motivo'      => 'required|in:Dañado,Perdido,Fuera de servicio',
-            'descripcion' => 'required|string|max:500',
+            'descripcion' => 'required|string|min:10|max:200',
         ]);
 
         $recurso = Inventario::findOrFail($id);
@@ -887,7 +888,7 @@ class InventarioController extends Controller
             $query->whereDate('fecha', '<=', $request->input('fecha_hasta'));
         }
 
-        $movimientos = $query->paginate(20)->withQueryString();
+        $movimientos = $query->paginate(10)->withQueryString();
 
         // HU 16: Listado de Préstamos / Entregas Pendientes (Lo que NO se ha devuelto aún)
         $entregasQuery = MovimientoInventario::with(['inventario.categoria', 'usuario', 'movimientosHijos'])
@@ -1180,7 +1181,7 @@ class InventarioController extends Controller
         $request->validate([
             'id_inventario' => 'required|exists:inventario,id_inventario',
             'fecha'         => 'required|date',
-            'hora'          => 'nullable|string',
+            'hora'          => ['nullable', 'date_format:H:i', 'after_or_equal:08:00', 'before_or_equal:15:00'],
         ]);
 
         $recurso = Inventario::with('categoria')->findOrFail($request->id_inventario);
@@ -1223,9 +1224,9 @@ class InventarioController extends Controller
             'id_inventario' => 'required|exists:inventario,id_inventario',
             'tipo'          => 'required|in:Entrega,Devolución,Entrada,Salida',
             'cantidad'      => 'required|integer|min:1',
-            'fecha'         => 'required|date',
+            'fecha'         => ['required', 'date', new NotWeekendOrColombianHoliday()],
             'destino'       => 'nullable|string|max:255',
-            'observacion'   => 'nullable|string',
+            'observacion'   => 'nullable|string|min:10|max:200',
             'foto'          => 'nullable|image|mimes:jpeg,jpg,png|max:4096',
         ], [
             'foto.mimes' => 'La evidencia debe ser una fotografía en formato JPG o PNG.',

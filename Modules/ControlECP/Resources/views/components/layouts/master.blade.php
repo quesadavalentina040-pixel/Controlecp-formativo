@@ -27,6 +27,7 @@
 
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Icons: Bootstrap Icons & FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -448,12 +449,84 @@
             border-color: #62E31D;
             box-shadow: 0 6px 15px rgba(57, 169, 0, 0.45);
         }
+
+        .pagination {
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0;
+            margin-bottom: 0;
+        }
+
+        .pagination .page-link {
+            min-width: 42px;
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #cfe7d2;
+            border-radius: 0;
+            color: #39A900;
+            background: #ffffff;
+            font-weight: 600;
+            box-shadow: none;
+        }
+
+        .pagination .page-item + .page-item .page-link {
+            margin-left: -1px;
+        }
+
+        .pagination .page-item.active .page-link {
+            z-index: 1;
+            border-color: #39A900;
+            background: #39A900;
+            color: #ffffff;
+        }
+
+        .pagination .page-link:hover {
+            z-index: 1;
+            border-color: #39A900;
+            background: #f0fbf4;
+            color: #267800;
+        }
+
+        .pagination .page-item.active .page-link:hover {
+            background: #39A900;
+            color: #ffffff;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #9ab59c;
+            background: #f7faf7;
+            border-color: #dceade;
+        }
     </style>
 
     @stack('styles')
+    @include('controlecp::components.system-alerts')
+    <style>
+        select.form-select {
+            padding-right: 2.25rem;
+            background-image: var(--bs-form-select-bg-img) !important;
+            background-position: right .75rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 16px 12px !important;
+        }
+    </style>
 </head>
 
 <body class="{{ request()->boolean('modal') ? 'modal-user-form-page' : '' }}">
+
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+            <strong>No se pudo guardar. Revisa estos campos:</strong>
+            <ul class="mb-0 mt-2">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    @endif
 
     @yield('content')
 
@@ -462,5 +535,97 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     @stack('scripts')
+    <script>
+        (() => {
+            const nameFields = new Set([
+                'first_name',
+                'first_last_name',
+                'second_last_name',
+                'nombres',
+                'apellidos',
+                'nombre_persona',
+                'nombre_aprendiz',
+                'nombre_instructor'
+            ]);
+            const phoneFields = new Set(['telephone', 'telephone1', 'phone', 'telefono', 'celular', 'mobile', 'movil']);
+            const longTextFields = new Set([
+                'descripcion',
+                'observacion',
+                'observaciones',
+                'texto',
+                'objetivo',
+                'avances',
+                'compromisos',
+                'respuesta',
+                'cambio',
+                'mensaje',
+                'motivo',
+                'motivo_correccion',
+                'motivo_reasignacion',
+                'motivo_cambio',
+                'resumen_final',
+                'comentario',
+                'detalle',
+                'asunto'
+            ]);
+            const integerFields = new Set(['anio', 'cantidad', 'cantidad_total', 'umbral_regular', 'umbral_critico']);
+
+            const fieldName = field => {
+                const nestedNames = [...(field.name || '').matchAll(/\[([^\]]+)\]/g)];
+                return (nestedNames.length ? nestedNames[nestedNames.length - 1][1] : field.name || '').toLowerCase();
+            };
+
+            const validateField = field => {
+                if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) return true;
+
+                const name = fieldName(field);
+                if (longTextFields.has(name)) {
+                    field.minLength = 10;
+                    field.maxLength = 200;
+                }
+                const value = field.value.trim();
+                let message = '';
+
+                if (nameFields.has(name) && value && !/^[\p{L}\s]+$/u.test(value)) {
+                    message = 'Este campo solo permite letras y espacios.';
+                } else if (phoneFields.has(name) && value && !/^\d{10}$/.test(value)) {
+                    message = 'El teléfono debe contener exactamente 10 dígitos.';
+                    field.inputMode = 'numeric';
+                    field.maxLength = 10;
+                } else if (longTextFields.has(name) && value.length > 0 && value.length < 10) {
+                    message = 'Este campo debe tener al menos 10 caracteres.';
+                    field.minLength = 10;
+                } else if (longTextFields.has(name) && value.length > 200) {
+                    message = 'Este campo no puede superar los 200 caracteres.';
+                    field.maxLength = 200;
+                } else if (integerFields.has(name) && value && !/^\d+$/.test(value)) {
+                    message = 'Este campo solo permite números enteros.';
+                    field.inputMode = 'numeric';
+                } else if (field instanceof HTMLInputElement && field.type === 'number' && value && !/^\d+$/.test(value)) {
+                    message = 'Este campo solo permite números enteros.';
+                }
+
+                field.setCustomValidity(message);
+                return message === '';
+            };
+
+            document.addEventListener('input', event => {
+                if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+                    validateField(event.target);
+                }
+            }, true);
+
+            document.addEventListener('submit', event => {
+                const invalidField = Array.from(event.target.elements)
+                    .find(field => !validateField(field));
+
+                if (invalidField) {
+                    event.preventDefault();
+                    invalidField.reportValidity();
+                    invalidField.focus();
+                }
+            }, true);
+        })();
+    </script>
 </body>
 </html>

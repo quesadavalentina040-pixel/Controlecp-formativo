@@ -25,7 +25,7 @@ class ElementoController extends Controller // Controlador para consultar y mant
         $validated = $request->validate([ // validate aplica las reglas al envío y devuelve solo los campos validados; si falla, Laravel redirige con errores.
             'codigo' => 'required|string|unique:elementos,codigo|max:50',
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
+            'descripcion' => 'nullable|string|min:10|max:200',
             'estado' => 'required|in:Activo,Inactivo',
         ]);
 
@@ -50,7 +50,7 @@ class ElementoController extends Controller // Controlador para consultar y mant
         $validated = $request->validate([ // Comprueba los campos recibidos; la regla unique excluye el propio id para permitir conservar su código actual.
             'codigo' => 'required|string|max:50|unique:elementos,codigo,' . $elemento->id,
             'nombre' => 'required|string|max:255',
-            'descripcion' => 'nullable|string',
+            'descripcion' => 'nullable|string|min:10|max:200',
             'estado' => 'required|in:Activo,Inactivo',
         ]);
 

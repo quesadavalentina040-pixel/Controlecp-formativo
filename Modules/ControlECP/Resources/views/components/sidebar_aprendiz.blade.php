@@ -32,19 +32,24 @@
             $items = [
                 ['icon' => 'fa-house', 'label' => 'Inicio', 'route' => 'controlecp.aprendiz.inicio'],
                 ['icon' => 'fa-calendar-days', 'label' => 'Cronograma', 'route' => 'controlecp.aprendiz.cronograma'],
-                ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuesta', 'route' => 'controlecp.aprendiz.encuesta'],
+                ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.aprendiz.encuesta'],
                 ['icon' => 'fa-comments', 'label' => 'Asesorías', 'route' => 'controlecp.aprendiz.asesorias'],
+                ['icon' => 'fa-star', 'label' => 'Calificación de actividad', 'route' => 'controlecp.aprendiz.calificacion_actividad'],
+                ['icon' => 'fa-star-half-stroke', 'label' => 'Calificación de asesoría', 'route' => 'controlecp.aprendiz.calificacion_asesoria'],
+                ['icon' => 'fa-award', 'label' => 'Mi certificado', 'route' => 'controlecp.aprendiz.certificado'],
+                ['icon' => 'fa-book-open', 'label' => 'Historia', 'route' => 'controlecp.aprendiz.historia'],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.aprendiz.pqr'],
+                ['icon' => 'fa-bell', 'label' => 'Notificaciones', 'route' => 'controlecp.aprendiz.notificaciones'],
+
             ];
         @endphp
 
-        {{-- Iteración que presenta los registros de items. --}}
         @foreach ($items as $item)
             @php
-                $active = $item['route'] && request()->routeIs($item['route']);
+                $active = request()->routeIs($item['route']);
             @endphp
             <li class="nav-item">
-                <a href="{{ $item['route'] && Route::has($item['route']) ? route($item['route']) : '#' }}"
+                <a href="{{ Route::has($item['route']) ? route($item['route']) : '#' }}"
                    class="nav-link ecp-sidebar-link d-flex align-items-center gap-2 px-3 py-2 rounded-3 {{ $active ? 'ecp-active' : '' }}"
                    style="font-weight: {{ $active ? '700' : '500' }}; transition: all .2s ease;">
                     <i class="fas {{ $item['icon'] }}"></i> {{ $item['label'] }}

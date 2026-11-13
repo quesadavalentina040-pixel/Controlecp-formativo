@@ -56,7 +56,7 @@ class MomentoController extends Controller
         // HU7 — Validar campos obligatorios
         $request->validate([
             'nombre'      => 'required|string|max:120',
-            'descripcion' => 'required|string|max:1000',
+            'descripcion' => 'required|string|min:10|max:200',
             'icono'       => ['nullable', 'string', 'max:80', 'regex:/^fa-[a-z0-9-]+$/'],
             'color'       => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'orden'       => 'nullable|integer|min:0|max:99',
@@ -108,7 +108,7 @@ class MomentoController extends Controller
         // HU7 — Validar campos obligatorios
         $request->validate([
             'nombre'      => 'required|string|max:120',
-            'descripcion' => 'required|string|max:1000',
+            'descripcion' => 'required|string|min:10|max:200',
             'icono'       => ['nullable', 'string', 'max:80', 'regex:/^fa-[a-z0-9-]+$/'],
             'color'       => ['nullable', 'regex:/^#[0-9a-fA-F]{6}$/'],
             'orden'       => 'nullable|integer|min:0|max:99',

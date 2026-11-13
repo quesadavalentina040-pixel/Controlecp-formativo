@@ -98,6 +98,45 @@
         border-color: #ffffff;
     }
 
+    .poe-search-toolbar {
+        padding: 12px;
+        background: var(--petroleo-ecp);
+        border-color: var(--petroleo-ecp);
+        border-radius: 18px;
+    }
+
+    .poe-search-toolbar .input-group-text,
+    .poe-search-toolbar .form-control,
+    .poe-search-toolbar .btn {
+        min-height: 46px;
+        border-radius: 10px !important;
+    }
+
+    .poe-search-toolbar .input-group-text {
+        padding-left: 14px;
+        border-right: 0;
+    }
+
+    .poe-search-toolbar .form-control {
+        border-left: 0;
+    }
+
+    .poe-search-toolbar .btn-ecp-navy {
+        background: var(--verde-ecp);
+        border-color: var(--verde-ecp);
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .poe-search-toolbar .btn-ecp-navy:hover {
+        background: var(--verde-ecp-hover);
+        border-color: var(--verde-ecp-hover);
+    }
+
+    .poe-search-toolbar .btn-outline-secondary {
+        flex: 1;
+    }
+
     .btn-ecp-outline-navy {
         background-color: transparent;
         color: var(--petroleo-ecp) !important;
@@ -150,43 +189,80 @@
         border: 1px solid #cbd5e1;
     }
 
-    /* Botones de acción en tabla */
+    .poe-row-actions {
+        display: flex;
+        justify-content: center;
+        gap: .4rem;
+        white-space: nowrap;
+    }
+
     .btn-action-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border: none;
-        background-color: #f1f5f9;
-        color: var(--petroleo-ecp);
-        transition: all .2s ease;
+        padding: 0;
+        border: 1px solid transparent;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
         text-decoration: none;
         cursor: pointer;
     }
-    .btn-action-icon:hover {
-        transform: scale(1.1);
+    .btn-action-icon:hover,
+    .btn-action-icon:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+    }
+    .btn-action-view {
+        background: #eaf5ff;
+        border-color: #c9e6fb;
+        color: #0876bd;
     }
     .btn-action-view:hover {
-        background-color: #e0f2fe;
-        color: #0284c7;
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
+    .btn-action-download {
+        background: #eaf8ef;
+        border-color: #ccebd6;
+        color: #278344;
     }
     .btn-action-download:hover {
-        background-color: #dcfce7;
-        color: #16a34a;
+        background: #278344;
+        border-color: #278344;
+        color: #fff;
+    }
+    .btn-action-version {
+        background: #fff7e6;
+        border-color: #f8e3b2;
+        color: #c47a00;
     }
     .btn-action-version:hover {
-        background-color: #fef3c7;
-        color: #d97706;
+        background: #c47a00;
+        border-color: #c47a00;
+        color: #fff;
+    }
+    .btn-action-history {
+        background: #f3edff;
+        border-color: #ddccff;
+        color: #7541c8;
     }
     .btn-action-history:hover {
-        background-color: #ede9fe;
-        color: #7c3aed;
+        background: #7541c8;
+        border-color: #7541c8;
+        color: #fff;
+    }
+    .btn-action-program {
+        background: #fff0f0;
+        border-color: #f7cccc;
+        color: #d63939;
     }
     .btn-action-program:hover {
-        background-color: #fee2e2;
-        color: #dc2626;
+        background: #d63939;
+        border-color: #d63939;
+        color: #fff;
     }
 
     /* Avatar circular de líderes */
@@ -352,7 +428,7 @@
         </div>
     </div>
 
-    <div class="poe-card p-3 mb-4">
+    <div class="poe-card poe-search-toolbar mb-4">
 
         <form method="GET" action="{{ route('controlecp.administrador.repositorio.poe.index') }}" class="row g-2 align-items-center" id="formBuscarPoe">
             <div class="col-12 col-md-8 col-lg-8">
@@ -372,7 +448,7 @@
             </div>
             <div class="col-6 col-md-2 col-lg-2 d-grid">
                 <button type="submit" class="btn btn-ecp-navy py-2">
-                    Buscar
+                    <i class="fas fa-search me-1"></i> Buscar
                 </button>
             </div>
             <div class="col-6 col-md-2 col-lg-2 d-grid">
@@ -496,7 +572,7 @@
                             </td>
 
                             <td class="text-center">
-                                <div class="d-inline-flex align-items-center gap-1">
+                                <div class="poe-row-actions">
 
                                     @if($vActual)
                                         @if($vActual->formato === 'PDF')
@@ -591,19 +667,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body">
-
-                    <div class="mb-3">
-                        <label for="codigoPoe" class="form-label fw-semibold text-dark">Código del Documento <span class="text-danger">*</span></label>
-                        <input type="text"
-                               name="codigo"
-                               id="codigoPoe"
-                               class="form-control"
-                               placeholder="Ej: ASIG-SGC-M-001"
-                               required
-                               style="font-family: monospace; text-transform: uppercase;">
-
-                        <div class="form-text">Código único de identificación de calidad del POE.</div>
-                    </div>
 
                     <div class="mb-3">
                         <label for="nombrePoe" class="form-label fw-semibold text-dark">Nombre del Procedimiento <span class="text-danger">*</span></label>
@@ -1132,7 +1195,6 @@
 
 @push('scripts')
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     // Inicializar tooltips de Bootstrap 5

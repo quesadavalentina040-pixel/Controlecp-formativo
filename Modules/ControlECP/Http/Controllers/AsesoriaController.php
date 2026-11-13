@@ -21,8 +21,8 @@ use Modules\ControlECP\Http\Requests\CancelarAsesoriaRequest;
 use Modules\ControlECP\Http\Requests\CorregirSeguimientoRequest;
 use Modules\ControlECP\Http\Requests\ProgramarAsesoriaRequest;
 use Modules\ControlECP\Http\Requests\ReprogramarAsesoriaRequest;
-use Modules\ControlECP\Http\Requests\StoreAsesoriaRequest;
 use Modules\ControlECP\Http\Requests\StoreSeguimientoRequest;
+use Modules\ControlECP\Rules\NotWeekendOrColombianHoliday;
 use Modules\SICA\Entities\Inventory;
 
 class AsesoriaController extends Controller // Controlador administrativo para solicitudes, programaciÃ³n y seguimiento de asesorÃ­as.
@@ -42,20 +42,23 @@ class AsesoriaController extends Controller // Controlador administrativo para s
     {
         if ($res = $this->verificarAccesoAdmin()) return /* Devuelve el resultado de este método. */ $res; // Guarda la respuesta del control de acceso para detener la acciÃ³n solo si fue denegada.
 
-        $indicadores = [ // Indicadores reales desde la base de datos | Cada where agrega una condiciÃ³n SQL y count ejecuta un conteo sin traer todas las filas.
-            'solicitadas' => Asesoria::where('estado', 'Solicitada')->count(),
-            'programadas' => Asesoria::where('estado', 'Programada')->count(),
-            'realizadas'  => Asesoria::where('estado', 'Realizada')->count(),
-            'sin_asignar' => Asesoria::whereNull('id_usuario_instructor')->where('estado', '!=', 'Cancelada')->count(),
-            'canceladas'  => Asesoria::where('estado', 'Cancelada')->count(),
+        $solicitudesRecibidas = Asesoria::where('id_usuario_instructor', Auth::id())
+            ->whereHas('usuarioRegistro.roles', fn ($query) => $query->where('slug', 'controlecp.apprentice'));
+        $indicadores = [
+            'solicitadas' => (clone $solicitudesRecibidas)->where('estado', 'Solicitada')->count(),
+            'programadas' => (clone $solicitudesRecibidas)->where('estado', 'Programada')->count(),
+            'realizadas'  => (clone $solicitudesRecibidas)->where('estado', 'Realizada')->count(),
+            'rechazadas'  => (clone $solicitudesRecibidas)->where('estado', 'Rechazada')->count(),
+            'canceladas'  => (clone $solicitudesRecibidas)->where('estado', 'Cancelada')->count(),
         ];
 
-        $query = Asesoria::with([ // ConstrucciÃ³n de consulta con filtros | with carga las relaciones de antemano para evitar una consulta adicional por cada asesorÃ­a.
+        $query = (clone $solicitudesRecibidas)->with([
             'categoria',
             'aprendiz.person',
             'instructor.person',
             'usuarioRegistro.person',
             'usuarioCancelador.person',
+            'calificacion.aprendiz',
             'historial',
             'seguimientos',
             'recursos.inventario.element',
@@ -63,14 +66,6 @@ class AsesoriaController extends Controller // Controlador administrativo para s
 
         if ($request->filled('categoria_id')) { // Filtro por categorÃ­a | filled solo activa el filtro si categorÃ­a_id existe y tiene un valor no vacÃ­o.
             $query->where('id_categoria_asesoria', $request->categoria_id); // where agrega a la consulta la igualdad entre la columna y el filtro recibido.
-        }
-
-        if ($request->filled('instructor_id')) { // Filtro por instructor o sin asignar | Se comprueba que haya un filtro; la cadena especial representa filas sin instructor asignado.
-            if ($request->instructor_id === 'sin_asignar') {
-                $query->whereNull('id_usuario_instructor'); // whereNull filtra filas cuyo instructor estÃ¡ guardado como NULL.
-            } else {
-                $query->where('id_usuario_instructor', $request->instructor_id); // En otro caso, where busca coincidencia exacta con el id seleccionado.
-            }
         }
 
         if ($request->filled('estado')) { // Filtro por estado | Solo incorpora la condiciÃ³n de estado cuando el formulario enviÃ³ un valor.
@@ -100,12 +95,41 @@ class AsesoriaController extends Controller // Controlador administrativo para s
 
         $asesorias = $query->orderBy('fecha', 'desc') // orderBy ordena primero por fecha y luego por hora, paginate consulta una pÃ¡gina y withQueryString conserva filtros en los enlaces.
             ->orderBy('hora_inicio', 'desc')
-            ->paginate(6)
+            ->paginate(10)
             ->withQueryString();
 
-        $graficas = $this->obtenerDatosGraficas(); // Datos para grÃ¡ficas (dÃ­a, semana, trimestre) | El mÃ©todo auxiliar realiza los conteos agrupados que consumen las grÃ¡ficas.
+        $asesorias->getCollection()->each(function ($asesoria) {
+            $asesoria->setAttribute('hora_inicio_formateada', str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($asesoria->hora_inicio)->format('g:i a')));
+            $asesoria->setAttribute('hora_fin_formateada', str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($asesoria->hora_fin)->format('g:i a')));
+        });
+        $calendarioAsesorias = (clone $solicitudesRecibidas)
+            ->where('estado', '!=', 'Rechazada')
+            ->with(['categoria', 'aprendiz.person'])
+            ->orderBy('fecha')->orderBy('hora_inicio')->get()
+            ->map(fn (Asesoria $asesoria) => [
+                'id' => $asesoria->id_asesoria,
+                'fecha' => $asesoria->fecha?->format('Y-m-d'),
+                'inicio' => substr($asesoria->hora_inicio, 0, 5),
+                'fin' => substr($asesoria->hora_fin, 0, 5),
+                'aprendiz' => $asesoria->aprendiz?->full_name ?? 'No registrado',
+                'categoria' => $asesoria->categoria?->nombre ?? 'Sin categoría',
+                'estado' => $asesoria->estado,
+                'motivo' => $asesoria->motivo,
+            ]);
 
-        $categorias = CategoriaAsesoria::withCount('instructores')->orderBy('nombre')->get(); // Listados para selectores y modales | withCount agrega el nÃºmero de instructores relacionados; orderBy ordena y get ejecuta la consulta.
+        $graficas = $this->obtenerDatosGraficas();
+
+        $categorias = CategoriaAsesoria::where(function ($query) {
+            $query->whereNull('id_administrador')->orWhere('id_administrador', Auth::id());
+        })->orderBy('nombre')->get(); // Incluye las categorÃ­as heredadas y las propias del administrador actual.
+        $categoriasDisponibilidad = CategoriaAsesoria::where('estado', 'Activa')
+            ->orderBy('nombre')->get();
+        $categoriaDisponibilidadSeleccionada = DB::table('disponibilidad_categoria_usuario')
+            ->where('id_usuario', Auth::id())
+            ->value('id_categoria_asesoria')
+            ?? DisponibilidadInstructor::where('id_usuario', Auth::id())
+                ->where('vigente', true)->orderByDesc('id_disponibilidad_instructor')
+                ->value('id_categoria_asesoria');
 
         $instructores = User::whereHas('roles', function ($q) { // whereHas limita usuarios por su relaciÃ³n de roles; el callback agrega la condiciÃ³n sobre slug. | with carga la persona asociada y get obtiene la colecciÃ³n de instructores.
             $q->where('slug', 'controlecp.instructor');
@@ -120,8 +144,11 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.asesoria', compact( // EnvÃ­a el conjunto de datos ya preparado a la vista administrativa.
             'indicadores',
             'asesorias',
+            'calendarioAsesorias',
             'graficas',
             'categorias',
+            'categoriasDisponibilidad',
+            'categoriaDisponibilidadSeleccionada',
             'instructores',
             'aprendices',
             'inventarios'
@@ -155,7 +182,8 @@ class AsesoriaController extends Controller // Controlador administrativo para s
                 'fecha_formateada'   => $asesoria->fecha ? $asesoria->fecha->format('d/m/Y') : null,
                 'hora_inicio'        => substr($asesoria->hora_inicio, 0, 5),
                 'hora_fin'           => substr($asesoria->hora_fin, 0, 5),
-                'fecha_solicitud'    => $asesoria->fecha_solicitud ? $asesoria->fecha_solicitud->format('d/m/Y H:i') : null,
+                'horario_formateado' => str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($asesoria->hora_inicio)->format('g:i a')) . ' - ' . str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($asesoria->hora_fin)->format('g:i a')),
+                'fecha_solicitud'    => $asesoria->fecha_solicitud ? str_replace(['am', 'pm'], ['a. m.', 'p. m.'], $asesoria->fecha_solicitud->format('d/m/Y g:i a')) : null,
                 'categoria'          => $asesoria->categoria ? $asesoria->categoria->nombre : 'Sin categorÃ­a',
                 'id_categoria_asesoria' => $asesoria->id_categoria_asesoria,
                 'aprendiz'           => [
@@ -175,11 +203,11 @@ class AsesoriaController extends Controller // Controlador administrativo para s
                         'accion'         => $h->accion,
                         'motivo'         => $h->motivo,
                         'fecha_anterior' => $h->fecha_anterior ? $h->fecha_anterior->format('d/m/Y') : null,
-                        'hora_anterior'  => $h->hora_anterior ? substr($h->hora_anterior, 0, 5) : null,
+                        'hora_anterior'  => $h->hora_anterior ? str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($h->hora_anterior)->format('g:i a')) : null,
                         'fecha_nueva'    => $h->fecha_nueva ? $h->fecha_nueva->format('d/m/Y') : null,
-                        'hora_nueva'     => $h->hora_nueva ? substr($h->hora_nueva, 0, 5) : null,
+                        'hora_nueva'     => $h->hora_nueva ? str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($h->hora_nueva)->format('g:i a')) : null,
                         'usuario'        => $h->usuario ? $h->usuario->full_name : 'Usuario',
-                        'fecha'          => $h->fecha ? $h->fecha->format('d/m/Y H:i') : null,
+                        'fecha'          => $h->fecha ? str_replace(['am', 'pm'], ['a. m.', 'p. m.'], $h->fecha->format('d/m/Y g:i a')) : null,
                     ];
                 }),
                 'seguimientos'       => $asesoria->seguimientos->map(function ($s) { // Convierte los seguimientos a un arreglo simple; las relaciones opcionales se protegen con ternarios.
@@ -191,7 +219,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
                         'motivo_correccion' => $s->motivo_correccion,
                         'es_correccion'     => !is_null($s->id_asesoria_seguimiento_corrige),
                         'usuario'           => $s->usuario ? $s->usuario->full_name : 'Usuario',
-                        'fecha'             => $s->fecha ? $s->fecha->format('d/m/Y H:i') : null,
+                        'fecha'             => $s->fecha ? str_replace(['am', 'pm'], ['a. m.', 'p. m.'], $s->fecha->format('d/m/Y g:i a')) : null,
                     ];
                 }),
                 'recursos'           => $asesoria->recursos->map(function ($r) { // Recorre recursos y usa la relaciÃ³n inventario.element para mostrar el nombre disponible.
@@ -207,6 +235,8 @@ class AsesoriaController extends Controller // Controlador administrativo para s
 
     private function obtenerDatosGraficas() // Calcula datos para las grÃ¡ficas simples (dÃ­a, semana, trimestre) | obtenerDatosGraficas(): Calcula las series resumidas de asesorÃ­as; se usa para alimentar las grÃ¡ficas del panel.
     {
+        $solicitudesRecibidas = Asesoria::where('id_usuario_instructor', Auth::id())
+            ->whereHas('usuarioRegistro.roles', fn ($query) => $query->where('slug', 'controlecp.apprentice'));
         $hoy = Carbon::today(); // today crea una fecha de hoy sin hora; year extrae el aÃ±o que se usarÃ¡ en los conteos trimestrales.
         $anioActual = $hoy->year;
 
@@ -215,7 +245,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         for ($i = 6; $i >= 0; $i--) { // El for itera del sexto dÃ­a atrÃ¡s hasta hoy para formar una serie de siete dÃ­as.
             $f = $hoy->copy()->subDays($i);
             $diasLabels[] = $f->translatedFormat('D d');
-            $diasValores[] = Asesoria::whereDate('fecha', $f->format('Y-m-d'))->count(); // whereDate filtra por dÃ­a calendario y count devuelve el total de asesorÃ­as para esa fecha.
+            $diasValores[] = (clone $solicitudesRecibidas)->whereDate('fecha', $f->format('Y-m-d'))->count();
         }
 
         $inicioSemana = $hoy->copy()->startOfWeek(); // 2. Por semana (dÃ­as Lunes a SÃ¡bado de la semana actual)
@@ -223,14 +253,14 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         $semanaValores = [];
         for ($d = 0; $d < 6; $d++) { // Repite el conteo para lunes a sÃ¡bado, calculando la fecha de cada dÃ­a desde el inicio de semana.
             $diaFecha = $inicioSemana->copy()->addDays($d);
-            $semanaValores[] = Asesoria::whereDate('fecha', $diaFecha->format('Y-m-d'))->count();
+            $semanaValores[] = (clone $solicitudesRecibidas)->whereDate('fecha', $diaFecha->format('Y-m-d'))->count();
         }
 
         $trimestres = [ // 3. Por trimestre del aÃ±o actual (T1 a T4) | Cada cadena whereYear/whereMonth agrega lÃ­mites de aÃ±o y meses antes de ejecutar count.
-            'T1 (Ene-Mar)' => Asesoria::whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 1)->whereMonth('fecha', '<=', 3)->count(),
-            'T2 (Abr-Jun)' => Asesoria::whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 4)->whereMonth('fecha', '<=', 6)->count(),
-            'T3 (Jul-Sep)' => Asesoria::whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 7)->whereMonth('fecha', '<=', 9)->count(),
-            'T4 (Oct-Dic)' => Asesoria::whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 10)->whereMonth('fecha', '<=', 12)->count(),
+            'T1 (Ene-Mar)' => (clone $solicitudesRecibidas)->whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 1)->whereMonth('fecha', '<=', 3)->count(),
+            'T2 (Abr-Jun)' => (clone $solicitudesRecibidas)->whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 4)->whereMonth('fecha', '<=', 6)->count(),
+            'T3 (Jul-Sep)' => (clone $solicitudesRecibidas)->whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 7)->whereMonth('fecha', '<=', 9)->count(),
+            'T4 (Oct-Dic)' => (clone $solicitudesRecibidas)->whereYear('fecha', $anioActual)->whereMonth('fecha', '>=', 10)->whereMonth('fecha', '<=', 12)->count(),
         ];
 
         return /* Devuelve el resultado de este mï¿½todo. */ [ // Devuelve etiquetas y series con la forma que espera el componente de grÃ¡ficas.
@@ -265,8 +295,10 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         $hInicio = substr($horaInicio, 0, 5);
         $hFin = substr($horaFin, 0, 5);
 
-        $instructoresIds = InstructorCategoria::where('id_categoria_asesoria', $categoriaId) // where filtra la tabla intermedia por categorÃ­a y pluck obtiene solo los ids vinculados.
-            ->pluck('id_usuario');
+        $categoria = CategoriaAsesoria::find($categoriaId);
+        $instructoresIds = $categoria && $categoria->id_administrador
+            ? collect([$categoria->id_administrador])
+            : InstructorCategoria::where('id_categoria_asesoria', $categoriaId)->pluck('id_usuario');
 
         if ($instructoresIds->isEmpty()) { // Si la categorÃ­a aÃºn no tiene instructores vinculados, permitimos a los instructores del sistema | isEmpty detecta colecciÃ³n vacÃ­a; whereHas filtra usuarios por rol y pluck trae Ãºnicamente sus ids.
             $instructoresIds = User::whereHas('roles', function ($q) {
@@ -274,19 +306,22 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             })->pluck('id');
         }
 
-        $conFranjaIds = DisponibilidadInstructor::whereIn('id_usuario', $instructoresIds) // 2. Instructores que tienen franja de disponibilidad habilitada y vigente para este horario | whereIn limita a los ids candidatos; las demÃ¡s condiciones cotejan vigencia y que la franja cubra todo el horario.
+        $conFranjaQuery = DisponibilidadInstructor::whereIn('id_usuario', $instructoresIds) // 2. Instructores que tienen franja de disponibilidad habilitada y vigente para este horario | whereIn limita a los ids candidatos; las demÃ¡s condiciones cotejan vigencia y que la franja cubra todo el horario.
             ->where('anio', $anio)
             ->where('trimestre', $trimestre)
             ->where('dia_semana', $diaSemana)
             ->where('habilitada', true)
             ->where('vigente', true)
             ->where('hora_inicio', '<=', $hInicio)
-            ->where('hora_fin', '>=', $hFin)
-            ->pluck('id_usuario');
+            ->where('hora_fin', '>=', $hFin);
+        if ($categoria?->id_administrador) {
+            $conFranjaQuery->where('id_categoria_asesoria', $categoria->id_categoria_asesoria);
+        }
+        $conFranjaIds = $conFranjaQuery->pluck('id_usuario');
 
         $ocupadosIds = Asesoria::whereIn('id_usuario_instructor', $instructoresIds) // 3. Filtrar instructores que tengan un cruce real de horario con otra asesorÃ­a activa | when aÃ±ade una condiciÃ³n solo si ya se estÃ¡ editando una asesorÃ­a; el grupo de where verifica solapamiento.
             ->whereDate('fecha', $fecha->format('Y-m-d'))
-            ->where('estado', '!=', 'Cancelada')
+            ->whereNotIn('estado', ['Cancelada', 'Rechazada'])
             ->when($asesoriaId, function ($q) use ($asesoriaId) {
                 $q->where('id_asesoria', '!=', $asesoriaId);
             })
@@ -297,6 +332,9 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             ->pluck('id_usuario_instructor');
 
         $candidatosSinCruce = $instructoresIds->diff($ocupadosIds); // Instructores libres sin cruce de horario | diff resta de la colecciÃ³n de candidatos los ids que aparecen ocupados.
+        if ($categoria?->id_administrador) {
+            $candidatosSinCruce = $candidatosSinCruce->intersect($conFranjaIds);
+        }
 
         $instructores = User::whereIn('id', $candidatosSinCruce)->with('person')->get()->map(function ($u) use ($conFranjaIds) { // Se construye el listado dando prioridad a los instructores con franja habilitada | whereIn consulta los candidatos, with precarga la persona, get ejecuta la bÃºsqueda y map adapta cada usuario.
             $tieneFranja = $conFranjaIds->contains($u->id); // contains comprueba si el id estÃ¡ entre quienes tienen una franja coincidente.
@@ -317,60 +355,6 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         ]);
     }
 
-    public function store(StoreAsesoriaRequest $request) // Registra una nueva solicitud de asesorÃ­a | store(): Valida y registra una nueva asesorÃ­a; se usa al enviar el formulario de creaciÃ³n.
-    {
-        if ($res = $this->verificarAccesoAdmin()) return /* Devuelve el resultado de este método. */ $res; // StoreAsesoriaRequest valida los datos antes de entrar aquÃ­; este control restringe ademÃ¡s el rol administrador.
-
-        $idInstructor = $request->filled('id_usuario_instructor') ? $request->id_usuario_instructor : null; // filled trata cadenas vacÃ­as como no informadas; en ese caso se guarda null como instructor pendiente.
-        $estado = 'Solicitada';
-
-        if ($idInstructor) { // Si se seleccionÃ³ un instructor, validar cruces antes de guardar
-            $hInicio = substr($request->hora_inicio, 0, 5); // substr reduce la hora a HH:MM para comparar valores recibidos con el formato de base de datos.
-            $hFin = substr($request->hora_fin, 0, 5);
-
-            $hayCruce = Asesoria::where('id_usuario_instructor', $idInstructor) // where encadena restricciones SQL y exists pregunta si hay alguna fila coincidente, sin cargarla completa.
-                ->whereDate('fecha', $request->fecha)
-                ->where('estado', '!=', 'Cancelada')
-                ->where(function ($q) use ($hInicio, $hFin) {
-                    $q->where('hora_inicio', '<', $hFin)
-                      ->where('hora_fin', '>', $hInicio);
-                })
-                ->exists();
-
-            if ($hayCruce) {
-                session()->flash('modal_abrir', 'modalNuevaSolicitud'); // flash conserva el modal que debe reabrirse; back devuelve al formulario y repone entrada y errores.
-                return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withInput()->withErrors([
-                    'id_usuario_instructor' => 'El instructor seleccionado tiene un cruce de horario con otra asesorÃ­a.'
-                ])->with('error', 'Existe un cruce con otra asesorÃ­a o sesiÃ³n en ese horario.');
-            }
-
-            $estado = 'Programada';
-        }
-
-        $asesoria = new Asesoria(); // new crea un modelo aÃºn no persistido; estas asignaciones mapean datos validados a sus columnas.
-        $asesoria->id_categoria_asesoria = $request->id_categoria_asesoria;
-        $asesoria->id_usuario_aprendiz   = $request->id_usuario_aprendiz;
-        $asesoria->id_usuario_instructor = $idInstructor;
-        $asesoria->id_usuario_registro   = Auth::id();
-        $asesoria->motivo                = $request->motivo;
-        $asesoria->fecha                 = $request->fecha;
-        $asesoria->hora_inicio           = $request->hora_inicio;
-        $asesoria->hora_fin              = $request->hora_fin;
-        $asesoria->estado                = $estado;
-        $asesoria->fecha_solicitud       = Carbon::now();
-        $asesoria->save(); // save inserta la asesorÃ­a y asigna su clave generada al modelo.
-
-        if ($idInstructor) { // Si hubo instructor se envÃ­an dos avisos; redirect y with devuelven al listado con mensaje temporal.
-            $this->notificarUsuario($asesoria->aprendiz, 'Tu asesorÃ­a ha sido programada.');
-            $this->notificarUsuario($asesoria->instructor, 'Se te ha asignado una nueva asesorÃ­a.');
-            return /* Envï¿½a al usuario a la ruta indicada despuï¿½s de terminar la acciï¿½n. */ redirect()->route('controlecp.administrador.asesorias.index')
-                ->with('success', 'Solicitud registrada y programada exitosamente con el instructor asignado.');
-        }
-
-        return /* Envï¿½a al usuario a la ruta indicada despuï¿½s de terminar la acciï¿½n. */ redirect()->route('controlecp.administrador.asesorias.index') // Sin instructor se confirma que la solicitud quedÃ³ pendiente en el mismo listado administrativo.
-            ->with('success', 'Solicitud registrada como pendiente (sin asignar).');
-    }
-
     public function update(Request $request, $id) // Actualiza los datos de una asesorÃ­a existente | update(): Actualiza los datos permitidos de una asesorÃ­a existente; se usa al guardar cambios administrativos.
     {
         if ($res = $this->verificarAccesoAdmin()) return /* Devuelve el resultado de este método. */ $res; // Comprueba autorizaciÃ³n y recupera la asesorÃ­a; findOrFail responde 404 para un id desconocido.
@@ -380,18 +364,21 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         $validator = Validator::make($request->all(), [ // all reÃºne entradas para Validator; make define reglas y mensajes personalizados sin guardarlos todavÃ­a.
             'id_usuario_aprendiz'   => 'required|exists:users,id',
             'id_categoria_asesoria' => 'required|exists:categorias_asesoria,id_categoria_asesoria',
-            'fecha'                 => 'required|date',
-            'hora_inicio'           => 'required|date_format:H:i',
-            'hora_fin'              => 'required|date_format:H:i|after:hora_inicio',
+            'fecha'                 => ['required', 'date', new NotWeekendOrColombianHoliday()],
+            'hora_inicio'           => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:15:00'],
+            'hora_fin'              => ['required', 'date_format:H:i', 'after:hora_inicio', 'before_or_equal:15:00'],
             'id_usuario_instructor' => 'nullable|exists:users,id',
-            'motivo'                => 'required|string|min:5',
+            'motivo'                => 'required|string|min:10|max:200',
         ], [
             'id_usuario_aprendiz.required'   => 'El aprendiz es obligatorio.',
             'id_categoria_asesoria.required' => 'La categorÃ­a temÃ¡tica es obligatoria.',
             'fecha.required'                 => 'La fecha es obligatoria.',
             'hora_inicio.required'           => 'La hora de inicio es obligatoria.',
+            'hora_inicio.after_or_equal'     => 'La asesoría debe iniciar a partir de las 8:00 a. m.',
+            'hora_inicio.before'              => 'La asesoría debe iniciar antes de las 3:00 p. m.',
             'hora_fin.required'              => 'La hora de fin es obligatoria.',
             'hora_fin.after'                 => 'La hora de fin debe ser posterior a la hora de inicio.',
+            'hora_fin.before_or_equal'       => 'La asesoría debe finalizar como máximo a las 3:00 p. m.',
             'motivo.required'                => 'El motivo es obligatorio.',
             'motivo.min'                     => 'El motivo debe tener al menos 5 caracteres.',
         ]);
@@ -411,7 +398,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             $hayCruce = Asesoria::where('id_usuario_instructor', $idInstructor) // where aplica los criterios SQL y exists solo comprueba si el solapamiento existe.
                 ->whereDate('fecha', $request->fecha)
                 ->where('id_asesoria', '!=', $id)
-                ->where('estado', '!=', 'Cancelada')
+                ->whereNotIn('estado', ['Cancelada', 'Rechazada'])
                 ->where(function ($q) use ($hInicio, $hFin) {
                     $q->where('hora_inicio', '<', $hFin)
                       ->where('hora_fin', '>', $hInicio);
@@ -459,7 +446,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         $hayCruce = Asesoria::where('id_usuario_instructor', $request->id_usuario_instructor) // ValidaciÃ³n de cruce con otra asesorÃ­a activa del mismo instructor | La consulta excluye el registro actual y las canceladas; exists solo necesita saber si hay coincidencia.
             ->whereDate('fecha', $request->fecha)
             ->where('id_asesoria', '!=', $id)
-            ->where('estado', '!=', 'Cancelada')
+            ->whereNotIn('estado', ['Cancelada', 'Rechazada'])
             ->where(function ($q) use ($hInicio, $hFin) {
                 $q->where('hora_inicio', '<', $hFin)
                   ->where('hora_fin', '>', $hInicio);
@@ -482,8 +469,8 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             $asesoria->estado                = 'Programada';
             $asesoria->save();
 
-            $this->notificarUsuario($asesoria->aprendiz, 'Tu asesorÃ­a ha sido programada.'); // Notifica a las dos personas relacionadas despuÃ©s de guardar la programaciÃ³n.
-            $this->notificarUsuario($asesoria->instructor, 'Se te ha asignado una asesorÃ­a para acompaÃ±amiento.');
+            $this->notificarUsuario($asesoria->aprendiz, 'Tu asesoría ha sido programada.'); // Notifica a las dos personas relacionadas después de guardar la programación.
+            $this->notificarUsuario($asesoria->instructor, 'Se te ha asignado una asesoría para acompañamiento.');
         });
 
         return /* Envï¿½a al usuario a la ruta indicada despuï¿½s de terminar la acciï¿½n. */ redirect()->route('controlecp.administrador.asesorias.index') // Devuelve al listado con una confirmaciÃ³n temporal de la asignaciÃ³n.
@@ -503,8 +490,8 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             $servicio->crear([ // crear recibe los datos para persistir destinatario, causante, mensaje y referencia al evento.
                 'id_usuario_receptor' => $usuario->id,
                 'id_usuario_causante' => Auth::id(),
-                'modulo'              => 'AsesorÃ­as',
-                'titulo'              => 'Novedad en AsesorÃ­a ECP',
+                'modulo'              => 'Asesorías',
+                'titulo'              => 'Novedad en Asesoría ECP',
                 'mensaje'             => $mensaje,
                 'referencia_tipo'     => 'asesoria',
                 'referencia_id'       => $asesoria ? $asesoria->id_asesoria : null,
@@ -533,7 +520,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             $hayCruce = Asesoria::where('id_usuario_instructor', $asesoria->id_usuario_instructor) // Busca otra asesorÃ­a activa del mismo instructor en la fecha nueva y con horas superpuestas.
                 ->whereDate('fecha', $request->fecha)
                 ->where('id_asesoria', '!=', $id)
-                ->where('estado', '!=', 'Cancelada')
+                ->whereNotIn('estado', ['Cancelada', 'Rechazada'])
                 ->where(function ($q) use ($hInicio, $hFin) {
                     $q->where('hora_inicio', '<', $hFin)
                       ->where('hora_fin', '>', $hInicio);
@@ -628,6 +615,12 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         if ($asesoria->estado === 'Realizada') {
             return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('info', 'La asesorÃ­a ya se encuentra marcada como finalizada.');
         }
+
+        $request->validate([
+            'avances'       => ['nullable', 'string', 'min:10', 'max:200'],
+            'compromisos'   => ['nullable', 'string', 'min:10', 'max:200'],
+            'observaciones' => ['nullable', 'string', 'min:10', 'max:200'],
+        ]);
 
         DB::transaction(function () use ($asesoria, $request, $id) { // La transacciÃ³n mantiene consistente el cierre, el seguimiento opcional y las notificaciones.
             $asesoria->estado = 'Realizada'; // Cambiar estado a Realizada
@@ -750,14 +743,14 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         $nombresDias = [ // Esta tabla traduce el nÃºmero de dÃ­a de la base de datos a un nombre legible.
             1 => 'Lunes',
             2 => 'Martes',
-            3 => 'MiÃ©rcoles',
+            3 => 'Miércoles',
             4 => 'Jueves',
             5 => 'Viernes',
             6 => 'SÃ¡bado',
             7 => 'Domingo',
         ];
 
-        $disponibilidades = DisponibilidadInstructor::where('id_usuario', $usuario) // Filtra las franjas vigentes, las ordena por calendario y get ejecuta la consulta. | map convierte cada modelo a un arreglo simple para la respuesta, usando relaciones/valores formateados.
+        $disponibilidades = DisponibilidadInstructor::with('categoria')->where('id_usuario', $usuario) // Filtra las franjas vigentes, las ordena por calendario y get ejecuta la consulta. | map convierte cada modelo a un arreglo simple para la respuesta, usando relaciones/valores formateados.
             ->where('vigente', true)
             ->orderBy('anio', 'desc')
             ->orderBy('trimestre', 'asc')
@@ -767,12 +760,16 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             ->map(function ($d) use ($nombresDias) {
                 return /* Devuelve el resultado de este mï¿½todo. */ [
                     'id'          => $d->id_disponibilidad_instructor,
+                    'categoria_id' => $d->id_categoria_asesoria,
+                    'categoria'   => $d->categoria?->nombre ?? 'Sin categoría',
                     'anio'        => $d->anio,
                     'trimestre'   => 'T' . $d->trimestre,
                     'dia_semana'  => $d->dia_semana,
                     'dia_nombre'  => $nombresDias[$d->dia_semana] ?? "DÃ­a {$d->dia_semana}",
-                    'hora_inicio' => substr($d->hora_inicio, 0, 5),
-                    'hora_fin'    => substr($d->hora_fin, 0, 5),
+                    'hora_inicio' => str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($d->hora_inicio)->format('g:i a')),
+                    'hora_fin'    => str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($d->hora_fin)->format('g:i a')),
+                    'hora_inicio_raw' => substr($d->hora_inicio, 0, 5),
+                    'hora_fin_raw'    => substr($d->hora_fin, 0, 5),
                     'habilitada'  => (bool)$d->habilitada,
                 ];
             });
@@ -783,22 +780,51 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         ]);
     }
 
+    public function guardarCategoriaDisponibilidad(Request $request)
+    {
+        if ($res = $this->verificarAccesoAdmin()) return $res;
+
+        $data = $request->validate([
+            'id_categoria_asesoria' => ['required', 'integer', 'exists:categorias_asesoria,id_categoria_asesoria'],
+        ]);
+        $categoriaActiva = CategoriaAsesoria::where('id_categoria_asesoria', $data['id_categoria_asesoria'])
+            ->where('estado', 'Activa')->exists();
+        if (!$categoriaActiva) {
+            return back()->withErrors(['id_categoria_asesoria' => 'Selecciona una categoría activa.'])
+                ->withInput()->with('modal_abrir', 'modalDisponibilidad');
+        }
+
+        DB::transaction(function () use ($data) {
+            DB::table('disponibilidad_categoria_usuario')->updateOrInsert(
+                ['id_usuario' => Auth::id()],
+                ['id_categoria_asesoria' => (int) $data['id_categoria_asesoria']]
+            );
+            DisponibilidadInstructor::where('id_usuario', Auth::id())
+                ->where('vigente', true)
+                ->update(['id_categoria_asesoria' => (int) $data['id_categoria_asesoria']]);
+        });
+
+        return back()->with('success', 'La categoría de tu disponibilidad fue guardada; tus días y horarios no cambiaron.')
+            ->with('modal_abrir', 'modalDisponibilidad');
+    }
+
     public function guardarDisponibilidad(Request $request) // guardarDisponibilidad(): Valida y guarda la disponibilidad horaria de instructores; se usa al actualizar sus franjas disponibles.
     {
         if ($res = $this->verificarAccesoAdmin()) return /* Devuelve el resultado de este método. */ $res; // No procesa el formulario de agenda hasta confirmar el rol administrador.
 
         $validator = Validator::make($request->all(), [ // all recoge los datos enviados y Validator::make aplica reglas junto a textos de error legibles.
-            'id_usuario'  => ['required', 'exists:users,id'],
             'anio'        => ['required', 'integer', 'min:2024', 'max:2035'],
             'trimestre'   => ['required', 'integer', 'min:1', 'max:4'],
-            'dia_semana'  => ['required', 'integer', 'min:1', 'max:7'],
-            'hora_inicio' => ['required'],
-            'hora_fin'    => ['required', 'after:hora_inicio'],
+            'dia_semana'  => ['required', 'integer', 'min:1', 'max:5'],
+            'hora_inicio' => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:15:00'],
+            'hora_fin'    => ['required', 'date_format:H:i', 'after:hora_inicio', 'before_or_equal:15:00'],
         ], [
-            'id_usuario.required' => 'Debes seleccionar un instructor.',
             'hora_inicio.required'=> 'La hora de inicio es requerida.',
             'hora_fin.required'   => 'La hora de fin es requerida.',
             'hora_fin.after'      => 'La hora de fin debe ser posterior a la de inicio.',
+            'hora_inicio.after_or_equal' => 'La disponibilidad debe iniciar a partir de las 8:00 a. m.',
+            'hora_inicio.before' => 'La disponibilidad debe iniciar antes de las 3:00 p. m.',
+            'hora_fin.before_or_equal' => 'La disponibilidad debe finalizar como máximo a las 3:00 p. m.',
         ]);
 
         if ($validator->fails()) { // fails detecta entradas invÃ¡lidas; flash permite reabrir el modal y back devuelve errores y datos.
@@ -806,15 +832,38 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withErrors($validator)->withInput();
         }
 
+        $categoriaId = DB::table('disponibilidad_categoria_usuario')
+            ->where('id_usuario', Auth::id())->value('id_categoria_asesoria');
+        if (!$categoriaId || !CategoriaAsesoria::where('id_categoria_asesoria', $categoriaId)->where('estado', 'Activa')->exists()) {
+            session()->flash('modal_abrir', 'modalDisponibilidad');
+            return back()->withErrors(['id_categoria_asesoria' => 'Selecciona y guarda una categoría activa antes de agregar franjas.'])->withInput();
+        }
+
+        $hayCruce = DisponibilidadInstructor::where('id_usuario', Auth::id())
+            ->where('anio', $request->anio)
+            ->where('trimestre', $request->trimestre)
+            ->where('dia_semana', $request->dia_semana)
+            ->where('vigente', true)
+            ->where('habilitada', true)
+            ->where('hora_inicio', '<', $request->hora_fin)
+            ->where('hora_fin', '>', $request->hora_inicio)
+            ->exists();
+        if ($hayCruce) {
+            session()->flash('modal_abrir', 'modalDisponibilidad');
+            return back()->withErrors(['hora_inicio' => 'La franja se cruza con otra disponibilidad activa de ese día.'])->withInput();
+        }
+
         DB::transaction(function () use ($request) { // Una transacciÃ³n protege la invalidaciÃ³n de franjas antiguas y el alta de la nueva.
-            DisponibilidadInstructor::where('id_usuario', $request->id_usuario) // Franjas anteriores para el mismo instructor, aÃ±o, trimestre y dÃ­a pasan a vigente=false (conservando historial) | where encadena los cuatro criterios; update modifica en bloque las coincidencias sin borrarlas.
+            DisponibilidadInstructor::where('id_usuario', Auth::id()) // Las franjas anteriores del administrador para ese periodo y día pasan al historial.
                 ->where('anio', $request->anio)
                 ->where('trimestre', $request->trimestre)
                 ->where('dia_semana', $request->dia_semana)
+                ->where('id_categoria_asesoria', $categoriaId)
                 ->update(['vigente' => false]);
 
             $disp = new DisponibilidadInstructor(); // Construye una franja nueva marcada como vigente y habilitada.
-            $disp->id_usuario     = $request->id_usuario;
+            $disp->id_usuario     = Auth::id();
+            $disp->id_categoria_asesoria = $categoriaId;
             $disp->anio           = $request->anio;
             $disp->trimestre      = $request->trimestre;
             $disp->dia_semana     = $request->dia_semana;
@@ -826,8 +875,80 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             $disp->save(); // save inserta la franja y conserva las anteriores como historial.
         });
 
-        return /* Envï¿½a al usuario a la ruta indicada despuï¿½s de terminar la acciï¿½n. */ redirect()->route('controlecp.administrador.asesorias.index') // Vuelve al listado y muestra confirmaciÃ³n temporal de la nueva franja.
-            ->with('success', 'Franja de disponibilidad guardada. Las franjas anteriores pasaron a historial.');
+        return redirect()->route('controlecp.administrador.asesorias.index')
+            ->with('success', 'Tu franja de disponibilidad para la categoría seleccionada fue guardada.')
+            ->with('modal_abrir', 'modalDisponibilidad');
+    }
+
+    public function actualizarDisponibilidad(Request $request, $id)
+    {
+        if ($res = $this->verificarAccesoAdmin()) return $res;
+
+        $disponibilidad = DisponibilidadInstructor::where('id_disponibilidad_instructor', $id)
+            ->where('id_usuario', Auth::id())
+            ->where('vigente', true)
+            ->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'hora_inicio' => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:15:00'],
+            'hora_fin' => ['required', 'date_format:H:i', 'after:hora_inicio', 'before_or_equal:15:00'],
+        ], [
+            'hora_inicio.after_or_equal' => 'La disponibilidad debe iniciar a partir de las 8:00 a. m.',
+            'hora_inicio.before' => 'La hora de inicio debe ser antes de las 3:00 p. m.',
+            'hora_fin.after' => 'La hora de fin debe ser posterior a la de inicio.',
+            'hora_fin.before_or_equal' => 'La disponibilidad debe finalizar como máximo a las 3:00 p. m.',
+        ]);
+
+        if ($validator->fails()) {
+            session()->flash('modal_abrir', 'modalEditarDisponibilidad');
+            session()->flash('modal_id', $disponibilidad->id_disponibilidad_instructor);
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $hayCruce = DisponibilidadInstructor::where('id_usuario', Auth::id())
+            ->where('anio', $disponibilidad->anio)
+            ->where('trimestre', $disponibilidad->trimestre)
+            ->where('dia_semana', $disponibilidad->dia_semana)
+            ->where('vigente', true)
+            ->where('habilitada', true)
+            ->where('id_disponibilidad_instructor', '!=', $disponibilidad->id_disponibilidad_instructor)
+            ->where('hora_inicio', '<', $request->hora_fin)
+            ->where('hora_fin', '>', $request->hora_inicio)
+            ->exists();
+        if ($hayCruce) {
+            session()->flash('modal_abrir', 'modalEditarDisponibilidad');
+            session()->flash('modal_id', $disponibilidad->id_disponibilidad_instructor);
+            return back()->withErrors(['hora_inicio' => 'La franja se cruza con otra disponibilidad activa de ese día.'])->withInput();
+        }
+
+        $disponibilidad->hora_inicio = $request->hora_inicio;
+        $disponibilidad->hora_fin = $request->hora_fin;
+        $disponibilidad->save();
+
+        return redirect()->route('controlecp.administrador.asesorias.index')
+            ->with('success', 'El horario de disponibilidad fue actualizado.')
+            ->with('modal_abrir', 'modalDisponibilidad');
+    }
+
+    public function cambiarEstadoDisponibilidad(Request $request, $id)
+    {
+        if ($res = $this->verificarAccesoAdmin()) return $res;
+
+        $data = $request->validate([
+            'habilitada' => ['required', 'boolean'],
+        ]);
+        $disponibilidad = DisponibilidadInstructor::where('id_disponibilidad_instructor', $id)
+            ->where('id_usuario', Auth::id())
+            ->where('vigente', true)
+            ->firstOrFail();
+        $disponibilidad->habilitada = (bool) $data['habilitada'];
+        $disponibilidad->save();
+
+        return redirect()->route('controlecp.administrador.asesorias.index')
+            ->with('success', $disponibilidad->habilitada
+                ? 'La franja de disponibilidad fue activada.'
+                : 'La franja de disponibilidad fue desactivada.')
+            ->with('modal_abrir', 'modalDisponibilidad');
     }
 
     public function storeCategoria(Request $request) // storeCategoria(): Valida y crea una categorÃ­a de asesorÃ­a; se usa al registrar una nueva opciÃ³n de clasificaciÃ³n.
@@ -836,8 +957,6 @@ class AsesoriaController extends Controller // Controlador administrativo para s
 
         $validator = Validator::make($request->all(), [ // all entrega los campos enviados; Validator construye las reglas y mensajes personalizados.
             'nombre'         => ['required', 'string', 'max:100', 'unique:categorias_asesoria,nombre'],
-            'instructores'   => ['nullable', 'array'],
-            'instructores.*' => ['exists:users,id'],
         ], [
             'nombre.required' => 'El nombre de la categorÃ­a es obligatorio.',
             'nombre.unique'   => 'Ya existe una categorÃ­a con ese nombre.',
@@ -849,13 +968,10 @@ class AsesoriaController extends Controller // Controlador administrativo para s
         }
 
         $categoria = new CategoriaAsesoria(); // Crea el modelo en memoria, limpia el nombre y asigna estado inicial.
+        $categoria->id_administrador = Auth::id();
         $categoria->nombre = trim($request->nombre);
         $categoria->estado = 'Activa';
         $categoria->save(); // save inserta la nueva categorÃ­a.
-
-        if ($request->has('instructores') && is_array($request->instructores)) { // has verifica si llegÃ³ el campo y is_array confirma que contenga una lista antes de sincronizar la relaciÃ³n.
-            $categoria->instructores()->sync($request->instructores); // sync mantiene la relaciÃ³n muchos-a-muchos exactamente con los ids recibidos.
-        }
 
         return /* Envï¿½a al usuario a la ruta indicada despuï¿½s de terminar la acciï¿½n. */ redirect()->route('controlecp.administrador.asesorias.index') // Vuelve a la pantalla administrativa con un aviso temporal.
             ->with('success', "CategorÃ­a '{$categoria->nombre}' creada exitosamente.");
@@ -865,12 +981,12 @@ class AsesoriaController extends Controller // Controlador administrativo para s
     {
         if ($res = $this->verificarAccesoAdmin()) return /* Devuelve el resultado de este método. */ $res; // Requiere el rol administrador para cambiar categorÃ­as.
 
-        $categoria = CategoriaAsesoria::findOrFail($id); // Busca la categorÃ­a o detiene la peticiÃ³n con 404.
+        $categoria = CategoriaAsesoria::where(function ($query) {
+            $query->whereNull('id_administrador')->orWhere('id_administrador', Auth::id());
+        })->findOrFail($id); // Busca una categorÃ­a propia o heredada.
 
         $validator = Validator::make($request->all(), [ // Valida campos y excluye el id actual de la regla unique para permitir que conserve su mismo nombre.
             'nombre'         => ['required', 'string', 'max:100', 'unique:categorias_asesoria,nombre,'.$id.',id_categoria_asesoria'],
-            'instructores'   => ['nullable', 'array'],
-            'instructores.*' => ['exists:users,id'],
         ], [
             'nombre.required' => 'El nombre de la categorÃ­a es obligatorio.',
             'nombre.unique'   => 'Ya existe una categorÃ­a con ese nombre.',
@@ -881,14 +997,11 @@ class AsesoriaController extends Controller // Controlador administrativo para s
             return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->withErrors($validator)->withInput();
         }
 
-        $categoria->nombre = trim($request->nombre); // Limpia el nuevo nombre y save persiste el cambio.
-        $categoria->save();
-
-        if ($request->has('instructores') && is_array($request->instructores)) { // Si hay una lista explÃ­cita de instructores, sync reemplaza las relaciones por esa lista.
-            $categoria->instructores()->sync($request->instructores);
-        } else {
-            $categoria->instructores()->sync([]); // Sin lista recibida se retiran todos los vÃ­nculos existentes.
-        }
+        DB::transaction(function () use ($categoria, $request) {
+            $categoria->id_administrador = Auth::id();
+            $categoria->nombre = trim($request->nombre);
+            $categoria->save();
+        });
 
         return /* Envï¿½a al usuario a la ruta indicada despuï¿½s de terminar la acciï¿½n. */ redirect()->route('controlecp.administrador.asesorias.index') // Regresa al panel para mostrar la confirmaciÃ³n de actualizaciÃ³n.
             ->with('success', "CategorÃ­a '{$categoria->nombre}' actualizada exitosamente.");
@@ -898,9 +1011,14 @@ class AsesoriaController extends Controller // Controlador administrativo para s
     {
         if ($res = $this->verificarAccesoAdmin()) return /* Devuelve el resultado de este método. */ $res; // Solo una cuenta administradora puede activar o desactivar categorÃ­as.
 
-        $categoria = CategoriaAsesoria::findOrFail($id); // Recupera la categorÃ­a o responde 404 si el id no existe.
-        $categoria->estado = ($categoria->estado === 'Activa') ? 'Inactiva' : 'Activa'; // El operador ternario invierte el estado entre Activa e Inactiva.
-        $categoria->save(); // Guarda el valor alternado en la base de datos.
+        $categoria = CategoriaAsesoria::where(function ($query) {
+            $query->whereNull('id_administrador')->orWhere('id_administrador', Auth::id());
+        })->findOrFail($id); // Recupera una categorÃ­a propia o heredada.
+        DB::transaction(function () use ($categoria) {
+            $categoria->id_administrador = Auth::id();
+            $categoria->estado = ($categoria->estado === 'Activa') ? 'Inactiva' : 'Activa';
+            $categoria->save();
+        });
 
         return /* Envï¿½a al usuario a la ruta indicada despuï¿½s de terminar la acciï¿½n. */ redirect()->route('controlecp.administrador.asesorias.index') // Vuelve al catÃ¡logo y muestra cuÃ¡l estado quedÃ³ aplicado.
             ->with('success', "Estado de la categorÃ­a cambiado a '{$categoria->estado}'.");
@@ -992,11 +1110,11 @@ class AsesoriaController extends Controller // Controlador administrativo para s
                         $a->categoria ? $a->categoria->nombre : 'Sin categoria',
                         $a->instructor ? $a->instructor->full_name : 'Sin asignar',
                         $a->fecha ? $a->fecha->format('d/m/Y') : '',
-                        substr($a->hora_inicio, 0, 5),
-                        substr($a->hora_fin, 0, 5),
+                        str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($a->hora_inicio)->format('g:i a')),
+                        str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($a->hora_fin)->format('g:i a')),
                         $a->estado,
                         $a->motivo,
-                        $a->fecha_solicitud ? $a->fecha_solicitud->format('d/m/Y H:i') : '',
+                        $a->fecha_solicitud ? str_replace(['am', 'pm'], ['a. m.', 'p. m.'], $a->fecha_solicitud->format('d/m/Y g:i a')) : '',
                         $a->usuarioCancelador ? $a->usuarioCancelador->full_name : '',
                         $a->motivo_cancelacion ?? '',
                     ], ';');
@@ -1015,7 +1133,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
                 $catNom = e($a->categoria ? $a->categoria->nombre : 'Sin categorÃ­a');
                 $instNom = e($a->instructor ? $a->instructor->full_name : 'Sin asignar');
                 $fechaStr = $a->fecha ? $a->fecha->format('d/m/Y') : '-';
-                $horasStr = substr($a->hora_inicio, 0, 5) . ' - ' . substr($a->hora_fin, 0, 5);
+                $horasStr = str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($a->hora_inicio)->format('g:i a')) . ' - ' . str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::parse($a->hora_fin)->format('g:i a'));
                 $motivoStr = e($a->motivo);
 
                 $filasHtml .= "<tr> // Concatena la fila ya preparada a la cadena de salida.
@@ -1051,7 +1169,7 @@ class AsesoriaController extends Controller // Controlador administrativo para s
                 <div class='header'>
                     <div>
                         <h2>Escuela Cultura de Paz - Reporte de AsesorÃ­as</h2>
-                        <small>Generado el: " . date('d/m/Y H:i') . " | Total asesorÃ­as listadas: " . $asesorias->count() . "</small>
+                        <small>Generado el: " . str_replace(['am', 'pm'], ['a. m.', 'p. m.'], Carbon::now()->format('d/m/Y g:i a')) . " | Total asesorÃ­as listadas: " . $asesorias->count() . "</small>
                     </div>
                     <div style='color: #39A900; font-weight: bold; font-size: 16px;'>Control ECP</div>
                 </div>

@@ -15,9 +15,9 @@ class StoreSeguimientoRequest extends FormRequest // Define autorización y vali
     public function rules(): array // rules() entrega las condiciones de validación para registrar el seguimiento.
     {
         return [ // Devuelve las reglas que Laravel aplicará a los datos.
-            'avances'       => ['required', 'string', 'min:5'], // Exige avances escritos en texto con mínimo cinco caracteres.
-            'compromisos'   => ['required', 'string', 'min:5'], // Exige compromisos escritos en texto con mínimo cinco caracteres.
-            'observaciones' => ['nullable', 'string'], // Permite no enviar observaciones; si se envían, deben ser texto.
+            'avances'       => ['required', 'string', 'min:10', 'max:200'], // Exige avances de 10 a 200 caracteres.
+            'compromisos'   => ['required', 'string', 'min:10', 'max:200'], // Exige compromisos de 10 a 200 caracteres.
+            'observaciones' => ['nullable', 'string', 'min:10', 'max:200'], // Permite observaciones vacías o de 10 a 200 caracteres.
         ];
     }
 
@@ -25,9 +25,13 @@ class StoreSeguimientoRequest extends FormRequest // Define autorización y vali
     {
         return [ // Devuelve el mensaje correspondiente a cada regla.
             'avances.required'     => 'El campo avances es obligatorio.', // Se muestra si no se escribieron avances.
-            'avances.min'          => 'Los avances deben tener al menos 5 caracteres.', // Se muestra si avances es demasiado corto.
+            'avances.min'          => 'Los avances deben tener al menos 10 caracteres.', // Se muestra si avances es demasiado corto.
+            'avances.max'          => 'Los avances no pueden superar los 200 caracteres.',
             'compromisos.required' => 'El campo compromisos es obligatorio.', // Se muestra si no se escribieron compromisos.
-            'compromisos.min'      => 'Los compromisos deben tener al menos 5 caracteres.', // Se muestra si compromisos es demasiado corto.
+            'compromisos.min'      => 'Los compromisos deben tener al menos 10 caracteres.', // Se muestra si compromisos es demasiado corto.
+            'compromisos.max'      => 'Los compromisos no pueden superar los 200 caracteres.',
+            'observaciones.min'    => 'Las observaciones deben tener al menos 10 caracteres.',
+            'observaciones.max'    => 'Las observaciones no pueden superar los 200 caracteres.',
         ];
     }
 

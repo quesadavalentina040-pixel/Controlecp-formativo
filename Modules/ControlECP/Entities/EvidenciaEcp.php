@@ -18,6 +18,7 @@ class EvidenciaEcp extends Model
         'course_id',
         'user_id',
         'tipo',
+        'origen',
         'archivo',
         'enlace',
         'descripcion',

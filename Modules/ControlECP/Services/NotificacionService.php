@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 // Collection representa listas de resultados de Eloquent.
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 // Notification es el modelo que representa los avisos guardados.
 use Modules\ControlECP\Entities\Notification;
 
@@ -337,7 +338,7 @@ class NotificacionService
 
     // Consulta el historial completo con filtros aplicados
     // Permite filtrar avisos y controlar el tamaño de cada página.
-    public function listarHistorial(int $idUsuario, array $filtros = [], int $perPage = 15): LengthAwarePaginator
+    public function listarHistorial(int $idUsuario, array $filtros = [], int $perPage = 10): LengthAwarePaginator
     {
         // Inicia una consulta restringida al usuario y ordenada de más nuevo a más antiguo.
         $query = Notification::where('id_usuario_receptor', $idUsuario)
@@ -346,9 +347,31 @@ class NotificacionService
 
         // Filtro por módulo
         // Aplica este filtro únicamente si se recibió un módulo no vacío.
-        if (!empty($filtros['modulo'])) {
-            // Añade a la consulta la condición del módulo elegido.
-            $query->where('modulo', $filtros['modulo']);
+        if (!empty($filtros['modulo']) && is_string($filtros['modulo'])) {
+            $categorias = $this->categoriasNotificaciones();
+            $categoriaSeleccionada = $filtros['modulo'];
+            $prefijo = str_starts_with($categoriaSeleccionada, 'panel:') ? 'panel:' : 'aprendiz:';
+            $claveCategoria = substr($categoriaSeleccionada, strlen($prefijo));
+
+            if (isset($categorias[$claveCategoria])) {
+                $categoria = $categorias[$claveCategoria];
+                $query->where(function ($subquery) use ($categoria) {
+                    $subquery->whereIn('modulo', $categoria['modulos'])
+                        ->orWhereIn('referencia_tipo', $categoria['referencias']);
+                });
+            } elseif (str_starts_with($categoriaSeleccionada, 'panel:modulo:')) {
+                $modulo = substr($categoriaSeleccionada, strlen('panel:modulo:'));
+                $referencias = $this->referenciasModuloPanel($modulo);
+                $query->where(function ($subquery) use ($modulo, $referencias) {
+                    $subquery->where('modulo', $modulo);
+                    if ($referencias !== []) {
+                        $subquery->orWhereIn('referencia_tipo', $referencias);
+                    }
+                });
+            } else {
+                // Mantiene el filtro histórico para los paneles de instructor y administración.
+                $query->where('modulo', $filtros['modulo']);
+            }
         }
 
         // Filtro por estado
@@ -391,5 +414,94 @@ class NotificacionService
             ->distinct()
             // Ejecuta la consulta y devuelve los valores de esa columna como colección.
             ->pluck('modulo');
+    }
+
+    public function obtenerModulosAprendiz(int $idUsuario): array
+    {
+        $categorias = $this->categoriasNotificaciones();
+        $orden = [
+            'cronograma',
+            'encuestas',
+            'asesorias',
+            'calificacion_actividad',
+            'calificacion_asesoria',
+            'historia',
+            'pqrs',
+        ];
+
+        $modulos = [];
+        foreach ($orden as $categoria) {
+            $modulos['aprendiz:' . $categoria] = $categorias[$categoria]['nombre'];
+        }
+
+        return $modulos;
+    }
+
+    public function obtenerModulosPanel(bool $esInstructor): array
+    {
+        $nombres = $esInstructor
+            ? [
+                'Acompañamiento', 'Fichas', 'Momentos', 'Actividades', 'Cronograma',
+                'Asistencia', 'Evidencias', 'Historias', 'Encuestas', 'Tabulación',
+                'Asesorías', 'Certificados', 'Inventario', 'PQRS', 'Reportes',
+            ]
+            : [
+                'Usuarios', 'Fichas', 'Momentos', 'Actividades', 'Cronograma',
+                'Asistencia', 'Evidencias', 'Historias', 'Encuestas', 'Tabulación',
+                'POE', 'Asesorías', 'Certificados', 'Inventario', 'PQRS', 'Reportes',
+            ];
+
+        $modulos = [];
+        foreach ($nombres as $nombre) {
+            $modulos['panel:modulo:' . $nombre] = $nombre;
+        }
+
+        return $modulos;
+    }
+
+    private function buscarCategoriaNotificacion(string $tipoReferencia, string $moduloNormalizado): ?string
+    {
+        foreach ($this->categoriasNotificaciones() as $clave => $categoria) {
+            if (in_array($tipoReferencia, $categoria['referencias'], true)
+                || in_array($moduloNormalizado, $categoria['modulos_normalizados'], true)) {
+                return $clave;
+            }
+        }
+
+        return null;
+    }
+
+    private function categoriasNotificaciones(): array
+    {
+        return [
+            'cronograma' => ['nombre' => 'Cronograma', 'modulos' => ['Cronograma'], 'modulos_normalizados' => ['cronograma'], 'referencias' => ['acompanamiento', 'acompaniamiento', 'cronograma']],
+            'asesorias' => ['nombre' => 'Asesorías', 'modulos' => ['Asesorías', 'AsesorÃ­as'], 'modulos_normalizados' => ['asesorias'], 'referencias' => ['asesoria', 'asesorias']],
+            'encuestas' => ['nombre' => 'Encuestas', 'modulos' => ['Encuestas'], 'modulos_normalizados' => ['encuestas'], 'referencias' => ['encuesta']],
+            'calificacion_actividad' => ['nombre' => 'Calificación de actividad', 'modulos' => ['Calificación de actividad', 'Calificacion de actividad'], 'modulos_normalizados' => ['calificacion de actividad'], 'referencias' => ['calificacion_actividad', 'calificacion-actividad']],
+            'calificacion_asesoria' => ['nombre' => 'Calificación de asesoría', 'modulos' => ['Calificación de asesoría', 'Calificacion de asesoria'], 'modulos_normalizados' => ['calificacion de asesoria'], 'referencias' => ['calificacion_asesoria', 'calificacion-asesoria']],
+            'calificaciones' => ['nombre' => 'Calificaciones', 'modulos' => ['Calificaciones'], 'modulos_normalizados' => ['calificaciones'], 'referencias' => ['calificacion', 'calificación']],
+            'historia' => ['nombre' => 'Historia', 'modulos' => ['Historia'], 'modulos_normalizados' => ['historia'], 'referencias' => ['historia']],
+            'pqrs' => ['nombre' => 'PQRS', 'modulos' => ['PQRS'], 'modulos_normalizados' => ['pqrs'], 'referencias' => ['pqr', 'pqrs']],
+            'certificaciones' => ['nombre' => 'Certificaciones', 'modulos' => ['Certificaciones', 'Certificación', 'Certificacion'], 'modulos_normalizados' => ['certificaciones', 'certificacion'], 'referencias' => ['certificacion', 'certificacion_pendiente']],
+            'inventario' => ['nombre' => 'Inventario', 'modulos' => ['Inventario'], 'modulos_normalizados' => ['inventario'], 'referencias' => ['inventario']],
+            'repositorio_poe' => ['nombre' => 'Repositorio POE', 'modulos' => ['Repositorio POE'], 'modulos_normalizados' => ['repositorio poe'], 'referencias' => ['poe']],
+        ];
+    }
+
+    private function referenciasModuloPanel(string $modulo): array
+    {
+        return match (Str::lower(Str::ascii($modulo))) {
+            'acompanamiento' => ['acompanamiento', 'acompaniamiento'],
+            'cronograma' => ['cronograma'],
+            'asesorias' => ['asesoria', 'asesorias'],
+            'certificados' => ['certificacion', 'certificacion_pendiente'],
+            'evidencias' => ['evidencia', 'evidencias'],
+            'encuestas' => ['encuesta'],
+            'historias' => ['historia'],
+            'inventario' => ['inventario'],
+            'poe' => ['poe'],
+            'pqrs' => ['pqr', 'pqrs'],
+            default => [],
+        };
     }
 }

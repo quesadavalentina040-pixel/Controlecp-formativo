@@ -25,6 +25,27 @@
         text-align: center;
         pointer-events: none;
     }
+    .report-row-action {
+        display: inline-flex;
+        width: 34px;
+        height: 34px;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: 1px solid #c9e6fb;
+        border-radius: 10px;
+        background: #eaf5ff;
+        color: #0876bd;
+        transition: background-color .15s ease, color .15s ease, transform .15s ease, box-shadow .15s ease;
+    }
+    .report-row-action:hover,
+    .report-row-action:focus-visible {
+        transform: translateY(-2px);
+        box-shadow: 0 3px 8px rgba(0, 26, 41, .14);
+        background: #0876bd;
+        border-color: #0876bd;
+        color: #fff;
+    }
     .nav-pills-custom .nav-link {
         color: #64748B;
         font-weight: 600;
@@ -333,8 +354,8 @@
                                             @endif
                                         </td>
                                         <td class="text-end pe-4 no-print">
-                                            <a href="{{ route('controlecp.administrador.inventario.show', $r->id_inventario) }}" class="btn btn-sm btn-outline-secondary rounded-pill px-2" title="Ver detalle">
-                                                <i class="fas fa-eye text-primary"></i>
+                                            <a href="{{ route('controlecp.administrador.inventario.show', $r->id_inventario) }}" class="btn report-row-action" title="Ver detalle" aria-label="Ver detalle">
+                                                <i class="fas fa-eye"></i>
                                             </a>
                                         </td>
                                     </tr>

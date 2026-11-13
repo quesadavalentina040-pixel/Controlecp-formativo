@@ -4,6 +4,7 @@ namespace Modules\ControlECP\Http\Requests; // Define el espacio de nombres para
 
 use Illuminate\Foundation\Http\FormRequest; // Importa la clase base de Laravel para validar solicitudes.
 use Illuminate\Support\Facades\Auth; // Importa la herramienta de Laravel que identifica al usuario autenticado.
+use Modules\ControlECP\Rules\NotWeekendOrColombianHoliday;
 
 class PoeProgramacionRequest extends FormRequest // Define autorización y reglas para programar una entrega POE.
 {
@@ -30,6 +31,7 @@ class PoeProgramacionRequest extends FormRequest // Define autorización y regla
                 'required', // Exige indicar una fecha.
                 'date', // Verifica que el valor tenga un formato de fecha válido.
                 'after_or_equal:today', // Exige que la fecha sea hoy o posterior, no una fecha pasada.
+                new NotWeekendOrColombianHoliday(), // Impide programar entregas en fines de semana o festivos nacionales.
             ],
         ];
     }
@@ -45,6 +47,7 @@ class PoeProgramacionRequest extends FormRequest // Define autorización y regla
             'fecha_limite.required'           => 'La fecha límite de subida es obligatoria.', // Avisa si no se indicó la fecha límite.
             'fecha_limite.date'               => 'La fecha límite debe ser una fecha válida.', // Avisa si el valor no se reconoce como fecha.
             'fecha_limite.after_or_equal'     => 'La fecha límite no puede ser anterior a hoy.', // Avisa si se eligió un día pasado.
+            'fecha_limite.not_weekend_or_colombian_holiday' => 'La fecha límite debe ser un día hábil y no festivo nacional de Colombia.',
         ];
     }
 }

@@ -535,7 +535,38 @@
 
         @if($bloques->hasPages())
             <div class="historia-pagination">
-                {{ $bloques->links('pagination::bootstrap-5') }}
+                @if ($bloques->hasPages())
+                    <nav aria-label="Paginación del historial">
+                        <ul class="pagination justify-content-center">
+                            @if ($bloques->onFirstPage())
+                                <li class="page-item disabled"><span class="page-link" aria-hidden="true">&lsaquo;</span></li>
+                            @else
+                                <li class="page-item"><a class="page-link" href="{{ $bloques->previousPageUrl() }}" aria-label="Página anterior">&lsaquo;</a></li>
+                            @endif
+                            @php
+                                $ultimaPaginaMostrada = 0;
+                            @endphp
+                            @for ($pagina = 1; $pagina <= $bloques->lastPage(); $pagina++)
+                                @if ($pagina === 1 || $pagina === $bloques->lastPage() || abs($pagina - $bloques->currentPage()) <= 1)
+                                    @if ($ultimaPaginaMostrada > 0 && $pagina > $ultimaPaginaMostrada + 1)
+                                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                                    @endif
+                                    <li class="page-item {{ $pagina === $bloques->currentPage() ? 'active' : '' }}">
+                                        <a class="page-link" href="{{ $bloques->url($pagina) }}" @if($pagina === $bloques->currentPage()) aria-current="page" @endif>{{ $pagina }}</a>
+                                    </li>
+                                    @php
+                                    $ultimaPaginaMostrada = $pagina;
+                                @endphp
+                                @endif
+                            @endfor
+                            @if ($bloques->hasMorePages())
+                                <li class="page-item"><a class="page-link" href="{{ $bloques->nextPageUrl() }}" aria-label="Página siguiente">&rsaquo;</a></li>
+                            @else
+                                <li class="page-item disabled"><span class="page-link" aria-hidden="true">&rsaquo;</span></li>
+                            @endif
+                        </ul>
+                    </nav>
+                @endif
             </div>
         @endif
     @endif
@@ -560,11 +591,6 @@
                 <input type="hidden" id="bloqueIdEditando" value="">
 
                 <div class="modal-body p-4">
-
-                    <div class="alert alert-light border d-flex align-items-center gap-2 py-2 px-3 mb-4 rounded-3 small">
-                        <i class="fas fa-info-circle text-primary"></i>
-                        <span>Los bloques se ordenarán cronológicamente en la línea de tiempo en zigzag.</span>
-                    </div>
 
                     <div class="mb-3">
                         <label for="campo_titulo" class="form-label fw-bold font-outfit text-dark small mb-1">
@@ -728,7 +754,6 @@
 
 @push('scripts')
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     const RUTA_BASE_HISTORIA = "{{ url('control-ecp/administrador/repositorio/historia') }}";
@@ -795,14 +820,14 @@
         if (tipo === 'imagen') {
             if (bloque.ruta_archivo) {
                 document.getElementById('nota_imagen_actual').classList.remove('d-none');
-                const urlImg = `/storage/${bloque.ruta_archivo}`;
+                const urlImg = `{{ rtrim(asset('storage'), '/') }}/${bloque.ruta_archivo}`;
                 document.getElementById('img_preview').src = urlImg;
                 document.getElementById('contenedor_preview_imagen').classList.remove('d-none');
             }
         } else if (tipo === 'audio') {
             if (bloque.ruta_archivo) {
                 document.getElementById('nota_audio_actual').classList.remove('d-none');
-                const urlAudio = `/storage/${bloque.ruta_archivo}`;
+                const urlAudio = `{{ rtrim(asset('storage'), '/') }}/${bloque.ruta_archivo}`;
                 const audioEl = document.getElementById('audio_preview');
                 audioEl.src = urlAudio;
                 document.getElementById('contenedor_preview_audio').classList.remove('d-none');

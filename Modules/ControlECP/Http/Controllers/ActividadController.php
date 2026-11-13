@@ -3,6 +3,7 @@
 namespace Modules\ControlECP\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +51,19 @@ class ActividadController extends Controller
             'actividades_momentos' => $momentos->sum('actividades_count'),
             'fichas'      => Course::where('status', 'Activo')->count(),
         ];
+        $actividadesPorPagina = 4;
+        $momentos->each(function ($momento) use ($request, $actividadesPorPagina) {
+            $pageName = 'momento_' . $momento->id . '_page';
+            $page = LengthAwarePaginator::resolveCurrentPage($pageName);
+            $actividadesMomento = $momento->actividades;
+            $momento->setAttribute('actividades_paginadas', new LengthAwarePaginator(
+                $actividadesMomento->forPage($page, $actividadesPorPagina)->values(),
+                $actividadesMomento->count(),
+                $actividadesPorPagina,
+                $page,
+                ['path' => $request->url(), 'query' => $request->query(), 'pageName' => $pageName]
+            ));
+        });
 
         return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.actividades', compact(
             'momentos', 'encuestasActivas', 'stats'
@@ -71,13 +85,15 @@ class ActividadController extends Controller
         $request->validate([
             'momento_id'  => 'required|exists:controlecp_momentos,id',
             'nombre'      => 'required|string|max:200',
-            'objetivo'    => 'required|string',
+            'descripcion' => 'nullable|string|min:10|max:200',
+            'objetivo'    => 'required|string|min:10|max:200',
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
         ], [
             'momento_id.required'  => 'Debes seleccionar un momento.',
             'nombre.required'      => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'    => 'El objetivo pedagógico es obligatorio.',
+            'objetivo.min'         => 'El objetivo pedagógico debe tener al menos 10 caracteres.',
             'duracion.required'    => 'La duración es obligatoria.',
             'duracion_min.required'=> 'La duración en minutos es obligatoria.',
         ]);
@@ -140,13 +156,15 @@ class ActividadController extends Controller
 
         $request->validate([
             'nombre'      => 'required|string|max:200',
-            'objetivo'    => 'required|string',
+            'descripcion' => 'nullable|string|min:10|max:200',
+            'objetivo'    => 'required|string|min:10|max:200',
             'duracion'    => 'required|string|max:30',
             'duracion_min'=> 'required|integer|min:15',
             'momento_id'  => 'required|exists:controlecp_momentos,id',
         ], [
             'nombre.required'  => 'El nombre de la actividad es obligatorio.',
             'objetivo.required'=> 'El objetivo pedagógico es obligatorio.',
+            'objetivo.min'     => 'El objetivo pedagógico debe tener al menos 10 caracteres.',
         ]);
 
         $momentoId = (int) $request->momento_id;
@@ -450,6 +468,7 @@ class ActividadController extends Controller
             $request->validate([
                 'archivo'   => 'required|image|mimes:jpg,jpeg,png|max:5120', // 5 MB
                 'course_id' => 'required|exists:courses,id',
+                'descripcion' => 'nullable|string|min:10|max:200',
             ], [
                 'archivo.required' => 'Debes seleccionar una foto.',
                 'archivo.image'    => 'El archivo debe ser una imagen.',
@@ -467,6 +486,7 @@ class ActividadController extends Controller
                 'course_id'      => $request->course_id,
                 'user_id'        => $usuario->id,
                 'tipo'           => 'foto',
+                'origen'         => 'actividad',
                 'archivo'        => $path,
                 'descripcion'    => $request->input('descripcion', ''),
                 'fecha_registro' => now(),
@@ -476,6 +496,7 @@ class ActividadController extends Controller
             $request->validate([
                 'enlace'    => 'required|url|max:500',
                 'course_id' => 'required|exists:courses,id',
+                'descripcion' => 'nullable|string|min:10|max:200',
             ], [
                 'enlace.required' => 'Debes ingresar el enlace del video.',
                 'enlace.url'      => 'El enlace debe ser una URL válida (YouTube, Drive, etc.).',
@@ -486,6 +507,7 @@ class ActividadController extends Controller
                 'course_id'      => $request->course_id,
                 'user_id'        => $usuario->id,
                 'tipo'           => 'video',
+                'origen'         => 'actividad',
                 'enlace'         => $request->enlace,
                 'descripcion'    => $request->input('descripcion', ''),
                 'fecha_registro' => now(),
@@ -508,8 +530,8 @@ class ActividadController extends Controller
                 'url'            => $evidencia->url,
                 'descripcion'    => $evidencia->descripcion,
                 'fecha_registro' => $evidencia->fecha_registro
-                    ? $evidencia->fecha_registro->format('d/m/Y H:i')
-                    : now()->format('d/m/Y H:i'),
+                    ? $evidencia->fecha_registro->copy()->timezone('America/Bogota')->format('d/m/Y g:i A')
+                    : null,
                 'usuario'        => $usuario->full_name,
             ],
         ]);
@@ -532,7 +554,7 @@ class ActividadController extends Controller
                 'tipo'           => $e->tipo,
                 'url'            => $e->url,
                 'descripcion'    => $e->descripcion,
-                'fecha_registro' => $e->fecha_registro?->format('d/m/Y H:i') ?? now()->format('d/m/Y H:i'),
+                'fecha_registro' => $e->fecha_registro?->copy()->timezone('America/Bogota')->format('d/m/Y g:i A'),
                 'usuario'        => $e->registradoPor?->full_name ?? 'Desconocido',
                 'ficha'          => $e->ficha ? "{$e->ficha->code} — " . ($e->ficha->program?->name ?? '') : 'Sin ficha',
             ]);

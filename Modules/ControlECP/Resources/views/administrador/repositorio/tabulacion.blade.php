@@ -178,6 +178,62 @@
         color: #ffffff;
         border-color: rgba(255, 255, 255, .75);
     }
+
+    .tabulacion-filter-toolbar {
+        padding: 12px;
+        background: var(--petroleo-ecp);
+        border-color: var(--petroleo-ecp);
+        border-radius: 18px;
+    }
+
+    .tabulacion-filter-toolbar label {
+        color: #ffffff !important;
+    }
+
+    .tabulacion-filter-toolbar .form-select,
+    .tabulacion-filter-toolbar .form-control,
+    .tabulacion-filter-toolbar .btn {
+        min-height: 44px;
+        border-radius: 10px !important;
+    }
+
+    .tabulacion-filter-toolbar .tabulacion-option-search {
+        min-height: 44px;
+        font-size: .88rem;
+    }
+
+    .tabulacion-filter-toolbar .btn-ecp-primary {
+        flex: 1;
+        padding: .55rem .8rem;
+    }
+
+    .tabulacion-filter-toolbar .btn-outline-secondary {
+        flex: 0 0 52px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (min-width: 992px) {
+        .tabulacion-filter-toolbar .tabulacion-filter-row {
+            display: grid;
+            grid-template-columns:
+                minmax(190px, 1.5fr)
+                minmax(155px, 1.2fr)
+                minmax(140px, 1.1fr)
+                minmax(105px, .8fr)
+                minmax(105px, .8fr)
+                minmax(150px, 1.2fr);
+            gap: 12px;
+            margin: 0;
+        }
+
+        .tabulacion-filter-toolbar .tabulacion-filter-row > [class*="col-"] {
+            width: auto;
+            padding: 0;
+        }
+    }
 </style>
 @endpush
 
@@ -199,19 +255,18 @@
 
     </div>
 
-    <div class="tabulacion-card p-3 mb-4">
+    <div class="tabulacion-card tabulacion-filter-toolbar mb-4">
 
         <form method="GET" action="{{ route('controlecp.administrador.repositorio.tabulacion.index') }}" id="formFiltrosTabulacion">
-            <div class="row g-3 align-items-end">
+            <div class="row g-3 align-items-end tabulacion-filter-row">
 
                 <div class="col-12 col-md-4 col-lg-3">
                     <label for="selectEncuesta" class="form-label fw-bold text-dark mb-1" style="font-size: 0.88rem;">
-                        <i class="fa-solid fa-square-poll-vertical me-1 text-success"></i> Seleccionar Encuesta:
+                        <i></i> Seleccionar Encuesta:
                     </label>
                     <select name="id_encuesta" id="selectEncuesta" class="form-select border-primary" onchange="cambiarEncuesta(this.form)">
-
                         @forelse($encuestas as $enc)
-                            <option value="{{ $enc->id_encuesta }}" {{ ($encuestaActual?->id_encuesta == $enc->id_encuesta) ? 'selected' : '' }}>
+                            <option value="{{ $enc->id_encuesta }}" {{ $encuestaActual?->id_encuesta == $enc->id_encuesta ? 'selected' : '' }}>
                                 {{ $enc->nombre }} ({{ $enc->estado }})
                             </option>
                         @empty
@@ -224,28 +279,42 @@
                     <label for="filtroActividad" class="form-label fw-semibold text-muted mb-1" style="font-size: 0.85rem;">
                         Actividad Formativa:
                     </label>
-                    <select name="id_actividad" id="filtroActividad" class="form-select">
-                        <option value="">-- Todas las actividades --</option>
+                    <input type="search"
+                           id="buscarActividad"
+                           class="form-control tabulacion-option-search"
+                           data-filter-options="opcionesActividades"
+                           data-filter-value="filtroActividad"
+                           aria-label="Buscar actividad formativa"
+                           placeholder="Buscar actividad..."
+                           list="opcionesActividades"
+                           autocomplete="off">
+                    <datalist id="opcionesActividades">
                         @foreach($filtrosDisponibles['actividades'] as $act)
-                            <option value="{{ $act->id }}" {{ (request('id_actividad') == $act->id) ? 'selected' : '' }}>
-                                {{ $act->numero ? "{$act->numero}. " : '' }}{{ $act->nombre }}
-                            </option>
+                            <option data-id="{{ $act->id }}" value="{{ $act->numero ? "{$act->numero}. " : '' }}{{ $act->nombre }}"></option>
                         @endforeach
-                    </select>
+                    </datalist>
+                    <input type="hidden" name="id_actividad" id="filtroActividad" value="{{ request('id_actividad') }}">
                 </div>
 
                 <div class="col-12 col-md-4 col-lg-2">
                     <label for="filtroFicha" class="form-label fw-semibold text-muted mb-1" style="font-size: 0.85rem;">
-                        Ficha (Grupo):
+                        Ficha:
                     </label>
-                    <select name="id_ficha" id="filtroFicha" class="form-select">
-                        <option value="">-- Todas --</option>
+                    <input type="search"
+                           id="buscarFicha"
+                           class="form-control tabulacion-option-search"
+                           data-filter-options="opcionesFichas"
+                           data-filter-value="filtroFicha"
+                           aria-label="Buscar ficha"
+                           placeholder="Buscar ficha..."
+                           list="opcionesFichas"
+                           autocomplete="off">
+                    <datalist id="opcionesFichas">
                         @foreach($filtrosDisponibles['fichas'] as $f)
-                            <option value="{{ $f->id }}" {{ (request('id_ficha') == $f->id) ? 'selected' : '' }}>
-                                {{ $f->code }}
-                            </option>
+                            <option data-id="{{ $f->id }}" value="{{ $f->code }}"></option>
                         @endforeach
-                    </select>
+                    </datalist>
+                    <input type="hidden" name="id_ficha" id="filtroFicha" value="{{ request('id_ficha') }}">
                 </div>
 
                 <div class="col-6 col-md-3 col-lg-1">
@@ -274,12 +343,13 @@
 
                 <div class="col-12 col-md-6 col-lg-3 d-flex gap-2">
                     <button type="submit" class="btn btn-ecp-primary flex-grow-1 px-2 py-2" title="Aplicar filtros">
-                        <i class="fa-solid fa-filter me-1"></i> Aplicar
+                        <i class="fas fa-search me-1"></i> Buscar
                     </button>
                     <a href="{{ route('controlecp.administrador.repositorio.tabulacion.index', ['id_encuesta' => $encuestaActual?->id_encuesta]) }}"
                        class="btn btn-outline-secondary px-2 py-2 text-decoration-none"
-                       title="Limpiar filtros">
-                        <i class="fa-solid fa-rotate-left me-1"></i> Limpiar
+                       title="Limpiar filtros"
+                       aria-label="Limpiar filtros">
+                        <i class="fa-solid fa-rotate-left"></i>
                     </a>
                 </div>
 
@@ -700,9 +770,34 @@
 
 @push('scripts')
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.tabulacion-option-search').forEach(function (searchInput) {
+        const options = document.getElementById(searchInput.dataset.filterOptions);
+        const valueInput = document.getElementById(searchInput.dataset.filterValue);
+        if (!options || !valueInput) {
+            return;
+        }
+
+        const matchingOption = function (value) {
+            return Array.from(options.options).find(function (option) {
+                return option.value.toLocaleLowerCase() === value.trim().toLocaleLowerCase();
+            });
+        };
+        const selectedOption = Array.from(options.options).find(function (option) {
+            return option.dataset.id === valueInput.value;
+        });
+        if (selectedOption) {
+            searchInput.value = selectedOption.value;
+        }
+
+        searchInput.addEventListener('input', function () {
+            const option = matchingOption(this.value);
+            valueInput.value = option ? option.dataset.id : '';
+        });
+
+    });
+
     @if(session('warning'))
         Swal.fire({
             icon: 'warning',
@@ -723,7 +818,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function cambiarEncuesta(form) {
-    ['id_actividad', 'id_ficha', 'fecha_desde', 'fecha_hasta'].forEach(function (name) {
+    ['id_actividad', 'id_ficha', 'fecha_desde', 'fecha_hasta', 'buscarActividad', 'buscarFicha'].forEach(function (name) {
         form.elements[name].value = '';
     });
     form.submit();

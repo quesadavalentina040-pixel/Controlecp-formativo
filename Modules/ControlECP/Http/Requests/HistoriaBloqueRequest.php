@@ -26,7 +26,7 @@ class HistoriaBloqueRequest extends FormRequest // Define autorización y reglas
 
         $rules = [ // Inicializa las reglas generales que aplican a cualquier bloque.
             'titulo'         => ['required', 'string', 'max:255'], // Exige un título de texto de hasta 255 caracteres.
-            'texto'          => ['required', 'string'], // Exige que el texto o descripción esté presente y sea texto.
+            'texto'          => ['required', 'string', 'min:10', 'max:200'], // Exige una descripción de 10 a 200 caracteres.
             'tipo_contenido' => ['required', 'in:imagen,audio,video'], // Exige elegir uno de los tipos admitidos.
         ];
 
@@ -84,6 +84,8 @@ class HistoriaBloqueRequest extends FormRequest // Define autorización y reglas
             'titulo.required'         => 'El título del bloque es obligatorio.', // Avisa si no se escribió título.
             'titulo.max'              => 'El título no puede superar los 255 caracteres.', // Avisa si el título supera el límite.
             'texto.required'          => 'El texto o descripción del bloque es obligatorio.', // Avisa si falta el texto descriptivo.
+            'texto.min'               => 'El texto o descripción debe tener al menos 10 caracteres.',
+            'texto.max'               => 'El texto o descripción no puede superar los 200 caracteres.',
             'tipo_contenido.required' => 'Debes seleccionar el tipo de contenido multimedia.', // Avisa si no se eligió un tipo.
             'tipo_contenido.in'       => 'El tipo de contenido debe ser imagen, audio o video.', // Avisa si el tipo no está entre los permitidos.
 

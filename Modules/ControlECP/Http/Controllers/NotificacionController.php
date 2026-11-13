@@ -22,9 +22,13 @@ class NotificacionController extends Controller // Controlador de historial, lec
     {
         $idUsuario = Auth::id(); // Auth::id() obtiene el identificador de la persona que inició sesión.
         $filtros = $request->only(['modulo', 'estado', 'fecha_desde', 'fecha_hasta']); // only() toma únicamente los filtros permitidos de la solicitud, sin aceptar otros parámetros.
+        $esAprendiz = Auth::user()?->hasRole('controlecp.apprentice') ?? false;
+        $esInstructor = Auth::user()?->hasRole('controlecp.instructor') ?? false;
 
         $notificaciones = $this->servicio->listarHistorial($idUsuario, $filtros); // El servicio aplica los filtros y recupera el historial perteneciente al usuario.
-        $modulos = $this->servicio->obtenerModulosDisponibles($idUsuario); // Recupera los módulos disponibles para ofrecerlos como opciones de filtro.
+        $modulos = $esAprendiz
+            ? $this->servicio->obtenerModulosAprendiz($idUsuario)
+            : $this->servicio->obtenerModulosPanel($esInstructor);
 
         $totales = [ // Cuenta todas las notificaciones recibidas por este usuario.
             'total'     => Notification::where('id_usuario_receptor', $idUsuario)->count(),
@@ -32,7 +36,13 @@ class NotificacionController extends Controller // Controlador de historial, lec
             'leidas'    => Notification::where('id_usuario_receptor', $idUsuario)->where('leida', true)->count(), // La segunda condición limita el conteo a las notificaciones ya leídas.
         ];
 
-        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.notificaciones', compact('notificaciones', 'modulos', 'totales', 'filtros')); // Renderiza la vista y compact() entrega variables con esos mismos nombres.
+        $vista = $esAprendiz
+            ? 'controlecp::aprendiz.notificaciones'
+            : ($esInstructor
+                ? 'controlecp::instructor.notificaciones'
+                : 'controlecp::administrador.notificaciones');
+
+        return view($vista, compact('notificaciones', 'modulos', 'totales', 'filtros'));
     }
 
     public function resumen(Request $request): JsonResponse // Retorna datos en formato JSON para la campana y sondeo en tiempo real | resumen(): Devuelve en JSON el resumen y las notificaciones recientes; se usa desde la campana y su sondeo periódico.
@@ -48,22 +58,22 @@ class NotificacionController extends Controller // Controlador de historial, lec
             'ultimo_id'       => $datos['ultimo_id'],
             'nuevas'          => $datos['nuevas']->map(fn($n) => [ // map() transforma cada modelo en un arreglo pequeño para la respuesta.
                 'id'         => $n->id_notificacion,
-                'modulo'     => $n->modulo,
+                'modulo'     => $n->modulo_mostrado,
                 'titulo'     => $n->titulo,
                 'mensaje'    => $n->mensaje,
-                'url'        => $n->url_referencia,
-                'fecha'      => $n->fecha_generacion->diffForHumans(), // Presenta el tiempo en forma relativa, por ejemplo «hace 5 minutos».
+                'url'        => route('controlecp.notificaciones.ir', $n->id_notificacion),
+                'fecha'      => $n->fecha_generacion->copy()->locale('es')->diffForHumans(), // Presenta el tiempo en español de forma relativa.
             ]),
             'recientes'       => $datos['recientes']->map(fn($n) => [ // Convierte también los registros recientes e incluye enlaces y fechas legibles.
                 'id'         => $n->id_notificacion,
-                'modulo'     => $n->modulo,
+                'modulo'     => $n->modulo_mostrado,
                 'titulo'     => $n->titulo,
                 'mensaje'    => $n->mensaje,
                 'cantidad'   => $n->cantidad,
                 'leida'      => $n->leida,
                 'url'        => route('controlecp.notificaciones.ir', $n->id_notificacion),
-                'fecha'      => $n->fecha_generacion->diffForHumans(),
-                'fecha_hora' => $n->fecha_generacion->format('d/m/Y H:i'),
+                'fecha'      => $n->fecha_generacion->copy()->locale('es')->diffForHumans(),
+                'fecha_hora' => $n->fecha_generacion->copy()->timezone('America/Bogota')->format('d/m/Y g:i a'),
             ]),
         ]);
     }
@@ -94,7 +104,7 @@ class NotificacionController extends Controller // Controlador de historial, lec
         return /* Devuelve los datos en formato JSON para la interfaz. */ response()->json([ // Devuelve el nuevo estado, la fecha formateada y el contador para actualizar la interfaz.
             'success'         => true,
             'leida'           => $notif->leida,
-            'fecha_lectura'   => $notif->fecha_lectura ? $notif->fecha_lectura->format('d/m/Y H:i') : null,
+            'fecha_lectura'   => $notif->fecha_lectura ? $notif->fecha_lectura->copy()->timezone('America/Bogota')->format('d/m/Y g:i a') : null,
             'total_no_leidas' => $noLeidas,
         ]);
     }

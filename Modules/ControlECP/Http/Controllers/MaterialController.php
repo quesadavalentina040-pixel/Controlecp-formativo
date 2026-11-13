@@ -93,7 +93,7 @@ class MaterialController extends Controller // Controlador de consulta y manteni
         $validated = $request->validate([ // Valida y obtiene únicamente los datos aceptados antes de guardarlos.
             'codigo'       => 'required|string|max:50|unique:materiales,codigo',
             'nombre'       => 'required|string|max:255',
-            'descripcion'  => 'nullable|string',
+            'descripcion'  => 'nullable|string|min:10|max:200',
             'imagen'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'categoria'    => 'required|in:' . implode(',', Material::CATEGORIAS),
             'cantidad'     => 'required|integer|min:0',
@@ -147,7 +147,7 @@ class MaterialController extends Controller // Controlador de consulta y manteni
         $validated = $request->validate([ // Valida los campos; el código único ignora el material actual.
             'codigo'       => 'required|string|max:50|unique:materiales,codigo,' . $material->id,
             'nombre'       => 'required|string|max:255',
-            'descripcion'  => 'nullable|string',
+            'descripcion'  => 'nullable|string|min:10|max:200',
             'imagen'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:2048',
             'categoria'    => 'required|in:' . implode(',', Material::CATEGORIAS),
             'cantidad'     => 'required|integer|min:0',
