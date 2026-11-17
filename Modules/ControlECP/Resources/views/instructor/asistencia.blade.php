@@ -444,6 +444,9 @@
 
 @section('dashboard-content')
 <div class="asistencia-page container-fluid px-3 py-3">
+    @php
+        $hayFiltros = collect($filtros)->contains(fn ($valor) => filled($valor));
+    @endphp
     <div class="asistencia-hero mb-4">
         <div>
             <div class="hero-eyebrow"><i class="fas fa-chart-line me-2"></i>Control ECP · Panel del instructor</div>
@@ -458,6 +461,7 @@
         <div class="alert alert-danger"><ul class="mb-0">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
     @endif
 
+    @unless($hayFiltros)
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
             <div class="kpi-asistencia h-100" style="border:2px solid rgba(57,169,0,.35);">
@@ -500,12 +504,13 @@
             </div>
         </div>
     </div>
+    @endunless
 
     <div class="asistencia-filter-card">
         <form method="GET" action="{{ route('controlecp.instructor.asistencia') }}" class="asistencia-filters">
                 <div>
                     <label class="form-label" for="filtroFicha">Ficha</label>
-                    <select class="form-select" id="filtroFicha" name="ficha_id">
+                    <select class="form-select" id="filtroFicha" name="ficha_id" onchange="this.form.elements['aprendiz_id'].value = ''; this.form.submit()">
                         <option value="">Todas</option>
                         @foreach($fichas as $ficha)
                             <option value="{{ $ficha->id }}" @selected(($filtros['ficha_id'] ?? '') == $ficha->id)>{{ $ficha->code }}</option>
@@ -514,7 +519,7 @@
                 </div>
                 <div>
                     <label class="form-label" for="filtroActividad">Actividad</label>
-                    <select class="form-select" id="filtroActividad" name="actividad_id">
+                    <select class="form-select" id="filtroActividad" name="actividad_id" onchange="this.form.elements['aprendiz_id'].value = ''; this.form.submit()">
                         <option value="">Todas</option>
                         @foreach($actividades as $actividad)
                             <option value="{{ $actividad->id }}" @selected(($filtros['actividad_id'] ?? '') == $actividad->id)>{{ $actividad->numero }} · {{ $actividad->nombre }}</option>
@@ -523,7 +528,7 @@
                 </div>
                 <div>
                     <label class="form-label" for="filtroEstado">Estado</label>
-                    <select class="form-select" id="filtroEstado" name="estado">
+                    <select class="form-select" id="filtroEstado" name="estado" onchange="this.form.elements['aprendiz_id'].value = ''; this.form.submit()">
                         <option value="">Todos</option>
                         @foreach(['Registrada', 'Anulada', 'Pendiente'] as $estado)
                             <option value="{{ $estado }}" @selected(($filtros['estado'] ?? '') === $estado)>{{ $estado }}</option>
@@ -538,57 +543,13 @@
                 <label class="form-label" for="fechaHasta">Hasta</label>
                 <input class="form-control" id="fechaHasta" type="date" name="fecha_hasta" value="{{ $filtros['fecha_hasta'] ?? '' }}">
                 </div>
-                @if($fichaSeleccionada)
                 <input type="hidden" name="aprendiz_id" value="{{ $filtros['aprendiz_id'] ?? '' }}">
-                @endif
                 <div class="asistencia-filter-actions">
                 <button class="btn asistencia-action-button" type="submit"><i class="fas fa-magnifying-glass me-1"></i>Buscar</button>
                 <a class="btn asistencia-filter-reset" href="{{ route('controlecp.instructor.asistencia') }}" title="Limpiar filtros" aria-label="Limpiar filtros"><i class="fas fa-rotate-left"></i></a>
                 </div>
         </form>
     </div>
-
-    @if($fichaSeleccionada)
-        <section class="card border-0 shadow-sm rounded-4 mb-4">
-            <div class="card-header bg-white border-0 p-4">
-                <h2 class="h5 fw-bold mb-1">Asistencia por aprendiz · Ficha {{ $fichaSeleccionada->code }}</h2>
-                <p class="small text-muted mb-0">Porcentaje calculado sobre las {{ $sesionesRegistradas }} sesiones con asistencia registrada.</p>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 asistencia-table">
-                    <thead class="table-light"><tr><th class="ps-4">Aprendiz</th><th>Documento</th><th>Presentes</th><th>Sesiones registradas</th><th>Porcentaje</th><th></th></tr></thead>
-                    <tbody>
-                    @forelse($aprendicesFicha as $aprendiz)
-                        @php
-                            $presentes = 0;
-                            foreach ($sesionesFicha as $sesionFicha) {
-                                if ($sesionFicha->asistencia?->estado !== 'Registrada') continue;
-                                $detalleFicha = $sesionFicha->asistencia->detalles->firstWhere('aprendiz_id', $aprendiz->id);
-                                if ($detalleFicha?->presente) $presentes++;
-                            }
-                            $porcentaje = $sesionesRegistradas ? round($presentes * 100 / $sesionesRegistradas, 1) : 0;
-                        @endphp
-                        <tr>
-                            <td class="ps-4 fw-semibold">{{ $aprendiz->person?->full_name ?? 'Aprendiz' }}</td>
-                            <td>{{ $aprendiz->person?->document_number ?? '—' }}</td>
-                            <td>{{ $presentes }}</td>
-                            <td>{{ $sesionesRegistradas }}</td>
-                            <td class="fw-semibold">{{ $porcentaje }}%</td>
-                            <td class="text-end pe-4">
-                                <a class="btn btn-sm btn-outline-primary rounded-pill"
-                                   href="{{ route('controlecp.instructor.asistencia', array_merge(request()->query(), ['aprendiz_id' => $aprendiz->id])) }}">
-                                    Ver asistencias
-                                </a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="6" class="text-center text-muted py-4">La ficha no tiene aprendices asociados.</td></tr>
-                    @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    @endif
 
     @if($sesionAprendiz)
         <section class="card border-0 shadow-sm rounded-4 mb-4">
@@ -636,6 +597,7 @@
                     @php
                         $registro = $cronograma->asistencia;
                         $vencida = $cronograma->fecha && $cronograma->fecha->isPast();
+                        $sinAprendices = $aprendicesPorFicha->get($cronograma->id_ficha, collect())->isEmpty();
                         $puedeRegistrar = $cronograma->actividad
                             && !in_array($cronograma->estado, ['Finalizada', 'Cancelada'], true)
                             && !$cronograma->fecha?->isFuture();
@@ -671,7 +633,9 @@
                                     <button class="btn asistencia-row-action asistencia-row-action--history" type="button" data-bs-toggle="modal" data-bs-target="#historial{{ $registro->id }}" title="Ver historial" aria-label="Ver historial"><i class="fas fa-clock-rotate-left"></i></button>
                                 @elseif($cronograma->actividad && !in_array($cronograma->estado, ['Finalizada', 'Cancelada'], true))
                                     <button class="btn asistencia-row-action asistencia-row-action--register" type="button"
-                                            @if($puedeRegistrar) data-bs-toggle="modal" data-bs-target="#registrarAsistencia{{ $cronograma->id_cronograma }}" @else disabled title="Podrás registrar la asistencia el día de la actividad." @endif>
+                                            @if($puedeRegistrar && $sinAprendices) onclick="window.showSystemAlert('No hay aprendices asociados a esta ficha; no es posible guardar la asistencia.', 'warning')"
+                                            @elseif($puedeRegistrar) data-bs-toggle="modal" data-bs-target="#registrarAsistencia{{ $cronograma->id_cronograma }}"
+                                            @else disabled title="Podrás registrar la asistencia el día de la actividad." @endif>
                                         <i class="fas fa-clipboard-check me-1"></i>{{ $registro?->estado === 'Anulada' ? 'Registrar de nuevo' : 'Registrar' }}
                                     </button>
                                 @endif
@@ -883,7 +847,7 @@
                     </div></div>
                 </div>
             @endif
-            @if($cronograma->actividad && !in_array($cronograma->estado, ['Finalizada', 'Cancelada'], true) && !$cronograma->fecha?->isFuture() && $cronograma->asistencia?->estado !== 'Registrada')
+            @if($cronograma->actividad && !in_array($cronograma->estado, ['Finalizada', 'Cancelada'], true) && !$cronograma->fecha?->isFuture() && $cronograma->asistencia?->estado !== 'Registrada' && $aprendicesPorFicha->get($cronograma->id_ficha, collect())->isNotEmpty())
                 @php
                     $aprendicesModal = $aprendicesPorFicha->get($cronograma->id_ficha, collect());
                 @endphp
@@ -952,8 +916,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                @else
-                                    <div class="alert alert-warning mb-0">No hay aprendices asociados a esta ficha; no es posible guardar la asistencia.</div>
                                 @endif
                             </div>
                             <div class="modal-footer">

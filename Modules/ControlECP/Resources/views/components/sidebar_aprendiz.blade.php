@@ -37,7 +37,6 @@
                 ['icon' => 'fa-star', 'label' => 'Calificación de actividad', 'route' => 'controlecp.aprendiz.calificacion_actividad'],
                 ['icon' => 'fa-star-half-stroke', 'label' => 'Calificación de asesoría', 'route' => 'controlecp.aprendiz.calificacion_asesoria'],
                 ['icon' => 'fa-award', 'label' => 'Mi certificado', 'route' => 'controlecp.aprendiz.certificado'],
-                ['icon' => 'fa-book-open', 'label' => 'Historia', 'route' => 'controlecp.aprendiz.historia'],
                 ['icon' => 'fa-comment-dots', 'label' => 'PQRS', 'route' => 'controlecp.aprendiz.pqr'],
                 ['icon' => 'fa-bell', 'label' => 'Notificaciones', 'route' => 'controlecp.aprendiz.notificaciones'],
 

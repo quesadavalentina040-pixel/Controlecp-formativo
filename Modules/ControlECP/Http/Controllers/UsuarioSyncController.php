@@ -72,8 +72,8 @@ class UsuarioSyncController extends Controller
             });
         }
 
-        $usuarios = $query->orderBy('created_at', 'asc')
-            ->orderBy('id', 'asc')
+        $usuarios = $query->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->paginate(10)
             ->withQueryString();
 
@@ -160,12 +160,12 @@ class UsuarioSyncController extends Controller
             'second_last_name'=> ['nullable', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
             'telephone'       => ['nullable', 'digits:10'],
             'email'           => 'required|email|max:150',
-            'nickname'        => ['required', 'string', 'max:80', 'regex:/^[A-Za-z0-9]+$/'],
+            'nickname'        => ['required', 'string', 'max:80', 'regex:/^[A-Za-z0-9_]+$/'],
             'role_slug'       => 'required|string',
             'password'        => ['required', 'string', 'min:6', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/'],
         ], [
             'document_number.required' => 'El número de documento es obligatorio.',
-            'document_number.digits'   => 'El número de documento debe tener exactamente 10 dígitos.',
+            'document_number.digits_between' => 'El número de documento debe contener solo dígitos y tener hasta 30 caracteres.',
             'first_name.required'      => 'El nombre es obligatorio.',
             'first_name.regex'         => 'El nombre solo puede contener letras y espacios.',
             'first_last_name.required' => 'El primer apellido es obligatorio.',
@@ -175,7 +175,7 @@ class UsuarioSyncController extends Controller
             'email.required'           => 'El correo electrónico es obligatorio.',
             'email.email'              => 'El correo no tiene un formato válido.',
             'nickname.required'        => 'El nombre de usuario es obligatorio.',
-            'nickname.regex'           => 'El nombre de usuario solo puede contener letras y números.',
+            'nickname.regex'           => 'El nombre de usuario solo puede contener letras, números y guion bajo (_).',
             'role_slug.required'       => 'Debes seleccionar un rol.',
             'password.required'        => 'La contraseña es obligatoria.',
             'password.min'             => 'La contraseña debe tener al menos 6 caracteres.',
@@ -291,17 +291,23 @@ class UsuarioSyncController extends Controller
         }
 
         $editUser = User::with('person')->findOrFail($id);
+        $requiereDatosPersona = (bool) $editUser->person;
 
         $request->validate([
-            'first_name'     => ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
-            'first_last_name'=> ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'document_type'  => [$requiereDatosPersona ? 'required' : 'nullable', 'string', 'max:60'],
+            'document_number'=> [$requiereDatosPersona ? 'required' : 'nullable', 'digits_between:1,30'],
+            'first_name'     => [$requiereDatosPersona ? 'required' : 'nullable', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            'first_last_name'=> [$requiereDatosPersona ? 'required' : 'nullable', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
             'second_last_name'=> ['nullable', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
             'telephone'      => ['nullable', 'digits:10'],
             'email'          => 'required|email|max:150',
-            'nickname'       => ['required', 'string', 'max:80', 'regex:/^[A-Za-z0-9]+$/'],
+            'nickname'       => ['required', 'string', 'max:80', 'regex:/^[A-Za-z0-9_]+$/'],
             'role_slug'      => 'required|string',
             'password'       => ['nullable', 'string', 'min:6', 'regex:/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/'],
         ], [
+            'document_type.required'   => 'El tipo de documento es obligatorio.',
+            'document_number.required' => 'El número de documento es obligatorio.',
+            'document_number.digits_between' => 'El número de documento debe contener solo dígitos y tener entre 1 y 30 caracteres.',
             'first_name.required'      => 'El nombre es obligatorio.',
             'first_name.regex'        => 'El nombre solo puede contener letras y espacios.',
             'first_last_name.required' => 'El primer apellido es obligatorio.',
@@ -311,11 +317,36 @@ class UsuarioSyncController extends Controller
             'email.required'           => 'El correo es obligatorio.',
             'email.email'              => 'El correo no tiene un formato válido.',
             'nickname.required'        => 'El nombre de usuario es obligatorio.',
-            'nickname.regex'           => 'El nombre de usuario solo puede contener letras y números.',
+            'nickname.regex'           => 'El nombre de usuario solo puede contener letras, números y guion bajo (_).',
             'role_slug.required'       => 'Debes seleccionar un rol.',
             'password.min'             => 'La contraseña debe tener al menos 6 caracteres.',
             'password.regex'           => 'La contraseña debe contener letras y números, sin caracteres especiales.',
         ]);
+
+        $datosPersonaEnviados = $request->filled('document_number')
+            || $request->filled('first_name')
+            || $request->filled('first_last_name')
+            || $request->filled('second_last_name')
+            || $request->filled('telephone');
+        if (!$editUser->person && $datosPersonaEnviados) {
+            $request->validate([
+                'document_type' => ['required', 'string', 'max:60'],
+                'document_number' => ['required', 'digits_between:1,30'],
+                'first_name' => ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+                'first_last_name' => ['required', 'string', 'max:80', 'regex:/^[\pL ]+$/u'],
+            ]);
+        }
+
+        if ($request->filled('document_number')) {
+            $documentQuery = Person::where('document_number', $request->document_number);
+            if ($editUser->person) {
+                $documentQuery->where('id', '!=', $editUser->person->id);
+            }
+            if ($documentQuery->exists()) {
+                return back()->withInput()
+                    ->withErrors(['document_number' => 'El número de documento ya está registrado para otra persona.']);
+            }
+        }
 
         // HU4 — Verificar correo duplicado (excluir al mismo usuario)
         if (User::where('email', $request->email)->where('id', '!=', $id)->exists()) {
@@ -331,15 +362,27 @@ class UsuarioSyncController extends Controller
 
         DB::beginTransaction();
         try {
-            // Actualizar datos de la persona vinculada
-            if ($editUser->person) {
-                $editUser->person->first_name       = mb_strtoupper(trim($request->first_name));
-                $editUser->person->first_last_name  = mb_strtoupper(trim($request->first_last_name));
-                $editUser->person->second_last_name = mb_strtoupper(trim($request->input('second_last_name', '')));
-                $editUser->person->personal_email   = $request->email;
-                $editUser->person->misena_email     = $request->email;
-                $editUser->person->telephone1       = $request->input('telephone', $editUser->person->telephone1 ?? '');
-                $editUser->person->save();
+            if ($editUser->person || $datosPersonaEnviados) {
+                $person = $editUser->person ?: new Person();
+                if (!$person->exists) {
+                    $person->gender              = 'No registra';
+                    $person->blood_type          = 'No registra';
+                    $person->marital_status      = 'No registra';
+                    $person->eps_id              = \Modules\SICA\Entities\EPS::first()->id ?? 1;
+                    $person->population_group_id = \Modules\SICA\Entities\PopulationGroup::first()->id ?? 1;
+                    $person->pension_entity_id   = \Modules\SICA\Entities\PensionEntity::first()->id ?? 1;
+                }
+
+                $person->document_type    = $request->input('document_type', $person->document_type);
+                $person->document_number  = $request->input('document_number', $person->document_number);
+                $person->first_name       = mb_strtoupper(trim($request->input('first_name', $person->first_name)));
+                $person->first_last_name  = mb_strtoupper(trim($request->input('first_last_name', $person->first_last_name)));
+                $person->second_last_name = mb_strtoupper(trim($request->input('second_last_name', $person->second_last_name ?? '')));
+                $person->personal_email   = $request->email;
+                $person->misena_email     = $request->email;
+                $person->telephone1       = $request->input('telephone', $person->telephone1 ?? '');
+                $person->save();
+                $editUser->person_id = $person->id;
             }
 
             // Actualizar datos del usuario

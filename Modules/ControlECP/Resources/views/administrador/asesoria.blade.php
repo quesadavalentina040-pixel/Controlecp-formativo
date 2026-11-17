@@ -659,7 +659,7 @@
             </div>
         @endif
 
-        <div id="toastDinamico" class="toast align-items-center text-white border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
+        <div id="toastDinamico" class="toast align-items-center text-white border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" data-system-alert-ignore style="display: none;">
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2">
                     <i id="toastDinamicoIcon" class="fas fa-info-circle fs-5"></i>
@@ -1904,7 +1904,7 @@
                         </div>
                     @endif
 
-                    <div class="alert alert-success border-0 shadow-sm small p-3 mb-3 rounded-3" style="background-color: #dcfce7; color: #166534;">
+                    <div class="alert alert-success border-0 shadow-sm small p-3 mb-3 rounded-3" data-system-alert-ignore style="background-color: #dcfce7; color: #166534;">
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <i class="fas fa-circle-check fs-5"></i>
                             <span class="fw-bold">¿Confirmas que esta asesoría fue realizada y deseas finalizarla?</span>
@@ -2055,7 +2055,7 @@
                         </div>
                     @endif
 
-                    <div class="alert alert-info border-0 shadow-sm small p-3 mb-3 rounded-3">
+                    <div class="alert alert-info border-0 shadow-sm small p-3 mb-3 rounded-3" data-system-alert-ignore>
                         <i class="fas fa-info-circle me-1"></i>
                         Esta acción <strong>nunca borra ni sobrescribe</strong> el seguimiento anterior; genera un nuevo registro que apunta al original.
                     </div>

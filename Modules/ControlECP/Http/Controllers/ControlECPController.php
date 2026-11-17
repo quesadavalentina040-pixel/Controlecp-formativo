@@ -18,7 +18,6 @@ use Modules\SICA\Entities\Apprentice;
 use Modules\ControlECP\Entities\ActividadEcp;
 use Modules\ControlECP\Entities\Asesoria;
 use Modules\ControlECP\Entities\Asistencia;
-use Modules\ControlECP\Entities\BloqueHistoria;
 use Modules\ControlECP\Entities\CalificacionEcp;
 use Modules\ControlECP\Entities\Cronograma;
 use Modules\ControlECP\Entities\CronogramaHistorial;
@@ -682,22 +681,6 @@ class ControlECPController extends Controller
         return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.certificados');
     }
 
-
-        /**
-     * Muestra la vista de Historias dentro del Repositorio del Administrador.
-     */
-    public function repositorioHistoria()
-    {
-        $usuario = Auth::user();
-
-        if (!$usuario->hasRole('controlecp.admin')) {
-            return /* Devuelve el resultado de este mï¿½todo. */ redirect()
-                ->route('controlecp.index')
-                ->with('error', 'No tienes permisos para acceder al repositorio de Control ECP.');
-        }
-
-        return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.repositorio.historia');
-    }
 
     /**
      * Muestra la vista de Encuestas dentro del Repositorio del Administrador.
@@ -1815,17 +1798,6 @@ class ControlECPController extends Controller
         return view('controlecp::instructor.ficha_nomina_modal', compact('ficha'));
     }
 
-    public function historiaInstructor()
-    {
-        if ($res = $this->verificarAccesoInstructor()) return $res;
-        $bloques = BloqueHistoria::query()
-            ->where('activo', true)
-            ->orderBy('orden')
-            ->orderBy('id')
-            ->paginate(10);
-        return view('controlecp::instructor.historia', compact('bloques'));
-    }
-
     public function inventarioInstructor()
     {
         if ($res = $this->verificarAccesoInstructor()) return $res;
@@ -1972,19 +1944,6 @@ class ControlECPController extends Controller
         })->values();
 
         return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::aprendiz.cronograma', compact('actividades', 'actividadesCalendario'));
-    }
-
-    public function historiaAprendiz()
-    {
-        if ($res = $this->verificarAccesoAprendiz()) return $res;
-
-        $bloques = BloqueHistoria::query()
-            ->where('activo', true)
-            ->orderBy('orden')
-            ->orderBy('id')
-            ->paginate(10);
-
-        return view('controlecp::aprendiz.historia', compact('bloques'));
     }
 
     public function encuestaAprendiz()

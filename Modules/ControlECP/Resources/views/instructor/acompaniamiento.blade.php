@@ -149,6 +149,10 @@
     .acom-calendar-heading{padding:.7rem .35rem;background:#001A29;color:#fff;text-align:center;font-size:.75rem;font-weight:700;text-transform:uppercase}
     .acom-calendar-day{display:flex;min-width:0;min-height:102px;flex-direction:column;gap:.2rem;padding:.45rem;background:#fff}
     .acom-calendar-day.is-outside{background:#eaf1f6;color:#718096}
+    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day,
+    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-non-working-day,
+    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-outside{background:#fff!important}
+    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-non-working-day{color:inherit!important}
     .acom-calendar-day-top{display:flex;align-items:center;justify-content:space-between;min-height:26px;margin-bottom:.1rem}
     .acom-calendar-day-number{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:50%;font-size:.82rem;font-weight:700}
     .acom-calendar-day.is-today .acom-calendar-day-number{background:#39A900;color:#fff;box-shadow:0 0 8px rgba(57,169,0,.3)}
@@ -174,7 +178,7 @@
         return sprintf('%d:%s', $hour % 12 ?: 12, substr($time, 3, 2));
     };
 @endphp
-<div class="container-fluid px-3 py-3">
+<div class="container-fluid px-3 py-3 instructor-acompanamiento-page">
     <header class="acom-hero mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
             <div class="small fw-bold text-uppercase mb-2" style="color:#62E31D;letter-spacing:.1em">Control ECP · Instructor</div>

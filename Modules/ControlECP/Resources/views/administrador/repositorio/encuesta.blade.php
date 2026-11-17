@@ -429,7 +429,7 @@
             </div>
         @endif
 
-        <div id="toastAjaxEncuesta" class="toast align-items-center text-white border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;">
+        <div id="toastAjaxEncuesta" class="toast align-items-center text-white border-0 shadow" role="alert" aria-live="assertive" aria-atomic="true" style="display: none;" data-system-alert-ignore>
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2">
                     <i id="toastAjaxEncuestaIcon" class="fas fa-check-circle fs-5"></i>
@@ -891,7 +891,7 @@
 
             <div class="modal-body p-4">
 
-                <div id="alertaEncuestaConRespuestas" class="alert alert-warning border border-warning rounded-4 p-3 mb-4 d-none">
+                <div id="alertaEncuestaConRespuestas" class="alert alert-warning border border-warning rounded-4 p-3 mb-4 d-none" data-system-alert-ignore>
                     <div class="d-flex gap-2">
                         <i class="fas fa-lock text-warning fs-4 mt-1"></i>
                         <div>

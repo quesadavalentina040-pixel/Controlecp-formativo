@@ -89,7 +89,6 @@
                     'route' => NULL,
                     'children' => [
                         ['icon' => 'fa-images', 'label' => 'Evidencias', 'route' => 'controlecp.administrador.repositorio.evidencias'],
-                        ['icon' => 'fa-file-medical', 'label' => 'Historias', 'route' => 'controlecp.administrador.repositorio.historia.index'],
                         ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.administrador.repositorio.encuesta.index'],
                         ['icon' => 'fa-table', 'label' => 'Tabulación', 'route' => 'controlecp.administrador.repositorio.tabulacion.index'],
                         ['icon' => 'fa-file-contract', 'label' => 'POE', 'route' => 'controlecp.administrador.repositorio.poe.index'],

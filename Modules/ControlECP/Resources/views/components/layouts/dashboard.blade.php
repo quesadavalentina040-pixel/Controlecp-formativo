@@ -7,30 +7,30 @@
     @push('styles')
         @if(auth()->user()->hasRole('controlecp.admin'))
             <style>
-                .admin-dashboard-content > .container-fluid > :first-child:not(.toast-container):not(.dash-welcome),
-                .admin-dashboard-content > .container-fluid > .toast-container + div {
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > :first-child:not(.toast-container):not(.dash-welcome),
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > .toast-container + div {
                     background: var(--sena-navy);
                     border-radius: 24px;
                     padding: 1.25rem 1.5rem;
                     border-bottom: 0 !important;
                 }
 
-                .admin-dashboard-content > .container-fluid > :first-child:not(.toast-container):not(.dash-welcome) h1,
-                .admin-dashboard-content > .container-fluid > :first-child:not(.toast-container):not(.dash-welcome) h2,
-                .admin-dashboard-content > .container-fluid > :first-child:not(.toast-container):not(.dash-welcome) h3,
-                .admin-dashboard-content > .container-fluid > .toast-container + div h1,
-                .admin-dashboard-content > .container-fluid > .toast-container + div h2,
-                .admin-dashboard-content > .container-fluid > .toast-container + div h3 {
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > :first-child:not(.toast-container):not(.dash-welcome) h1,
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > :first-child:not(.toast-container):not(.dash-welcome) h2,
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > :first-child:not(.toast-container):not(.dash-welcome) h3,
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > .toast-container + div h1,
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > .toast-container + div h2,
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > .toast-container + div h3 {
                     color: #fff !important;
                 }
 
-                .admin-dashboard-content > .container-fluid > :first-child:not(.toast-container):not(.dash-welcome) .text-muted,
-                .admin-dashboard-content > .container-fluid > .toast-container + div .text-muted {
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > :first-child:not(.toast-container):not(.dash-welcome) .text-muted,
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > .toast-container + div .text-muted {
                     color: #c7d4da !important;
                 }
 
-                .admin-dashboard-content > .container-fluid > :first-child:not(.toast-container):not(.dash-welcome) .btn-outline-secondary,
-                .admin-dashboard-content > .container-fluid > .toast-container + div .btn-outline-secondary {
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > :first-child:not(.toast-container):not(.dash-welcome) .btn-outline-secondary,
+                .admin-dashboard-content > .container-fluid:not(.user-registration-page) > .toast-container + div .btn-outline-secondary {
                     color: #fff;
                     border-color: rgba(255, 255, 255, .65);
                 }

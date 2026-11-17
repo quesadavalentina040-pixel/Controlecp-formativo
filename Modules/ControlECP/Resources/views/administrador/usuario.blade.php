@@ -354,7 +354,7 @@
     @endif
 
     <!-- Tarjetas de Estadísticas (KPIs) -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-4" id="estadisticasUsuariosEcp">
         <!-- KPI 1: Total Usuarios Control ECP -->
         <div class="col-12 col-md-4">
             <div class="card stat-card stat-card-total shadow-sm h-100 bg-white">
@@ -493,12 +493,7 @@
     </div>
 
     <!-- Tabla Principal de Usuarios Locales -->
-    <div class="card border-0 shadow-sm" style="border-radius: 18px;">
-        <div class="card-header bg-white border-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold mb-0" style="color: var(--ecp-navy);">
-                <i class="fas fa-id-card-clip me-2" style="color: var(--ecp-green);"></i>Usuarios registrados en Control ECP
-            </h5>
-        </div>
+    <div class="card border-0 shadow-sm" id="listaUsuariosEcp" style="border-radius: 18px;">
 
         <div class="card-body p-0">
             @if($usuarios->count() > 0)
@@ -506,8 +501,8 @@
                     <table class="table table-users align-middle mb-0" id="tablaUsuariosEcp">
                         <thead class="table-light" style="font-size: 0.82rem; text-transform: uppercase; color: #52796f;">
                             <tr>
-                                <th style="width: 33%;">Persona / Documento</th>
-                                <th style="width: 26%;">Usuario & Contacto</th>
+                                <th style="width: 36%;">Nombre completo</th>
+                                <th style="width: 23%;">Usuario</th>
                                 <th style="width: 20%;">Rol</th>
                                 <th style="width: 12%;">Estado</th>
                                 <th class="text-end pe-4" style="width: 9%;">Acciones</th>
@@ -517,6 +512,9 @@
                             @foreach($usuarios as $u)
                                 @php
                                     $p = $u->person;
+                                    $nombreCompleto = $p
+                                        ? trim(implode(' ', array_filter([$p->first_name, $p->first_last_name, $p->second_last_name])))
+                                        : ($u->name ?: 'Sin datos personales');
                                     $hasAdmin = $u->hasRole('controlecp.admin');
                                     $hasInstructor = $u->hasRole('controlecp.instructor');
                                     $hasApprentice = $u->hasRole('controlecp.apprentice');
@@ -524,7 +522,7 @@
                                     $avatarBg = $hasAdmin ? '#e8f8e8' : ($hasInstructor ? '#ebf5fb' : '#fef9e7');
                                     $avatarColor = $hasAdmin ? '#1e7000' : ($hasInstructor ? '#0b5e94' : '#9c6c03');
                                 @endphp
-                                <tr>
+                                <tr id="usuario-row-{{ $u->id }}" data-full-name="{{ $nombreCompleto }}">
                                     <!-- Datos de Persona -->
                                     <td class="ps-4">
                                         <div class="d-flex align-items-center gap-2">
@@ -532,39 +530,16 @@
                                                 {{ $u->initials }}
                                             </div>
                                             <div>
-                                        <div class="fw-bold text-dark mb-0">
-                                            {{ $u->full_name }}
-                                        </div>
-                                        <div class="small text-muted d-flex align-items-center gap-1 mt-1">
-                                            <span class="badge bg-light text-dark border">
-                                                {{ $p ? $p->document_type : 'Doc' }}
-                                            </span>
-                                            <span class="fw-semibold text-dark">{{ $p ? $p->document_number : 'Sin documento' }}</span>
-                                            @if($p)
-                                                <button class="btn btn-link p-0 text-muted" onclick="copiarAlPortapapeles('{{ $p->document_number }}')" title="Copiar documento">
-                                                    <i class="far fa-copy" style="font-size: 0.75rem;"></i>
-                                                </button>
-                                            @endif
-                                        </div>
+                                                <div class="fw-bold text-dark mb-0">{{ $nombreCompleto }}</div>
                                             </div>
                                         </div>
                                     </td>
 
-                                    <!-- Usuario & Contacto -->
+                                    <!-- Usuario -->
                                     <td>
                                         <div class="small text-dark fw-semibold">
                                             <i class="fas fa-at me-1 text-muted"></i>{{ $u->nickname }}
                                         </div>
-                                        <div class="small text-muted mt-1 text-truncate" style="max-width: 240px;">
-                                            <a href="mailto:{{ $u->email }}" class="text-decoration-none text-muted">
-                                                <i class="far fa-envelope me-1 text-success"></i>{{ $u->email }}
-                                            </a>
-                                        </div>
-                                        @if($p && !empty($p->telephone1))
-                                            <div class="small text-muted mt-1">
-                                                <i class="fas fa-phone me-1" style="font-size: 0.75rem;"></i>{{ $p->telephone1 }}
-                                            </div>
-                                        @endif
                                     </td>
 
                                     <!-- Roles Control ECP -->
@@ -594,7 +569,7 @@
                                     </td>
 
                                     <!-- Estado (HU1) -->
-                                    <td>
+                                    <td class="estado-usuario">
                                         @if(($u->estado ?? 'Activo') === 'Activo')
                                             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;">
                                                 <i class="fas fa-circle-check me-1"></i> Activo
@@ -615,14 +590,12 @@
                                                         'id' => $u->id,
                                                         'nickname' => $u->nickname,
                                                         'email' => $u->email,
-                                                        'full_name' => $u->full_name,
+                                                        'full_name' => $nombreCompleto,
                                                         'initials' => $u->initials,
                                                         'document_type' => $p ? $p->document_type : 'Cédula de ciudadanía',
                                                         'document_number' => $p ? $p->document_number : '',
                                                         'telephone' => $p ? $p->telephone1 : '',
-                                                        'misena_email' => $p ? $p->misena_email : '',
-                                                        'role' => $hasAdmin ? 'Administrador' : ($hasInstructor ? 'Instructor' : ($hasApprentice ? 'Aprendiz' : 'Usuario')),
-                                                        'updated_at' => $u->updated_at ? $u->updated_at->format('d/m/Y H:i') : 'Activo'
+                                                        'created_at' => $u->created_at ? $u->created_at->format('d/m/Y H:i') : 'No disponible'
                                                     ]) }})">
                                                 <i class="fas fa-eye"></i>
                                             </button>
@@ -632,15 +605,15 @@
                                                 <i class="fas fa-pen"></i>
                                             </button>
                                                 @if(($u->estado ?? 'Activo') === 'Activo')
-                                                    <button class="btn-action-icon btn-action-disable" type="button"
+                                                    <button class="btn-action-icon btn-action-disable estado-usuario-toggle" type="button"
                                                             title="Desactivar usuario"
-                                                            onclick="confirmarCambioEstado({{ $u->id }}, 'desactivar', '{{ addslashes($u->full_name) }}')">
+                                                            onclick="confirmarCambioEstado({{ $u->id }}, 'desactivar', '{{ addslashes($nombreCompleto) }}')">
                                                         <i class="fas fa-ban"></i>
                                                     </button>
                                                 @else
-                                                    <button class="btn-action-icon btn-action-enable" type="button"
+                                                    <button class="btn-action-icon btn-action-enable estado-usuario-toggle" type="button"
                                                             title="Activar usuario"
-                                                            onclick="confirmarCambioEstado({{ $u->id }}, 'activar', '{{ addslashes($u->full_name) }}')">
+                                                            onclick="confirmarCambioEstado({{ $u->id }}, 'activar', '{{ addslashes($nombreCompleto) }}')">
                                                         <i class="fas fa-circle-check"></i>
                                                     </button>
                                                 @endif
@@ -718,38 +691,6 @@
 <!-- ========================================================================================= -->
 <!-- MODALES DEL SISTEMA DE INTEGRACIÓN Y SINCRONIZACIÓN API                                   -->
 <!-- ========================================================================================= -->
-
-<!-- Modal: Confirmación Activar / Desactivar Usuario (HU7 / HU8) -->
-<div class="modal fade" id="modalCambioEstado" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="modal-header border-0 pb-0 pt-4 px-4 text-center justify-content-center position-relative">
-                <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
-                <div id="estadoModalIcon" class="rounded-circle d-flex align-items-center justify-content-center shadow-sm"
-                     style="width: 65px; height: 65px; font-size: 1.8rem;">
-                    <i class="fas fa-ban"></i>
-                </div>
-            </div>
-            <div class="modal-body p-4 text-center">
-                <h5 class="fw-bold mb-2" id="estadoModalTitle" style="color: var(--ecp-navy);">
-                    Desactivar Usuario
-                </h5>
-                <p class="text-muted small mb-4" id="estadoModalDesc">
-                    El usuario no podrá iniciar sesión, pero sus datos e historial se conservan.
-                </p>
-                <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">
-                        Cancelar
-                    </button>
-                    <button type="button" class="btn rounded-pill px-4 text-white" id="btnConfirmarEstado"
-                            onclick="ejecutarCambioEstado()">
-                        Confirmar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- 1. Modal: Configuración de la API REST Central -->
 <div class="modal fade" id="modalConfigApi" tabindex="-1" aria-hidden="true">
@@ -899,13 +840,13 @@
     </div>
 </div>
 
-<!-- 3. Modal: Ver Credencial / Ficha SICEFA -->
+<!-- 3. Modal: Detalle del usuario -->
 <div class="modal fade" id="modalCredencialUsuario" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
             <div class="modal-header border-0 pb-0 pt-3 px-4 d-flex justify-content-between align-items-center">
                 <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1 rounded-pill">
-                    <i class="fas fa-shield-halved me-1"></i> Credencial Digital SICEFA
+                    <i class="fas fa-user me-1"></i> Detalle del usuario
                 </span>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -922,13 +863,6 @@
                     <h5 class="fw-bold mb-1 text-dark" id="credFullName">Nombre de Usuario</h5>
                     <div class="small text-muted mb-3" id="credDoc">Cédula: 00000000</div>
 
-                    <!-- Badge Rol -->
-                    <div class="mb-4">
-                        <span class="badge rounded-pill px-4 py-2 fs-6 shadow-sm" id="credRoleBadge" style="background-color: var(--ecp-green); color: white;">
-                            Rol ECP
-                        </span>
-                    </div>
-
                     <!-- Datos de Contacto -->
                     <div class="text-start bg-white p-3 rounded-3 shadow-xs mb-3 border">
                         <div class="row g-2 small">
@@ -941,11 +875,8 @@
                             <div class="col-4 text-muted">Teléfono:</div>
                             <div class="col-8 fw-semibold text-dark" id="credPhone">--</div>
 
-                            <div class="col-4 text-muted">Centro:</div>
-                            <div class="col-8 fw-semibold text-dark">La Angostura (Huila)</div>
-
-                            <div class="col-4 text-muted">Sincronizado:</div>
-                            <div class="col-8 fw-semibold text-success" id="credUpdated">--</div>
+                            <div class="col-4 text-muted">Fecha de creación:</div>
+                            <div class="col-8 fw-semibold text-dark" id="credCreated">--</div>
                         </div>
                     </div>
 
@@ -1307,47 +1238,66 @@
     let _estadoAccion   = null;
 
     function confirmarCambioEstado(userId, accion, fullName) {
-        _estadoUserId = userId;
-        _estadoAccion = accion;
+        const desactivar = accion === 'desactivar';
+        Swal.fire({
+            icon: desactivar ? 'warning' : 'question',
+            title: desactivar ? '¿Desactivar usuario?' : '¿Activar usuario?',
+            text: desactivar
+                ? `¿Desactivar a "${fullName}"? No podrá iniciar sesión, pero sus datos e historial se conservarán.`
+                : `¿Reactivar a "${fullName}"? Podrá volver a iniciar sesión.`,
+            showCancelButton: true,
+            confirmButtonText: desactivar ? 'Sí, desactivar' : 'Sí, activar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: desactivar ? '#dc3545' : '#39A900',
+            cancelButtonColor: '#6c757d',
+            reverseButtons: true
+        }).then(result => {
+            if (result.isConfirmed) {
+                _estadoUserId = userId;
+                _estadoAccion = accion;
+                ejecutarCambioEstado();
+            }
+        });
+    }
 
-        const icon  = document.getElementById('estadoModalIcon');
-        const title = document.getElementById('estadoModalTitle');
-        const desc  = document.getElementById('estadoModalDesc');
-        const btn   = document.getElementById('btnConfirmarEstado');
+    function actualizarEstadoUsuarioEnTabla(userId, estado) {
+        const row = document.getElementById(`usuario-row-${userId}`);
+        if (!row) return;
 
-        if (accion === 'desactivar') {
-            icon.style.background = '#fdecea';
-            icon.style.color      = '#c0392b';
-            icon.innerHTML        = '<i class="fas fa-ban"></i>';
-            title.innerText       = 'Desactivar usuario';
-            desc.innerText        = `¿Desactivar a "${fullName}"? El usuario no podrá iniciar sesión, pero sus datos e historial se conservan.`;
-            btn.style.background  = '#dc3545';
-            btn.style.borderColor = '#dc3545';
-        } else {
-            icon.style.background = '#e8f8e8';
-            icon.style.color      = '#1e7000';
-            icon.innerHTML        = '<i class="fas fa-circle-check"></i>';
-            title.innerText       = 'Activar usuario';
-            desc.innerText        = `¿Reactivar a "${fullName}"? El usuario podrá volver a iniciar sesión.`;
-            btn.style.background  = '#39A900';
-            btn.style.borderColor = '#39A900';
-        }
+        const activo = estado === 'Activo';
+        const estadoCell = row.querySelector('.estado-usuario');
+        const toggleButton = row.querySelector('.estado-usuario-toggle');
 
-        new bootstrap.Modal(document.getElementById('modalCambioEstado')).show();
+        if (!estadoCell || !toggleButton) return;
+
+        estadoCell.innerHTML = activo
+            ? '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;"><i class="fas fa-circle-check me-1"></i> Activo</span>'
+            : '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1" style="font-size: 0.75rem;"><i class="fas fa-ban me-1"></i> Inactivo</span>';
+
+        const accion = activo ? 'desactivar' : 'activar';
+        toggleButton.className = `btn-action-icon ${activo ? 'btn-action-disable' : 'btn-action-enable'} estado-usuario-toggle`;
+        toggleButton.title = activo ? 'Desactivar usuario' : 'Activar usuario';
+        toggleButton.innerHTML = activo
+            ? '<i class="fas fa-ban"></i>'
+            : '<i class="fas fa-circle-check"></i>';
+        toggleButton.onclick = () => confirmarCambioEstado(userId, accion, row.dataset.fullName);
     }
 
     async function ejecutarCambioEstado() {
         const accion = _estadoAccion === 'desactivar' ? 'desactivar' : 'activar';
         const url    = "{{ url('/control-ecp/administrador/usuarios') }}/" + _estadoUserId + '/' + accion;
-        const modalElement = document.getElementById('modalCambioEstado');
-        const confirmButton = document.getElementById('btnConfirmarEstado');
 
-        if (!_estadoUserId || !_estadoAccion || confirmButton.disabled) {
+        if (!_estadoUserId || !_estadoAccion) {
             return;
         }
 
-        confirmButton.disabled = true;
-        confirmButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Procesando...';
+        Swal.fire({
+            title: accion === 'desactivar' ? 'Desactivando usuario...' : 'Activando usuario...',
+            text: 'Por favor, espera un momento.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => Swal.showLoading()
+        });
 
         try {
             const resp = await fetch(url, {
@@ -1361,22 +1311,37 @@
                 throw new Error(data.message || 'No se pudo actualizar el estado del usuario.');
             }
 
-            if (data.success) {
-                const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-                modalElement.addEventListener('hidden.bs.modal', function mostrarResultado() {
-                    modalElement.removeEventListener('hidden.bs.modal', mostrarResultado);
-                    mostrarAlerta(data.message, 'success');
-                });
-                modal.hide();
-                setTimeout(() => { window.location.reload(); }, 1500);
-            } else {
-                mostrarAlerta(data.message, 'warning');
+            if (!data.success) {
+                throw new Error(data.message || 'No se pudo actualizar el estado del usuario.');
             }
+
+            actualizarEstadoUsuarioEnTabla(_estadoUserId, accion === 'desactivar' ? 'Inactivo' : 'Activo');
+
+            let errorActualizacionLista = false;
+            try {
+                await refrescarListaUsuarios();
+            } catch (error) {
+                console.error('No fue posible actualizar la tabla de usuarios:', error);
+                errorActualizacionLista = true;
+            }
+
+            await Swal.fire({
+                icon: errorActualizacionLista ? 'warning' : 'success',
+                title: errorActualizacionLista ? 'Estado actualizado' : '¡Operación Exitosa!',
+                text: errorActualizacionLista
+                    ? `${data.message} No se pudo actualizar la tabla automáticamente.`
+                    : data.message,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#39A900'
+            });
         } catch (e) {
-            mostrarAlerta('Error al cambiar el estado: ' + e.message, 'danger');
-        } finally {
-            confirmButton.disabled = false;
-            confirmButton.innerHTML = 'Confirmar';
+            await Swal.fire({
+                icon: 'error',
+                title: 'No se pudo cambiar el estado',
+                text: e.message,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#39A900'
+            });
         }
     }
 
@@ -1409,22 +1374,14 @@
     // ── 8. Ver Credencial / Ficha de Usuario ────────────────────────────────────────
     function verCredencialUsuario(data) {
         document.getElementById('credFullName').innerText = data.full_name;
-        document.getElementById('credDoc').innerText = data.document_type + ': ' + data.document_number;
+        document.getElementById('credDoc').innerText = data.document_number
+            ? data.document_type + ': ' + data.document_number
+            : 'Sin documento';
         document.getElementById('credAvatar').innerText = data.initials;
         document.getElementById('credNickname').innerText = data.nickname;
         document.getElementById('credEmail').innerText = data.email;
         document.getElementById('credPhone').innerText = data.telephone || 'No registra';
-        document.getElementById('credUpdated').innerText = data.updated_at;
-
-        const roleBadge = document.getElementById('credRoleBadge');
-        roleBadge.innerText = data.role;
-        if (data.role === 'Administrador') {
-            roleBadge.style.backgroundColor = '#1e7000';
-        } else if (data.role === 'Instructor') {
-            roleBadge.style.backgroundColor = '#0b5e94';
-        } else {
-            roleBadge.style.backgroundColor = '#9c6c03';
-        }
+        document.getElementById('credCreated').innerText = data.created_at;
 
         const modal = new bootstrap.Modal(document.getElementById('modalCredencialUsuario'));
         modal.show();
@@ -1513,6 +1470,32 @@
 
 @push('scripts')
 <script>
+    async function refrescarListaUsuarios() {
+        const listaActual = document.getElementById('listaUsuariosEcp');
+        const estadisticasActuales = document.getElementById('estadisticasUsuariosEcp');
+        if (!listaActual || !estadisticasActuales) {
+            throw new Error('No se encontró el listado o sus estadísticas.');
+        }
+
+        const response = await fetch(window.location.href, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        if (!response.ok) {
+            throw new Error('No se pudo consultar la lista actualizada.');
+        }
+
+        const html = await response.text();
+        const documento = new DOMParser().parseFromString(html, 'text/html');
+        const listaActualizada = documento.getElementById('listaUsuariosEcp');
+        const estadisticasActualizadas = documento.getElementById('estadisticasUsuariosEcp');
+        if (!listaActualizada || !estadisticasActualizadas) {
+            throw new Error('La respuesta no contiene el listado actualizado.');
+        }
+
+        listaActual.replaceWith(listaActualizada);
+        estadisticasActuales.replaceWith(estadisticasActualizadas);
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         window.addEventListener('message', function (event) {
             if (event.origin !== window.location.origin || !event.data || event.data.type !== 'user-saved') {
@@ -1527,10 +1510,14 @@
 
             modalElement.addEventListener('hidden.bs.modal', function mostrarResultado() {
                 modalElement.removeEventListener('hidden.bs.modal', mostrarResultado);
-                mostrarAlerta(event.data.message, 'success');
+                refrescarListaUsuarios()
+                    .then(() => mostrarAlerta(event.data.message, 'success'))
+                    .catch(error => {
+                        console.error('No fue posible actualizar la tabla de usuarios:', error);
+                        mostrarAlerta(`${event.data.message} No se pudo actualizar la tabla automáticamente.`, 'warning');
+                    });
             });
             modalInstance.hide();
-            setTimeout(() => { window.location.reload(); }, 1800);
         });
 
         const listPath = @json(parse_url(route('controlecp.administrador.usuarios'), PHP_URL_PATH));
@@ -1544,7 +1531,10 @@
                 try {
                     if (item.frame.contentWindow.location.pathname === listPath) {
                         bootstrap.Modal.getOrCreateInstance(item.modal).hide();
-                        window.location.reload();
+                        refrescarListaUsuarios().catch(error => {
+                            console.error('No fue posible actualizar la tabla de usuarios:', error);
+                            mostrarAlerta('No se pudo actualizar la tabla automáticamente.', 'warning');
+                        });
                     }
                 } catch (error) {
                     console.error('No fue posible verificar el resultado del formulario:', error);

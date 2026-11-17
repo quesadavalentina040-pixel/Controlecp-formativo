@@ -18,7 +18,6 @@ use Modules\ControlECP\Http\Controllers\AcompanamientoInstructorController;
 use Modules\ControlECP\Http\Controllers\ControlECPController;
 use Modules\ControlECP\Http\Controllers\ElementoController;
 use Modules\ControlECP\Http\Controllers\EncuestaController;
-use Modules\ControlECP\Http\Controllers\HistoriaController;
 use Modules\ControlECP\Http\Controllers\NotificacionController;
 use Modules\ControlECP\Http\Controllers\PoeController;
 use Modules\ControlECP\Http\Controllers\PoeProgramacionController;
@@ -293,16 +292,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/control-ecp/administrador/pqr/{id}', [PqrController::class, 'show'])
         ->name('controlecp.administrador.pqr.show');
 
-    // --- Repositorio > Historia (Administrador - HU-008) ---
-    Route::prefix('control-ecp/administrador/repositorio/historia')->name('controlecp.administrador.repositorio.historia.')->group(function () {
-        Route::get('/',                  [HistoriaController::class, 'index'])     ->name('index');
-        Route::post('/',                 [HistoriaController::class, 'store'])     ->name('store');
-        Route::put('/{id}',              [HistoriaController::class, 'update'])    ->name('update');
-        Route::post('/reordenar',        [HistoriaController::class, 'reordenar']) ->name('reordenar');
-        Route::patch('/{id}/desactivar', [HistoriaController::class, 'desactivar'])->name('desactivar');
-        Route::patch('/{id}/activar',    [HistoriaController::class, 'activar'])   ->name('activar');
-    });
-
     // --- Repositorio > Encuestas (Administrador - HU-009) ---
     Route::prefix('control-ecp/administrador/repositorio/encuestas')->name('controlecp.administrador.repositorio.encuesta.')->group(function () {
         Route::get('/',                               [EncuestaController::class, 'index'])             ->name('index');
@@ -473,7 +462,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.instructor.encuestas.preguntas.destroy');
     Route::prefix('control-ecp/instructor/repositorio')->name('controlecp.instructor.repositorio.')->group(function () {
         Route::get('/evidencias', [InstructorRepositorioController::class, 'evidencias'])->name('evidencias');
-        Route::get('/historias', [InstructorRepositorioController::class, 'historias'])->name('historia');
         Route::get('/encuestas', [InstructorRepositorioController::class, 'encuestas'])->name('encuestas');
         Route::get('/tabulacion', [InstructorRepositorioController::class, 'tabulacion'])->name('tabulacion');
         Route::get('/tabulacion/exportar', [InstructorRepositorioController::class, 'exportarTabulacionPdf'])->name('tabulacion.exportar');
@@ -484,8 +472,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.instructor.fichas.detalle');
     Route::get('/control-ecp/instructor/fichas/{fichaId}/nomina', [ControlECPController::class, 'nominaFichaInstructor'])
         ->name('controlecp.instructor.fichas.nomina');
-    Route::get('/control-ecp/instructor/historia', [ControlECPController::class, 'historiaInstructor'])
-        ->name('controlecp.instructor.historia');
     Route::get('/control-ecp/instructor/inventario', [InstructorInventarioController::class, 'index'])
         ->name('controlecp.instructor.inventario');
     Route::get('/control-ecp/instructor/inventario/{id}', [InstructorInventarioController::class, 'show'])
@@ -512,8 +498,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('controlecp.aprendiz.inicio');
     Route::get('/control-ecp/aprendiz/cronograma', [ControlECPController::class, 'cronogramaAprendiz'])
         ->name('controlecp.aprendiz.cronograma');
-    Route::get('/control-ecp/aprendiz/historia', [ControlECPController::class, 'historiaAprendiz'])
-        ->name('controlecp.aprendiz.historia');
     Route::get('/control-ecp/aprendiz/mi-certificado', [AprendizCertificadoController::class, 'index'])
         ->name('controlecp.aprendiz.certificado');
     Route::get('/control-ecp/aprendiz/mi-certificado/{fichaId}/descargar', [AprendizCertificadoController::class, 'descargar'])

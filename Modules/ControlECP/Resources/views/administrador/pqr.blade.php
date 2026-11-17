@@ -1377,7 +1377,7 @@
                             </div>
                             {{-- Aviso solo lectura (visible en modo instructor) --}}
                             <div id="detReadonlyBar" class="d-none mt-3 pt-3 border-top">
-                                <div class="alert mb-0 py-2 small border-0 d-flex align-items-center gap-2"
+                                <div class="alert mb-0 py-2 small border-0 d-flex align-items-center gap-2" data-system-alert-ignore
                                      style="background:#FFF7ED; border-radius:10px;">
                                     <i class="fas fa-lock" style="color:#D97706;"></i>
                                     <span class="text-dark">Esta PQRS es gestionada por el instructor asignado.
@@ -1448,7 +1448,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="alert alert-info border-0 py-2 small mb-3 rounded-3" style="background:#EFF6FF;">
+                    <div class="alert alert-info border-0 py-2 small mb-3 rounded-3" data-system-alert-ignore style="background:#EFF6FF;">
                         <i class="fas fa-circle-info me-1"></i>
                         Respondiendo a <strong id="respModalRadicado">—</strong>:
                         <span id="respModalAsunto" class="text-dark fw-semibold">—</span>

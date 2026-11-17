@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Modules\ControlECP\Entities\Actividad;
-use Modules\ControlECP\Entities\BloqueHistoria;
 use Modules\ControlECP\Entities\AcompanamientoEvidencia;
 use Modules\ControlECP\Entities\Encuesta;
 use Modules\ControlECP\Entities\EvidenciaEcp;
@@ -45,6 +44,7 @@ class InstructorRepositorioController extends Controller
         $filtros = $request->validate([
             'buscar' => ['nullable', 'string', 'max:150'],
             'categoria' => ['nullable', Rule::in(['Actividades', 'Asistencias', 'Acompañamientos', 'Excusas'])],
+            'ficha_id' => ['nullable', 'integer'],
         ]);
 
         $evidencias = EvidenciaEcp::with(['actividad.momento', 'ficha.program', 'registradoPor'])
@@ -85,6 +85,8 @@ class InstructorRepositorioController extends Controller
 
                 return [
                     'categoria' => $esActividad ? 'Actividades' : 'Asistencias',
+                    'ficha_id' => $evidencia->ficha?->id,
+                    'ficha' => $evidencia->ficha?->code,
                     'titulo' => $evidencia->actividad?->nombre ?: ($esActividad ? 'Evidencia de actividad' : 'Evidencia de asistencia'),
                     'detalle' => trim(collect([
                         $evidencia->ficha?->code ? 'Ficha ' . $evidencia->ficha->code : null,
@@ -121,6 +123,8 @@ class InstructorRepositorioController extends Controller
 
                 $evidencias->push([
                     'categoria' => 'Acompañamientos',
+                    'ficha_id' => $evidencia->ficha?->id,
+                    'ficha' => $evidencia->ficha?->code,
                     'titulo' => 'Evidencia de sesión #' . ($session?->numero ?? '—')
                         . ' · ' . ($acompanamiento?->aprendiz?->person?->full_name ?? $acompanamiento?->aprendiz?->nickname ?? 'Aprendiz'),
                     'detalle' => trim(collect([
@@ -152,6 +156,7 @@ class InstructorRepositorioController extends Controller
             ->where('d.justificada', true)
             ->whereNotNull('d.excusa_imagen')
             ->select([
+                'c.id_ficha as ficha_id',
                 'd.excusa_imagen',
                 'd.observacion',
                 'd.created_at',
@@ -167,6 +172,8 @@ class InstructorRepositorioController extends Controller
             ->each(function ($excusa) use ($evidencias) {
                 $evidencias->push([
                     'categoria' => 'Excusas',
+                    'ficha_id' => $excusa->ficha_id,
+                    'ficha' => $excusa->ficha,
                     'titulo' => 'Excusa de ' . trim("{$excusa->first_name} {$excusa->first_last_name} {$excusa->second_last_name}"),
                     'detalle' => trim(collect([
                         $excusa->ficha ? 'Ficha ' . $excusa->ficha : null,
@@ -189,8 +196,9 @@ class InstructorRepositorioController extends Controller
         $totalExcusas = $evidencias->where('categoria', 'Excusas')->count();
         $filtroCategoria = $filtros['categoria'] ?? '';
         $busqueda = trim($filtros['buscar'] ?? '');
+        $filtroFichaId = (string) ($filtros['ficha_id'] ?? '');
 
-        $evidencias = $evidencias->filter(function (array $evidencia) use ($filtroCategoria, $busqueda) {
+        $evidenciasCategoria = $evidencias->filter(function (array $evidencia) use ($filtroCategoria, $busqueda) {
             if ($filtroCategoria && $evidencia['categoria'] !== $filtroCategoria) {
                 return false;
             }
@@ -209,18 +217,50 @@ class InstructorRepositorioController extends Controller
             return true;
         })->sortByDesc(fn (array $evidencia) => strtotime((string) $evidencia['fecha']) ?: 0)->values();
 
+        $fichas = $evidenciasCategoria
+            ->filter(fn (array $evidencia) => !empty($evidencia['ficha_id']) && !empty($evidencia['ficha']))
+            ->unique('ficha_id')
+            ->map(fn (array $evidencia) => [
+                'id' => $evidencia['ficha_id'],
+                'codigo' => $evidencia['ficha'],
+            ])
+            ->sortBy('codigo')
+            ->values();
+
+        $fichaSeleccionada = $fichas->first(
+            fn (array $ficha) => (string) $ficha['id'] === $filtroFichaId
+        );
+        if (!$fichaSeleccionada) {
+            $filtroFichaId = '';
+        }
+
+        $evidenciasFicha = $filtroFichaId === ''
+            ? collect()
+            : $evidenciasCategoria
+                ->filter(fn (array $evidencia) => (string) ($evidencia['ficha_id'] ?? '') === $filtroFichaId)
+                ->values();
+
         $porPagina = 8;
         $pagina = LengthAwarePaginator::resolveCurrentPage();
-        $registros = new LengthAwarePaginator(
-            $evidencias->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
-            $evidencias->count(),
+        $fichasPaginadas = new LengthAwarePaginator(
+            $fichas->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+            $fichas->count(),
             $porPagina,
             $pagina,
             ['path' => $request->url(), 'query' => $request->query()]
         );
+        $registros = new LengthAwarePaginator(
+            $evidenciasFicha->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+            $evidenciasFicha->count(),
+            $porPagina,
+            $pagina,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+        $paginacion = $filtroFichaId === '' ? $fichasPaginadas : $registros;
 
         return view('controlecp::instructor.repositorio.evidencias', compact(
-            'registros', 'categorias', 'totalActividades', 'totalAsistencias', 'totalAcompanamientos', 'totalExcusas',
+            'registros', 'fichas', 'fichasPaginadas', 'paginacion', 'fichaSeleccionada', 'filtroFichaId',
+            'categorias', 'totalActividades', 'totalAsistencias', 'totalAcompanamientos', 'totalExcusas',
             'filtroCategoria', 'busqueda'
         ));
     }
@@ -262,19 +302,6 @@ class InstructorRepositorioController extends Controller
         }
 
         return null;
-    }
-
-    public function historias()
-    {
-        $this->autorizarInstructor();
-
-        $bloques = BloqueHistoria::query()
-            ->where('activo', true)
-            ->orderBy('orden')
-            ->orderBy('id')
-            ->paginate(10);
-
-        return view('controlecp::instructor.repositorio.historia', compact('bloques'));
     }
 
     public function encuestas(Request $request, TabulacionService $tabulacionService)

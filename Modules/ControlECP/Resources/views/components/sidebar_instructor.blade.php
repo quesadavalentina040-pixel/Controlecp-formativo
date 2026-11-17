@@ -53,7 +53,6 @@
                     'label' => 'Repositorio',
                     'children' => [
                         ['icon' => 'fa-images', 'label' => 'Evidencias', 'route' => 'controlecp.instructor.repositorio.evidencias'],
-                        ['icon' => 'fa-file-lines', 'label' => 'Historias', 'route' => 'controlecp.instructor.repositorio.historia'],
                         ['icon' => 'fa-square-poll-vertical', 'label' => 'Encuestas', 'route' => 'controlecp.instructor.repositorio.encuestas'],
                         ['icon' => 'fa-table-cells', 'label' => 'Tabulación', 'route' => 'controlecp.instructor.repositorio.tabulacion'],
                     ],

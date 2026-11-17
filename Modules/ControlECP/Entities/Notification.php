@@ -187,6 +187,11 @@ class Notification extends Model
             };
         }
 
+        if (auth()->user()?->hasRole('controlecp.instructor')
+            && strtolower((string) $this->referencia_tipo) === 'asesoria') {
+            return route('controlecp.instructor.asesorias');
+        }
+
         return match (strtolower((string)$this->referencia_tipo)) {
             'asesoria' => route('controlecp.administrador.asesorias.index'),
             'pqr', 'pqrs' => route('controlecp.administrador.inicio'),

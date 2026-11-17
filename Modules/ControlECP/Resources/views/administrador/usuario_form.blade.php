@@ -10,6 +10,14 @@
     .form-label { font-weight: 600; font-size: 0.88rem; color: var(--ecp-navy); }
     .required-star { color: #dc3545; }
     .card-form { border-radius: 18px; }
+    .card-form .form-control:autofill,
+    .card-form .form-control:-webkit-autofill,
+    .card-form .form-control:-webkit-autofill:hover,
+    .card-form .form-control:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--ecp-navy) !important;
+        -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+        box-shadow: 0 0 0 1000px #fff inset !important;
+    }
     .section-title {
         font-size: 0.78rem;
         font-weight: 700;
@@ -42,8 +50,15 @@
 @section('dashboard-content')
 @php
     $isEdit   = isset($editUser);
-    $pageTitle = $isEdit ? 'Editar Usuario' : 'Registrar Usuario';
     $person   = $isEdit ? $editUser->person : null;
+    $requiereDatosPersona = !$isEdit || (bool) $person;
+    $tipoDocumento = old('document_type', $person ? $person->document_type : 'Cédula de ciudadanía');
+    $tiposDocumento = [
+        'Cédula de ciudadanía' => 'C.C.',
+        'Tarjeta de identidad' => 'T.I.',
+        'Pasaporte' => 'Pasaporte',
+        'Cédula de extranjería' => 'C.E.',
+    ];
 
     // Rol ECP actualmente asignado al usuario
     $currentRoleSlug = '';
@@ -53,37 +68,7 @@
     }
 @endphp
 
-<div class="container-fluid px-3 py-3">
-
-    {{-- Breadcrumb --}}
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-2 border-bottom">
-        <div>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-1 small text-muted">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.inicio') }}" class="text-decoration-none" style="color: var(--ecp-green);">
-                            <i class="fas fa-house me-1"></i>Inicio
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('controlecp.administrador.usuarios') }}" class="text-decoration-none" style="color: var(--ecp-green);">
-                            Usuarios
-                        </a>
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: var(--ecp-navy); font-weight: 600;">
-                        {{ $pageTitle }}
-                    </li>
-                </ol>
-            </nav>
-            <h2 class="h3 fw-bold mb-0" style="color: var(--ecp-navy); font-family: 'Outfit', sans-serif;">
-                <i class="fas {{ $isEdit ? 'fa-user-pen' : 'fa-user-plus' }} me-2" style="color: var(--ecp-green);"></i>{{ $pageTitle }}
-            </h2>
-            <p class="text-muted small mb-0">Control ECP &bull; {{ $isEdit ? 'Modifica los datos del usuario y su rol' : 'Completa el formulario para registrar un nuevo usuario' }}</p>
-        </div>
-        <a href="{{ route('controlecp.administrador.usuarios') }}" class="btn btn-outline-secondary rounded-pill px-4">
-            <i class="fas fa-arrow-left me-1"></i> Volver al listado
-        </a>
-    </div>
+<div class="container-fluid px-3 py-3 {{ $isEdit ? '' : 'user-registration-page' }}">
 
     {{-- Alertas de errores de validación --}}
     @if($errors->any())
@@ -126,61 +111,65 @@
                     <div class="row g-3">
 
                         {{-- Documento --}}
-                        @if(!$isEdit)
                         <div class="col-md-4">
-                            <label class="form-label">
+                            <label class="form-label" for="documentType">
                                 Tipo de Documento
+                                @if($requiereDatosPersona)<span class="required-star">*</span>@endif
                             </label>
-                            <select class="form-select" name="document_type">
-                                <option value="Cédula de ciudadanía" selected>C.C.</option>
-                                <option value="Tarjeta de identidad">T.I.</option>
-                                <option value="Pasaporte">Pasaporte</option>
-                                <option value="Cédula de extranjería">C.E.</option>
+                            <select class="form-select @error('document_type') is-invalid @enderror" id="documentType" name="document_type" {{ $requiereDatosPersona ? 'required' : '' }}>
+                                @if(!array_key_exists($tipoDocumento, $tiposDocumento))
+                                    <option value="{{ $tipoDocumento }}" selected>{{ $tipoDocumento }}</option>
+                                @endif
+                                @foreach($tiposDocumento as $documentTypeValue => $documentTypeLabel)
+                                    <option value="{{ $documentTypeValue }}" @selected($tipoDocumento === $documentTypeValue)>
+                                        {{ $documentTypeLabel }}
+                                    </option>
+                                @endforeach
                             </select>
+                            @error('document_type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="col-md-8">
-                            <label class="form-label">
-                                Número de Documento <span class="required-star">*</span>
+                            <label class="form-label" for="documentNumber">
+                                Número de Documento
+                                @if($requiereDatosPersona)<span class="required-star">*</span>@endif
                             </label>
                             <input type="text" class="form-control @error('document_number') is-invalid @enderror"
-                                   name="document_number" value="{{ old('document_number') }}"
-                                   placeholder="Ej: 1012345678" inputmode="numeric" pattern="[0-9]{10}"
-                                   minlength="10" maxlength="10" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 10)" required>
+                                   id="documentNumber" name="document_number" value="{{ old('document_number', $person ? $person->document_number : '') }}"
+                                   placeholder="Ej: 1012345678" inputmode="numeric"
+                                   pattern="{{ $isEdit ? '[0-9]+' : '[0-9]{10}' }}"
+                                   minlength="{{ $isEdit ? 1 : 10 }}" maxlength="{{ $isEdit ? 30 : 10 }}"
+                                   oninput="this.value = this.value.replace(/\D/g, '').slice(0, {{ $isEdit ? 30 : 10 }})"
+                                   {{ $requiereDatosPersona ? 'required' : '' }}>
                             @error('document_number')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        @else
-                        <div class="col-12">
-                            <label class="form-label">Documento de Identidad</label>
-                            <input type="text" class="form-control bg-light" readonly
-                                   value="{{ $person ? $person->document_type . ': ' . $person->document_number : 'Sin documento' }}">
-                        </div>
-                        @endif
 
                         {{-- Nombres --}}
                         <div class="col-md-4">
                             <label class="form-label">
-                                Primer Nombre <span class="required-star">*</span>
+                                Primer Nombre @if($requiereDatosPersona)<span class="required-star">*</span>@endif
                             </label>
                             <input type="text" class="form-control @error('first_name') is-invalid @enderror"
                                    name="first_name"
                                    value="{{ old('first_name', $person ? $person->first_name : '') }}"
                                    placeholder="Ej: JUAN" pattern="[\p{L} ]+" title="Solo se permiten letras y espacios"
-                                   required>
+                                   {{ $requiereDatosPersona ? 'required' : '' }}>
                             @error('first_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">
-                                Primer Apellido <span class="required-star">*</span>
+                                Primer Apellido @if($requiereDatosPersona)<span class="required-star">*</span>@endif
                             </label>
                             <input type="text" class="form-control @error('first_last_name') is-invalid @enderror"
                                    name="first_last_name"
                                    value="{{ old('first_last_name', $person ? $person->first_last_name : '') }}"
                                    placeholder="Ej: PÉREZ" pattern="[\p{L} ]+" title="Solo se permiten letras y espacios"
-                                   required>
+                                   {{ $requiereDatosPersona ? 'required' : '' }}>
                             @error('first_last_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -213,7 +202,7 @@
                             <input type="email" class="form-control @error('email') is-invalid @enderror"
                                    name="email"
                                    value="{{ old('email', $isEdit ? $editUser->email : '') }}"
-                                   placeholder="usuario@misena.edu.co" maxlength="150" required>
+                                   placeholder="usuario@misena.edu.co" maxlength="150" autocomplete="off" required>
                             @error('email')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -232,14 +221,14 @@
                         {{-- Nickname --}}
                         <div class="col-md-6">
                             <label class="form-label">
-                                Nombre de Usuario (nickname) <span class="required-star">*</span>
+                                Nombre de Usuario <span class="required-star">*</span>
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted"><i class="fas fa-at"></i></span>
                                 <input type="text" class="form-control @error('nickname') is-invalid @enderror"
                                        name="nickname"
                                        value="{{ old('nickname', $isEdit ? $editUser->nickname : '') }}"
-                                       placeholder="Ej: juanperez" pattern="[A-Za-z0-9]+" title="Solo se permiten letras y números"
+                                       placeholder="Ej: admin_controlecp" pattern="[A-Za-z0-9_]+" title="Solo se permiten letras, números y guion bajo (_)"
                                        required>
                                 @error('nickname')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -252,7 +241,7 @@
                             <label class="form-label">
                                 Contraseña
                                 @if($isEdit)
-                                    <span class="text-muted fw-normal">(dejar vacío para no cambiarla)</span>
+                                    <span class="text-muted fw-normal">(vacío para no cambiarla)</span>
                                 @else
                                     <span class="required-star">*</span>
                                 @endif
@@ -261,6 +250,7 @@
                                 <input type="password" class="form-control @error('password') is-invalid @enderror"
                                        id="inputPassword" name="password"
                                        placeholder="{{ $isEdit ? 'Nueva contraseña (opcional)' : 'Mínimo 6 caracteres' }}"
+                                       autocomplete="new-password"
                                        minlength="6" pattern="(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9]+"
                                        title="Debe contener letras y números, sin caracteres especiales"
                                        {{ !$isEdit ? 'required' : '' }}>

@@ -120,6 +120,8 @@
     }
     .asesoria-instructor-calendar-day:nth-child(7n+1) { border-left:1px solid #d9e3ea; }
     .asesoria-instructor-calendar-day.is-outside { background:#eaf1f5; color:#82909b; }
+    .asesorias-instructor-page .asesoria-instructor-calendar-day { background:#fff!important; }
+    .asesorias-instructor-page .asesoria-instructor-calendar-day.is-non-working-day { background:#fff!important;color:inherit!important; }
     .asesoria-instructor-calendar-day-number {
         display:inline-flex;
         width:22px;
@@ -425,7 +427,7 @@
 @endpush
 
 @section('dashboard-content')
-<div class="container-fluid px-3 py-3">
+<div class="container-fluid px-3 py-3 asesorias-instructor-page">
     <div class="asesoria-instructor-page">
     <div class="asesoria-instructor-header d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>

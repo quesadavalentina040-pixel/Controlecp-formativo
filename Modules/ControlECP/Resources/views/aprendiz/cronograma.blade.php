@@ -156,6 +156,10 @@
     }
     .apr-calendar-day.is-outside { background: #f8fafc; color: #94a3b8; }
     .apr-calendar-day.is-non-working-day { background: #e8eef3; color: #718397; }
+    .apr-calendar .apr-calendar-day,
+    .apr-calendar .apr-calendar-day.is-non-working-day,
+    .apr-calendar .apr-calendar-day.is-outside { background: #fff !important; }
+    .apr-calendar .apr-calendar-day.is-non-working-day { color: inherit !important; }
     .apr-calendar-day.is-today { box-shadow: none; }
     .apr-calendar-number { font-size: .8rem; font-weight: 700; }
     .apr-calendar-day.is-today .apr-calendar-number {

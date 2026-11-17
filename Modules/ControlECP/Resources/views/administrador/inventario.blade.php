@@ -1304,7 +1304,7 @@
                         <label for="movFoto" class="form-label small fw-semibold text-dark">Adjuntar foto <span class="text-muted fw-normal">(opcional)</span></label>
                         <input type="file" name="foto" id="movFoto" class="form-control rounded-3" accept="image/jpeg,image/png">
                     </div>
-                    <div class="alert alert-warning py-2 small mb-0 d-flex align-items-center gap-2">
+                    <div class="alert alert-warning py-2 small mb-0 d-flex align-items-center gap-2" data-system-alert-ignore>
                         <i class="fas fa-triangle-exclamation text-danger"></i>
                         <span>El stock no puede quedar en negativo.</span>
                     </div>

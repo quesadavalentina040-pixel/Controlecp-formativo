@@ -543,6 +543,8 @@ class CronogramaController extends Controller
             'recursos'      => 'nullable|array',
             'recursos.*.id_inventario' => 'required|exists:inventario,id_inventario',
             'recursos.*.cantidad'      => 'required|integer|min:1',
+        ], [
+            'hora_fin.before_or_equal' => 'La hora de fin debe ser como máximo las 3:00 p. m.',
         ]);
 
         // Criterio 3: Validar disponibilidad del instructor en nuevo horario

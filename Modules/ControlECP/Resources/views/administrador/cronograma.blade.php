@@ -190,6 +190,10 @@
         box-shadow: 0 0 8px rgba(0,0,0,0.15);
         flex-shrink: 0;
     }
+    .semaforo-indicator-large {
+        width: 20px;
+        height: 20px;
+    }
     .semaforo-verde {
         background-color: #39A900;
         box-shadow: 0 0 10px rgba(57, 169, 0, 0.6);
@@ -384,13 +388,14 @@
     .calendar-day-cell:hover {
         background-color: #f8fafc;
     }
-    .calendar-day-cell.non-working-day,
-    .calendar-day-cell.non-working-day:hover {
-        background-color: #e8eef3;
+    .calendar-day-cell.non-working-day {
+        background-color: #ffffff;
     }
     .calendar-day-cell.other-month {
-        background-color: #f1f5f9;
-        opacity: 0.55;
+        background-color: #ffffff;
+    }
+    .calendar-day-cell.other-month .calendar-day-number {
+        color: #94a3b8;
     }
     .calendar-day-header-top {
         display: flex;
@@ -851,12 +856,15 @@
             </div>
         </div>
 
-        <!-- Pospuestas y Finalizadas (Sin Semáforo - Criterio 6) -->
+        <!-- Pospuestas y Finalizadas (Semáforo gris - Criterio 6) -->
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="card card-semaforo-box card-semaforo-neutro shadow-sm" onclick="filtrarPorSemaforoCard('sin_color')">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
-                        <span class="card-semaforo-label">Sin color (otras)</span>
+                        <span class="card-semaforo-label d-inline-flex align-items-center gap-2">
+                            <span class="semaforo-indicator semaforo-neutro" aria-hidden="true"></span>
+                            Gris (otras)
+                        </span>
                         <span class="card-semaforo-icon"><i class="fas fa-calendar-check"></i></span>
                     </div>
                     <div class="d-flex align-items-baseline flex-wrap gap-2">
@@ -941,7 +949,7 @@
                                 <option value="rojo" {{ request('semaforo') === 'rojo' ? 'selected' : '' }}>🔴 Rojo (≤ 2 días)</option>
                                 <option value="amarillo" {{ request('semaforo') === 'amarillo' ? 'selected' : '' }}>🟡 Amarillo (~1 sem)</option>
                                 <option value="verde" {{ request('semaforo') === 'verde' ? 'selected' : '' }}>🟢 Verde (≥ 2 sem)</option>
-                                <option value="sin_color" {{ request('semaforo') === 'sin_color' ? 'selected' : '' }}>⚪ Sin color (Posp/Fin)</option>
+                                <option value="sin_color" {{ request('semaforo') === 'sin_color' ? 'selected' : '' }}>⚪ Gris (Posp/Fin)</option>
                             </select>
                         </div>
                         <div>
@@ -1038,6 +1046,11 @@
                                         $act = $sesion->actividad;
                                         $numAct = $act ? ($act->numero ? "Actividad {$act->numero}" : "Actividad {$act->id}") : 'Actividad';
                                         $nomMom = $act && $act->momento ? $act->momento->nombre : 'Sin Momento';
+                                        $estadoSemaforoGris = [
+                                            'Pospuesta' => 'Pospuesta',
+                                            'Finalizada' => 'Finalizada',
+                                            'Cancelada' => 'Cancelada',
+                                        ][$sesion->estado] ?? 'Sin semáforo';
                                     @endphp
                                     <tr>
                                         <!-- Semáforo (Criterio 6: Solo a pendientes) -->
@@ -1054,7 +1067,14 @@
                                                 <span class="semaforo-indicator semaforo-verde" title="Semáforo Verde: En tiempo (2 semanas o más)"></span>
                                                 <div class="small text-success fw-bold" style="font-size: 0.68rem;">{{ $sesion->dias_restantes }}d</div>
                                             @else
-                                                <span class="badge bg-light text-secondary border small" style="font-size: 0.68rem;">Sin semáforo</span>
+                                                <div class="d-flex flex-column align-items-center gap-1">
+                                                    <span class="semaforo-indicator semaforo-neutro semaforo-indicator-large"
+                                                          title="{{ $estadoSemaforoGris }}"
+                                                          aria-label="{{ $estadoSemaforoGris }}"></span>
+                                                    <span class="small text-muted fw-semibold" style="font-size: 0.68rem;">
+                                                        {{ $estadoSemaforoGris }}
+                                                    </span>
+                                                </div>
                                             @endif
                                         </td>
 
@@ -1328,7 +1348,6 @@
                     <h5 class="modal-title fw-bold" style="color: #001A29;">
                         <i class="fas fa-pen-to-square me-2" style="color: #001A29;"></i>Editar Programación
                     </h5>
-                    <p class="text-muted small mb-0">Modifica fecha, horario, lugar, ficha o recursos asociados (Criterio 8)</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
@@ -1377,7 +1396,7 @@
 
                         <div class="col-6 col-md-4">
                             <label class="form-label small fw-bold text-dark">Hora Fin</label>
-                            <input type="time" name="hora_fin" id="editHoraFin" class="form-control rounded-pill" min="08:00" max="15:00" step="60" required>
+                            <input type="time" name="hora_fin" id="editHoraFin" class="form-control rounded-pill" value="15:00" min="08:00" max="15:00" step="60" required>
                         </div>
 
                         <div class="col-12">
@@ -2283,7 +2302,7 @@
                 document.getElementById('editFicha').value = d.id_ficha;
                 document.getElementById('editFecha').value = d.fecha;
                 document.getElementById('editHoraInicio').value = d.hora_inicio;
-                document.getElementById('editHoraFin').value = d.hora_fin;
+                document.getElementById('editHoraFin').value = '15:00';
                 document.getElementById('editLugar').value = d.lugar;
                 document.getElementById('editMotivo').value = '';
 

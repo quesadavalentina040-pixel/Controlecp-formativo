@@ -38,6 +38,7 @@ class ControlECPServiceProvider extends ModuleServiceProvider
             $this->commands([
                 \Modules\ControlECP\Console\RevisarProgramacionesPoeCommand::class,
                 \Modules\ControlECP\Console\NotificarSesionesAcompanamientoCommand::class,
+                \Modules\ControlECP\Console\NotificarAsesoriasCommand::class,
             ]);
         }
     }
@@ -60,6 +61,7 @@ class ControlECPServiceProvider extends ModuleServiceProvider
             $schedule = $this->app->make(Schedule::class);
             $schedule->command('poe:revisar-programaciones')->daily();
             $schedule->command('controlecp:avisar-sesiones-acompanamiento')->dailyAt('08:00');
+            $schedule->command('controlecp:avisar-asesorias-dos-dias')->dailyAt('08:00')->withoutOverlapping();
         });
     }
 }

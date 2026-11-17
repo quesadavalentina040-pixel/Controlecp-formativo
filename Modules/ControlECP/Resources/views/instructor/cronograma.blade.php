@@ -405,6 +405,12 @@
         background-color: #f1f5f9;
         opacity: 0.55;
     }
+    .cronograma-instructor-page .calendar-day-cell {
+        background-color: #fff !important;
+    }
+    .cronograma-instructor-page .calendar-day-cell.other-month {
+        opacity: 1;
+    }
     .calendar-day-events {
         display: flex;
         flex-direction: column;
@@ -620,7 +626,7 @@
     })->values();
 @endphp
 
-<div class="container-fluid px-3 py-3">
+<div class="container-fluid px-3 py-3 cronograma-instructor-page">
     <div class="cronograma-header-card d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
             <div class="small fw-semibold mb-1" style="color: #39A900;">
@@ -826,6 +832,7 @@
                                 ) ?? 'neutro';
                             @endphp
                             <div class="calendar-day-cell {{ $esHoy ? 'today' : '' }} {{ $dia->month !== $mesActual->month ? 'other-month' : '' }} {{ $eventosDia->isNotEmpty() ? 'has-events' : '' }}"
+                                 style="background-color: #fff !important;"
                                  data-calendario-fecha="{{ $dia->toDateString() }}"
                                  @if($eventosDia->isNotEmpty()) role="button" tabindex="0" aria-label="{{ $dia->translatedFormat('d F Y') }}, {{ $eventosDia->count() }} actividades" @endif>
                                 <div class="calendar-day-header-top">

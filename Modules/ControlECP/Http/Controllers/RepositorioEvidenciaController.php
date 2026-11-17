@@ -48,6 +48,9 @@ class RepositorioEvidenciaController extends Controller
 
                 $evidencias->push([
                     'categoria' => $esEvidenciaActividad ? 'Actividades' : 'Asistencias',
+                    'ficha_id' => $evidencia->course_id,
+                    'ficha' => $evidencia->ficha?->code,
+                    'usuario_id' => $evidencia->user_id,
                     'titulo' => $evidencia->actividad?->nombre ?: ($esEvidenciaActividad ? 'Evidencia de actividad' : 'Evidencia de asistencia'),
                     'detalle' => trim(collect([
                         $evidencia->ficha?->code ? 'Ficha ' . $evidencia->ficha->code : null,
@@ -80,6 +83,8 @@ class RepositorioEvidenciaController extends Controller
                 'd.excusa_imagen',
                 'd.observacion',
                 'd.created_at',
+                'c.id_ficha as ficha_id',
+                'a.registrado_por as usuario_id',
                 'act.nombre as actividad',
                 'co.code as ficha',
                 'p.first_name',
@@ -92,6 +97,9 @@ class RepositorioEvidenciaController extends Controller
             ->each(function ($excusa) use ($evidencias) {
                 $evidencias->push([
                     'categoria' => 'Excusas',
+                    'ficha_id' => $excusa->ficha_id,
+                    'ficha' => $excusa->ficha,
+                    'usuario_id' => $excusa->usuario_id,
                     'titulo' => 'Excusa de ' . trim("{$excusa->first_name} {$excusa->first_last_name} {$excusa->second_last_name}"),
                     'detalle' => trim(collect([
                         $excusa->ficha ? 'Ficha ' . $excusa->ficha : null,
@@ -108,42 +116,77 @@ class RepositorioEvidenciaController extends Controller
                 ]);
             });
 
-        $categorias = [
-            'Actividades',
-            'Asistencias',
-            'Excusas',
-        ];
-        $totalEvidencias = $evidencias->count();
-        $totalActividades = $evidencias->where('categoria', 'Actividades')->count();
-        $totalAsistencias = $evidencias->where('categoria', 'Asistencias')->count();
-        $totalExcusas = $evidencias->where('categoria', 'Excusas')->count();
+        $conteoCategorias = $evidencias->countBy('categoria');
+        $cantidadExcusas = $conteoCategorias->get('Excusas', 0);
+        $cantidadActividades = $conteoCategorias->get('Actividades', 0);
+        $cantidadAsistencias = $conteoCategorias->get('Asistencias', 0);
+
+        $categoriasPermitidas = ['Excusas', 'Actividades', 'Asistencias'];
         $filtroCategoria = $request->input('categoria');
-        $busqueda = trim((string) $request->input('buscar'));
+        if (!in_array($filtroCategoria, $categoriasPermitidas, true)) {
+            $filtroCategoria = null;
+        }
 
-        $evidencias = $evidencias
-            ->filter(function (array $evidencia) use ($filtroCategoria, $busqueda) {
-                if ($filtroCategoria && $evidencia['categoria'] !== $filtroCategoria) {
-                    return false;
-                }
+        $evidenciasCategoria = $filtroCategoria
+            ? $evidencias->where('categoria', $filtroCategoria)
+            : collect();
+        $filtroFicha = $request->input('ficha');
+        $filtroFicha = is_string($filtroFicha) ? trim($filtroFicha) : '';
+        $filtroUsuario = $request->input('usuario');
+        $filtroUsuario = is_string($filtroUsuario) ? trim($filtroUsuario) : '';
+        $filtroFichaId = $request->input('ficha_id');
+        $filtroFichaId = is_scalar($filtroFichaId) ? trim((string) $filtroFichaId) : '';
 
-                if ($busqueda !== '') {
-                    $texto = implode(' ', [
-                        $evidencia['categoria'],
-                        $evidencia['titulo'],
-                        $evidencia['detalle'],
-                        $evidencia['usuario'] ?? '',
-                    ]);
+        $coincideConFiltros = static function (array $evidencia) use ($filtroFicha, $filtroUsuario) {
+            if ($filtroFicha !== '' && mb_stripos((string) ($evidencia['ficha'] ?? ''), $filtroFicha) === false) {
+                return false;
+            }
 
-                    return mb_stripos($texto, $busqueda) !== false;
-                }
+            if ($filtroUsuario !== '' && mb_stripos((string) ($evidencia['usuario'] ?? ''), $filtroUsuario) === false) {
+                return false;
+            }
 
-                return true;
-            })
+            return true;
+        };
+        $evidenciasCoincidentes = $evidenciasCategoria->filter($coincideConFiltros);
+        $fichas = $evidenciasCoincidentes
+            ->filter(fn (array $evidencia) => !empty($evidencia['ficha_id']) && !empty($evidencia['ficha']))
+            ->unique('ficha_id')
+            ->map(fn (array $evidencia) => [
+                'id' => $evidencia['ficha_id'],
+                'codigo' => $evidencia['ficha'],
+            ])
+            ->sortBy('codigo')
+            ->values();
+        $usuarios = $evidenciasCategoria
+            ->filter(fn (array $evidencia) => !empty($evidencia['usuario_id']) && !empty($evidencia['usuario']))
+            ->unique('usuario_id')
+            ->map(fn (array $evidencia) => [
+                'id' => $evidencia['usuario_id'],
+                'nombre' => $evidencia['usuario'],
+            ])
+            ->sortBy('nombre')
+            ->values();
+
+        $evidencias = $evidenciasCoincidentes
+            ->filter(fn (array $evidencia) => $filtroFichaId === '' || (string) ($evidencia['ficha_id'] ?? '') === $filtroFichaId)
             ->sortByDesc(fn (array $evidencia) => strtotime((string) $evidencia['fecha']) ?: 0)
             ->values();
 
+        $evidenciaFichaSeleccionada = $evidenciasCategoria->first(
+            fn (array $evidencia) => (string) ($evidencia['ficha_id'] ?? '') === $filtroFichaId
+        );
+        $fichaSeleccionada = $evidenciaFichaSeleccionada['ficha'] ?? 'Sin ficha';
+
         $porPagina = 8;
         $pagina = LengthAwarePaginator::resolveCurrentPage();
+        $fichasPaginadas = new LengthAwarePaginator(
+            $fichas->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+            $fichas->count(),
+            $porPagina,
+            $pagina,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
         $registros = new LengthAwarePaginator(
             $evidencias->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
             $evidencias->count(),
@@ -151,16 +194,22 @@ class RepositorioEvidenciaController extends Controller
             $pagina,
             ['path' => $request->url(), 'query' => $request->query()]
         );
+        $paginacion = $filtroFichaId === '' ? $fichasPaginadas : $registros;
 
         return view('controlecp::administrador.repositorio.evidencias', compact(
             'registros',
-            'categorias',
+            'fichasPaginadas',
+            'paginacion',
             'filtroCategoria',
-            'busqueda',
-            'totalEvidencias',
-            'totalActividades',
-            'totalAsistencias',
-            'totalExcusas'
+            'fichas',
+            'usuarios',
+            'filtroFicha',
+            'filtroUsuario',
+            'filtroFichaId',
+            'fichaSeleccionada',
+            'cantidadExcusas',
+            'cantidadActividades',
+            'cantidadAsistencias'
         ));
     }
 
