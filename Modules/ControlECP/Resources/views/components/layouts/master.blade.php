@@ -215,13 +215,13 @@
 
         /* Casillita Contenedora Glassmorphism SENA */
         .ecp-hero-card {
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 2px solid rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.64);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.72);
             border-radius: 24px;
             padding: 2.2rem 2.4rem;
-            box-shadow: 0 15px 40px rgba(0, 26, 41, 0.18);
+            box-shadow: 0 12px 32px rgba(0, 26, 41, 0.14);
             width: 100%;
             max-width: 600px;
             min-height: 380px;
@@ -353,19 +353,27 @@
 
         /* Footer Oficial SENA Empresa (Azul Marino y Verde SENA) */
         .ecp-footer {
-            background: #001A29;
+            background: #00324D;
             color: rgba(255, 255, 255, 0.85);
             border-top: 4px solid var(--sena-pastel-primary);
-            padding-top: 4.5rem;
+            padding-top: 1.5rem;
         }
 
         .ecp-footer h5 {
             color: #62E31D;
             font-size: 1.15rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.65rem;
             position: relative;
-            padding-bottom: 0.6rem;
+            padding-bottom: 0.3rem;
+        }
+
+        .ecp-footer > .container.pb-5 {
+            padding-bottom: 0.75rem !important;
+        }
+
+        .ecp-footer .mt-4 {
+            margin-top: 0.75rem !important;
         }
 
         .ecp-footer h5::after {
@@ -392,7 +400,7 @@
         }
 
         .ecp-footer ul li {
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.35rem;
             display: flex;
             align-items: flex-start;
         }
@@ -416,8 +424,8 @@
         }
 
         .ecp-footer-bottom {
-            background: #00131E;
-            padding: 1.5rem 0;
+            background: #002336;
+            padding: 0.5rem 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.65);
