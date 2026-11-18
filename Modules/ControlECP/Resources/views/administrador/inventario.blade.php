@@ -101,6 +101,16 @@
         border-color: #278344;
         color: #fff;
     }
+    .inv-action-return {
+        background: #e8f8fb;
+        border-color: #b9e6ef;
+        color: #087c91;
+    }
+    .inv-action-return:hover {
+        background: #087c91;
+        border-color: #087c91;
+        color: #fff;
+    }
     .inv-action-disable,
     .inv-action-category-disable {
         background: #fff0f0;
@@ -417,37 +427,7 @@
         </div>
     </div>
 
-    <!-- 2. Alerta Prominente de Devolución Incompleta (Mockup Image 1 & 2) -->
-    @if(isset($alertasLista) && $alertasLista->count() > 0)
-        @foreach($alertasLista as $alertaItem)
-            <div class="card border-0 shadow-sm mb-3 border-start border-4 border-danger" style="background: #FFF5F5; border-radius: 12px;">
-                <div class="card-body p-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="text-danger fs-3">
-                            <i class="fas fa-circle-exclamation"></i>
-                        </div>
-                        <div>
-                            <span class="badge bg-danger text-white mb-1">Devolución incompleta</span>
-                            <div class="fw-semibold text-danger small">
-                                {{ $alertaItem->observacion }}
-                            </div>
-                            <div class="text-muted small" style="font-size: 0.75rem;">
-                                Recurso: <strong>{{ $alertaItem->inventario ? $alertaItem->inventario->nombre : 'Recurso' }}</strong> &bull;
-                                Fecha: {{ $alertaItem->fecha ? $alertaItem->fecha->format('d/m/Y H:i') : '' }}
-                            </div>
-                        </div>
-                    </div>
-                    @if($alertaItem->inventario)
-                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm" onclick="abrirDetalleModal({{ $alertaItem->inventario->id_inventario }})">
-                            Ver detalle
-                        </button>
-                    @endif
-                </div>
-            </div>
-        @endforeach
-    @endif
-
-    <!-- 3. Buscador y Filtros (Mockup Image 1 & 2) -->
+    <!-- Buscador y filtros -->
     <div class="inventario-filter-card">
             <form action="{{ route('controlecp.administrador.inventario') }}" method="GET" class="inventario-filter-form">
                 <!-- Buscador por texto -->
@@ -666,9 +646,20 @@
                                                 <i class="fas fa-pen"></i>
                                             </button>
 
-                                            <!-- Registrar Movimiento Rápido -->
-                                            <button type="button" class="btn btn-action-icon inv-action-move" title="Registrar entrega o devolución" aria-label="Registrar entrega o devolución" onclick="abrirMovimientoRapido({{ $recurso->id_inventario }}, '{{ addslashes($recurso->nombre) }}', {{ $recurso->cantidad_disponible }})">
-                                                <i class="fas fa-right-left"></i>
+                                            <!-- Registrar uso o entrega -->
+                                            <button type="button" class="btn btn-action-icon inv-action-move"
+                                                    title="Usar recurso" aria-label="Usar {{ $recurso->nombre }}"
+                                                    data-action-url="{{ route('controlecp.administrador.inventario.entrega', $recurso->id_inventario) }}"
+                                                    data-resource-name="{{ $recurso->nombre }}"
+                                                    data-available="{{ $recurso->cantidad_disponible }}"
+                                                    onclick="abrirModalUsarRecurso(this)"
+                                                    @disabled($recurso->cantidad_disponible < 1 || ($actividades->isEmpty() && $asesorias->isEmpty()))>
+                                                <i class="fas fa-arrow-up"></i>
+                                            </button>
+
+                                            <!-- Registrar devolución -->
+                                            <button type="button" class="btn btn-action-icon inv-action-return" title="Registrar devolución" aria-label="Devolver {{ $recurso->nombre }}" onclick="abrirMovimientoRapido({{ $recurso->id_inventario }}, 'Devolución')">
+                                                <i class="fas fa-arrow-rotate-left"></i>
                                             </button>
 
                                             <!-- Dar de Baja -->
@@ -867,20 +858,6 @@
                             <div class="mb-3">
                                 <span class="text-muted small d-block mb-2">Fotos:</span>
                                 <div class="d-flex flex-wrap gap-2" id="detFotosMiniaturas"></div>
-                            </div>
-                            <div class="d-flex flex-wrap gap-2 pt-2 border-top" id="detAccionesBar">
-                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill px-3 flex-grow-1" id="detBtnEditar">
-                                    <i class="fas fa-pen me-1"></i> Editar
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3 flex-grow-1" id="detBtnEntrega">
-                                    <i class="fas fa-arrow-up me-1"></i> Entrega
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3 flex-grow-1" id="detBtnDevolucion">
-                                    <i class="fas fa-arrow-rotate-left me-1"></i> Devolución
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 flex-grow-1" id="detBtnBaja">
-                                    <i class="fas fa-ban me-1"></i> Dar de baja
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1249,8 +1226,93 @@
 </div>
 
 <!-- =================================================================== -->
-<!-- 6. MODAL: REGISTRAR MOVIMIENTO RÁPIDO                               -->
+<!-- 6. MODAL: USAR RECURSO EN ACTIVIDAD O ASESORÍA                      -->
 <!-- =================================================================== -->
+<div class="modal fade" id="modalUsarRecursoAdmin" tabindex="-1" aria-labelledby="modalUsarRecursoAdminTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <form id="formUsarRecursoAdmin" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header text-white py-3 px-4" style="background:#001A29;border-bottom:2px solid #39A900;">
+                    <h2 class="modal-title h5 fw-bold" id="modalUsarRecursoAdminTitulo">Usar recurso</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="small text-muted">Recurso: <strong id="adminRecursoUsarNombre"></strong></p>
+                    <div data-admin-entrega-paso="datos">
+                        <div class="small fw-semibold text-primary mb-3">Paso 1 de 2 · Selecciona el destino y la cantidad</div>
+                        <div class="mb-3">
+                            <label for="adminDestinoEntrega" class="form-label small fw-semibold">Actividad o asesoría <span class="text-danger">*</span></label>
+                            <select id="adminDestinoEntrega" name="destino" class="form-select rounded-3" required>
+                                <option value="">Selecciona el destino</option>
+                                <optgroup label="Actividades">
+                                    @foreach($actividades as $actividad)
+                                        <option value="actividad:{{ $actividad->id_cronograma }}">
+                                            {{ $actividad->actividad?->nombre ?? 'Actividad' }} ·
+                                            {{ $actividad->fecha?->format('d/m/Y') ?? 'Sin fecha' }} ·
+                                            {{ substr($actividad->hora_inicio, 0, 5) }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Asesorías">
+                                    @foreach($asesorias as $asesoria)
+                                        <option value="asesoria:{{ $asesoria->id_asesoria }}">
+                                            {{ $asesoria->categoria?->nombre ?? 'Asesoría' }} ·
+                                            {{ $asesoria->fecha?->format('d/m/Y') ?? 'Sin fecha' }} ·
+                                            {{ substr($asesoria->hora_inicio, 0, 5) }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                            @if($actividades->isEmpty() && $asesorias->isEmpty())
+                                <div class="form-text text-danger">No hay actividades o asesorías disponibles para asociar el uso.</div>
+                            @endif
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminCantidadEntrega" class="form-label small fw-semibold">Cantidad que vas a usar <span class="text-danger">*</span></label>
+                            <input id="adminCantidadEntrega" type="number" name="cantidad" class="form-control rounded-3"
+                                   min="1" value="1" required>
+                            <div class="form-text">Disponibles ahora: <span id="adminCantidadDisponible"></span> unidades.</div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn text-white rounded-pill px-4" style="background:#39A900;"
+                                    data-admin-entrega-continuar
+                                    @disabled($actividades->isEmpty() && $asesorias->isEmpty())>
+                                Continuar <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="d-none" data-admin-entrega-paso="evidencia">
+                        <div class="small fw-semibold text-primary mb-3">Paso 2 de 2 · Adjunta la evidencia para entregar</div>
+                        <div class="bg-light rounded-3 p-3 mb-3">
+                            <div class="small text-muted">Vas a entregar</div>
+                            <strong data-admin-entrega-resumen></strong>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminFotoEntrega" class="form-label small fw-semibold">Foto de evidencia <span class="text-danger">*</span></label>
+                            <input id="adminFotoEntrega" type="file" name="foto" class="form-control rounded-3"
+                                   accept="image/jpeg,image/png">
+                            <div class="form-text">JPG o PNG, máximo 4 MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminObservacionEntrega" class="form-label small fw-semibold">Observación</label>
+                            <textarea id="adminObservacionEntrega" name="observacion" class="form-control rounded-3" rows="2" maxlength="1000"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between gap-2">
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-admin-entrega-volver>
+                                <i class="fas fa-arrow-left me-1"></i>Volver
+                            </button>
+                            <button type="submit" class="btn text-white rounded-pill px-4" style="background:#39A900;">
+                                <i class="fas fa-arrow-up me-1"></i>Entregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="modalRegistrarMovimiento" tabindex="-1" aria-labelledby="modalMovimientoTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 rounded-4 shadow">
@@ -1261,16 +1323,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="btn-group w-100 mb-3" role="group">
-                        <input type="radio" class="btn-check" name="tipo" id="tipoEntrega" value="Entrega" checked autocomplete="off" onchange="actualizarTipoMovimiento()">
-                        <label class="btn btn-outline-success fw-bold rounded-start-pill py-2" for="tipoEntrega">
-                            <i class="fas fa-arrow-up me-1"></i> Entrega (Salida)
-                        </label>
-                        <input type="radio" class="btn-check" name="tipo" id="tipoDevolucion" value="Devolución" autocomplete="off" onchange="actualizarTipoMovimiento()">
-                        <label class="btn btn-outline-primary fw-bold rounded-end-pill py-2" for="tipoDevolucion">
-                            <i class="fas fa-arrow-rotate-left me-1"></i> Devolución (Entrada)
-                        </label>
-                    </div>
+                    <input type="hidden" name="tipo" id="tipoMovimiento" value="Entrega">
                     <div class="mb-3">
                         <label for="movRecursoSelect" class="form-label small fw-semibold text-dark">Recurso <span class="text-danger">*</span></label>
                         <select name="id_inventario" id="movRecursoSelect" class="form-select rounded-3" required onchange="actualizarMaxCantidad()">
@@ -1311,7 +1364,7 @@
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color: #39A900;">Registrar movimiento</button>
+                    <button type="submit" id="btnRegistrarMovimiento" class="btn text-white rounded-pill px-4 shadow-sm" style="background-color: #39A900;">Registrar entrega</button>
                 </div>
             </form>
         </div>
@@ -1444,7 +1497,64 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+const urlRepositorioEvidenciasInventario = @json(route('controlecp.administrador.repositorio.evidencias'));
 let recursoActualDetalleId = null;
+
+function abrirModalUsarRecurso(boton) {
+    const form = document.getElementById('formUsarRecursoAdmin');
+    const cantidad = document.getElementById('adminCantidadEntrega');
+    const foto = document.getElementById('adminFotoEntrega');
+    form.reset();
+    form.action = boton.dataset.actionUrl;
+    document.getElementById('adminRecursoUsarNombre').textContent = boton.dataset.resourceName;
+    document.getElementById('adminCantidadDisponible').textContent = boton.dataset.available;
+    cantidad.max = boton.dataset.available;
+    cantidad.value = 1;
+    foto.required = false;
+    form.querySelector('[data-admin-entrega-paso="datos"]').classList.remove('d-none');
+    form.querySelector('[data-admin-entrega-paso="evidencia"]').classList.add('d-none');
+    new bootstrap.Modal(document.getElementById('modalUsarRecursoAdmin')).show();
+}
+
+function avanzarPasoEntregaAdmin(form) {
+    if (!form.reportValidity()) return;
+
+    const destino = form.querySelector('#adminDestinoEntrega');
+    const cantidad = form.querySelector('#adminCantidadEntrega');
+    const foto = form.querySelector('#adminFotoEntrega');
+    const resumen = form.querySelector('[data-admin-entrega-resumen]');
+    resumen.textContent = `${cantidad.value} unidad(es) para ${destino.options[destino.selectedIndex].text.trim()}`;
+    foto.required = true;
+    form.querySelector('[data-admin-entrega-paso="datos"]').classList.add('d-none');
+    form.querySelector('[data-admin-entrega-paso="evidencia"]').classList.remove('d-none');
+}
+
+document.addEventListener('click', event => {
+    const continuar = event.target.closest('[data-admin-entrega-continuar]');
+    if (continuar) {
+        const form = continuar.closest('form#formUsarRecursoAdmin');
+        if (form) avanzarPasoEntregaAdmin(form);
+        return;
+    }
+
+    const volver = event.target.closest('[data-admin-entrega-volver]');
+    if (!volver) return;
+
+    const form = volver.closest('form#formUsarRecursoAdmin');
+    if (!form) return;
+
+    form.querySelector('#adminFotoEntrega').required = false;
+    form.querySelector('[data-admin-entrega-paso="evidencia"]').classList.add('d-none');
+    form.querySelector('[data-admin-entrega-paso="datos"]').classList.remove('d-none');
+});
+
+document.addEventListener('submit', event => {
+    const form = event.target.closest('form#formUsarRecursoAdmin');
+    if (!form || !form.querySelector('[data-admin-entrega-paso="evidencia"]').classList.contains('d-none')) return;
+
+    event.preventDefault();
+    avanzarPasoEntregaAdmin(form);
+});
 
 function abrirDetalleModal(id) {
     recursoActualDetalleId = id;
@@ -1501,25 +1611,6 @@ function abrirDetalleModal(id) {
                 fotosCont.appendChild(img);
             });
 
-            document.getElementById('detBtnEditar').onclick = () => {
-                bootstrap.Modal.getInstance(document.getElementById('modalDetalleRecurso')).hide();
-                abrirEditarModal(data.id_inventario);
-            };
-            document.getElementById('detBtnEntrega').onclick = () => {
-                bootstrap.Modal.getInstance(document.getElementById('modalDetalleRecurso')).hide();
-                abrirMovimientoRapido(data.id_inventario, data.nombre, data.cantidad_disponible);
-            };
-            document.getElementById('detBtnDevolucion').onclick = () => {
-                bootstrap.Modal.getInstance(document.getElementById('modalDetalleRecurso')).hide();
-                abrirMovimientoRapido(data.id_inventario, data.nombre, data.cantidad_disponible);
-                document.getElementById('tipoDevolucion').checked = true;
-                actualizarTipoMovimiento();
-            };
-            document.getElementById('detBtnBaja').onclick = () => {
-                bootstrap.Modal.getInstance(document.getElementById('modalDetalleRecurso')).hide();
-                abrirModalBaja(data.id_inventario, data.nombre, data.cantidad_disponible);
-            };
-
             const tbodyPendientes = document.getElementById('detPendientesTbody');
             tbodyPendientes.innerHTML = '';
             if (!data.movimientos_pendientes || data.movimientos_pendientes.length === 0) {
@@ -1536,7 +1627,11 @@ function abrirDetalleModal(id) {
                 tbodyDevueltos.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted small">No hay registros de devoluciones o entradas.</td></tr>';
             } else {
                 data.movimientos_devueltos.forEach(d => {
-                    const fotoBadge = d.foto ? `<a href="${d.foto}" target="_blank" class="badge bg-light text-primary border"><i class="fas fa-image me-1"></i>Ver foto</a>` : '<span class="text-muted small">-</span>';
+                    const urlEvidencia = new URL(urlRepositorioEvidenciasInventario, window.location.origin);
+                    urlEvidencia.searchParams.set('categoria', 'Inventario');
+                    urlEvidencia.searchParams.set('producto_id', id);
+                    urlEvidencia.searchParams.set('movimiento_id', d.id);
+                    const fotoBadge = d.foto ? `<a href="${urlEvidencia.href}" class="badge bg-light text-primary border"><i class="fas fa-image me-1"></i>Ver</a>` : '<span class="text-muted small">-</span>';
                     tbodyDevueltos.innerHTML += `<tr><td class="text-muted small">${d.fecha}</td><td><span class="badge ${d.tipo === 'Devolución' ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary'} rounded-pill small">${d.tipo}</span></td><td class="text-center fw-bold text-dark small">${d.cantidad} un.</td><td class="small text-muted">${d.observacion || '-'} <span class="d-block text-secondary" style="font-size:0.7rem;">Por: ${d.autor}</span></td><td class="text-center">${fotoBadge}</td></tr>`;
                 });
             }
@@ -1609,9 +1704,17 @@ function previewDrawerFotos(files) {
     });
 }
 
-function abrirMovimientoRapido(idRecurso, nombre, cantDisponible) {
+function abrirMovimientoRapido(idRecurso, tipo = 'Entrega') {
     const select = document.getElementById('movRecursoSelect');
+    select.closest('form').reset();
     select.value = idRecurso;
+    document.getElementById('tipoMovimiento').value = tipo;
+    document.getElementById('modalMovimientoTitle').innerText = tipo === 'Entrega'
+        ? 'Registrar uso / entrega'
+        : 'Registrar devolución';
+    document.getElementById('btnRegistrarMovimiento').innerText = tipo === 'Entrega'
+        ? 'Registrar entrega'
+        : 'Registrar devolución';
     actualizarMaxCantidad();
     new bootstrap.Modal(document.getElementById('modalRegistrarMovimiento')).show();
 }
@@ -1620,15 +1723,13 @@ function actualizarMaxCantidad() {
     const select = document.getElementById('movRecursoSelect');
     const selectedOption = select.options[select.selectedIndex];
     const cantInput = document.getElementById('movCantidad');
-    const esEntrega = document.getElementById('tipoEntrega').checked;
+    const esEntrega = document.getElementById('tipoMovimiento').value === 'Entrega';
     if (selectedOption && selectedOption.dataset.disponible) {
         const disponible = parseInt(selectedOption.dataset.disponible);
         if (esEntrega) cantInput.max = disponible;
         else cantInput.removeAttribute('max');
     }
 }
-
-function actualizarTipoMovimiento() { actualizarMaxCantidad(); }
 
 function abrirModalBaja(idRecurso, nombre, cant) {
     document.getElementById('bajaRecursoNombre').innerText = nombre;

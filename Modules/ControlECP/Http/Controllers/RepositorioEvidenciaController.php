@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Modules\ControlECP\Entities\EvidenciaEcp;
+use Modules\ControlECP\Entities\MovimientoInventario;
 
 class RepositorioEvidenciaController extends Controller
 {
@@ -116,12 +117,47 @@ class RepositorioEvidenciaController extends Controller
                 ]);
             });
 
+        MovimientoInventario::with(['inventario', 'usuario'])
+            ->whereNotNull('foto')
+            ->orderByDesc('fecha')
+            ->get()
+            ->each(function (MovimientoInventario $movimiento) use ($evidencias) {
+                $recurso = $movimiento->inventario?->nombre ?? 'Recurso de inventario';
+                $evidencias->push([
+                    'categoria' => 'Inventario',
+                    'movimiento_id' => $movimiento->id_movimiento_inventario,
+                    'inventario_id' => $movimiento->id_inventario,
+                    'inventario_nombre' => $recurso,
+                    'ficha_id' => null,
+                    'ficha' => null,
+                    'usuario_id' => $movimiento->id_usuario,
+                    'titulo' => $recurso . ' · ' . $movimiento->tipo,
+                    'detalle' => trim(collect([
+                        $recurso,
+                        'Cantidad: ' . $movimiento->cantidad,
+                        $movimiento->observacion,
+                    ])->filter()->implode(' · ')),
+                    'tipo' => 'Imagen',
+                    'url' => asset($movimiento->foto),
+                    'url_video_embed' => null,
+                    'es_imagen' => true,
+                    'es_video' => false,
+                    'usuario' => $movimiento->usuario?->nickname ?: $movimiento->usuario?->full_name,
+                    'fecha' => $movimiento->fecha,
+                ]);
+            });
+
         $conteoCategorias = $evidencias->countBy('categoria');
         $cantidadExcusas = $conteoCategorias->get('Excusas', 0);
         $cantidadActividades = $conteoCategorias->get('Actividades', 0);
         $cantidadAsistencias = $conteoCategorias->get('Asistencias', 0);
+        $cantidadInventario = $evidencias
+            ->where('categoria', 'Inventario')
+            ->filter(fn (array $evidencia) => !empty($evidencia['inventario_id']))
+            ->unique('inventario_id')
+            ->count();
 
-        $categoriasPermitidas = ['Excusas', 'Actividades', 'Asistencias'];
+        $categoriasPermitidas = ['Excusas', 'Actividades', 'Asistencias', 'Inventario'];
         $filtroCategoria = $request->input('categoria');
         if (!in_array($filtroCategoria, $categoriasPermitidas, true)) {
             $filtroCategoria = null;
@@ -136,6 +172,20 @@ class RepositorioEvidenciaController extends Controller
         $filtroUsuario = is_string($filtroUsuario) ? trim($filtroUsuario) : '';
         $filtroFichaId = $request->input('ficha_id');
         $filtroFichaId = is_scalar($filtroFichaId) ? trim((string) $filtroFichaId) : '';
+        $filtroProductoId = $request->input('producto_id');
+        $filtroProductoId = is_scalar($filtroProductoId) && ctype_digit((string) $filtroProductoId)
+            ? trim((string) $filtroProductoId)
+            : '';
+        $filtroMovimientoId = $request->input('movimiento_id');
+        $filtroMovimientoId = is_scalar($filtroMovimientoId) && ctype_digit((string) $filtroMovimientoId)
+            ? trim((string) $filtroMovimientoId)
+            : '';
+        if ($filtroCategoria === 'Inventario') {
+            $filtroFichaId = '';
+        } else {
+            $filtroProductoId = '';
+            $filtroMovimientoId = '';
+        }
 
         $coincideConFiltros = static function (array $evidencia) use ($filtroFicha, $filtroUsuario) {
             if ($filtroFicha !== '' && mb_stripos((string) ($evidencia['ficha'] ?? ''), $filtroFicha) === false) {
@@ -149,6 +199,22 @@ class RepositorioEvidenciaController extends Controller
             return true;
         };
         $evidenciasCoincidentes = $evidenciasCategoria->filter($coincideConFiltros);
+        $productos = $evidenciasCoincidentes
+            ->where('categoria', 'Inventario')
+            ->filter(fn (array $evidencia) => !empty($evidencia['inventario_id']))
+            ->groupBy('inventario_id')
+            ->map(fn ($movimientos, $id) => [
+                'id' => (string) $id,
+                'nombre' => $movimientos->first()['inventario_nombre'],
+            ])
+            ->sortBy('nombre')
+            ->values();
+        if ($filtroProductoId !== '' && !$productos->contains(fn (array $producto) => $producto['id'] === $filtroProductoId)) {
+            $filtroProductoId = '';
+        }
+        $productoSeleccionado = $productos->first(
+            fn (array $producto) => $producto['id'] === $filtroProductoId
+        );
         $fichas = $evidenciasCoincidentes
             ->filter(fn (array $evidencia) => !empty($evidencia['ficha_id']) && !empty($evidencia['ficha']))
             ->unique('ficha_id')
@@ -173,11 +239,6 @@ class RepositorioEvidenciaController extends Controller
             ->sortByDesc(fn (array $evidencia) => strtotime((string) $evidencia['fecha']) ?: 0)
             ->values();
 
-        $evidenciaFichaSeleccionada = $evidenciasCategoria->first(
-            fn (array $evidencia) => (string) ($evidencia['ficha_id'] ?? '') === $filtroFichaId
-        );
-        $fichaSeleccionada = $evidenciaFichaSeleccionada['ficha'] ?? 'Sin ficha';
-
         $porPagina = 8;
         $pagina = LengthAwarePaginator::resolveCurrentPage();
         $fichasPaginadas = new LengthAwarePaginator(
@@ -187,14 +248,51 @@ class RepositorioEvidenciaController extends Controller
             $pagina,
             ['path' => $request->url(), 'query' => $request->query()]
         );
-        $registros = new LengthAwarePaginator(
-            $evidencias->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
-            $evidencias->count(),
+        $productosPaginados = new LengthAwarePaginator(
+            $productos->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+            $productos->count(),
             $porPagina,
             $pagina,
             ['path' => $request->url(), 'query' => $request->query()]
         );
-        $paginacion = $filtroFichaId === '' ? $fichasPaginadas : $registros;
+        if ($filtroCategoria === 'Inventario') {
+            $evidenciasProducto = $filtroProductoId === ''
+                ? collect()
+                : $evidenciasCoincidentes->filter(
+                    fn (array $evidencia) => (string) ($evidencia['inventario_id'] ?? '') === $filtroProductoId
+                )->values();
+            if ($filtroMovimientoId !== '' && !$request->query->has('page')) {
+                $indiceMovimiento = $evidenciasProducto->search(
+                    fn (array $evidencia) => (string) $evidencia['movimiento_id'] === $filtroMovimientoId
+                );
+                if ($indiceMovimiento !== false) {
+                    $pagina = intdiv($indiceMovimiento, $porPagina) + 1;
+                }
+            }
+            $registros = new LengthAwarePaginator(
+                $evidenciasProducto->sortByDesc(fn (array $evidencia) => strtotime((string) $evidencia['fecha']) ?: 0)
+                    ->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+                $evidenciasProducto->count(),
+                $porPagina,
+                $pagina,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+            $fichaSeleccionada = 'Inventario';
+            $paginacion = $filtroProductoId === '' ? $productosPaginados : $registros;
+        } else {
+            $evidenciaFichaSeleccionada = $evidenciasCategoria->first(
+                fn (array $evidencia) => (string) ($evidencia['ficha_id'] ?? '') === $filtroFichaId
+            );
+            $fichaSeleccionada = $evidenciaFichaSeleccionada['ficha'] ?? 'Sin ficha';
+            $registros = new LengthAwarePaginator(
+                $evidencias->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+                $evidencias->count(),
+                $porPagina,
+                $pagina,
+                ['path' => $request->url(), 'query' => $request->query()]
+            );
+            $paginacion = $filtroFichaId === '' ? $fichasPaginadas : $registros;
+        }
 
         return view('controlecp::administrador.repositorio.evidencias', compact(
             'registros',
@@ -206,10 +304,16 @@ class RepositorioEvidenciaController extends Controller
             'filtroFicha',
             'filtroUsuario',
             'filtroFichaId',
+            'filtroProductoId',
+            'filtroMovimientoId',
             'fichaSeleccionada',
+            'productos',
+            'productosPaginados',
+            'productoSeleccionado',
             'cantidadExcusas',
             'cantidadActividades',
-            'cantidadAsistencias'
+            'cantidadAsistencias',
+            'cantidadInventario'
         ));
     }
 

@@ -72,6 +72,17 @@ class InstructorInventarioController extends Controller
         }
 
         $recursos = $query->orderBy('nombre')->paginate(10)->withQueryString();
+        $idsRecursosPagina = $recursos->getCollection()->pluck('id_inventario');
+        $entregasPendientes = $idsRecursosPagina->isEmpty()
+            ? collect()
+            : MovimientoInventario::with('movimientosHijos')
+                ->where('id_usuario', Auth::id())
+                ->whereIn('id_inventario', $idsRecursosPagina)
+                ->whereIn('tipo', ['Entrega', 'Salida'])
+                ->get()
+                ->filter(fn ($movimiento) => $movimiento->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') < $movimiento->cantidad)
+                ->groupBy('id_inventario');
+
         $todosActivos = Inventario::where('estado', '!=', 'Inactivo')
             ->get(['estado', 'cantidad_total', 'cantidad_disponible', 'umbral_critico', 'umbral_regular']);
         $totalRecursos = Inventario::count();
@@ -90,13 +101,53 @@ class InstructorInventarioController extends Controller
             'totalUnidades',
             'totalDisponibles',
             'totalPrestados',
-            'stockBajoCount'
+            'stockBajoCount',
+            'entregasPendientes'
         ));
     }
 
-    public function show(int $id)
+    public function show(Request $request, int $id)
     {
         $recurso = $this->recurso($id);
+        if ($request->boolean('modal') && $request->input('accion') === 'entrega') {
+            $actividades = Cronograma::with('actividad')
+                ->where('id_instructor', Auth::id())
+                ->whereNotIn('estado', ['Cancelada'])
+                ->whereDate('fecha', '>=', today())
+                ->orderBy('fecha')->orderBy('hora_inicio')
+                ->get();
+            $asesorias = Asesoria::with('categoria')
+                ->where('id_usuario_instructor', Auth::id())
+                ->whereIn('estado', ['Programada', 'Realizada'])
+                ->whereDate('fecha', '>=', today())
+                ->orderBy('fecha')->orderBy('hora_inicio')
+                ->get();
+
+            $vista = view('controlecp::instructor.inventario', compact(
+                'recurso',
+                'actividades',
+                'asesorias'
+            ));
+
+            return response($vista->renderSections()['dashboard-content']);
+        }
+
+        if ($request->boolean('modal') && $request->input('accion') === 'devolucion') {
+            $recurso->load('movimientos.movimientosHijos');
+            $entregasPendientes = $recurso->movimientos
+                ->where('id_usuario', Auth::id())
+                ->whereIn('tipo', ['Entrega', 'Salida'])
+                ->filter(fn ($movimiento) => $movimiento->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') < $movimiento->cantidad)
+                ->values();
+
+            $vista = view('controlecp::instructor.inventario', compact(
+                'recurso',
+                'entregasPendientes'
+            ));
+
+            return response($vista->renderSections()['dashboard-content']);
+        }
+
         $recurso->load([
             'categoria',
             'fotos',
@@ -120,11 +171,23 @@ class InstructorInventarioController extends Controller
             ->whereDate('fecha', '>=', today())
             ->orderBy('fecha')->orderBy('hora_inicio')
             ->get();
+
         $entregasPendientes = $recurso->movimientos
             ->where('id_usuario', Auth::id())
             ->whereIn('tipo', ['Entrega', 'Salida'])
             ->filter(fn ($movimiento) => $movimiento->movimientosHijos->where('tipo', 'Devolución')->sum('cantidad') < $movimiento->cantidad)
             ->values();
+
+        if ($request->boolean('modal')) {
+            $vista = view('controlecp::instructor.inventario', compact(
+                'recurso',
+                'actividades',
+                'asesorias',
+                'entregasPendientes'
+            ));
+
+            return response($vista->renderSections()['dashboard-content']);
+        }
 
         return view('controlecp::instructor.inventario_show', compact(
             'recurso',

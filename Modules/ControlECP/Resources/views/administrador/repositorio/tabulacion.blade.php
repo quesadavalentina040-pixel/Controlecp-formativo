@@ -252,7 +252,12 @@
                 Consulta analítica en tiempo real de respuestas, tasa de participación, satisfacción y distribución por pregunta.
             </p>
         </div>
-
+        @if($encuestaActual && $resultados && $resultados['consolidado']['total_respuestas'] > 0)
+            <a href="{{ route('controlecp.administrador.repositorio.tabulacion.exportar', array_merge(request()->query(), ['id_encuesta' => $encuestaActual->id_encuesta])) }}"
+               class="btn btn-ecp-primary text-decoration-none">
+                <i class="fa-solid fa-file-pdf me-2"></i>Exportar PDF
+            </a>
+        @endif
     </div>
 
     <div class="tabulacion-card tabulacion-filter-toolbar mb-4">

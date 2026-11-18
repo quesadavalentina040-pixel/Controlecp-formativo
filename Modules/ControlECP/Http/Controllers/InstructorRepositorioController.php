@@ -16,6 +16,7 @@ use Modules\ControlECP\Entities\Actividad;
 use Modules\ControlECP\Entities\AcompanamientoEvidencia;
 use Modules\ControlECP\Entities\Encuesta;
 use Modules\ControlECP\Entities\EvidenciaEcp;
+use Modules\ControlECP\Entities\MovimientoInventario;
 use Modules\ControlECP\Services\TabulacionService;
 
 class InstructorRepositorioController extends Controller
@@ -43,8 +44,10 @@ class InstructorRepositorioController extends Controller
         $this->autorizarInstructor();
         $filtros = $request->validate([
             'buscar' => ['nullable', 'string', 'max:150'],
-            'categoria' => ['nullable', Rule::in(['Actividades', 'Asistencias', 'Acompañamientos', 'Excusas'])],
+            'categoria' => ['nullable', Rule::in(['Actividades', 'Asistencias', 'Acompañamientos', 'Excusas', 'Inventario'])],
             'ficha_id' => ['nullable', 'integer'],
+            'producto_id' => ['nullable', 'integer'],
+            'movimiento_id' => ['nullable', 'integer'],
         ]);
 
         $evidencias = EvidenciaEcp::with(['actividad.momento', 'ficha.program', 'registradoPor'])
@@ -189,14 +192,54 @@ class InstructorRepositorioController extends Controller
                 ]);
             });
 
-        $categorias = ['Actividades', 'Asistencias', 'Acompañamientos', 'Excusas'];
+        MovimientoInventario::with(['inventario', 'usuario'])
+            ->where('id_usuario', Auth::id())
+            ->whereNotNull('foto')
+            ->orderByDesc('fecha')
+            ->get()
+            ->each(function (MovimientoInventario $movimiento) use ($evidencias) {
+                $recurso = $movimiento->inventario?->nombre ?? 'Recurso de inventario';
+                $evidencias->push([
+                    'categoria' => 'Inventario',
+                    'movimiento_id' => $movimiento->id_movimiento_inventario,
+                    'inventario_id' => $movimiento->id_inventario,
+                    'inventario_nombre' => $recurso,
+                    'ficha_id' => null,
+                    'ficha' => null,
+                    'titulo' => $recurso . ' · ' . $movimiento->tipo,
+                    'detalle' => trim(collect([
+                        $recurso,
+                        'Cantidad: ' . $movimiento->cantidad,
+                        $movimiento->observacion,
+                    ])->filter()->implode(' · ')),
+                    'tipo' => 'Imagen',
+                    'url' => asset($movimiento->foto),
+                    'url_video_embed' => null,
+                    'es_video' => false,
+                    'usuario' => $movimiento->usuario?->nickname ?: $movimiento->usuario?->full_name,
+                    'fecha' => $movimiento->fecha,
+                ]);
+            });
+
+        $categorias = ['Actividades', 'Asistencias', 'Acompañamientos', 'Excusas', 'Inventario'];
         $totalActividades = $evidencias->where('categoria', 'Actividades')->count();
         $totalAsistencias = $evidencias->where('categoria', 'Asistencias')->count();
         $totalAcompanamientos = $evidencias->where('categoria', 'Acompañamientos')->count();
         $totalExcusas = $evidencias->where('categoria', 'Excusas')->count();
+        $totalInventario = $evidencias
+            ->where('categoria', 'Inventario')
+            ->filter(fn (array $evidencia) => !empty($evidencia['inventario_id']))
+            ->unique('inventario_id')
+            ->count();
         $filtroCategoria = $filtros['categoria'] ?? '';
         $busqueda = trim($filtros['buscar'] ?? '');
         $filtroFichaId = (string) ($filtros['ficha_id'] ?? '');
+        $filtroProductoId = (string) ($filtros['producto_id'] ?? '');
+        $filtroMovimientoId = (string) ($filtros['movimiento_id'] ?? '');
+        if ($filtroCategoria !== 'Inventario') {
+            $filtroProductoId = '';
+            $filtroMovimientoId = '';
+        }
 
         $evidenciasCategoria = $evidencias->filter(function (array $evidencia) use ($filtroCategoria, $busqueda) {
             if ($filtroCategoria && $evidencia['categoria'] !== $filtroCategoria) {
@@ -216,6 +259,23 @@ class InstructorRepositorioController extends Controller
 
             return true;
         })->sortByDesc(fn (array $evidencia) => strtotime((string) $evidencia['fecha']) ?: 0)->values();
+
+        $productos = $evidenciasCategoria
+            ->where('categoria', 'Inventario')
+            ->filter(fn (array $evidencia) => !empty($evidencia['inventario_id']))
+            ->groupBy('inventario_id')
+            ->map(fn ($movimientos, $id) => [
+                'id' => (string) $id,
+                'nombre' => $movimientos->first()['inventario_nombre'],
+            ])
+            ->sortBy('nombre')
+            ->values();
+        if ($filtroProductoId !== '' && !$productos->contains(fn (array $producto) => $producto['id'] === $filtroProductoId)) {
+            $filtroProductoId = '';
+        }
+        $productoSeleccionado = $productos->first(
+            fn (array $producto) => $producto['id'] === $filtroProductoId
+        );
 
         $fichas = $evidenciasCategoria
             ->filter(fn (array $evidencia) => !empty($evidencia['ficha_id']) && !empty($evidencia['ficha']))
@@ -239,9 +299,25 @@ class InstructorRepositorioController extends Controller
             : $evidenciasCategoria
                 ->filter(fn (array $evidencia) => (string) ($evidencia['ficha_id'] ?? '') === $filtroFichaId)
                 ->values();
+        if ($filtroCategoria === 'Inventario') {
+            $evidenciasFicha = $evidenciasCategoria;
+        }
 
+        $evidenciasProducto = $filtroProductoId === ''
+            ? collect()
+            : $evidenciasCategoria->filter(
+                fn (array $evidencia) => (string) ($evidencia['inventario_id'] ?? '') === $filtroProductoId
+            )->values();
         $porPagina = 8;
         $pagina = LengthAwarePaginator::resolveCurrentPage();
+        if ($filtroMovimientoId !== '' && !$request->query->has('page')) {
+            $indiceMovimiento = $evidenciasProducto->search(
+                fn (array $evidencia) => (string) $evidencia['movimiento_id'] === $filtroMovimientoId
+            );
+            if ($indiceMovimiento !== false) {
+                $pagina = intdiv($indiceMovimiento, $porPagina) + 1;
+            }
+        }
         $fichasPaginadas = new LengthAwarePaginator(
             $fichas->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
             $fichas->count(),
@@ -249,18 +325,32 @@ class InstructorRepositorioController extends Controller
             $pagina,
             ['path' => $request->url(), 'query' => $request->query()]
         );
-        $registros = new LengthAwarePaginator(
-            $evidenciasFicha->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
-            $evidenciasFicha->count(),
+        $productosPaginados = new LengthAwarePaginator(
+            $productos->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+            $productos->count(),
             $porPagina,
             $pagina,
             ['path' => $request->url(), 'query' => $request->query()]
         );
-        $paginacion = $filtroFichaId === '' ? $fichasPaginadas : $registros;
+        $evidenciasParaMostrar = $filtroCategoria === 'Inventario'
+            ? $evidenciasProducto
+            : $evidenciasFicha;
+        $registros = new LengthAwarePaginator(
+            $evidenciasParaMostrar->slice(($pagina - 1) * $porPagina, $porPagina)->values(),
+            $evidenciasParaMostrar->count(),
+            $porPagina,
+            $pagina,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+        $paginacion = $filtroCategoria === 'Inventario'
+            ? ($filtroProductoId === '' ? $productosPaginados : $registros)
+            : ($filtroFichaId === '' ? $fichasPaginadas : $registros);
 
         return view('controlecp::instructor.repositorio.evidencias', compact(
             'registros', 'fichas', 'fichasPaginadas', 'paginacion', 'fichaSeleccionada', 'filtroFichaId',
-            'categorias', 'totalActividades', 'totalAsistencias', 'totalAcompanamientos', 'totalExcusas',
+            'productos', 'productosPaginados', 'productoSeleccionado', 'filtroProductoId',
+            'filtroMovimientoId',
+            'categorias', 'totalActividades', 'totalAsistencias', 'totalAcompanamientos', 'totalExcusas', 'totalInventario',
             'filtroCategoria', 'busqueda'
         ));
     }

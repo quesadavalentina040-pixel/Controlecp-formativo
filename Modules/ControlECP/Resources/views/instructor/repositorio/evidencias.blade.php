@@ -65,6 +65,7 @@
     .repo-evidencias .summary-card--attendance { --summary-color: #278000; --summary-border: #b6e4a8; --summary-icon-bg: #eff8e9; }
     .repo-evidencias .summary-card--excuses { --summary-color: #e04444; --summary-border: #ffb6b6; --summary-icon-bg: #fff0f0; }
     .repo-evidencias .summary-card--accompaniment { --summary-color: #805ad5; --summary-border: #d6c7ff; --summary-icon-bg: #f3efff; }
+    .repo-evidencias .summary-card--inventory { --summary-color: #d63384; --summary-border: #f2b6d0; --summary-icon-bg: #fff0f6; }
     .repo-evidencias .summary-copy { min-width: 0; }
     .repo-evidencias .summary-label { display: block; color: var(--repo-petroleo); font-size: .95rem; font-weight: 750; }
     .repo-evidencias .summary-description { margin-top: .25rem; color: #64748b; font-size: .85rem; }
@@ -191,6 +192,10 @@
     .repo-evidencias .welcome-guide-item--accompaniment {
         --welcome-color: #805ad5;
         --welcome-bg: #f3efff;
+    }
+    .repo-evidencias .welcome-guide-item--inventory {
+        --welcome-color: #d63384;
+        --welcome-bg: #fff0f6;
     }
 
     .repo-evidencias .welcome-guide-title {
@@ -389,6 +394,7 @@
     .repo-evidencias .ficha-group--attendance { --ficha-color: #278000; --ficha-border: #b6e4a8; }
     .repo-evidencias .ficha-group--excuses { --ficha-color: #e04444; --ficha-border: #ffb6b6; }
     .repo-evidencias .ficha-group--accompaniment { --ficha-color: #805ad5; --ficha-border: #d6c7ff; }
+    .repo-evidencias .ficha-group--inventory { --ficha-color: #d63384; --ficha-border: #f2b6d0; }
     .repo-evidencias .ficha-group { border-color: var(--ficha-border); }
     .repo-evidencias .ficha-group-header {
         display: flex;
@@ -406,6 +412,7 @@
     .repo-evidencias .ficha-pagination--attendance { --ficha-color: #278000; }
     .repo-evidencias .ficha-pagination--excuses { --ficha-color: #e04444; }
     .repo-evidencias .ficha-pagination--accompaniment { --ficha-color: #805ad5; }
+    .repo-evidencias .ficha-pagination--inventory { --ficha-color: #d63384; }
     .repo-evidencias .ficha-pagination .page-item.active .page-link {
         border-color: var(--ficha-color);
         background: var(--ficha-color);
@@ -418,12 +425,12 @@
     <div class="page-heading">
         <div>
             <h1><i class="fas fa-images me-2" style="color: var(--repo-verde)"></i>Repositorio de evidencias</h1>
-            <p>Fotos y videos organizados por origen: actividades, asistencias, acompañamientos y excusas.</p>
+            <p>Fotos y videos organizados por origen: actividades, asistencias, acompañamientos, excusas e inventario.</p>
         </div>
     </div>
 
     <div class="row g-3 mb-4">
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-12 col-sm-6 col-xl">
             <a href="{{ route('controlecp.instructor.repositorio.evidencias', ['categoria' => 'Actividades']) }}"
                class="summary-card summary-card--activities {{ $filtroCategoria === 'Actividades' ? 'is-active' : '' }}"
                @if($filtroCategoria === 'Actividades') aria-current="page" @endif>
@@ -435,7 +442,7 @@
                 <span class="summary-count" aria-label="{{ $totalActividades }} registros">{{ $totalActividades }}</span>
             </a>
         </div>
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-12 col-sm-6 col-xl">
             <a href="{{ route('controlecp.instructor.repositorio.evidencias', ['categoria' => 'Asistencias']) }}"
                class="summary-card summary-card--attendance {{ $filtroCategoria === 'Asistencias' ? 'is-active' : '' }}"
                @if($filtroCategoria === 'Asistencias') aria-current="page" @endif>
@@ -447,7 +454,7 @@
                 <span class="summary-count" aria-label="{{ $totalAsistencias }} registros">{{ $totalAsistencias }}</span>
             </a>
         </div>
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-12 col-sm-6 col-xl">
             <a href="{{ route('controlecp.instructor.repositorio.evidencias', ['categoria' => 'Excusas']) }}"
                class="summary-card summary-card--excuses {{ $filtroCategoria === 'Excusas' ? 'is-active' : '' }}"
                @if($filtroCategoria === 'Excusas') aria-current="page" @endif>
@@ -459,7 +466,7 @@
                 <span class="summary-count" aria-label="{{ $totalExcusas }} registros">{{ $totalExcusas }}</span>
             </a>
         </div>
-        <div class="col-12 col-sm-6 col-xl-3">
+        <div class="col-12 col-sm-6 col-xl">
             <a href="{{ route('controlecp.instructor.repositorio.evidencias', ['categoria' => 'Acompañamientos']) }}"
                class="summary-card summary-card--accompaniment {{ $filtroCategoria === 'Acompañamientos' ? 'is-active' : '' }}"
                @if($filtroCategoria === 'Acompañamientos') aria-current="page" @endif>
@@ -469,6 +476,18 @@
                     <span class="summary-description">Fotos y videos de sesiones</span>
                 </span>
                 <span class="summary-count" aria-label="{{ $totalAcompanamientos }} registros">{{ $totalAcompanamientos }}</span>
+            </a>
+        </div>
+        <div class="col-12 col-sm-6 col-xl">
+            <a href="{{ route('controlecp.instructor.repositorio.evidencias', ['categoria' => 'Inventario']) }}"
+               class="summary-card summary-card--inventory {{ $filtroCategoria === 'Inventario' ? 'is-active' : '' }}"
+               @if($filtroCategoria === 'Inventario') aria-current="page" @endif>
+                <span class="summary-icon"><i class="fas fa-boxes-stacked"></i></span>
+                <span class="summary-copy">
+                    <span class="summary-label">Evidencias de inventario</span>
+                    <span class="summary-description">Fotos de entregas y devoluciones</span>
+                </span>
+                <span class="summary-count" aria-label="{{ $totalInventario }} productos">{{ $totalInventario }}</span>
             </a>
         </div>
     </div>
@@ -481,13 +500,13 @@
                     <span class="welcome-eyebrow">Guía rápida del repositorio</span>
                     <h2 class="welcome-title">Explora las evidencias del instructor</h2>
                     <p class="welcome-intro">
-                        Consulta fotos y videos de actividades, asistencias y acompañamientos, además de los soportes de excusas.
+                        Consulta fotos y videos de actividades, asistencias y acompañamientos, además de los soportes de excusas y evidencias de inventario.
                         Usa los filtros para encontrar los registros que necesitas.
                     </p>
                 </div>
             </div>
             <div class="row g-3 welcome-guide">
-                <div class="col-12 col-sm-6 col-xl-3">
+                <div class="col-12 col-sm-6 col-xl">
                     <article class="welcome-guide-item">
                         <div class="welcome-guide-title">
                             <span class="welcome-guide-icon"><i class="fas fa-list-check"></i></span>
@@ -496,7 +515,7 @@
                         <p>Revisa fotografías y videos que documentan las actividades realizadas.</p>
                     </article>
                 </div>
-                <div class="col-12 col-sm-6 col-xl-3">
+                <div class="col-12 col-sm-6 col-xl">
                     <article class="welcome-guide-item welcome-guide-item--attendance">
                         <div class="welcome-guide-title">
                             <span class="welcome-guide-icon"><i class="fas fa-user-check"></i></span>
@@ -505,7 +524,7 @@
                         <p>Consulta los soportes visuales asociados a los registros de asistencia.</p>
                     </article>
                 </div>
-                <div class="col-12 col-sm-6 col-xl-3">
+                <div class="col-12 col-sm-6 col-xl">
                     <article class="welcome-guide-item welcome-guide-item--excuses">
                         <div class="welcome-guide-title">
                             <span class="welcome-guide-icon"><i class="fas fa-file-circle-check"></i></span>
@@ -514,13 +533,22 @@
                         <p>Encuentra los documentos adjuntos para justificar novedades de asistencia.</p>
                     </article>
                 </div>
-                <div class="col-12 col-sm-6 col-xl-3">
+                <div class="col-12 col-sm-6 col-xl">
                     <article class="welcome-guide-item welcome-guide-item--accompaniment">
                         <div class="welcome-guide-title">
                             <span class="welcome-guide-icon"><i class="fas fa-hand-holding-heart"></i></span>
                             <strong>Acompañamientos</strong>
                         </div>
                         <p>Explora las evidencias fotográficas y de video de las sesiones.</p>
+                    </article>
+                </div>
+                <div class="col-12 col-sm-6 col-xl">
+                    <article class="welcome-guide-item welcome-guide-item--inventory">
+                        <div class="welcome-guide-title">
+                            <span class="welcome-guide-icon"><i class="fas fa-boxes-stacked"></i></span>
+                            <strong>Inventario</strong>
+                        </div>
+                        <p>Consulta las fotos que respaldan entregas y devoluciones de recursos.</p>
                     </article>
                 </div>
             </div>
@@ -536,6 +564,9 @@
             <input type="hidden" name="categoria" value="{{ $filtroCategoria }}">
             @if($filtroFichaId !== '')
                 <input type="hidden" name="ficha_id" value="{{ $filtroFichaId }}">
+            @endif
+            @if($filtroProductoId !== '')
+                <input type="hidden" name="producto_id" value="{{ $filtroProductoId }}">
             @endif
             <div class="filter-form-grid">
                 <div>
@@ -557,7 +588,34 @@
             </div>
         </form>
 
-        @if($filtroFichaId === '')
+        @if($filtroCategoria === 'Inventario' && $filtroProductoId === '')
+            @if($productos->isEmpty())
+                <div class="panel empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h2 class="h5">No hay productos con evidencias</h2>
+                    <p class="mb-0">No se encontraron productos de inventario con fotos para esta búsqueda.</p>
+                </div>
+            @else
+                <div class="row g-3">
+                    @foreach($productosPaginados as $producto)
+                        <div class="col-12 col-sm-6 col-xl-3">
+                            <a href="{{ route('controlecp.instructor.repositorio.evidencias', [
+                                'categoria' => 'Inventario',
+                                'producto_id' => $producto['id'],
+                                'buscar' => $busqueda,
+                            ]) }}"
+                               class="summary-card ficha-choice-card summary-card--inventory"
+                               aria-label="Ver evidencias de {{ $producto['nombre'] }}">
+                                <span class="summary-icon"><i class="fas fa-folder-open"></i></span>
+                                <span class="summary-copy">
+                                    <span class="summary-label">Producto: {{ $producto['nombre'] }}</span>
+                                </span>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        @elseif($filtroFichaId === '' && $filtroCategoria !== 'Inventario')
             @if($fichas->isEmpty())
                 <div class="panel empty-state">
                     <i class="fas fa-folder-open"></i>
@@ -573,7 +631,7 @@
                                 'ficha_id' => $ficha['id'],
                                 'buscar' => $busqueda,
                             ]) }}"
-                               class="summary-card ficha-choice-card {{ $filtroCategoria === 'Actividades' ? 'summary-card--activities' : ($filtroCategoria === 'Asistencias' ? 'summary-card--attendance' : ($filtroCategoria === 'Excusas' ? 'summary-card--excuses' : 'summary-card--accompaniment')) }}"
+                               class="summary-card ficha-choice-card {{ $filtroCategoria === 'Actividades' ? 'summary-card--activities' : ($filtroCategoria === 'Asistencias' ? 'summary-card--attendance' : ($filtroCategoria === 'Excusas' ? 'summary-card--excuses' : ($filtroCategoria === 'Inventario' ? 'summary-card--inventory' : 'summary-card--accompaniment'))) }}"
                                aria-label="Ver evidencias de la ficha {{ $ficha['codigo'] }}">
                                 <span class="summary-icon"><i class="fas fa-folder-open"></i></span>
                                 <span class="summary-copy">
@@ -588,48 +646,49 @@
             @if($registros->isEmpty())
                 <div class="panel empty-state">
                     <i class="fas fa-folder-open"></i>
-                    <h2 class="h5">No hay evidencias para mostrar</h2>
-                    <p class="mb-0">No se encontraron registros para esta ficha con la búsqueda seleccionada.</p>
+                    <h2 class="h5">{{ $filtroCategoria === 'Inventario' ? 'No hay evidencias de inventario para mostrar' : 'No hay evidencias para mostrar' }}</h2>
+                    <p class="mb-0">{{ $filtroCategoria === 'Inventario' ? 'No se encontraron evidencias para este producto con la búsqueda seleccionada.' : 'No se encontraron registros para esta ficha con la búsqueda seleccionada.' }}</p>
                     <a href="{{ route('controlecp.instructor.repositorio.evidencias', [
                         'categoria' => $filtroCategoria,
                         'buscar' => $busqueda,
                     ]) }}" class="btn btn-outline-secondary mt-3">
-                        <i class="fas fa-arrow-left me-1"></i>Volver a fichas
+                        <i class="fas fa-arrow-left me-1"></i>{{ $filtroCategoria === 'Inventario' ? 'Volver a productos' : 'Volver a fichas' }}
                     </a>
                 </div>
             @else
-                <section class="panel ficha-group ficha-group--{{ $filtroCategoria === 'Actividades' ? 'activities' : ($filtroCategoria === 'Asistencias' ? 'attendance' : ($filtroCategoria === 'Excusas' ? 'excuses' : 'accompaniment')) }}">
+                <section class="panel ficha-group ficha-group--{{ $filtroCategoria === 'Inventario' ? 'inventory' : ($filtroCategoria === 'Actividades' ? 'activities' : ($filtroCategoria === 'Asistencias' ? 'attendance' : ($filtroCategoria === 'Excusas' ? 'excuses' : 'accompaniment'))) }}">
                     <div class="ficha-group-header">
-                        <h2 class="ficha-group-heading">Ficha: {{ $fichaSeleccionada['codigo'] }}</h2>
+                        <h2 class="ficha-group-heading">{{ $filtroCategoria === 'Inventario' ? 'Evidencias de ' . $productoSeleccionado['nombre'] : 'Ficha: ' . $fichaSeleccionada['codigo'] }}</h2>
                         <a href="{{ route('controlecp.instructor.repositorio.evidencias', [
                             'categoria' => $filtroCategoria,
                             'buscar' => $busqueda,
                         ]) }}" class="small fw-semibold text-decoration-none">
-                            <i class="fas fa-arrow-left me-1"></i>Volver a fichas
+                            <i class="fas fa-arrow-left me-1"></i>{{ $filtroCategoria === 'Inventario' ? 'Volver a productos' : 'Volver a fichas' }}
                         </a>
                     </div>
                     <div class="row g-3">
                         @foreach($registros as $registro)
                             <div class="col-12 col-sm-6 col-xl-4 col-xxl-3">
-                                <article class="panel evidence-card">
+                                <article class="panel evidence-card"
+                                    @if($registro['categoria'] === 'Inventario') id="evidencia-movimiento-{{ $registro['movimiento_id'] }}" @endif>
                                     @if($registro['es_video'])
-                                        <div class="evidence-preview evidence-preview--video">
-                                            @if($registro['url_video_embed'])
-                                                <iframe src="{{ $registro['url_video_embed'] }}"
-                                                        title="Video: {{ $registro['titulo'] }}" loading="lazy"
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                                        referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-                                            @else
-                                                <a class="video-link-preview" href="{{ $registro['url'] }}" target="_blank" rel="noopener noreferrer">
-                                                    <i class="fas fa-circle-play"></i><span>Ver video</span>
-                                                </a>
-                                            @endif
-                                        </div>
+                                        <button type="button" class="evidence-preview evidence-preview--video border-0 w-100"
+                                                data-repository-video="{{ $registro['url_video_embed'] }}"
+                                                data-repository-video-url="{{ $registro['url'] }}"
+                                                data-repository-title="{{ $registro['titulo'] }}"
+                                                aria-label="Ver video: {{ $registro['titulo'] }}">
+                                            <span class="video-link-preview">
+                                                <i class="fas fa-circle-play"></i><span>Ver video</span>
+                                            </span>
+                                        </button>
                                     @else
-                                        <a class="evidence-preview text-decoration-none" href="{{ $registro['url'] }}" target="_blank"
-                                           rel="noopener noreferrer" aria-label="Abrir {{ $registro['titulo'] }}">
+                                        <button type="button" class="evidence-preview border-0 w-100" style="cursor:pointer"
+                                                data-repository-image="{{ $registro['url'] }}"
+                                                data-repository-title="{{ $registro['titulo'] }}"
+                                                @if($registro['categoria'] === 'Inventario') data-repository-movement-id="{{ $registro['movimiento_id'] }}" @endif
+                                                aria-label="Ver evidencia: {{ $registro['titulo'] }}">
                                             <img src="{{ $registro['url'] }}" alt="{{ $registro['titulo'] }}" loading="lazy">
-                                        </a>
+                                        </button>
                                     @endif
                                     <div class="evidence-body">
                                         <span class="evidence-category"><i class="fas fa-folder"></i>{{ $registro['categoria'] }}</span>
@@ -655,7 +714,7 @@
         @endif
 
         @if($paginacion->hasPages())
-            <div class="panel mt-4 p-3 ficha-pagination ficha-pagination--{{ $filtroCategoria === 'Actividades' ? 'activities' : ($filtroCategoria === 'Asistencias' ? 'attendance' : ($filtroCategoria === 'Excusas' ? 'excuses' : 'accompaniment')) }}">
+            <div class="panel mt-4 p-3 ficha-pagination ficha-pagination--{{ $filtroCategoria === 'Inventario' ? 'inventory' : ($filtroCategoria === 'Actividades' ? 'activities' : ($filtroCategoria === 'Asistencias' ? 'attendance' : ($filtroCategoria === 'Excusas' ? 'excuses' : 'accompaniment'))) }}">
                 <nav aria-label="Paginación de resultados">
                     <ul class="pagination justify-content-center mb-0">
                         @if($paginacion->onFirstPage())
@@ -690,4 +749,89 @@
         @endif
     @endif
 </div>
+@if($filtroCategoria)
+    <div class="modal fade" id="modalEvidenciaRepositorio" tabindex="-1"
+         aria-labelledby="modalEvidenciaRepositorioTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header text-white" style="background:#001a29;">
+                    <h2 class="modal-title h5 fw-bold" id="modalEvidenciaRepositorioTitulo">Evidencia</h2>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center p-3">
+                    <img id="modalEvidenciaRepositorioImagen" src="" alt=""
+                         class="img-fluid rounded-3 d-none" style="max-height:70vh;object-fit:contain;">
+                    <iframe id="modalEvidenciaRepositorioVideo" class="w-100 rounded-3 d-none" title="Video de evidencia"
+                            style="height:min(70vh, 560px);border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                    <video id="modalEvidenciaRepositorioVideoDirecto" class="w-100 rounded-3 d-none" style="max-height:70vh;"
+                           controls playsinline></video>
+                    <a id="modalEvidenciaRepositorioEnlace" class="btn btn-outline-primary d-none" href="">
+                        Ver video en esta pestaña
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    @push('scripts')
+    <script>
+        (() => {
+            const modalElement = document.getElementById('modalEvidenciaRepositorio');
+            const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+            const image = document.getElementById('modalEvidenciaRepositorioImagen');
+            const iframe = document.getElementById('modalEvidenciaRepositorioVideo');
+            const video = document.getElementById('modalEvidenciaRepositorioVideoDirecto');
+            const link = document.getElementById('modalEvidenciaRepositorioEnlace');
+            const title = document.getElementById('modalEvidenciaRepositorioTitulo');
+
+            document.addEventListener('click', event => {
+                const preview = event.target.closest('[data-repository-image], [data-repository-video]');
+                if (!preview) return;
+                title.textContent = preview.dataset.repositoryTitle;
+                image.classList.add('d-none');
+                iframe.classList.add('d-none');
+                video.classList.add('d-none');
+                link.classList.add('d-none');
+
+                if (preview.dataset.repositoryImage) {
+                    image.src = preview.dataset.repositoryImage;
+                    image.alt = preview.dataset.repositoryTitle;
+                    image.classList.remove('d-none');
+                } else if (preview.dataset.repositoryVideo) {
+                    iframe.src = preview.dataset.repositoryVideo;
+                    iframe.classList.remove('d-none');
+                } else {
+                    const videoUrl = preview.dataset.repositoryVideoUrl;
+                    const extension = new URL(videoUrl, window.location.origin).pathname;
+                    if (/\.(mp4|webm|ogg|mov)$/i.test(extension)) {
+                        video.src = videoUrl;
+                        video.classList.remove('d-none');
+                    } else {
+                        link.href = videoUrl;
+                        link.classList.remove('d-none');
+                    }
+                }
+                modal.show();
+            });
+            modalElement.addEventListener('hidden.bs.modal', () => {
+                image.removeAttribute('src');
+                iframe.removeAttribute('src');
+                video.pause();
+                video.removeAttribute('src');
+                video.load();
+            });
+
+            const movimientoId = new URLSearchParams(window.location.search).get('movimiento_id');
+            if (movimientoId) {
+                const preview = Array.from(document.querySelectorAll('[data-repository-movement-id]'))
+                    .find(element => element.dataset.repositoryMovementId === movimientoId);
+                if (preview) {
+                    preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    preview.click();
+                }
+            }
+        })();
+    </script>
+    @endpush
+@endif
 @endsection

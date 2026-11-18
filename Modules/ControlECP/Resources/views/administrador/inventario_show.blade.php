@@ -143,8 +143,8 @@
             </a>
 
             @if($recurso->estado !== 'Inactivo')
-                <button type="button" class="btn inv-detail-action inv-detail-loan btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEntrega" {{ $recurso->cantidad_disponible <= 0 ? 'disabled' : '' }}>
-                    <i class="fas fa-hand-holding-box me-1"></i> Entrega
+                <button type="button" class="btn inv-detail-action inv-detail-loan btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalEntrega" {{ $recurso->cantidad_disponible <= 0 || ($actividades->isEmpty() && $asesorias->isEmpty()) ? 'disabled' : '' }}>
+                    <i class="fas fa-arrow-up me-1"></i> Usar
                 </button>
 
                 <button type="button" class="btn inv-detail-action inv-detail-return btn-sm px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalDevolucion">
@@ -399,7 +399,11 @@
                                                 </td>
                                                 <td class="text-center">
                                                     @if($d['foto'])
-                                                        <a href="{{ $d['foto'] }}" target="_blank" class="badge bg-light text-primary border text-decoration-none">
+                                                        <a href="{{ route('controlecp.administrador.repositorio.evidencias', [
+                                                            'categoria' => 'Inventario',
+                                                            'producto_id' => $recurso->id_inventario,
+                                                            'movimiento_id' => $d['id'],
+                                                        ]) }}" class="badge bg-light text-primary border text-decoration-none">
                                                             <i class="fas fa-image me-1"></i>Ver
                                                         </a>
                                                     @else
@@ -481,28 +485,73 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
-                    <div class="alert alert-info py-2 small mb-3">
-                        Existencias disponibles actualmente: <strong>{{ $recurso->cantidad_disponible }}</strong> unidad(es).
+                    <p class="small text-muted">Recurso: <strong>{{ $recurso->nombre }}</strong></p>
+                    <div data-admin-detalle-entrega-paso="datos">
+                        <div class="small fw-semibold text-primary mb-3">Paso 1 de 2 · Selecciona el destino y la cantidad</div>
+                        <div class="mb-3">
+                            <label for="adminDetalleDestinoEntrega" class="form-label small fw-semibold text-dark">Actividad o asesoría <span class="text-danger">*</span></label>
+                            <select id="adminDetalleDestinoEntrega" name="destino" class="form-select rounded-3" required>
+                                <option value="">Selecciona el destino</option>
+                                <optgroup label="Actividades">
+                                    @foreach($actividades as $actividad)
+                                        <option value="actividad:{{ $actividad->id_cronograma }}">
+                                            {{ $actividad->actividad?->nombre ?? 'Actividad' }} ·
+                                            {{ $actividad->fecha?->format('d/m/Y') ?? 'Sin fecha' }} ·
+                                            {{ substr($actividad->hora_inicio, 0, 5) }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Asesorías">
+                                    @foreach($asesorias as $asesoria)
+                                        <option value="asesoria:{{ $asesoria->id_asesoria }}">
+                                            {{ $asesoria->categoria?->nombre ?? 'Asesoría' }} ·
+                                            {{ $asesoria->fecha?->format('d/m/Y') ?? 'Sin fecha' }} ·
+                                            {{ substr($asesoria->hora_inicio, 0, 5) }}
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                            @if($actividades->isEmpty() && $asesorias->isEmpty())
+                                <div class="form-text text-danger">No hay actividades o asesorías disponibles para asociar el uso.</div>
+                            @endif
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminDetalleCantidadEntrega" class="form-label small fw-semibold text-dark">Cantidad que vas a usar <span class="text-danger">*</span></label>
+                            <input type="number" name="cantidad" id="adminDetalleCantidadEntrega" class="form-control rounded-3"
+                                   min="1" max="{{ $recurso->cantidad_disponible }}" value="1" required>
+                            <div class="form-text">Disponibles ahora: {{ $recurso->cantidad_disponible }} unidades.</div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn text-white rounded-pill px-4" style="background:#39A900;"
+                                    data-admin-detalle-entrega-continuar
+                                    @disabled($recurso->cantidad_disponible < 1 || ($actividades->isEmpty() && $asesorias->isEmpty()))>
+                                Continuar <i class="fas fa-arrow-right ms-1"></i>
+                            </button>
+                        </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="cantidadEntrega" class="form-label small fw-semibold text-dark">Cantidad a Entregar <span class="text-danger">*</span></label>
-                        <input type="number" name="cantidad" id="cantidadEntrega" class="form-control rounded-3" min="1" max="{{ $recurso->cantidad_disponible }}" value="1" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="destinoEntrega" class="form-label small fw-semibold text-dark">Destino / Responsable <span class="text-danger">*</span></label>
-                        <input type="text" name="destino" id="destinoEntrega" class="form-control rounded-3" placeholder="Ej: Taller Ficha 2856471 - Ambiente 204" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="observacionEntrega" class="form-label small fw-semibold text-dark">Observaciones</label>
-                        <textarea name="observacion" id="observacionEntrega" class="form-control rounded-3" rows="2" placeholder="Estado en que se entrega, compromisos..."></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="fotoEntrega" class="form-label small fw-semibold text-dark">Adjuntar foto de evidencia (Opcional)</label>
-                        <input type="file" name="foto" id="fotoEntrega" class="form-control rounded-3" accept="image/jpeg,image/png">
+                    <div class="d-none" data-admin-detalle-entrega-paso="evidencia">
+                        <div class="small fw-semibold text-primary mb-3">Paso 2 de 2 · Adjunta la evidencia para entregar</div>
+                        <div class="bg-light rounded-3 p-3 mb-3">
+                            <div class="small text-muted">Vas a entregar</div>
+                            <strong data-admin-detalle-entrega-resumen></strong>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fotoEntrega" class="form-label small fw-semibold text-dark">Foto de evidencia <span class="text-danger">*</span></label>
+                            <input type="file" name="foto" id="fotoEntrega" class="form-control rounded-3" accept="image/jpeg,image/png">
+                            <div class="form-text">JPG o PNG, máximo 4 MB.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="observacionEntrega" class="form-label small fw-semibold text-dark">Observación</label>
+                            <textarea name="observacion" id="observacionEntrega" class="form-control rounded-3" rows="2" maxlength="1000"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between gap-2">
+                            <button type="button" class="btn btn-light rounded-pill px-4" data-admin-detalle-entrega-volver>
+                                <i class="fas fa-arrow-left me-1"></i>Volver
+                            </button>
+                            <button type="submit" class="btn text-white rounded-pill px-4" style="background:#39A900;">
+                                <i class="fas fa-arrow-up me-1"></i>Entregar
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer border-top-0 pt-0">
@@ -679,6 +728,34 @@
 
 @push('scripts')
 <script>
+    const formEntregaAdminDetalle = document.querySelector('#modalEntrega form');
+
+    function avanzarEntregaAdminDetalle() {
+        if (!formEntregaAdminDetalle.reportValidity()) return;
+
+        const destino = formEntregaAdminDetalle.querySelector('#adminDetalleDestinoEntrega');
+        const cantidad = formEntregaAdminDetalle.querySelector('#adminDetalleCantidadEntrega');
+        const foto = formEntregaAdminDetalle.querySelector('#fotoEntrega');
+        formEntregaAdminDetalle.querySelector('[data-admin-detalle-entrega-resumen]').textContent =
+            `${cantidad.value} unidad(es) para ${destino.options[destino.selectedIndex].text.trim()}`;
+        foto.required = true;
+        formEntregaAdminDetalle.querySelector('[data-admin-detalle-entrega-paso="datos"]').classList.add('d-none');
+        formEntregaAdminDetalle.querySelector('[data-admin-detalle-entrega-paso="evidencia"]').classList.remove('d-none');
+    }
+
+    document.querySelector('[data-admin-detalle-entrega-continuar]')?.addEventListener('click', avanzarEntregaAdminDetalle);
+    document.querySelector('[data-admin-detalle-entrega-volver]')?.addEventListener('click', () => {
+        formEntregaAdminDetalle.querySelector('#fotoEntrega').required = false;
+        formEntregaAdminDetalle.querySelector('[data-admin-detalle-entrega-paso="evidencia"]').classList.add('d-none');
+        formEntregaAdminDetalle.querySelector('[data-admin-detalle-entrega-paso="datos"]').classList.remove('d-none');
+    });
+    formEntregaAdminDetalle?.addEventListener('submit', event => {
+        if (formEntregaAdminDetalle.querySelector('[data-admin-detalle-entrega-paso="evidencia"]').classList.contains('d-none')) {
+            event.preventDefault();
+            avanzarEntregaAdminDetalle();
+        }
+    });
+
     function cambiarFotoPrincipal(src, thumbElement) {
         const imgPrincipal = document.getElementById('imgPrincipalRecurso');
         if (imgPrincipal) {

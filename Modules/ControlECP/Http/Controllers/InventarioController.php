@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Modules\ControlECP\Entities\Asesoria;
 use Modules\ControlECP\Entities\CategoriaInventario;
+use Modules\ControlECP\Entities\Cronograma;
 use Modules\ControlECP\Entities\Inventario;
 use Modules\ControlECP\Entities\MovimientoInventario;
 use Modules\ControlECP\Entities\RecursoFoto;
@@ -95,6 +97,16 @@ class InventarioController extends Controller
 
         // Obtener colección paginada
         $recursos = $query->orderBy('nombre', 'asc')->paginate(10)->withQueryString();
+        $actividades = Cronograma::with('actividad')
+            ->whereNotIn('estado', ['Cancelada'])
+            ->whereDate('fecha', '>=', today())
+            ->orderBy('fecha')->orderBy('hora_inicio')
+            ->get();
+        $asesorias = Asesoria::with('categoria')
+            ->whereIn('estado', ['Programada', 'Realizada'])
+            ->whereDate('fecha', '>=', today())
+            ->orderBy('fecha')->orderBy('hora_inicio')
+            ->get();
 
         // --- ESTADÍSTICAS DEL INVENTARIO  ---
         $todosActivos = Inventario::where('estado', '!=', 'Inactivo')->get();
@@ -171,6 +183,8 @@ class InventarioController extends Controller
 
         return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario', compact(
             'recursos',
+            'actividades',
+            'asesorias',
             'categorias',
             'todasCategorias',
             'todosRecursos',
@@ -452,12 +466,24 @@ class InventarioController extends Controller
         });
 
         $entregasPendientes = $movimientosPendientes;
+        $actividades = Cronograma::with('actividad')
+            ->whereNotIn('estado', ['Cancelada'])
+            ->whereDate('fecha', '>=', today())
+            ->orderBy('fecha')->orderBy('hora_inicio')
+            ->get();
+        $asesorias = Asesoria::with('categoria')
+            ->whereIn('estado', ['Programada', 'Realizada'])
+            ->whereDate('fecha', '>=', today())
+            ->orderBy('fecha')->orderBy('hora_inicio')
+            ->get();
 
         return /* Muestra la pantalla solicitada con los datos preparados. */ view('controlecp::administrador.inventario_show', compact(
             'recurso',
             'movimientosPendientes',
             'movimientosDevueltos',
-            'entregasPendientes'
+            'entregasPendientes',
+            'actividades',
+            'asesorias'
         ));
     }
 
@@ -639,12 +665,42 @@ class InventarioController extends Controller
         $validated = $request->validate([
             'cantidad'    => "required|integer|min:1|max:{$recurso->cantidad_disponible}",
             'destino'     => 'required|string|max:255',
-            'observacion' => 'nullable|string|min:10|max:200',
-            'foto'        => 'nullable|image|mimes:jpeg,jpg,png|max:4096',
+            'observacion' => 'nullable|string|max:1000',
+            'foto'        => 'required|image|mimes:jpeg,jpg,png|max:4096',
         ], [
             'cantidad.max' => "No puedes entregar más de la cantidad disponible actual ({$recurso->cantidad_disponible}).",
             'foto.mimes'   => 'La evidencia debe ser una fotografía en formato JPG o PNG.',
         ]);
+
+        $destino = $validated['destino'];
+        $idCronograma = null;
+        $idAsesoria = null;
+        if (!preg_match('/^(actividad|asesoria):([1-9][0-9]*)$/D', $destino, $coincidencias)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'destino' => 'Selecciona una actividad o asesoría válida.',
+            ]);
+        }
+
+        $destinoId = (int) $coincidencias[2];
+        if ($coincidencias[1] === 'actividad') {
+            $actividad = Cronograma::with('actividad')
+                ->whereNotIn('estado', ['Cancelada'])
+                ->whereDate('fecha', '>=', today())
+                ->findOrFail($destinoId);
+            $idCronograma = $actividad->id_cronograma;
+            $destino = 'Actividad: ' . ($actividad->actividad?->nombre ?? 'Actividad')
+                . ' · ' . ($actividad->fecha?->format('d/m/Y') ?? 'Sin fecha')
+                . ' · ' . substr($actividad->hora_inicio, 0, 5);
+        } else {
+            $asesoria = Asesoria::with('categoria')
+                ->whereIn('estado', ['Programada', 'Realizada'])
+                ->whereDate('fecha', '>=', today())
+                ->findOrFail($destinoId);
+            $idAsesoria = $asesoria->id_asesoria;
+            $destino = 'Asesoría: ' . ($asesoria->categoria?->nombre ?? 'Asesoría')
+                . ' · ' . ($asesoria->fecha?->format('d/m/Y') ?? 'Sin fecha')
+                . ' · ' . substr($asesoria->hora_inicio, 0, 5);
+        }
 
         DB::beginTransaction();
         try {
@@ -653,6 +709,13 @@ class InventarioController extends Controller
                 $nombreArchivo = 'mov_' . uniqid() . '.' . $request->file('foto')->getClientOriginalExtension();
                 $ruta = $request->file('foto')->storeAs('inventario/movimientos', $nombreArchivo, 'public');
                 $fotoRuta = 'storage/' . $ruta;
+            }
+
+            $recurso = Inventario::whereKey($id)->lockForUpdate()->firstOrFail();
+            if ($recurso->estado === 'Inactivo' || $validated['cantidad'] > $recurso->cantidad_disponible) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'cantidad' => 'El recurso ya no tiene suficientes unidades disponibles para completar la entrega.',
+                ]);
             }
 
             // Descontar existencias disponibles
@@ -666,11 +729,13 @@ class InventarioController extends Controller
             MovimientoInventario::create([
                 'id_inventario' => $recurso->id_inventario,
                 'id_usuario'    => Auth::id(),
+                'id_cronograma' => $idCronograma,
+                'id_asesoria'   => $idAsesoria,
                 'tipo'          => 'Entrega',
                 'cantidad'      => $validated['cantidad'],
                 'estado_anterior' => 'Disponible',
                 'estado_nuevo'  => $recurso->estado,
-                'observacion'   => "Destino: {$validated['destino']}." . ($validated['observacion'] ? " Nota: {$validated['observacion']}" : ''),
+                'observacion'   => "Destino: {$destino}." . (!empty($validated['observacion']) ? " Nota: {$validated['observacion']}" : ''),
                 'foto'          => $fotoRuta,
                 'fecha'         => now(),
             ]);
@@ -678,8 +743,17 @@ class InventarioController extends Controller
             DB::commit();
 
             return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('success', "Entrega de {$validated['cantidad']} unidad(es) registrada correctamente.");
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
+            if ($fotoRuta) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $fotoRuta));
+            }
+            throw $e;
         } catch (\Exception $e) {
             DB::rollBack();
+            if ($fotoRuta) {
+                Storage::disk('public')->delete(str_replace('storage/', '', $fotoRuta));
+            }
             return /* Regresa a la pantalla anterior para continuar el proceso. */ back()->with('error', 'Error al registrar entrega: ' . $e->getMessage());
         }
     }
@@ -1255,7 +1329,7 @@ class InventarioController extends Controller
                 }
                 $recurso->save();
 
-                $obs = ($validated['destino'] ? "Destino: {$validated['destino']}. " : '') . ($validated['observacion'] ?? '');
+                $obs = "Destino: {$destino}. " . ($validated['observacion'] ?? '');
 
                 MovimientoInventario::create([
                     'id_inventario'   => $recurso->id_inventario,

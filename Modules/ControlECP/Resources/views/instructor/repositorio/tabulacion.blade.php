@@ -259,9 +259,9 @@
                 <i class="fas fa-arrow-left me-1"></i>Mis encuestas
             </a>
             @if($resultados && $resultados['consolidado']['total_respuestas'] > 0)
-                <a href="{{ route('controlecp.instructor.repositorio.tabulacion.exportar', request()->query()) }}"
+                <a href="{{ route('controlecp.instructor.repositorio.tabulacion.exportar', array_merge(request()->query(), ['id_encuesta' => $encuestaActual->id_encuesta])) }}"
                    class="btn btn-ecp-primary text-decoration-none">
-                    <i class="fa-solid fa-file-pdf me-2"></i>Descargar PDF
+                    <i class="fa-solid fa-file-pdf me-2"></i>Exportar PDF
                 </a>
             @endif
         </div>

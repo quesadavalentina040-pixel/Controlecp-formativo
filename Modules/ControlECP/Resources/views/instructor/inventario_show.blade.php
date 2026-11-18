@@ -172,7 +172,11 @@
                             <td>
                                 {{ $movimiento->observacion ?: '—' }}
                                 @if($movimiento->foto)
-                                    <a class="small d-block" href="{{ asset($movimiento->foto) }}" target="_blank" rel="noopener">Ver evidencia</a>
+                                    <a class="small d-block" href="{{ route('controlecp.instructor.repositorio.evidencias', [
+                                        'categoria' => 'Inventario',
+                                        'producto_id' => $movimiento->id_inventario,
+                                        'movimiento_id' => $movimiento->id_movimiento_inventario,
+                                    ]) }}">Ver</a>
                                 @endif
                             </td>
                         </tr>

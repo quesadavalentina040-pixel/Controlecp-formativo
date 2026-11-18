@@ -41,6 +41,34 @@
         color: #FFFFFF;
         box-shadow: 0 2px 8px rgba(57, 169, 0, 0.25);
     }
+    .movement-pagination .page-link {
+        min-width: 40px;
+        min-height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-color: #d3ead0;
+        color: #278344;
+        background: #fff;
+        font-weight: 600;
+    }
+    .movement-pagination .page-link:hover,
+    .movement-pagination .page-link:focus {
+        color: #fff;
+        background: #278344;
+        border-color: #278344;
+        box-shadow: none;
+    }
+    .movement-pagination .page-item.active .page-link {
+        color: #fff;
+        background: #39A900;
+        border-color: #39A900;
+    }
+    .movement-pagination .page-item.disabled .page-link {
+        color: #94a3b8;
+        background: #f8fafc;
+        border-color: #d3ead0;
+    }
     .inv-movement-action {
         display: inline-flex;
         width: 34px;
@@ -191,9 +219,11 @@
                         <i class="fas fa-arrow-rotate-left me-1"></i> Saldar devolución
                     </button>
                     @if($alertaIncompletaPrincipal->inventario)
-                        <a href="{{ route('controlecp.administrador.inventario.show', $alertaIncompletaPrincipal->inventario->id_inventario) }}" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm">
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 shadow-sm"
+                                data-inventario-detalle-url="{{ route('controlecp.administrador.inventario.detalle-json', $alertaIncompletaPrincipal->inventario->id_inventario) }}"
+                                aria-label="Ver detalle de {{ $alertaIncompletaPrincipal->inventario->nombre }}">
                             Ver detalle
-                        </a>
+                        </button>
                     @endif
                 </div>
             </div>
@@ -405,7 +435,11 @@
                                         <!-- Evidencia Fotográfica (HU 14) -->
                                         <td class="text-end pe-4">
                                             @if($mov->foto)
-                                                <a href="{{ asset($mov->foto) }}" target="_blank" class="btn inv-movement-action" title="Ver fotografía adjunta" aria-label="Ver fotografía adjunta">
+                                                <a href="{{ route('controlecp.administrador.repositorio.evidencias', [
+                                                    'categoria' => 'Inventario',
+                                                    'producto_id' => $mov->id_inventario,
+                                                    'movimiento_id' => $mov->id_movimiento_inventario,
+                                                ]) }}" class="btn inv-movement-action" title="Ver fotografía adjunta" aria-label="Ver fotografía adjunta">
                                                     <i class="fas fa-camera"></i>
                                                 </a>
                                             @else
@@ -427,11 +461,8 @@
                     </div>
 
                     <!-- Paginación -->
-                    <div class="p-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <div class="small text-muted">
-                            Mostrando {{ $movimientos->firstItem() ?? 0 }} - {{ $movimientos->lastItem() ?? 0 }} de {{ $movimientos->total() }} movimientos
-                        </div>
-                        <div>
+                    <div class="p-3 border-top d-flex justify-content-center align-items-center">
+                        <div class="movement-pagination">
                             @if ($movimientos->hasPages())
                                 <nav aria-label="Paginación de movimientos">
                                     <ul class="pagination justify-content-center">
@@ -565,6 +596,8 @@
         </div>
     </div>
 </div>
+
+@include('controlecp::administrador.inventario_movimiento_detalle_modal')
 
 <!-- ======================================================== -->
 <!-- MODAL: REGISTRAR MOVIMIENTO (Con soporte para Saldo)    -->

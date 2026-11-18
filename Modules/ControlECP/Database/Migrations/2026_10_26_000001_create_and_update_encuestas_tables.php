@@ -54,17 +54,13 @@ return new class extends Migration
 
         // 2. Tabla preguntas_encuesta
         if (!Schema::hasTable('preguntas_encuesta')) {
-            // Define preguntas, tipo de respuesta, escala opcional y posición en la encuesta.
+            // Define preguntas, tipo de respuesta y posición en la encuesta.
             // Define las columnas y restricciones de preguntas_encuesta.
             Schema::create('preguntas_encuesta', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('encuesta_id')->constrained('controlecp_encuestas')->onDelete('cascade');
                 $table->text('texto');
                 $table->enum('tipo', ['opcion_multiple', 'escala', 'texto']);
-                $table->integer('escala_min')->nullable()->default(1);
-                $table->integer('escala_max')->nullable()->default(5);
-                $table->string('escala_etiqueta_min')->nullable();
-                $table->string('escala_etiqueta_max')->nullable();
                 $table->integer('orden')->default(0);
                 $table->timestamps();
             });
