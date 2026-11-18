@@ -194,6 +194,10 @@
         box-shadow: 0 0 8px rgba(0,0,0,0.15);
         flex-shrink: 0;
     }
+    .semaforo-indicator-large {
+        width: 20px;
+        height: 20px;
+    }
     .semaforo-verde {
         background-color: #39A900;
         box-shadow: 0 0 10px rgba(57, 169, 0, 0.6);
@@ -688,11 +692,14 @@
             <div class="card card-semaforo-box card-semaforo-neutro shadow-sm" onclick="filtrarPorSemaforoInstructor('sin_color')">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
-                        <span class="card-semaforo-label">Pospuestas</span>
+                        <span class="card-semaforo-label d-inline-flex align-items-center gap-2">
+                            <span class="semaforo-indicator semaforo-neutro" aria-hidden="true"></span>
+                            Pospuestas
+                        </span>
                         <span class="card-semaforo-icon"><i class="fas fa-calendar-minus"></i></span>
                     </div>
                     <div class="card-semaforo-value text-dark">{{ $stats['pospuestas'] ?? 0 }}</div>
-                    <div class="card-semaforo-subtitle">Sin semáforo</div>
+                    <div class="card-semaforo-subtitle">Estado gris</div>
                 </div>
             </div>
         </div>
@@ -912,6 +919,7 @@
                                         $actividad = $cronograma->actividad;
                                         $numeroActividad = $actividad ? ($actividad->numero ? "Actividad {$actividad->numero}" : "Actividad {$actividad->id}") : 'Actividad';
                                         $nombreMomento = $actividad?->momento?->nombre ?? 'Sin momento';
+                                        $estadoSemaforoGris = $cronograma->estado ?: 'Otro estado';
                                         $diasRestantes = $cronograma->fecha
                                             ? \Carbon\Carbon::today()->diffInDays($cronograma->fecha, false)
                                             : null;
@@ -930,7 +938,10 @@
                                                 <span class="semaforo-indicator semaforo-verde" title="Semáforo verde: 8 días o más"></span>
                                                 <div class="small text-success fw-bold" style="font-size: 0.68rem;">{{ $diasRestantes }}d</div>
                                             @else
-                                                <span class="badge bg-light text-secondary border small" style="font-size: 0.68rem;">Sin semáforo</span>
+                                                <div class="d-flex flex-column align-items-center gap-1">
+                                                    <span class="semaforo-indicator semaforo-neutro semaforo-indicator-large" title="{{ $estadoSemaforoGris }}" aria-label="{{ $estadoSemaforoGris }}"></span>
+                                                    <span class="small text-muted fw-semibold" style="font-size: 0.68rem;">{{ $estadoSemaforoGris }}</span>
+                                                </div>
                                             @endif
                                         </td>
                                         <td>
