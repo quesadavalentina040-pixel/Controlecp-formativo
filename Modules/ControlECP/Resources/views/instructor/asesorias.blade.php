@@ -121,6 +121,7 @@
     .asesoria-instructor-calendar-day:nth-child(7n+1) { border-left:1px solid #d9e3ea; }
     .asesoria-instructor-calendar-day.is-outside { background:#eaf1f5; color:#82909b; }
     .asesorias-instructor-page .asesoria-instructor-calendar-day { background:#fff!important; }
+    .asesorias-instructor-page .asesoria-instructor-calendar-day.is-outside { background:#eaf1f5!important; }
     .asesorias-instructor-page .asesoria-instructor-calendar-day.is-non-working-day { background:#fff!important;color:inherit!important; }
     .asesoria-instructor-calendar-day-number {
         display:inline-flex;
@@ -712,8 +713,10 @@
                                 . ' · ' . ($appointment->aprendiz?->person?->full_name ?? $appointment->aprendiz?->nickname ?? 'Aprendiz'))
                                 ->implode(' | ');
                         @endphp
-                        <div class="asesoria-instructor-calendar-day {{ $calendarDay->month !== $calendarMonth->month ? 'is-outside' : '' }} {{ $calendarDate === now()->toDateString() ? 'is-today' : '' }}" data-calendario-fecha="{{ $calendarDate }}">
-                            <span class="asesoria-instructor-calendar-day-number">{{ $calendarDay->day }}</span>
+                        <div class="asesoria-instructor-calendar-day {{ $calendarDay->month !== $calendarMonth->month ? 'is-outside' : '' }} {{ $calendarDate === now()->toDateString() ? 'is-today' : '' }}"
+                             @if($calendarDay->month !== $calendarMonth->month) style="background:#eaf1f5!important;color:#82909b!important;" @endif
+                             data-calendario-fecha="{{ $calendarDate }}">
+                            <span class="asesoria-instructor-calendar-day-number" @if($calendarDay->month !== $calendarMonth->month) style="color:#82909b!important;" @endif>{{ $calendarDay->day }}</span>
                             @if($dayAppointments->isNotEmpty())
                                 <button class="asesoria-instructor-calendar-event {{ $dayAppointments->every(fn ($appointment) => $appointment->estado === 'Realizada') ? 'is-done' : '' }}"
                                         type="button" data-bs-toggle="modal" data-bs-target="#asesoriasDia{{ $calendarDay->format('Ymd') }}"

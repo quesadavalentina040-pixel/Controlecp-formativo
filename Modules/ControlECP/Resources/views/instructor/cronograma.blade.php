@@ -402,13 +402,17 @@
         font-size: .85rem;
     }
     .calendar-day-cell.other-month {
-        background-color: #f1f5f9;
-        opacity: 0.55;
+        background-color: #eaf1f5;
+        opacity: 1;
+    }
+    .calendar-day-cell.other-month .calendar-day-number {
+        color: #82909b;
     }
     .cronograma-instructor-page .calendar-day-cell {
         background-color: #fff !important;
     }
     .cronograma-instructor-page .calendar-day-cell.other-month {
+        background-color: #eaf1f5 !important;
         opacity: 1;
     }
     .calendar-day-events {
@@ -832,7 +836,6 @@
                                 ) ?? 'neutro';
                             @endphp
                             <div class="calendar-day-cell {{ $esHoy ? 'today' : '' }} {{ $dia->month !== $mesActual->month ? 'other-month' : '' }} {{ $eventosDia->isNotEmpty() ? 'has-events' : '' }}"
-                                 style="background-color: #fff !important;"
                                  data-calendario-fecha="{{ $dia->toDateString() }}"
                                  @if($eventosDia->isNotEmpty()) role="button" tabindex="0" aria-label="{{ $dia->translatedFormat('d F Y') }}, {{ $eventosDia->count() }} actividades" @endif>
                                 <div class="calendar-day-header-top">

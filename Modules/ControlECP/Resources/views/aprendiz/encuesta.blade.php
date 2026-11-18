@@ -20,6 +20,11 @@
     .apr-encuesta-card:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,26,41,.1); }
     .apr-encuesta-card .card-body { padding: 1.25rem; }
     .apr-encuesta-icon { display:flex; width:48px; height:48px; align-items:center; justify-content:center; border-radius:15px; font-size:1.15rem; }
+    .apr-encuesta-kpi { min-height:125px; padding:1.1rem 1.25rem; border:1px solid; border-radius:16px; background:#fff; box-shadow:0 2px 10px rgba(0,26,41,.05); transition:transform .18s ease, box-shadow .18s ease; }
+    .apr-encuesta-kpi:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,26,41,.1); }
+    .apr-encuesta-kpi-label { color:#475569; font-size:.9rem; font-weight:600; }
+    .apr-encuesta-kpi-value { margin-top:.4rem; font-size:2rem; font-weight:800; line-height:1; }
+    .apr-encuesta-kpi-icon { display:flex; width:42px; height:42px; align-items:center; justify-content:center; border-radius:50%; font-size:1rem; }
     .apr-encuesta-status { display:inline-flex; min-width:112px; align-items:center; justify-content:center; gap:.4rem; padding:.22rem .75rem; border:1px solid transparent; border-radius:999px; font-size:.75rem; font-weight:800; white-space:nowrap; }
     .apr-encuesta-status--done { border-color:#9bd8b7; background:#e9f8ef; color:#168653; }
     .apr-encuesta-status--pending { border-color:#ffc533; background:#fff4d6; color:#974500; }
@@ -42,6 +47,7 @@
     @media (max-width:575px) {
         .apr-encuesta-modal .modal-body { padding:1rem; }
         .apr-encuesta-card .card-body { padding:1rem; }
+        .apr-encuesta-kpi { min-height:110px; }
     }
 </style>
 @endpush
@@ -65,6 +71,41 @@
             <ul class="mb-0 mt-1">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
         </div>
     @endif
+
+    @php
+        $totalEncuestas = $encuestas->count();
+        $encuestasRespondidas = $encuestas->filter(fn ($actividad) => $actividad->respondida)->count();
+        $encuestasPendientes = $encuestas->filter(fn ($actividad) => $actividad->asistio && !$actividad->respondida)->count();
+    @endphp
+    <div class="row g-3 mb-4" aria-label="Resumen de encuestas">
+        <div class="col-12 col-md-4">
+            <div class="apr-encuesta-kpi h-100" style="border-color:rgba(2,132,199,.35)">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="apr-encuesta-kpi-label">Total de encuestas</span>
+                    <span class="apr-encuesta-kpi-icon" style="background:#e0f2fe;color:#0284c7"><i class="fas fa-square-poll-vertical" aria-hidden="true"></i></span>
+                </div>
+                <div class="apr-encuesta-kpi-value" style="color:#0284c7">{{ $totalEncuestas }}</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="apr-encuesta-kpi h-100" style="border-color:rgba(245,158,11,.4)">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="apr-encuesta-kpi-label">Pendientes por responder</span>
+                    <span class="apr-encuesta-kpi-icon" style="background:#fff7e6;color:#c47a00"><i class="fas fa-clock" aria-hidden="true"></i></span>
+                </div>
+                <div class="apr-encuesta-kpi-value" style="color:#c47a00">{{ $encuestasPendientes }}</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="apr-encuesta-kpi h-100" style="border-color:rgba(22,163,74,.35)">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="apr-encuesta-kpi-label">Respondidas</span>
+                    <span class="apr-encuesta-kpi-icon" style="background:#dcfce7;color:#16a34a"><i class="fas fa-circle-check" aria-hidden="true"></i></span>
+                </div>
+                <div class="apr-encuesta-kpi-value" style="color:#16a34a">{{ $encuestasRespondidas }}</div>
+            </div>
+        </div>
+    </div>
 
     <div class="d-flex flex-column gap-3">
         @forelse($encuestas as $actividad)

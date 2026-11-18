@@ -189,6 +189,40 @@
         border: 1px solid #cbd5e1;
     }
 
+    #paginacionProgramaciones {
+        gap: 2px;
+        align-items: center;
+    }
+    #paginacionProgramaciones .page-link {
+        min-width: 38px;
+        height: 38px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dbe4e8;
+        color: #3c5a68;
+        font-weight: 700;
+        background: #fff;
+        box-shadow: none;
+    }
+    #paginacionProgramaciones .page-item:first-child .page-link,
+    #paginacionProgramaciones .page-item:last-child .page-link {
+        border-radius: 8px 0 0 8px;
+    }
+    #paginacionProgramaciones .page-item:last-child .page-link {
+        border-radius: 0 8px 8px 0;
+    }
+    #paginacionProgramaciones .page-item.active .page-link {
+        background: #0da9aa;
+        border-color: #0da9aa;
+        color: #fff;
+    }
+    #paginacionProgramaciones .page-item.disabled .page-link {
+        color: #9baab0;
+        background: #f5f7f8;
+    }
+
     .poe-row-actions {
         display: flex;
         justify-content: center;
@@ -904,14 +938,15 @@
 
                 <div class="p-3 bg-light border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="small fw-semibold text-muted">Filtrar por estado:</span>
-                        <div class="btn-group btn-group-sm" role="group" id="btnGroupFiltroProg">
-                            <button type="button" class="btn btn-outline-secondary active" onclick="filtrarProgramaciones('todos', this)">Todas</button>
-                            <button type="button" class="btn btn-outline-warning text-dark" onclick="filtrarProgramaciones('Pendiente', this)">Pendientes</button>
-                            <button type="button" class="btn btn-outline-danger" onclick="filtrarProgramaciones('Atrasada', this)">Atrasadas</button>
-                            <button type="button" class="btn btn-outline-success" onclick="filtrarProgramaciones('Cumplida', this)">Cumplidas</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="filtrarProgramaciones('Cancelada', this)">Canceladas</button>
-                        </div>
+                        <label for="filtroEstadoProg" class="small fw-semibold text-muted mb-0">Filtrar por estado:</label>
+                        <select id="filtroEstadoProg" class="form-select form-select-sm" style="width:auto;"
+                                onchange="filtrarProgramaciones(this.value)">
+                            <option value="todos">Todas</option>
+                            <option value="Pendiente">Pendientes</option>
+                            <option value="Atrasada">Atrasadas</option>
+                            <option value="Cumplida">Cumplidas</option>
+                            <option value="Cancelada">Canceladas</option>
+                        </select>
                     </div>
                 </div>
 
@@ -981,21 +1016,21 @@
                                     </td>
                                     <td class="text-center">
                                         @if(!$p->cancelada && $p->estado !== 'Cumplida')
-                                            <div class="btn-group btn-group-sm" role="group">
-
+                                            <div class="poe-row-actions">
                                                 <button type="button"
-                                                        class="btn btn-outline-warning text-dark"
+                                                        class="btn-action-icon btn-action-version"
                                                         onclick="abrirModalReprogramar({{ $p->id_poe_programacion }}, '{{ $p->poe?->codigo }}', '{{ $p->fecha_limite ? $p->fecha_limite->format('Y-m-d') : '' }}', {{ $p->id_usuario_nuevo_lider }})"
-
-                                                        title="Reprogramar entrega">
+                                                        data-bs-toggle="tooltip"
+                                                        title="Reprogramar entrega"
+                                                        aria-label="Reprogramar entrega">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
-
                                                 <button type="button"
-                                                        class="btn btn-outline-danger"
+                                                        class="btn-action-icon btn-action-program"
                                                         onclick="confirmarCancelarProgramacion({{ $p->id_poe_programacion }}, '{{ $p->poe?->codigo }}')"
-
-                                                        title="Cancelar programación">
+                                                        data-bs-toggle="tooltip"
+                                                        title="Cancelar programación"
+                                                        aria-label="Cancelar programación">
                                                     <i class="fa-solid fa-ban"></i>
                                                 </button>
                                             </div>
@@ -1013,6 +1048,9 @@
                             @endforelse
                         </tbody>
                     </table>
+                    <nav class="d-flex justify-content-center mt-3" aria-label="Paginación de programaciones">
+                        <ul class="pagination pagination-sm mb-0" id="paginacionProgramaciones"></ul>
+                    </nav>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1391,19 +1429,73 @@ function abrirModalProgramar(idPoe, codigo, nombre, idLiderActual, nombreLiderAc
 }
 
 // Filtrar filas del modal de programaciones
-function filtrarProgramaciones(estado, btn) {
-    document.querySelectorAll('#btnGroupFiltroProg button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+let estadoFiltroProgramaciones = 'todos';
+let paginaProgramaciones = 1;
+const filasPorPaginaProgramaciones = 10;
 
-    const filas = document.querySelectorAll('.fila-prog');
-    filas.forEach(f => {
-        if (estado === 'todos') {
-            f.style.display = '';
-        } else {
-            f.style.display = (f.getAttribute('data-estado') === estado) ? '' : 'none';
-        }
-    });
+function filtrarProgramaciones(estado) {
+    estadoFiltroProgramaciones = estado;
+    paginaProgramaciones = 1;
+    renderizarPaginacionProgramaciones();
 }
+
+function renderizarPaginacionProgramaciones() {
+    const todasFilas = Array.from(document.querySelectorAll('.fila-prog'));
+    const filasVisibles = todasFilas.filter(fila =>
+        estadoFiltroProgramaciones === 'todos'
+        || fila.getAttribute('data-estado') === estadoFiltroProgramaciones
+    );
+
+    todasFilas.forEach(fila => fila.style.display = 'none');
+
+    const totalPaginas = Math.max(1, Math.ceil(filasVisibles.length / filasPorPaginaProgramaciones));
+    if (paginaProgramaciones > totalPaginas) paginaProgramaciones = totalPaginas;
+
+    const inicio = (paginaProgramaciones - 1) * filasPorPaginaProgramaciones;
+    filasVisibles.slice(inicio, inicio + filasPorPaginaProgramaciones).forEach(fila => {
+        fila.style.display = '';
+    });
+
+    const paginacion = document.getElementById('paginacionProgramaciones');
+    paginacion.replaceChildren();
+
+    const crearItem = (texto, pagina, disabled = false, active = false) => {
+        const li = document.createElement('li');
+        li.className = `page-item${disabled ? ' disabled' : ''}${active ? ' active' : ''}`;
+        const boton = document.createElement('button');
+        boton.type = 'button';
+        boton.className = 'page-link';
+        boton.textContent = texto;
+        boton.disabled = disabled;
+        if (!disabled) {
+            boton.addEventListener('click', () => {
+                paginaProgramaciones = pagina;
+                renderizarPaginacionProgramaciones();
+            });
+        }
+        li.appendChild(boton);
+        paginacion.appendChild(li);
+    };
+
+    crearItem('‹', paginaProgramaciones - 1, paginaProgramaciones === 1);
+    for (let pagina = 1; pagina <= totalPaginas; pagina++) {
+        crearItem(String(pagina), pagina, false, pagina === paginaProgramaciones);
+    }
+    crearItem('›', paginaProgramaciones + 1, paginaProgramaciones === totalPaginas);
+}
+
+document.addEventListener('DOMContentLoaded', renderizarPaginacionProgramaciones);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const modalProgramaciones = document.getElementById('modalProgramaciones');
+    if (!modalProgramaciones) return;
+
+    modalProgramaciones.addEventListener('shown.bs.modal', () => {
+        const filtroEstado = document.getElementById('filtroEstadoProg');
+        if (filtroEstado) filtroEstado.value = 'todos';
+        filtrarProgramaciones('todos');
+    });
+});
 
 // Abrir modal de Reprogramación
 function abrirModalReprogramar(idProgramacion, codigoPoe, fechaLimite, idNuevoLider) {

@@ -2340,7 +2340,11 @@
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'asesoria-calendar-day';
-                if (date.getMonth() !== currentMonth.getMonth()) button.classList.add('is-outside');
+                if (date.getMonth() !== currentMonth.getMonth()) {
+                    button.classList.add('is-outside');
+                    button.style.background = '#eaf1f5';
+                    button.style.color = '#82909b';
+                }
                 if (items.length) button.classList.add('has-events');
                 if (items.length && items.every(item => item.estado === 'Realizada')) button.classList.add('is-done');
                 if (key === selectedDate) button.classList.add('is-selected');
@@ -2348,6 +2352,9 @@
                 const dateNumber = document.createElement('span');
                 dateNumber.className = 'asesoria-calendar-day-number';
                 dateNumber.textContent = String(date.getDate());
+                if (date.getMonth() !== currentMonth.getMonth()) {
+                    dateNumber.style.color = '#82909b';
+                }
                 const dayHeading = document.createElement('div');
                 dayHeading.className = 'asesoria-calendar-day-heading';
                 dayHeading.append(dateNumber);

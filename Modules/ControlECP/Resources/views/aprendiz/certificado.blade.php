@@ -6,6 +6,11 @@
     .apr-cert-header h1 { color:#fff; }
     .apr-cert-header p { color:#c7d4da; }
     .apr-cert-card { overflow:hidden; border:1px solid #e0ece4; border-radius:16px; background:#fff; box-shadow:0 2px 10px rgba(0,26,41,.05); }
+    .apr-cert-kpi { min-height:125px; padding:1.1rem 1.25rem; border:1px solid; border-radius:16px; background:#fff; box-shadow:0 2px 10px rgba(0,26,41,.05); transition:transform .18s ease, box-shadow .18s ease; }
+    .apr-cert-kpi:hover { transform:translateY(-2px); box-shadow:0 8px 22px rgba(0,26,41,.1); }
+    .apr-cert-kpi-label { color:#475569; font-size:.9rem; font-weight:600; }
+    .apr-cert-kpi-value { margin-top:.4rem; font-size:2rem; font-weight:800; line-height:1; }
+    .apr-cert-kpi-icon { display:flex; width:42px; height:42px; align-items:center; justify-content:center; border-radius:50%; font-size:1rem; }
     .apr-cert-card-header { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:1rem; padding:1.1rem 1.25rem; border-bottom:1px solid #edf1f3; }
     .apr-cert-moment { display:flex; align-items:center; gap:.75rem; padding:.9rem 1.1rem; border-bottom:1px solid #edf1f3; }
     .apr-cert-moment:last-child { border-bottom:0; }
@@ -28,6 +33,9 @@
     .apr-cert-modal .modal-header p { color:#c7d4da; }
     .apr-cert-modal .modal-header .btn-close { filter:brightness(0) invert(1); }
     .apr-cert-modal .modal-body { max-height:65vh; overflow-y:auto; padding:1.25rem; background:#f7faf8; }
+    @media (max-width:575px) {
+        .apr-cert-kpi { min-height:110px; }
+    }
 </style>
 @endpush
 
@@ -38,6 +46,42 @@
         <h1 class="h3 fw-bold mb-1"><i class="fas fa-award me-2" style="color:#62E31D" aria-hidden="true"></i>Mi certificado</h1>
         <p class="mb-0 small">Consulta el avance de los momentos de tu ficha y descarga la constancia cuando completes el proceso.</p>
     </header>
+
+    @php
+        $constanciasDisponibles = $records->where('completo', true)->count();
+        $momentosCertificados = $records->sum('completados');
+        $momentosPendientes = $records->sum(fn ($record) => $record['total'] - $record['completados']);
+    @endphp
+    <div class="row g-3 mb-4" aria-label="Resumen de certificación">
+        <div class="col-12 col-md-4">
+            <div class="apr-cert-kpi h-100" style="border-color:rgba(2,132,199,.35)">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="apr-cert-kpi-label">Constancias disponibles</span>
+                    <span class="apr-cert-kpi-icon" style="background:#e0f2fe;color:#0284c7"><i class="fas fa-file-pdf" aria-hidden="true"></i></span>
+                </div>
+                <div class="apr-cert-kpi-value" style="color:#0284c7">{{ $constanciasDisponibles }}</div>
+                <div class="small text-muted mt-2">Una por ficha al certificar sus tres momentos</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="apr-cert-kpi h-100" style="border-color:rgba(22,163,74,.35)">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="apr-cert-kpi-label">Momentos certificados</span>
+                    <span class="apr-cert-kpi-icon" style="background:#dcfce7;color:#16a34a"><i class="fas fa-circle-check" aria-hidden="true"></i></span>
+                </div>
+                <div class="apr-cert-kpi-value" style="color:#16a34a">{{ $momentosCertificados }}</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="apr-cert-kpi h-100" style="border-color:rgba(245,158,11,.4)">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <span class="apr-cert-kpi-label">Momentos pendientes</span>
+                    <span class="apr-cert-kpi-icon" style="background:#fff7e6;color:#c47a00"><i class="fas fa-hourglass-half" aria-hidden="true"></i></span>
+                </div>
+                <div class="apr-cert-kpi-value" style="color:#c47a00">{{ $momentosPendientes }}</div>
+            </div>
+        </div>
+    </div>
 
     @if($records->isEmpty())
         <div class="apr-cert-empty">

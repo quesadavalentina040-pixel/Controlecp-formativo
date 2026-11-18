@@ -392,10 +392,10 @@
         background-color: #ffffff;
     }
     .calendar-day-cell.other-month {
-        background-color: #ffffff;
+        background-color: #eaf1f5;
     }
     .calendar-day-cell.other-month .calendar-day-number {
-        color: #94a3b8;
+        color: #82909b;
     }
     .calendar-day-header-top {
         display: flex;

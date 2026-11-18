@@ -745,9 +745,11 @@
 
                 <div class="mt-3">
                     <label class="form-label fw-semibold small">Ficha asociada <span class="text-danger">*</span></label>
-                    <select id="evidFichaId" class="form-select">
-                        <option value="">— Seleccionar ficha —</option>
-                    </select>
+                    <input type="search" id="evidFichaBuscar" class="form-control"
+                           list="evidFichasDisponibles" placeholder="Buscar por número de ficha o programa..."
+                           autocomplete="off">
+                    <datalist id="evidFichasDisponibles"></datalist>
+                    <input type="hidden" id="evidFichaId" value="">
                 </div>
 
                 <div class="mt-3">
@@ -949,11 +951,18 @@ function abrirModalEvidencia(actId, nombre, fichas = []) {
     document.getElementById('evidArchivo').value  = '';
     document.getElementById('evidEnlace').value   = '';
     document.getElementById('evidDescripcion').value = '';
-    const fichaSelect = document.getElementById('evidFichaId');
-    fichaSelect.replaceChildren(new Option('— Seleccionar ficha —', ''));
+    const fichaBuscar = document.getElementById('evidFichaBuscar');
+    const fichaId = document.getElementById('evidFichaId');
+    const fichasDatalist = document.getElementById('evidFichasDisponibles');
+    fichaBuscar.value = '';
+    fichaId.value = '';
+    fichasDatalist.replaceChildren();
     fichas.forEach(ficha => {
         const label = `${ficha.code} — ${ficha.program || 'Sin programa'}`;
-        fichaSelect.add(new Option(label, ficha.id));
+        const option = document.createElement('option');
+        option.value = label;
+        option.dataset.fichaId = ficha.id;
+        fichasDatalist.appendChild(option);
     });
     document.querySelector('input[name="evidTipo"][value="foto"]').checked = true;
     toggleEvidTipo();
@@ -966,9 +975,22 @@ function toggleEvidTipo() {
     document.getElementById('evidVideoWrap').classList.toggle('d-none', tipo !== 'video');
 }
 
+function actualizarFichaEvidenciaSeleccionada() {
+    const buscar = document.getElementById('evidFichaBuscar');
+    const hidden = document.getElementById('evidFichaId');
+    hidden.value = '';
+
+    document.querySelectorAll('#evidFichasDisponibles option').forEach(option => {
+        if (option.value === buscar.value) {
+            hidden.value = option.dataset.fichaId || '';
+        }
+    });
+}
+
 async function ejecutarSubirEvidencia() {
     const actId     = document.getElementById('evidActividadId').value;
     const tipo      = document.querySelector('input[name="evidTipo"]:checked')?.value;
+    actualizarFichaEvidenciaSeleccionada();
     const fichaId   = document.getElementById('evidFichaId').value;
     const desc      = document.getElementById('evidDescripcion').value.trim();
     const alertEl   = document.getElementById('evidAlert');

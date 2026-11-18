@@ -91,6 +91,7 @@
     button.apr-asesoria-calendar-day:not(:disabled):hover,
     button.apr-asesoria-calendar-day:not(:disabled).is-selected { border-color:#39A900; background:#39A900; color:#fff; }
     .apr-asesoria-calendar-day:disabled { cursor:not-allowed; opacity:1; }
+    .apr-asesoria-calendar-day.is-outside { border-color:#d9e3ea; background:#eaf1f5!important; color:#82909b!important; }
     .apr-asesoria-calendar-day.is-nonworking,
     button.apr-asesoria-calendar-day.is-nonworking { border-color:#c8d3dd; background:#e8eef3; color:#718397; }
     .apr-asesoria-calendar-day.is-busy,
@@ -515,7 +516,13 @@
         }));
         const offset = (monthStart.getDay() + 6) % 7;
         for (let blank = 0; blank < offset; blank++) {
-            calendarGrid.append(document.createElement('span'));
+            const outsideDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1 - (offset - blank));
+            const outsideButton = document.createElement('button');
+            outsideButton.type = 'button';
+            outsideButton.disabled = true;
+            outsideButton.className = 'apr-asesoria-calendar-day is-outside';
+            outsideButton.textContent = String(outsideDate.getDate());
+            calendarGrid.append(outsideButton);
         }
         const days = dateMap();
         for (let dayNumber = 1; dayNumber <= monthEnd.getDate(); dayNumber++) {
@@ -536,6 +543,17 @@
                 dayButton.addEventListener('click', () => selectDay(info));
             }
             calendarGrid.append(dayButton);
+        }
+        const renderedCount = offset + monthEnd.getDate();
+        const trailingCount = (renderedCount <= 35 ? 35 : 42) - renderedCount;
+        for (let trailing = 1; trailing <= trailingCount; trailing++) {
+            const outsideDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, trailing);
+            const outsideButton = document.createElement('button');
+            outsideButton.type = 'button';
+            outsideButton.disabled = true;
+            outsideButton.className = 'apr-asesoria-calendar-day is-outside';
+            outsideButton.textContent = String(outsideDate.getDate());
+            calendarGrid.append(outsideButton);
         }
         const firstMonth = new Date(calendarDays[0].fecha + 'T00:00:00');
         const lastMonth = new Date(calendarDays[calendarDays.length - 1].fecha + 'T00:00:00');

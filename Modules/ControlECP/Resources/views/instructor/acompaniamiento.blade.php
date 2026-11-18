@@ -148,10 +148,11 @@
     .acom-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px;overflow:hidden;border-radius:14px;background:#dce5eb}
     .acom-calendar-heading{padding:.7rem .35rem;background:#001A29;color:#fff;text-align:center;font-size:.75rem;font-weight:700;text-transform:uppercase}
     .acom-calendar-day{display:flex;min-width:0;min-height:102px;flex-direction:column;gap:.2rem;padding:.45rem;background:#fff}
-    .acom-calendar-day.is-outside{background:#eaf1f6;color:#718096}
+    .acom-calendar-day.is-outside{background:#eaf1f5;color:#82909b}
+    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-outside{background:#eaf1f5!important}
+    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-outside .acom-calendar-day-number{color:#82909b}
     .instructor-acompanamiento-page .acom-calendar .acom-calendar-day,
-    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-non-working-day,
-    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-outside{background:#fff!important}
+    .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-non-working-day{background:#fff!important}
     .instructor-acompanamiento-page .acom-calendar .acom-calendar-day.is-non-working-day{color:inherit!important}
     .acom-calendar-day-top{display:flex;align-items:center;justify-content:space-between;min-height:26px;margin-bottom:.1rem}
     .acom-calendar-day-number{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;border-radius:50%;font-size:.82rem;font-weight:700}
@@ -267,9 +268,12 @@
             <div class="acom-calendar">
                 @foreach(['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'] as $weekday)<div class="acom-calendar-heading">{{ $weekday }}</div>@endforeach
                 @foreach($days as $day)
-                    <div class="acom-calendar-day {{ !$day['in_month'] ? 'is-outside' : '' }} {{ $day['date']->isToday() ? 'is-today' : '' }}" data-calendario-fecha="{{ $day['date']->toDateString() }}">
+                    <div class="acom-calendar-day {{ !$day['in_month'] ? 'is-outside' : '' }} {{ $day['date']->isToday() ? 'is-today' : '' }}"
+                         @if(!$day['in_month']) style="background:#eaf1f5!important;color:#82909b!important;" @endif
+                         data-calendario-fecha="{{ $day['date']->toDateString() }}">
                         <div class="acom-calendar-day-top">
-                            <span class="acom-calendar-day-number">{{ $day['date']->day }}</span>
+                            <span class="acom-calendar-day-number"
+                                  @if(!$day['in_month']) style="color:#82909b!important;" @endif>{{ $day['date']->day }}</span>
                             @if($day['date']->isToday())<span class="acom-calendar-today-label">Hoy</span>@endif
                         </div>
                         @foreach($day['session_groups'] as $sessionColor => $sessions)
