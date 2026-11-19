@@ -286,32 +286,6 @@
         }
     }
 
-    .modal-ecp-badge-green {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        background: #eaf8ee;
-        color: #2b8000;
-        font-size: 0.78rem;
-        font-weight: 700;
-        padding: 0.4rem 0.95rem;
-        border-radius: 50px;
-        border: 1px solid rgba(57, 169, 0, 0.3);
-    }
-
-    .modal-ecp-badge-gold {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        background: #fff8e6;
-        color: #b45309;
-        font-size: 0.78rem;
-        font-weight: 700;
-        padding: 0.4rem 0.95rem;
-        border-radius: 50px;
-        border: 1px solid rgba(217, 119, 6, 0.3);
-    }
-
     .modal-ecp-img-box {
         position: relative;
         border-radius: 18px;
@@ -374,6 +348,434 @@
         flex-shrink: 0;
     }
 
+    .ecp-servicio-card {
+        overflow: hidden;
+        height: 100%;
+        background: #ffffff;
+        border: 1px solid rgba(57, 169, 0, 0.18);
+        border-radius: 16px;
+        box-shadow: 0 8px 22px rgba(0, 26, 41, 0.07);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .ecp-servicio-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 28px rgba(57, 169, 0, 0.14);
+    }
+
+    .ecp-servicio-image {
+        display: block;
+        width: 100%;
+        height: 190px;
+        object-fit: cover;
+    }
+
+    .ecp-servicio-title {
+        min-height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+        padding: 0.75rem 0.9rem;
+        color: #ffffff;
+        background: linear-gradient(135deg, #297A38, #39A900);
+        font-size: 0.95rem;
+        font-weight: 800;
+        text-align: center;
+    }
+
+    .ecp-servicio-text {
+        margin: 0;
+        padding: 1rem 1.1rem;
+        color: var(--sena-pastel-text-body);
+        font-size: 0.88rem;
+        line-height: 1.65;
+    }
+
+    @media (max-width: 767.98px) {
+        .ecp-servicio-image {
+            height: 220px;
+        }
+    }
+
+    .ecp-podcast-hero {
+        position: relative;
+        overflow: hidden;
+        min-height: 280px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background:
+            linear-gradient(rgba(0, 26, 41, 0.68), rgba(0, 26, 41, 0.82)),
+            url('{{ asset("general/assets/img/carrusel-2.png") }}') center 55% / cover no-repeat;
+        border: 1px solid rgba(57, 169, 0, 0.28);
+        border-radius: 18px;
+        box-shadow: 0 12px 28px rgba(0, 26, 41, 0.12);
+        text-align: center;
+    }
+
+    .ecp-podcast-content {
+        position: relative;
+        z-index: 1;
+        max-width: 650px;
+        color: #ffffff;
+    }
+
+    .ecp-podcast-kicker {
+        margin-bottom: 0.35rem;
+        color: #62E31D;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+    }
+
+    .ecp-podcast-title {
+        margin-bottom: 0.65rem;
+        color: #ffffff;
+        font-family: 'Outfit', sans-serif;
+        font-size: clamp(1.55rem, 4vw, 2.25rem);
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .ecp-podcast-text {
+        margin-bottom: 1.35rem;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.65;
+    }
+
+    .ecp-podcast-listen {
+        width: 74px;
+        height: 74px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        background: #1DB954;
+        border: 5px solid rgba(255, 255, 255, 0.95);
+        border-radius: 50%;
+        box-shadow: 0 10px 24px rgba(29, 185, 84, 0.38);
+        font-size: 1.8rem;
+        text-decoration: none;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    }
+
+    .ecp-podcast-listen:hover,
+    .ecp-podcast-listen:focus-visible {
+        color: #ffffff;
+        background: #169C46;
+        transform: scale(1.08);
+        box-shadow: 0 14px 30px rgba(29, 185, 84, 0.48);
+    }
+
+    .ecp-podcast-listen-label {
+        display: block;
+        margin-top: 0.55rem;
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .ecp-logros-banner {
+        display: block;
+        width: 100%;
+        height: 210px;
+        object-fit: cover;
+        object-position: center 58%;
+        border: 1px solid rgba(57, 169, 0, 0.18);
+        border-radius: 16px;
+        box-shadow: 0 8px 22px rgba(0, 26, 41, 0.07);
+    }
+
+    .ecp-logros-list {
+        margin: 0;
+        padding: 1.25rem 1.35rem;
+        list-style: none;
+        background: #ffffff;
+        border: 1px solid rgba(57, 169, 0, 0.18);
+        border-radius: 16px;
+        box-shadow: 0 8px 22px rgba(0, 26, 41, 0.05);
+    }
+
+    .ecp-logros-card {
+        overflow: hidden;
+        height: 100%;
+        background: #ffffff;
+        border: 1px solid rgba(57, 169, 0, 0.18);
+        border-radius: 16px;
+        box-shadow: 0 8px 22px rgba(0, 26, 41, 0.07);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .ecp-logros-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 28px rgba(57, 169, 0, 0.14);
+    }
+
+    .ecp-logros-card-image {
+        display: block;
+        width: 100%;
+        height: 190px;
+        object-fit: cover;
+    }
+
+    .ecp-logros-card-content {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.8rem;
+        min-height: 145px;
+        padding: 1.15rem;
+    }
+
+    .ecp-logros-card-icon {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        color: #39A900;
+        background: #eaf8ee;
+        border-radius: 50%;
+        font-size: 1rem;
+    }
+
+    .ecp-logros-card-text {
+        margin: 0;
+        color: var(--sena-pastel-text-body);
+        font-size: 0.92rem;
+        line-height: 1.65;
+    }
+
+    @media (max-width: 767.98px) {
+        .ecp-logros-card-image {
+            height: 220px;
+        }
+    }
+
+    .ecp-historia-card {
+        min-height: 170px;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.1rem;
+        background: #ffffff;
+        border: 1px solid rgba(57, 169, 0, 0.18);
+        border-radius: 16px;
+        box-shadow: 0 8px 22px rgba(0, 26, 41, 0.06);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .ecp-historia-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 28px rgba(57, 169, 0, 0.13);
+    }
+
+    .ecp-historia-photo {
+        width: 82px;
+        height: 82px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 4px solid #eaf8ee;
+        border-radius: 50%;
+        box-shadow: 0 8px 18px rgba(57, 169, 0, 0.16);
+    }
+
+    .ecp-historia-photo img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .ecp-historia-card-title {
+        margin-bottom: 0.4rem;
+        color: var(--sena-pastel-text-title);
+        font-size: 1rem;
+        font-weight: 800;
+    }
+
+    .ecp-historia-card-text {
+        margin: 0;
+        color: var(--sena-pastel-text-body);
+        font-size: 0.88rem;
+        line-height: 1.65;
+    }
+
+    @media (max-width: 575.98px) {
+        .ecp-historia-card {
+            align-items: center;
+        }
+
+        .ecp-historia-photo {
+            width: 68px;
+            height: 68px;
+        }
+    }
+
+    .ecp-logros-list li {
+        position: relative;
+        padding: 0.65rem 0 0.65rem 2.1rem;
+        color: var(--sena-pastel-text-body);
+        font-size: 1.02rem;
+        line-height: 1.75;
+    }
+
+    .ecp-logros-list li::before {
+        position: absolute;
+        top: 0.78rem;
+        left: 0;
+        width: 28px;
+        height: 28px;
+        content: "\f140";
+        color: #39A900;
+        font-family: "Font Awesome 6 Free";
+        font-size: 1.25rem;
+        font-weight: 900;
+    }
+
+    .ecp-mision-vision-box {
+        padding: 1.25rem;
+        background: #ffffff;
+        border: 1px solid #dfe6ed;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 26, 41, 0.06);
+    }
+
+    .ecp-mision-vision-banner {
+        display: block;
+        width: 100%;
+        max-height: 190px;
+        margin-bottom: 1.15rem;
+        object-fit: contain;
+        border-radius: 12px;
+        background: #f8fbf9;
+    }
+
+    .ecp-quienes-somos-box {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.35rem 1.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f4fbf6 100%);
+        border: 1px solid rgba(57, 169, 0, 0.24);
+        border-radius: 18px;
+        box-shadow: 0 8px 24px rgba(0, 26, 41, 0.06);
+    }
+
+    .ecp-quienes-somos-box::after {
+        position: absolute;
+        right: -32px;
+        bottom: -42px;
+        width: 130px;
+        height: 130px;
+        content: "";
+        background: rgba(57, 169, 0, 0.06);
+        border-radius: 50%;
+    }
+
+    .ecp-quienes-somos-icon {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 84px;
+        height: 84px;
+        flex-shrink: 0;
+        overflow: hidden;
+        background: #ffffff;
+        border: 4px solid #62E31D;
+        border-radius: 50%;
+        box-shadow: 0 10px 22px rgba(57, 169, 0, 0.22);
+    }
+
+    .ecp-quienes-somos-photo {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+    }
+
+    .ecp-quienes-somos-content {
+        position: relative;
+        z-index: 1;
+        color: var(--sena-pastel-text-body);
+        line-height: 1.8;
+    }
+
+    .ecp-quienes-somos-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+        color: var(--sena-pastel-text-title);
+        font-size: 1.12rem;
+        font-weight: 800;
+    }
+
+    .ecp-quienes-somos-title::after {
+        width: 44px;
+        height: 3px;
+        content: "";
+        background: #39A900;
+        border-radius: 999px;
+    }
+
+    @media (max-width: 575.98px) {
+        .ecp-quienes-somos-box {
+            align-items: flex-start;
+            padding: 1.1rem;
+        }
+
+        .ecp-quienes-somos-icon {
+            width: 58px;
+            height: 58px;
+            border-width: 4px;
+            font-size: 1.35rem;
+        }
+    }
+
+    .ecp-mision-vision-column {
+        height: 100%;
+        color: var(--sena-pastel-text-body);
+        line-height: 1.75;
+    }
+
+    .ecp-mision-vision-column + .ecp-mision-vision-column {
+        border-left: 1px solid #e3e9ef;
+        padding-left: 1.25rem;
+    }
+
+    .ecp-mision-vision-heading {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        margin-bottom: 0.75rem;
+        color: var(--sena-pastel-text-title);
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .ecp-mision-vision-heading i {
+        color: #39A900;
+    }
+
+    @media (max-width: 767.98px) {
+        .ecp-mision-vision-column + .ecp-mision-vision-column {
+            border-left: 0;
+            border-top: 1px solid #e3e9ef;
+            padding-top: 1.25rem;
+            padding-left: 0;
+        }
+    }
+
     .modal-ecp-callout {
         background: #eaf8ee;
         border: 1px solid rgba(57, 169, 0, 0.3);
@@ -399,6 +801,7 @@
         font-size: 0.82rem;
         color: #00324D;
     }
+
 </style>
 @endpush
 
@@ -510,17 +913,12 @@
                         <div class="row justify-content-center">
                             <div class="col-xl-7 col-lg-8 col-md-10">
                                 <div class="ecp-hero-card text-center">
-                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(57, 169, 0, 0.45); box-shadow: 0 2px 8px rgba(57, 169, 0, 0.15);">
-                                        <i class="fas fa-dove" style="color: var(--sena-pastel-primary); font-size: 0.8rem;"></i>
-                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Escuela Cultura de Paz • SENA</span>
-                                    </div>
-
                                     <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
                                         ¿Quiénes <span style="color: var(--sena-pastel-primary);">somos?</span>
                                     </h2>
 
                                     <p class="mb-3 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 460px; font-size: 0.92rem; line-height: 1.5;">
-                                        Somos un espacio pedagógico de formación integral que promueve la convivencia, el diálogo y los valores humanos.
+                                        Somos la Escuela Cultura de Paz, una estrategia institucional del Centro de Formación Agroindustrial La Angostura.
                                     </p>
 
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
@@ -541,11 +939,6 @@
                         <div class="row justify-content-center">
                             <div class="col-xl-7 col-lg-8 col-md-10">
                                 <div class="ecp-hero-card text-center">
-                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(57, 169, 0, 0.45); box-shadow: 0 2px 8px rgba(57, 169, 0, 0.15);">
-                                        <i class="fas fa-award" style="color: var(--sena-pastel-primary); font-size: 0.8rem;"></i>
-                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Avances y experiencias</span>
-                                    </div>
-
                                     <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
                                         Logros de la <span style="color: var(--sena-pastel-primary);">Escuela</span>
                                     </h2>
@@ -572,11 +965,6 @@
                         <div class="row justify-content-center">
                             <div class="col-xl-7 col-lg-8 col-md-10">
                                 <div class="ecp-hero-card text-center">
-                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(57, 169, 0, 0.45); box-shadow: 0 2px 8px rgba(57, 169, 0, 0.15);">
-                                        <i class="fas fa-book-open" style="color: var(--sena-pastel-primary); font-size: 0.8rem;"></i>
-                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Origen y recorrido</span>
-                                    </div>
-
                                     <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
                                         Historia de la <span style="color: var(--sena-pastel-primary);">Escuela</span>
                                     </h2>
@@ -603,17 +991,12 @@
                         <div class="row justify-content-center">
                             <div class="col-xl-7 col-lg-8 col-md-10">
                                 <div class="ecp-hero-card text-center">
-                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(57, 169, 0, 0.45); box-shadow: 0 2px 8px rgba(57, 169, 0, 0.15);">
-                                        <i class="fas fa-compass" style="color: var(--sena-pastel-primary); font-size: 0.8rem;"></i>
-                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Nuestro propósito</span>
-                                    </div>
-
                                     <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
                                         Misión y <span style="color: var(--sena-pastel-primary);">visión</span>
                                     </h2>
 
                                     <p class="mb-3 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 460px; font-size: 0.92rem; line-height: 1.5;">
-                                        Nuestro propósito y horizonte: formar en cultura de paz, respeto y convivencia.
+                                        Somos una estrategia del SENA para fortalecer la formación integral y construir una cultura de paz.
                                     </p>
 
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
@@ -634,11 +1017,6 @@
                         <div class="row justify-content-center">
                             <div class="col-xl-7 col-lg-8 col-md-10">
                                 <div class="ecp-hero-card text-center">
-                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(57, 169, 0, 0.45); box-shadow: 0 2px 8px rgba(57, 169, 0, 0.15);">
-                                        <i class="fas fa-hands-holding-circle" style="color: var(--sena-pastel-primary); font-size: 0.8rem;"></i>
-                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Acompañamiento y formación</span>
-                                    </div>
-
                                     <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
                                         Nuestros <span style="color: var(--sena-pastel-primary);">servicios</span>
                                     </h2>
@@ -665,17 +1043,12 @@
                         <div class="row justify-content-center">
                             <div class="col-xl-7 col-lg-8 col-md-10">
                                 <div class="ecp-hero-card text-center">
-                                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(57, 169, 0, 0.45); box-shadow: 0 2px 8px rgba(57, 169, 0, 0.15);">
-                                        <i class="fas fa-podcast" style="color: var(--sena-pastel-primary); font-size: 0.8rem;"></i>
-                                        <span class="fw-bold" style="color: var(--sena-pastel-text-title); font-size: 0.72rem;">Voces de la cultura de paz</span>
-                                    </div>
-
                                     <h2 class="fw-bold mb-2 fs-2" style="color: var(--sena-pastel-text-title); line-height: 1.2;">
                                         Podcast <span style="color: var(--sena-pastel-primary);">ECP</span>
                                     </h2>
 
                                     <p class="mb-3 mx-auto fw-medium" style="color: var(--sena-pastel-text-body); max-width: 460px; font-size: 0.92rem; line-height: 1.5;">
-                                        Conversaciones y reflexiones sobre cultura de paz. Episodios próximamente.
+                                        Explora, escucha, aprende y transforma con nuestra Escuela Cultura de Paz.
                                     </p>
 
                                     <div class="d-flex flex-wrap justify-content-center gap-2">
@@ -774,18 +1147,8 @@
     <!-- ========================================================================= -->
     <section class="collapse ecp-detalle-section" id="detalle-kpi-section" aria-labelledby="detalle-tag-area">
         <div class="container">
+            <h2 class="visually-hidden" id="detalle-tag-area">Información de Área</h2>
             <div class="ecp-detalle-card-wrapper position-relative">
-
-                <div class="d-flex justify-content-between align-items-center pb-3 mb-4 border-bottom">
-                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                        <span class="modal-ecp-badge-green"><i class="fas fa-seedling"></i> Escuela Cultura de Paz</span>
-                        <span class="modal-ecp-badge-gold" id="detalle-tag-area"><i class="fas fa-circle-info"></i> Información de Área</span>
-                    </div>
-                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1" onclick="cerrarDetalleKpi()" title="Volver al índice">
-                        <i class="fas fa-arrow-left"></i> <span>Volver al índice</span>
-                    </button>
-                </div>
-
                 <div id="detalle-kpi-content"></div>
                 <div class="d-none" aria-hidden="true">
 
@@ -1390,23 +1753,17 @@
         'quienes-somos': {
             title: 'Quiénes somos',
             icon: 'fas fa-users',
-            description: 'La Escuela Cultura de Paz (ECP) es una estrategia pedagógica del Centro Agroindustrial SENA La Angostura, creada para fortalecer la convivencia, el diálogo y los valores humanos en toda la comunidad educativa. Trabajamos desde tres dimensiones: el ser, el convivir y el transformar, acompañando a aprendices, instructores y personal en su desarrollo integral.',
-            items: [
-                { icon: 'fas fa-graduation-cap', title: 'Formación integral del ser', text: 'Promovemos el autoconocimiento, la responsabilidad personal y el crecimiento ético en cada miembro de la comunidad SENA.' },
-                { icon: 'fas fa-handshake', title: 'Convivencia y diálogo', text: 'Fomentamos relaciones basadas en el respeto, la empatía y la comunicación no violenta dentro y fuera del aula.' },
-                { icon: 'fas fa-shield-halved', title: 'Ambientes seguros', text: 'Garantizamos espacios libres de violencia, acoso y discriminación, donde cada persona se siente valorada y protegida.' },
-                { icon: 'fas fa-users-gear', title: 'Equipo comprometido', text: 'Contamos con instructores líderes, psicólogos y bienestar institucional trabajando en red por la paz del centro.' }
-            ]
+            description: 'Somos la Escuela Cultura de Paz, una estrategia institucional del Centro de Formación Agroindustrial La Angostura que promueve la integridad del ser en toda la comunidad educativa mediante actividades que fortalecen la autoestima, el autoconocimiento, el equilibrio emocional y las habilidades blandas, fomentando la reconciliación, el consenso y la sana convivencia.',
+            items: []
         },
         'logros': {
             title: 'Logros de la Escuela',
             icon: 'fas fa-award',
-            description: 'La Escuela Cultura de Paz ha alcanzado resultados significativos en la transformación de la convivencia y el bienestar del Centro Agroindustrial SENA La Angostura. Cada logro refleja el compromiso colectivo de aprendices, instructores y directivos por construir una comunidad más justa, empática y pacífica.',
+            description: 'Resultados que fortalecen la formación integral y la cultura de paz en nuestra comunidad educativa.',
             items: [
-                { icon: 'fas fa-people-group', title: 'Cobertura total de fichas', text: 'Los Momentos ECP se aplican al 100% de las fichas formativas activas del centro, impactando a cientos de aprendices cada trimestre.' },
-                { icon: 'fas fa-heart-pulse', title: 'Reducción de conflictos', text: 'Se ha evidenciado una disminución notable en los reportes de conflictos internos gracias a la mediación pedagógica activa.' },
-                { icon: 'fas fa-certificate', title: 'Reconocimiento institucional', text: 'La ECP ha sido reconocida como buena práctica de convivencia a nivel regional dentro de la red de centros SENA.' },
-                { icon: 'fas fa-seedling', title: 'Cultura de paz arraigada', text: 'Aprendices que pasaron por la ECP demuestran mayor capacidad para resolver diferencias de forma constructiva y colaborativa.' }
+                { icon: 'fas fa-bullseye', title: 'Integridad del ser', text: 'Promover la integralidad del ser en toda la comunidad del Centro de Formación Agroindustrial La Angostura.' },
+                { icon: 'fas fa-heart-pulse', title: 'Bienestar emocional', text: 'Fortalecer la autoestima, el autoconocimiento, el equilibrio emocional, las habilidades blandas y la relación consigo mismo y su entorno en toda la comunidad del Centro de Formación.' },
+                { icon: 'fas fa-seedling', title: 'Cultura de paz', text: 'Crear una cultura de gratitud, respeto, amor, integridad, unión y perdón con equidad y justicia.' }
             ]
         },
         'historia': {
@@ -1423,38 +1780,31 @@
         'mision-vision': {
             title: 'Misión y Visión',
             icon: 'fas fa-compass',
-            description: 'La Escuela Cultura de Paz orienta su quehacer desde un propósito claro y un horizonte ambicioso: ser el motor de transformación humana del Centro Agroindustrial SENA La Angostura, formando ciudadanos íntegros capaces de construir paz desde su cotidianidad.',
+            description: 'Conoce el propósito y el horizonte de la Escuela Cultura de Paz del Centro de Formación Agroindustrial La Angostura.',
             items: [
-                { icon: 'fas fa-bullseye', title: 'Misión', text: 'Promover una cultura de paz mediante la formación integral, el acompañamiento socioemocional y el diálogo, fortaleciendo la convivencia y el bienestar de toda la comunidad educativa SENA.' },
-                { icon: 'fas fa-eye', title: 'Visión', text: 'Ser un referente nacional en formación para la paz dentro de la red SENA, reconocido por transformar vidas y generar comunidades educativas solidarias, respetuosas y colaborativas.' },
-                { icon: 'fas fa-scale-balanced', title: 'Valores', text: 'Respeto, empatía, solidaridad, honestidad y compromiso con la paz son los pilares que guían cada acción de la Escuela Cultura de Paz.' },
-                { icon: 'fas fa-star', title: 'Principio rector', text: 'Creemos que la paz no se enseña, se construye juntos. Cada interacción en el centro es una oportunidad para cultivarla.' }
+                { icon: 'fas fa-bullseye', title: 'Misión', text: 'Somos la Escuela Cultura de Paz, una estrategia del SENA que, mediante el enfoque de “aprender haciendo” y su articulación con SENA Empresa, promueve la formación integral de la comunidad del Centro de Formación Agroindustrial “La Angostura”.' },
+                { icon: 'fas fa-bullseye', title: 'Fortalecimiento integral', text: 'Fortalecemos el autoconocimiento, la autoestima, el equilibrio emocional, las habilidades blandas, el trabajo en equipo, el emprendimiento y la innovación, preparando a los aprendices para su desarrollo personal y laboral.' },
+                { icon: 'fas fa-bullseye', title: 'Valores y cultura de paz', text: 'A través de valores como el respeto, la gratitud, el amor, la unión, el perdón, la equidad y la justicia, buscamos generar un impacto positivo en la comunidad y contribuir a la construcción de una cultura de paz.' },
+                { icon: 'fas fa-eye', title: 'Visión', text: 'Seremos una estrategia reconocida a nivel regional y nacional en el SENA, que integra la formación por proyectos bajo el enfoque SENA Empresa, promoviendo una cultura de paz y la transformación de entornos educativos y sociales.' },
+                { icon: 'fas fa-eye', title: 'Proyección y liderazgo', text: 'Buscamos ser una estrategia replicable en otros centros de formación, fortaleciendo la participación de la comunidad educativa y formando aprendices líderes, innovadores, críticos y comprometidos con decisiones responsables.' },
+                { icon: 'fas fa-eye', title: 'Competencias para el desarrollo sostenible', text: 'A través del fortalecimiento de competencias como la autonomía, el liderazgo, la comunicación asertiva, la autorregulación y el empoderamiento, contribuiremos al desarrollo sostenible y a la construcción de una sociedad más humana, consciente y en paz.' }
             ]
         },
         'servicios': {
             title: 'Nuestros Servicios',
             icon: 'fas fa-hands-holding-circle',
-            description: 'La Escuela Cultura de Paz ofrece un conjunto de servicios orientados al bienestar integral, la convivencia y el desarrollo humano de aprendices e instructores del Centro Agroindustrial SENA La Angostura.',
+            description: 'La Escuela Cultura de Paz ofrece servicios orientados al bienestar integral, la convivencia y el desarrollo humano de la comunidad educativa.',
             items: [
-                { icon: 'fas fa-brain', title: 'Acompañamiento psicosocial', text: 'Sesiones de escucha activa y orientación socioemocional para aprendices que enfrentan dificultades personales, académicas o relacionales.' },
-                { icon: 'fas fa-people-arrows', title: 'Mediación de conflictos', text: 'Facilitación de diálogos y acuerdos entre las partes involucradas en un conflicto, buscando soluciones justas y duraderas.' },
-                { icon: 'fas fa-chalkboard-user', title: 'Talleres formativos', text: 'Actividades grupales vivenciales sobre inteligencia emocional, liderazgo, comunicación asertiva y resolución de conflictos.' },
-                { icon: 'fas fa-spa', title: 'Bienestar espiritual y emocional', text: 'Espacios de reflexión, mindfulness y fortalecimiento de valores que nutren el equilibrio interior de cada persona.' },
-                { icon: 'fas fa-medal', title: 'Reconocimiento a la convivencia', text: 'Programa de estímulos para aprendices e instructores que demuestran comportamientos ejemplares en cultura de paz.' },
-                { icon: 'fas fa-podcast', title: 'Comunicación y divulgación', text: 'Podcast ECP, boletines y contenidos digitales que difunden reflexiones y aprendizajes sobre la cultura de paz.' }
+                { icon: 'fas fa-brain', title: 'Acompañamiento Psicológico', text: 'Espacios de escucha activa y orientación para fortalecer el bienestar emocional y acompañar a aprendices e integrantes de la comunidad educativa.', image: 'acompanamiento-psicologico.png' },
+                { icon: 'fas fa-spa', title: 'Fortalecimiento Espiritual', text: 'Actividades de reflexión, gratitud y fortalecimiento de valores que promueven el equilibrio interior y una convivencia basada en el respeto.', image: 'fortalecimiento-espiritual.png' },
+                { icon: 'fas fa-users-gear', title: 'Fortalecimiento del Trabajo en Equipo', text: 'Dinámicas colaborativas que favorecen la comunicación, la cooperación, el liderazgo positivo y la construcción conjunta de soluciones.', image: 'fortalecimiento-trabajo-equipo.png' }
             ]
         },
         'podcast': {
             title: 'Podcast ECP',
             icon: 'fas fa-podcast',
-            description: 'El Podcast de la Escuela Cultura de Paz es un espacio de reflexión, conversación y aprendizaje donde voces de la comunidad SENA La Angostura comparten experiencias, historias y herramientas para construir paz desde lo cotidiano. Cada episodio es una invitación a pensar, sentir y actuar diferente.',
-            items: [
-                { icon: 'fas fa-microphone-lines', title: 'Voces de la comunidad', text: 'Aprendices, instructores y líderes de bienestar comparten sus experiencias y aprendizajes en torno a la cultura de paz.' },
-                { icon: 'fas fa-lightbulb', title: 'Reflexiones prácticas', text: 'Cada episodio aborda temas concretos: manejo de emociones, resolución de conflictos, liderazgo y convivencia escolar.' },
-                { icon: 'fas fa-headphones', title: 'Acceso libre y gratuito', text: 'El podcast estará disponible en plataformas digitales para que toda la comunidad pueda escucharlo cuando quiera.' },
-                { icon: 'fas fa-calendar-plus', title: 'Próximos episodios', text: 'Se están produciendo los primeros episodios. Pronto podrás sintonizarnos y ser parte de la conversación por la paz.' }
-            ],
-            note: 'El Podcast ECP estará disponible muy pronto. ¡Síguenos en redes sociales para ser el primero en enterarte!'
+            description: 'Escucha conversaciones sobre cultura de paz, bienestar y transformación en nuestro podcast oficial.',
+            items: []
         }
     };
 
@@ -1475,19 +1825,172 @@
             col.classList.toggle('is-active', isActive);
             col.setAttribute('aria-expanded', isActive ? 'true' : 'false');
         });
-        tagArea.innerHTML = `<i class="${info.icon} me-1" aria-hidden="true"></i> ${info.title}`;
+        tagArea.textContent = info.title;
 
-        const items = info.items.map(item => `
-            <div class="col-md-6">
-                <div class="modal-ecp-feature-card h-100 mb-0">
-                    <div class="modal-ecp-feature-icon"><i class="${item.icon}" aria-hidden="true"></i></div>
-                    <div>
-                        <strong class="d-block text-dark small">${item.title}</strong>
-                        <span class="text-muted small">${item.text}</span>
+        let items;
+
+        if (area === 'quienes-somos') {
+            items = `
+                <div class="col-12">
+                    <div class="ecp-quienes-somos-box">
+                        <div class="ecp-quienes-somos-icon" aria-hidden="true">
+                            <img class="ecp-quienes-somos-photo" src="{{ asset('general/assets/img/quienes-somos-comunidad.png') }}" alt="Comunidad de la Escuela Cultura de Paz">
+                        </div>
+                        <div class="ecp-quienes-somos-content">
+                            <div class="ecp-quienes-somos-title">Escuela Cultura de Paz</div>
+                            <p class="mb-0">${info.description}</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        } else if (area === 'logros') {
+            items = `
+                <div class="col-md-4">
+                    <article class="ecp-logros-card">
+                        <img class="ecp-logros-card-image" src="{{ asset('general/assets/img/logro-integralidad-ser.png') }}" alt="Integralidad del ser">
+                        <div class="ecp-logros-card-content">
+                            <div class="ecp-logros-card-icon"><i class="fas fa-bullseye" aria-hidden="true"></i></div>
+                            <p class="ecp-logros-card-text">Promover la integralidad del ser en toda la comunidad del Centro de Formación Agroindustrial La Angostura.</p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-md-4">
+                    <article class="ecp-logros-card">
+                        <img class="ecp-logros-card-image" src="{{ asset('general/assets/img/logro-bienestar-emocional.png') }}" alt="Bienestar emocional">
+                        <div class="ecp-logros-card-content">
+                            <div class="ecp-logros-card-icon"><i class="fas fa-heart-pulse" aria-hidden="true"></i></div>
+                            <p class="ecp-logros-card-text">Fortalecer la autoestima, el autoconocimiento, el equilibrio emocional, las habilidades blandas y la relación consigo mismo y su entorno en toda la comunidad del Centro de Formación.</p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-md-4">
+                    <article class="ecp-logros-card">
+                        <img class="ecp-logros-card-image" src="{{ asset('general/assets/img/logro-cultura-paz-valores.png') }}" alt="Cultura de paz">
+                        <div class="ecp-logros-card-content">
+                            <div class="ecp-logros-card-icon"><i class="fas fa-seedling" aria-hidden="true"></i></div>
+                            <p class="ecp-logros-card-text">Crear una cultura de gratitud, respeto, amor, integridad, unión y perdón con equidad y justicia.</p>
+                        </div>
+                    </article>
+                </div>
+            `;
+        } else if (area === 'historia') {
+            items = `
+                <div class="col-md-6">
+                    <article class="ecp-historia-card">
+                        <div class="ecp-historia-photo">
+                            <img src="{{ asset('general/assets/img/historia-origen-fundacion.png') }}" alt="Origen y fundación">
+                        </div>
+                        <div>
+                            <div class="ecp-historia-card-title">Origen y fundación</div>
+                            <p class="ecp-historia-card-text">Surgió de la iniciativa de instructores y el equipo de bienestar comprometidos con generar ambientes escolares más humanos y solidarios.</p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-md-6">
+                    <article class="ecp-historia-card">
+                        <div class="ecp-historia-photo">
+                            <img src="{{ asset('general/assets/img/historia-crecimiento-estructura.png') }}" alt="Crecimiento y estructura">
+                        </div>
+                        <div>
+                            <div class="ecp-historia-card-title">Crecimiento y estructura</div>
+                            <p class="ecp-historia-card-text">Con el tiempo se formalizaron los tres Momentos pedagógicos (Autoconciencia, Convivencia y Resolución de Conflictos) como eje metodológico.</p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-md-6">
+                    <article class="ecp-historia-card">
+                        <div class="ecp-historia-photo">
+                            <img src="{{ asset('general/assets/img/historia-consolidacion-institucional.png') }}" alt="Consolidación institucional">
+                        </div>
+                        <div>
+                            <div class="ecp-historia-card-title">Consolidación institucional</div>
+                            <p class="ecp-historia-card-text">La ECP pasó a ser parte oficial del plan de bienestar del centro, integrándose a los procesos de formación de todas las fichas activas.</p>
+                        </div>
+                    </article>
+                </div>
+                <div class="col-md-6">
+                    <article class="ecp-historia-card">
+                        <div class="ecp-historia-photo">
+                            <img src="{{ asset('general/assets/img/historia-hoy-futuro.png') }}" alt="Hoy y el futuro">
+                        </div>
+                        <div>
+                            <div class="ecp-historia-card-title">Hoy y el futuro</div>
+                            <p class="ecp-historia-card-text">Actualmente la ECP se gestiona digitalmente a través de Control ECP, garantizando trazabilidad, seguimiento y mejora continua de cada acción.</p>
+                        </div>
+                    </article>
+                </div>
+            `;
+        } else if (area === 'mision-vision') {
+            items = `
+                <div class="col-12">
+                    <div class="ecp-mision-vision-box">
+                        <img class="ecp-mision-vision-banner" src="{{ asset('general/assets/img/mision-vision-ilustracion.png') }}" alt="Ilustración de la misión y la visión de la Escuela Cultura de Paz">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="ecp-mision-vision-column">
+                                    <div class="ecp-mision-vision-heading">
+                                        <i class="fas fa-bullseye" aria-hidden="true"></i>
+                                        <span>Misión</span>
+                                    </div>
+                                    <p class="mb-0">Somos la Escuela Cultura de Paz, una estrategia del SENA que, mediante el enfoque de “aprender haciendo” y su articulación con SENA Empresa, promueve la formación integral de la comunidad del Centro de Formación Agroindustrial “La Angostura”.</p>
+                                    <p class="mb-0 mt-2">Fortalecemos el autoconocimiento, la autoestima, el equilibrio emocional, las habilidades blandas, el trabajo en equipo, el emprendimiento y la innovación, preparando a los aprendices para su desarrollo personal y laboral.</p>
+                                    <p class="mb-0 mt-2">A través de valores como el respeto, la gratitud, el amor, la unión, el perdón, la equidad y la justicia, buscamos generar un impacto positivo en la comunidad y contribuir a la construcción de una cultura de paz.</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="ecp-mision-vision-column">
+                                    <div class="ecp-mision-vision-heading">
+                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                        <span>Visión</span>
+                                    </div>
+                                    <p class="mb-0">Seremos una estrategia reconocida a nivel regional y nacional en el SENA, que integra la formación por proyectos bajo el enfoque SENA Empresa, promoviendo una cultura de paz y la transformación de entornos educativos y sociales.</p>
+                                    <p class="mb-0 mt-2">Buscamos ser una estrategia replicable en otros centros de formación, fortaleciendo la participación de la comunidad educativa y formando aprendices líderes, innovadores, críticos y comprometidos con decisiones responsables.</p>
+                                    <p class="mb-0 mt-2">A través del fortalecimiento de competencias como la autonomía, el liderazgo, la comunicación asertiva, la autorregulación y el empoderamiento, contribuiremos al desarrollo sostenible y a la construcción de una sociedad más humana, consciente y en paz.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (area === 'servicios') {
+            items = info.items.map(item => `
+                <div class="col-md-4">
+                    <article class="ecp-servicio-card">
+                        <img class="ecp-servicio-image" src="{{ asset('general/assets/img') }}/${item.image}" alt="${item.title}">
+                        <h3 class="ecp-servicio-title">${item.title}</h3>
+                        <p class="ecp-servicio-text">${item.text}</p>
+                    </article>
+                </div>
+            `).join('');
+        } else if (area === 'podcast') {
+            items = `
+                <div class="col-12">
+                    <div class="ecp-podcast-hero">
+                        <div class="ecp-podcast-content">
+                            <p class="ecp-podcast-kicker">Escuela Cultura de Paz</p>
+                            <h3 class="ecp-podcast-title">Explora, escucha, aprende y transforma</h3>
+                            <p class="ecp-podcast-text">Escucha nuestros episodios en Spotify y acompáñanos en conversaciones para construir una cultura de paz.</p>
+                            <a class="ecp-podcast-listen" href="https://open.spotify.com/show/2093V1L7VHoL9NGE5kjR5N?si=G3SGXT2MTQKUOD-eANj3Kg&nd=1&dlsi=4ba03173ee954ec5" target="_blank" rel="noopener noreferrer" aria-label="Escuchar el podcast Escuela Cultura de Paz en Spotify">
+                                <i class="fab fa-spotify" aria-hidden="true"></i>
+                            </a>
+                            <span class="ecp-podcast-listen-label">Escuchar en Spotify</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            items = info.items.map(item => `
+                <div class="col-md-6">
+                    <div class="modal-ecp-feature-card h-100 mb-0">
+                        <div class="modal-ecp-feature-icon"><i class="${item.icon}" aria-hidden="true"></i></div>
+                        <div>
+                            <strong class="d-block text-dark small">${item.title}</strong>
+                            <span class="text-muted small">${item.text}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
         const note = info.note
             ? `<div class="col-12"><div class="modal-ecp-callout"><i class="${info.icon} me-1" aria-hidden="true"></i>${info.note}</div></div>`
             : '';
@@ -1495,8 +1998,13 @@
         contenido.innerHTML = `
             <div class="row g-3">
                 <div class="col-12">
-                    <h3 class="fw-bold mb-2" style="color: var(--sena-pastel-text-title);">${info.title}</h3>
-                    <p class="mb-1" style="color: var(--sena-pastel-text-body); line-height: 1.7;">${info.description}</p>
+                    <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap mb-2">
+                        <h3 class="fw-bold mb-0" style="color: var(--sena-pastel-text-title);">${info.title}</h3>
+                        <button type="button" class="btn btn-sena-green d-inline-flex align-items-center gap-2" onclick="cerrarDetalleKpi()" title="Cerrar detalle">
+                            <i class="fas fa-xmark" aria-hidden="true"></i> <span>Cerrar detalle</span>
+                        </button>
+                    </div>
+                    ${area === 'quienes-somos' ? '' : `<p class="mb-1" style="color: var(--sena-pastel-text-body); line-height: 1.7;">${info.description}</p>`}
                 </div>
                 ${items}
                 ${note}
@@ -1535,5 +2043,6 @@
         });
         document.getElementById('areas-ecp').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+
 </script>
 @endpush
