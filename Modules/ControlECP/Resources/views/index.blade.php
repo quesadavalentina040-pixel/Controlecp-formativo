@@ -504,7 +504,7 @@
             <!-- Diapositivas del Carrusel con Fotos Reales y Cajita Compacta -->
             <div class="carousel-inner">
                 <!-- Slide 1: Quiénes somos -->
-                <div class="carousel-item active ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-1.png') }}'); background-size: cover; background-position: center;">
+                <div class="carousel-item active ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-1.png') }}?v={{ filemtime(public_path('general/assets/img/carrusel-1.png')) }}'); background-size: cover; background-position: center;">
                     <div class="ecp-carousel-overlay"></div>
                     <div class="container ecp-carousel-content py-4">
                         <div class="row justify-content-center">
@@ -535,7 +535,7 @@
                 </div>
 
                 <!-- Slide 2: Logros -->
-                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-2.png') }}'); background-size: cover; background-position: center;">
+                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-2.png') }}?v={{ filemtime(public_path('general/assets/img/carrusel-2.png')) }}'); background-size: cover; background-position: center;">
                     <div class="ecp-carousel-overlay"></div>
                     <div class="container ecp-carousel-content py-4">
                         <div class="row justify-content-center">
@@ -566,7 +566,7 @@
                 </div>
 
                 <!-- Slide 3: Historia -->
-                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-3.png') }}'); background-size: cover; background-position: center;">
+                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-3.png') }}?v={{ filemtime(public_path('general/assets/img/carrusel-3.png')) }}'); background-size: cover; background-position: center;">
                     <div class="ecp-carousel-overlay"></div>
                     <div class="container ecp-carousel-content py-4">
                         <div class="row justify-content-center">
@@ -597,7 +597,7 @@
                 </div>
 
                 <!-- Slide 4: Misión y visión -->
-                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-1.png') }}'); background-size: cover; background-position: center;">
+                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-4.png') }}?v={{ filemtime(public_path('general/assets/img/carrusel-4.png')) }}'); background-size: cover; background-position: center;">
                     <div class="ecp-carousel-overlay"></div>
                     <div class="container ecp-carousel-content py-4">
                         <div class="row justify-content-center">
@@ -628,7 +628,7 @@
                 </div>
 
                 <!-- Slide 5: Nuestros servicios -->
-                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-2.png') }}'); background-size: cover; background-position: center;">
+                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-5.png') }}?v={{ filemtime(public_path('general/assets/img/carrusel-5.png')) }}'); background-size: cover; background-position: center;">
                     <div class="ecp-carousel-overlay"></div>
                     <div class="container ecp-carousel-content py-4">
                         <div class="row justify-content-center">
@@ -659,7 +659,7 @@
                 </div>
 
                 <!-- Slide 6: Podcast ECP -->
-                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-3.png') }}'); background-size: cover; background-position: center;">
+                <div class="carousel-item ecp-carousel-item" style="background-image: url('{{ asset('general/assets/img/carrusel-6.png') }}?v={{ filemtime(public_path('general/assets/img/carrusel-6.png')) }}'); background-size: cover; background-position: center;">
                     <div class="ecp-carousel-overlay"></div>
                     <div class="container ecp-carousel-content py-4">
                         <div class="row justify-content-center">
@@ -1390,56 +1390,71 @@
         'quienes-somos': {
             title: 'Quiénes somos',
             icon: 'fas fa-users',
-            description: 'Somos un espacio pedagógico de formación integral que promueve la convivencia, el diálogo y los valores humanos en la comunidad educativa SENA.',
+            description: 'La Escuela Cultura de Paz (ECP) es una estrategia pedagógica del Centro Agroindustrial SENA La Angostura, creada para fortalecer la convivencia, el diálogo y los valores humanos en toda la comunidad educativa. Trabajamos desde tres dimensiones: el ser, el convivir y el transformar, acompañando a aprendices, instructores y personal en su desarrollo integral.',
             items: [
-                { icon: 'fas fa-graduation-cap', title: 'Formación integral', text: 'Fortalecemos el desarrollo personal y ciudadano.' },
-                { icon: 'fas fa-handshake', title: 'Convivencia y diálogo', text: 'Promovemos relaciones respetuosas y constructivas.' }
+                { icon: 'fas fa-graduation-cap', title: 'Formación integral del ser', text: 'Promovemos el autoconocimiento, la responsabilidad personal y el crecimiento ético en cada miembro de la comunidad SENA.' },
+                { icon: 'fas fa-handshake', title: 'Convivencia y diálogo', text: 'Fomentamos relaciones basadas en el respeto, la empatía y la comunicación no violenta dentro y fuera del aula.' },
+                { icon: 'fas fa-shield-halved', title: 'Ambientes seguros', text: 'Garantizamos espacios libres de violencia, acoso y discriminación, donde cada persona se siente valorada y protegida.' },
+                { icon: 'fas fa-users-gear', title: 'Equipo comprometido', text: 'Contamos con instructores líderes, psicólogos y bienestar institucional trabajando en red por la paz del centro.' }
             ]
         },
         'logros': {
-            title: 'Logros',
+            title: 'Logros de la Escuela',
             icon: 'fas fa-award',
-            description: 'Conoce los avances y experiencias de la Escuela Cultura de Paz.',
+            description: 'La Escuela Cultura de Paz ha alcanzado resultados significativos en la transformación de la convivencia y el bienestar del Centro Agroindustrial SENA La Angostura. Cada logro refleja el compromiso colectivo de aprendices, instructores y directivos por construir una comunidad más justa, empática y pacífica.',
             items: [
-                { icon: 'fas fa-people-group', title: 'Experiencias formativas', text: 'Actividades para aprender y construir en comunidad.' },
-                { icon: 'fas fa-heart', title: 'Aportes a la convivencia', text: 'Acciones que impulsan el respeto y el diálogo.' }
-            ],
-            note: 'Los logros específicos se publicarán cuando su información esté confirmada.'
+                { icon: 'fas fa-people-group', title: 'Cobertura total de fichas', text: 'Los Momentos ECP se aplican al 100% de las fichas formativas activas del centro, impactando a cientos de aprendices cada trimestre.' },
+                { icon: 'fas fa-heart-pulse', title: 'Reducción de conflictos', text: 'Se ha evidenciado una disminución notable en los reportes de conflictos internos gracias a la mediación pedagógica activa.' },
+                { icon: 'fas fa-certificate', title: 'Reconocimiento institucional', text: 'La ECP ha sido reconocida como buena práctica de convivencia a nivel regional dentro de la red de centros SENA.' },
+                { icon: 'fas fa-seedling', title: 'Cultura de paz arraigada', text: 'Aprendices que pasaron por la ECP demuestran mayor capacidad para resolver diferencias de forma constructiva y colaborativa.' }
+            ]
         },
         'historia': {
-            title: 'Historia',
+            title: 'Historia de la Escuela',
             icon: 'fas fa-book-open',
-            description: 'Conoce el recorrido y la evolución de la Escuela Cultura de Paz.',
+            description: 'La Escuela Cultura de Paz nació como respuesta a la necesidad de fortalecer la convivencia en el Centro Agroindustrial La Angostura del SENA. Desde sus inicios, ha evolucionado de una iniciativa de bienestar a una estrategia pedagógica estructurada que hoy hace parte del corazón formativo del centro.',
             items: [
-                { icon: 'fas fa-seedling', title: 'Un espacio para la paz', text: 'Una iniciativa de formación y convivencia para la comunidad educativa.' }
-            ],
-            note: 'La información histórica detallada se incorporará en esta sección.'
+                { icon: 'fas fa-flag', title: 'Origen y fundación', text: 'Surgió de la iniciativa de instructores y el equipo de bienestar comprometidos con generar ambientes escolares más humanos y solidarios.' },
+                { icon: 'fas fa-route', title: 'Crecimiento y estructura', text: 'Con el tiempo se formalizaron los tres Momentos pedagógicos (Autoconciencia, Convivencia y Resolución de Conflictos) como eje metodológico.' },
+                { icon: 'fas fa-landmark', title: 'Consolidación institucional', text: 'La ECP pasó a ser parte oficial del plan de bienestar del centro, integrándose a los procesos de formación de todas las fichas activas.' },
+                { icon: 'fas fa-infinity', title: 'Hoy y el futuro', text: 'Actualmente la ECP se gestiona digitalmente a través de Control ECP, garantizando trazabilidad, seguimiento y mejora continua de cada acción.' }
+            ]
         },
         'mision-vision': {
-            title: 'Misión y visión',
+            title: 'Misión y Visión',
             icon: 'fas fa-compass',
-            description: 'El propósito y horizonte de la Escuela Cultura de Paz.',
+            description: 'La Escuela Cultura de Paz orienta su quehacer desde un propósito claro y un horizonte ambicioso: ser el motor de transformación humana del Centro Agroindustrial SENA La Angostura, formando ciudadanos íntegros capaces de construir paz desde su cotidianidad.',
             items: [
-                { icon: 'fas fa-bullseye', title: 'Misión', text: 'Promover una cultura de paz mediante la formación integral, el acompañamiento y el diálogo, fortaleciendo la convivencia de la comunidad educativa.' },
-                { icon: 'fas fa-eye', title: 'Visión', text: 'Ser un referente institucional en formación para la paz, promoviendo relaciones respetuosas, solidarias y colaborativas.' }
+                { icon: 'fas fa-bullseye', title: 'Misión', text: 'Promover una cultura de paz mediante la formación integral, el acompañamiento socioemocional y el diálogo, fortaleciendo la convivencia y el bienestar de toda la comunidad educativa SENA.' },
+                { icon: 'fas fa-eye', title: 'Visión', text: 'Ser un referente nacional en formación para la paz dentro de la red SENA, reconocido por transformar vidas y generar comunidades educativas solidarias, respetuosas y colaborativas.' },
+                { icon: 'fas fa-scale-balanced', title: 'Valores', text: 'Respeto, empatía, solidaridad, honestidad y compromiso con la paz son los pilares que guían cada acción de la Escuela Cultura de Paz.' },
+                { icon: 'fas fa-star', title: 'Principio rector', text: 'Creemos que la paz no se enseña, se construye juntos. Cada interacción en el centro es una oportunidad para cultivarla.' }
             ]
         },
         'servicios': {
-            title: 'Nuestros servicios',
+            title: 'Nuestros Servicios',
             icon: 'fas fa-hands-holding-circle',
-            description: 'Acompañamos el bienestar y la convivencia con acciones para el desarrollo personal y colectivo.',
+            description: 'La Escuela Cultura de Paz ofrece un conjunto de servicios orientados al bienestar integral, la convivencia y el desarrollo humano de aprendices e instructores del Centro Agroindustrial SENA La Angostura.',
             items: [
-                { icon: 'fas fa-brain', title: 'Acompañamiento psicológico', text: 'Escucha y orientación para el bienestar emocional.' },
-                { icon: 'fas fa-spa', title: 'Fortalecimiento espiritual', text: 'Espacios para cultivar valores y bienestar interior.' },
-                { icon: 'fas fa-people-group', title: 'Trabajo en equipo', text: 'Actividades colaborativas para fortalecer la comunicación y la convivencia.' }
+                { icon: 'fas fa-brain', title: 'Acompañamiento psicosocial', text: 'Sesiones de escucha activa y orientación socioemocional para aprendices que enfrentan dificultades personales, académicas o relacionales.' },
+                { icon: 'fas fa-people-arrows', title: 'Mediación de conflictos', text: 'Facilitación de diálogos y acuerdos entre las partes involucradas en un conflicto, buscando soluciones justas y duraderas.' },
+                { icon: 'fas fa-chalkboard-user', title: 'Talleres formativos', text: 'Actividades grupales vivenciales sobre inteligencia emocional, liderazgo, comunicación asertiva y resolución de conflictos.' },
+                { icon: 'fas fa-spa', title: 'Bienestar espiritual y emocional', text: 'Espacios de reflexión, mindfulness y fortalecimiento de valores que nutren el equilibrio interior de cada persona.' },
+                { icon: 'fas fa-medal', title: 'Reconocimiento a la convivencia', text: 'Programa de estímulos para aprendices e instructores que demuestran comportamientos ejemplares en cultura de paz.' },
+                { icon: 'fas fa-podcast', title: 'Comunicación y divulgación', text: 'Podcast ECP, boletines y contenidos digitales que difunden reflexiones y aprendizajes sobre la cultura de paz.' }
             ]
         },
         'podcast': {
             title: 'Podcast ECP',
             icon: 'fas fa-podcast',
-            description: 'Un espacio para compartir conversaciones y reflexiones sobre cultura de paz.',
-            items: [],
-            note: 'Los episodios estarán disponibles próximamente.'
+            description: 'El Podcast de la Escuela Cultura de Paz es un espacio de reflexión, conversación y aprendizaje donde voces de la comunidad SENA La Angostura comparten experiencias, historias y herramientas para construir paz desde lo cotidiano. Cada episodio es una invitación a pensar, sentir y actuar diferente.',
+            items: [
+                { icon: 'fas fa-microphone-lines', title: 'Voces de la comunidad', text: 'Aprendices, instructores y líderes de bienestar comparten sus experiencias y aprendizajes en torno a la cultura de paz.' },
+                { icon: 'fas fa-lightbulb', title: 'Reflexiones prácticas', text: 'Cada episodio aborda temas concretos: manejo de emociones, resolución de conflictos, liderazgo y convivencia escolar.' },
+                { icon: 'fas fa-headphones', title: 'Acceso libre y gratuito', text: 'El podcast estará disponible en plataformas digitales para que toda la comunidad pueda escucharlo cuando quiera.' },
+                { icon: 'fas fa-calendar-plus', title: 'Próximos episodios', text: 'Se están produciendo los primeros episodios. Pronto podrás sintonizarnos y ser parte de la conversación por la paz.' }
+            ],
+            note: 'El Podcast ECP estará disponible muy pronto. ¡Síguenos en redes sociales para ser el primero en enterarte!'
         }
     };
 
@@ -1494,7 +1509,10 @@
 
         const detalle = bootstrap.Collapse.getOrCreateInstance(detalleElement, { toggle: false });
         if (detalleElement.classList.contains('show')) {
-            document.getElementById('areas-ecp').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Ya está abierto: solo actualiza contenido y hace scroll al detalle
+            setTimeout(() => {
+                detalleElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
         } else {
             detalle.show();
         }
@@ -1506,7 +1524,8 @@
     }
 
     document.getElementById('detalle-kpi-section').addEventListener('shown.bs.collapse', () => {
-        document.getElementById('areas-ecp').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Scroll directo al panel de detalle una vez que termina de expandirse
+        document.getElementById('detalle-kpi-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
     document.getElementById('detalle-kpi-section').addEventListener('hidden.bs.collapse', () => {
